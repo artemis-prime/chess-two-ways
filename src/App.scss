@@ -1,0 +1,63 @@
+$board-brown: rgb(105, 49, 49);
+$square-size: 100px;
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+main {
+  display: grid;
+  grid-template-columns: $square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
+  grid-template-rows: $square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
+  margin: 40px auto;
+  width: $square-size * 8;
+  height: $square-size * 8;
+  border: 2px $board-brown solid;   
+}
+
+.grid-square {
+
+  &.col-odd.row-even {
+    background-color: $board-brown;
+  }
+  &.col-even.row-odd {
+    background-color: $board-brown;
+  }
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    display: block;
+
+  }
+}
+
+
+.App-header {
+  background-color: #274070;
+  /* min-height: 100vh; */
+  display: flex;
+  padding:  0.5rem 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-header-text {
+  display: block;
+}
+
