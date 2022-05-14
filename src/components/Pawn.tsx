@@ -4,19 +4,22 @@ import { useDrag } from 'react-dnd'
 
 import { useGameService } from '../domain/GameServiceProvider'
 import { SquareState } from '../domain/SquareState'
+import type DnDPawn from './DnDPawn'
 
 const Pawn: React.FC<{
   row: number,
   col: number, 
   state: SquareState,
   height: number,
-  color: string
+  color: string,
+  visible: boolean,
 }> = ({
   row,
   col, 
   state,
   height,
-  color
+  color,
+  visible
 }) => {
   const game = useGameService()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
@@ -25,7 +28,7 @@ const Pawn: React.FC<{
       row,
       col,
       state
-    },
+    } as DnDPawn,
     canDrag: (monitor) => (
       game.currentTurn() === state
     ),
@@ -36,19 +39,18 @@ const Pawn: React.FC<{
     }),
   }))
 
-  const _height = isDragging ? 1.25 * height : height
   return (
     <div 
       ref={drag}
       style={{
-        opacity: isDragging ? 0.5 : 1, 
+        opacity: (visible) ? (isDragging ? 0.5 : 1) : 0.3, 
         cursor: canDrag ? (isDragging ? 'move' : 'pointer') : 'default', 
       }}
     >
       <svg
 
-        width={`${_height}px`}
-        height={`${_height}px`}
+        width={`${height}px`}
+        height={`${height}px`}
         viewBox="0 0 700 700"
         xmlns="http://www.w3.org/2000/svg"
       >

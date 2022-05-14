@@ -8,11 +8,15 @@ import {
 
 
 import { SquareState } from './SquareState'
+import { MoveType } from './MoveType'
 
 export interface GameService {
 
   getState(row: number, col: number): SquareState
+
+  moveType(fromRow: number, fromCol: number, toRow: number, toCol: number): MoveType
   canDrop(fromRow: number, fromCol: number, toRow: number, toCol: number): boolean
+  
   drop(fromRow: number, fromCol: number, toRow: number, toCol: number): void
 
   currentTurn(): SquareState.white | SquareState.black
@@ -51,11 +55,29 @@ class GameServiceImpl implements GameService {
       // https://mobx.js.org/observable-state.html#limitations
     makeObservable<GameServiceImpl, 
       '_model' |
-      '_currentTurn' 
+      '_currentTurn'| 
+      '_toggleTurn' | 
+      '_move'
     >(this, {
       _model: observable,
-      _currentTurn: observable
+      _currentTurn: observable,
+      _toggleTurn: action,
+      _move: action
     })
+  }
+
+  private _toggleTurn(): void {
+    this._currentTurn = (this._currentTurn === SquareState.white) ? SquareState.black : SquareState.white
+  }
+
+  private _move(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number
+  ): void {
+    this._model[toRow][toCol] = this._model[fromRow][fromCol]
+    this._model[fromRow][fromCol] = SquareState.empty
   }
 
   currentTurn(): SquareState.white | SquareState.black {
@@ -75,12 +97,13 @@ class GameServiceImpl implements GameService {
     )
   }
 
-  dropIntent(
+  moveType(
     fromRow: number, 
     fromCol: number,
     toRow: number, 
     toCol: number
-  ) {
+  ): MoveType {
+
     const toState = this.getState(toRow, toCol)
     const fromState = this.getState(fromRow, fromCol)
 
@@ -94,7 +117,7 @@ class GameServiceImpl implements GameService {
       && 
       Math.abs(toRow - fromRow) === 2
     ) {
-      return 'initial-advance'
+      return MoveType.initialAdvance
     }
 
     // regular advance? 
@@ -110,7 +133,7 @@ class GameServiceImpl implements GameService {
         fromState === SquareState.white && (toRow - fromRow === -1)
       )
     ) {
-      return 'regular-advance'
+      return MoveType.normalAdvance
     }
 
     // regular take? 
@@ -127,23 +150,21 @@ class GameServiceImpl implements GameService {
         fromState === SquareState.white && (toRow - fromRow === -1)
       )
     ) {
-      return 'take'
+      return MoveType.take
     }
 
-    return 'none'
+    return MoveType.invalid
   }
 
   canDrop(fromRow: number, fromCol: number, toRow: number, toCol: number): boolean {
-    const intent = this.dropIntent(fromRow, fromCol, toRow, toCol)
-    return !(intent === 'none')
+    return this.moveType(fromRow, fromCol, toRow, toCol) !== MoveType.invalid
   }
 
   drop(fromRow: number, fromCol: number, toRow: number, toCol: number): void {
-    const intent = this.dropIntent(fromRow, fromCol, toRow, toCol)
-    if (intent !== 'none') {
-      this._model[toRow][toCol] = this._model[fromRow][fromCol]
-      this._model[fromRow][fromCol] = SquareState.empty
-      this._currentTurn = (this._currentTurn === SquareState.white) ? SquareState.black : SquareState.white
+    const move = this.moveType(fromRow, fromCol, toRow, toCol)
+    if (move !== MoveType.invalid) {
+      this._move(fromRow, fromCol, toRow, toCol)
+      this._toggleTurn()
     }
   }
 }
