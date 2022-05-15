@@ -30,8 +30,6 @@ class GameServiceImpl implements GameService {
 
   constructor() {
 
-    this._newGame()
-
     makeObservable(this, {
       drop: action
     })
@@ -42,17 +40,21 @@ class GameServiceImpl implements GameService {
       '_currentTurn'| 
       '_toggleTurn' | 
       '_move' | 
-      '_newGame'
+      '_resetGame'
     >(this, {
       _model: observable,
       _currentTurn: observable,
       _toggleTurn: action,
       _move: action,
-      _newGame: action
+      _resetGame: action
     })
+
+    this._resetGame()
   }
 
-  private _newGame(): void {
+  private _resetGame(): void {
+
+    this._model = []
     for (let row = 0; row < 8; row++) {
       const rowContents: Content[] = []
       if (row === 0) {
@@ -100,6 +102,19 @@ class GameServiceImpl implements GameService {
       }
     }
     return result
+  }
+
+  private _won(color: Colors): boolean {
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.getContent(row, col).piece
+          // There is still the opponent's color on the board
+        if (piece && piece.color !== color) {
+          return false
+        }
+      }
+    }
+    return true
   }
 
   private _toggleTurn(): void {
@@ -376,6 +391,13 @@ class GameServiceImpl implements GameService {
       this._move(fromRow, fromCol, toRow, toCol)
       if (move === MoveTypes.convert) {
         this._model[toRow][toCol].piece!.type = PieceTypes.queen
+      }
+      if (move !== MoveTypes.move) {
+        if (this._won(this._model[toRow][toCol].piece!.color)) {
+          console.log("WON!")
+          this._resetGame()
+          return 
+        }
       }
       this._toggleTurn()
     }
