@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
 import Pawn from './Pawn'
+import Queen from './Queen'
 import { useGameService } from '../domain/GameServiceProvider'
 import { MoveTypes, PieceTypes, Square } from '../domain/types'
 
@@ -68,6 +69,9 @@ const SquareComponent: React.FC<{
     >
       {(square.piece && square.piece.type === PieceTypes.pawn) && (
         <Pawn square={square} flashingOn={pieceFlashingOn}/>  
+      )}
+      {(square.piece && square.piece.type === PieceTypes.queen) && (
+        <Queen square={square} flashingOn={pieceFlashingOn}/>  
       )}
     </div>  
   )

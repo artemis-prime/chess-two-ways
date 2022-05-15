@@ -59,7 +59,7 @@ class GameServiceImpl implements GameService {
         for (let col = 0; col < 8; col++) {
           rowContents[col] = { 
             piece: {
-              type: PieceTypes.pawn,
+              type: (col === 2) ? PieceTypes.queen : PieceTypes.pawn,
               color: Colors.black
             }
           }  
@@ -69,7 +69,8 @@ class GameServiceImpl implements GameService {
         for (let col = 0; col < 8; col++) {
           rowContents[col] = {
             piece: {
-              type: PieceTypes.pawn,
+              type: (col === 5) ? PieceTypes.queen : PieceTypes.pawn,
+              //type: PieceTypes.pawn,
               color: Colors.white
             }
           }
@@ -193,6 +194,134 @@ class GameServiceImpl implements GameService {
     return MoveTypes.invalid
   }
 
+  private _isClear(row: number, col: number): boolean {
+    return !this._model[row][col].piece
+  }
+
+  private _isClearAlongRow(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    if (fromRow === toRow) {
+      const delta = toCol - fromCol
+      if (delta < 0) {
+        for (let col = fromCol - 1; col > toCol; col--) {
+          if (!this._isClear(toRow, col)) return false
+        }
+      }
+      else {
+        for (let col = fromCol + 1; col < toCol; col++) {
+          if (!this._isClear(toRow, col)) return false
+        }
+      }
+      return true
+    }
+    return false
+  }
+
+  private _isClearAlongColumn(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    if (fromCol === toCol) {
+      const delta = toRow - fromRow
+      if (delta < 0) {
+        for (let row = fromRow - 1; row > toRow; row--) {
+          if (!this._isClear(row, toCol)) return false
+        }
+      }
+      else {
+        for (let row = fromRow + 1; row < toRow; row++) {
+          if (!this._isClear(row, toCol)) return false
+        }
+      }
+      return true
+    }
+    return false
+  }
+
+  private _isClearAlongDiagonal(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    const deltaX = toRow - fromRow
+    const deltaY = toCol - fromCol
+
+    if (Math.abs(deltaX) !== Math.abs(deltaY)) {
+      return false
+    }
+
+      // --> NE
+    if (deltaX > 0 && deltaY > 0) {
+      for (let row = fromRow + 1, col = fromCol + 1; row < toRow && col < toCol; row++, col++) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> SE
+    else if (deltaX > 0 && deltaY < 0) {
+      for (let row = fromRow + 1, col = fromCol - 1; row < toRow && col > toCol; row++, col--) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> SW
+    else if (deltaX < 0 && deltaY < 0) {
+      for (let row = fromRow - 1, col = fromCol - 1; row > toRow && col > toCol; row--, col--) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> NW
+    else if (deltaX < 0 && deltaY > 0) {
+      for (let row = fromRow - 1, col = fromCol + 1; row > toRow && col < toCol; row--, col++) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+        
+    return true
+  }
+
+  private _resolveQueenMove(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+    fromContent: Content,
+    toContent: Content,
+  ): MoveTypes {
+    if (
+      (fromContent.piece!.color === Colors.black && toContent.piece && toContent.piece.color === Colors.white
+      ||
+      fromContent.piece!.color === Colors.white && toContent.piece && toContent.piece.color === Colors.black)
+      &&
+      (this._isClearAlongRow(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongColumn(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongDiagonal(fromRow, fromCol, toRow, toCol))
+    ) {
+      return MoveTypes.take
+    }
+    else if (
+      !toContent.piece 
+      && 
+      (this._isClearAlongRow(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongColumn(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongDiagonal(fromRow, fromCol, toRow, toCol))
+    ) {
+      return MoveTypes.move
+    }
+    return MoveTypes.invalid
+
+  }
+
+
   moveType(
     fromRow: number, 
     fromCol: number,
@@ -203,8 +332,23 @@ class GameServiceImpl implements GameService {
     const toContent = this.getContent(toRow, toCol)
     const fromContent = this.getContent(fromRow, fromCol)
 
-    if (fromContent.piece && fromContent.piece.type === PieceTypes.pawn) {
+      // Dnd fw should ensure this doesn't happen, but whatevs
+    if (!fromContent.piece) {
+      return MoveTypes.invalid   
+    }
+    
+    if (fromContent.piece.type === PieceTypes.pawn) {
       return this._resolvePawnMove(
+        fromRow, 
+        fromCol,
+        toRow, 
+        toCol,
+        fromContent,
+        toContent,
+      )
+    }
+    else if (fromContent.piece.type === PieceTypes.queen) {
+      return this._resolveQueenMove(
         fromRow, 
         fromCol,
         toRow, 
