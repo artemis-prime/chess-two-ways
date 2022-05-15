@@ -3,39 +3,33 @@ import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
 import Pawn from './Pawn'
-import type DnDPawn from './DnDPawn'
 import { useGameService } from '../domain/GameServiceProvider'
-import { SquareState } from '../domain/SquareState'
-import { MoveType } from '../domain/MoveType'
+import { MoveTypes, PieceTypes, Square } from '../domain/types'
 
-const Square: React.FC<{ 
-  state: SquareState,
-  row: number,
-  col: number 
+const SquareComponent: React.FC<{ 
+  square: Square
 }> = observer(({ 
-  state,
-  row,
-  col 
+  square,
 }) => {
 
   const game = useGameService()
   const timeoutRef = useRef<any | undefined>(undefined)
-  const [pawnVisible, setPawnVisible] = useState<boolean>(true)
+  const [pieceFlashingOn, setPieceFlashingOn] = useState<boolean>(true)
   
   const [{ isOver, moveType }, drop] = useDrop(
     () => ({
       accept: 'Pawn',
-      drop: (item: DnDPawn, monitor) => { game.drop(item.row, item.col, row, col) },
-      canDrop: (item : DnDPawn, monitor) => (game.canDrop(item.row, item.col, row, col)),
+      drop: (item: Square, monitor) => { game.drop(item.row, item.col, square.row, square.col) },
+      canDrop: (item : Square, monitor) => (game.canDrop(item.row, item.col, square.row, square.col)),
       collect: (monitor) => {
-        const item = monitor.getItem() as DnDPawn
+        const item = monitor.getItem() as Square
         return {
-          moveType: item ? game.moveType(item.row, item.col, row, col) : MoveType.invalid,
+          moveType: item ? game.moveType(item.row, item.col, square.row, square.col) : MoveTypes.invalid,
           isOver: (!!monitor.isOver())
         }
       }
     }),
-    [row, col]
+    [square]
   )
 
   useEffect(() => {
@@ -44,12 +38,12 @@ const Square: React.FC<{
       if (timeoutRef.current) {
         clearInterval(timeoutRef.current)
         timeoutRef.current = undefined 
-        setPawnVisible(true)
+        setPieceFlashingOn(true)
       }
     }
-    if (isOver && moveType === MoveType.take && !timeoutRef.current) {
+    if (isOver && moveType === MoveTypes.take && !timeoutRef.current) {
       timeoutRef.current = setInterval(() => {
-        setPawnVisible((p) => (!p))
+        setPieceFlashingOn((p) => (!p))
       }, 100)
     }
     else if (timeoutRef.current) {
@@ -58,32 +52,25 @@ const Square: React.FC<{
     return clearMe
   }, [moveType, isOver])
 
-  const borderStyle = (!isOver || moveType === MoveType.invalid) ? 
+  const borderStyle = (!isOver || moveType === MoveTypes.invalid) ? 
     'none' 
     : 
-    (moveType === MoveType.take) ? 
-      ((pawnVisible) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn
+    (moveType === MoveTypes.take) ? 
+      ((pieceFlashingOn) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn
       : 
       '2px #2f2 solid' 
-
-
 
   return (
     <div 
       ref={drop}
-      className={`grid-square row-${row} row-${(row % 2) ? 'even' : 'odd'} col-${col} col-${(col % 2) ? 'even' : 'odd'}`}
-      style={{
-        border: borderStyle 
-      }}
+      className={`grid-square row-${square.row} row-${(square.row % 2) ? 'even' : 'odd'} col-${square.col} col-${(square.col % 2) ? 'even' : 'odd'}`}
+      style={{ border: borderStyle }}
     >
-      {(state === SquareState.black) && (
-        <Pawn row={row} col={col} state={state} height={75} color='#322' visible={pawnVisible}/>  
-      )}
-      {(state === SquareState.white) && (
-        <Pawn row={row} col={col} state={state} height={75} color='#cbb' visible={pawnVisible}/>  
+      {(square.piece && square.piece.type === PieceTypes.pawn) && (
+        <Pawn square={square} flashingOn={pieceFlashingOn}/>  
       )}
     </div>  
   )
 })
 
-export default Square
+export default SquareComponent
