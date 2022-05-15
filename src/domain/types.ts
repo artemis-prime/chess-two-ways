@@ -25,5 +25,6 @@ export interface Square extends Content {
 export enum MoveTypes {
   move = 'move',
   take = 'take',
+  convert = 'convert',
   invalid = 'invalid'
 }

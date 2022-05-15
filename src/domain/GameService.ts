@@ -59,7 +59,8 @@ class GameServiceImpl implements GameService {
         for (let col = 0; col < 8; col++) {
           rowContents[col] = { 
             piece: {
-              type: (col === 2) ? PieceTypes.queen : PieceTypes.pawn,
+              //type: (col === 2) ? PieceTypes.queen : PieceTypes.pawn,
+              type: PieceTypes.pawn,
               color: Colors.black
             }
           }  
@@ -69,8 +70,8 @@ class GameServiceImpl implements GameService {
         for (let col = 0; col < 8; col++) {
           rowContents[col] = {
             piece: {
-              type: (col === 5) ? PieceTypes.queen : PieceTypes.pawn,
-              //type: PieceTypes.pawn,
+              //type: (col === 5) ? PieceTypes.queen : PieceTypes.pawn,
+              type: PieceTypes.pawn,
               color: Colors.white
             }
           }
@@ -171,6 +172,9 @@ class GameServiceImpl implements GameService {
         (fromContent.piece!.color === Colors.white && (toRow - fromRow === -1))
       )
     ) {
+      if ((fromContent.piece!.color === Colors.black && toRow === 7) || (fromContent.piece!.color === Colors.white && toRow === 0)) {
+        return MoveTypes.convert
+      }
       return MoveTypes.move
     }
 
@@ -189,6 +193,9 @@ class GameServiceImpl implements GameService {
         fromContent.piece!.color === Colors.white && (toRow - fromRow === -1)
       )
     ) {
+      if ((fromContent.piece!.color === Colors.black && toRow === 7) || (fromContent.piece!.color === Colors.white && toRow === 0)) {
+        return MoveTypes.convert
+      }
       return MoveTypes.take
     }
     return MoveTypes.invalid
@@ -321,7 +328,6 @@ class GameServiceImpl implements GameService {
 
   }
 
-
   moveType(
     fromRow: number, 
     fromCol: number,
@@ -368,6 +374,9 @@ class GameServiceImpl implements GameService {
     const move = this.moveType(fromRow, fromCol, toRow, toCol)
     if (move !== MoveTypes.invalid) {
       this._move(fromRow, fromCol, toRow, toCol)
+      if (move === MoveTypes.convert) {
+        this._model[toRow][toCol].piece!.type = PieceTypes.queen
+      }
       this._toggleTurn()
     }
   }

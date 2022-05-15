@@ -42,7 +42,7 @@ const SquareComponent: React.FC<{
         setPieceFlashingOn(true)
       }
     }
-    if (isOver && moveType === MoveTypes.take && !timeoutRef.current) {
+    if (isOver && (moveType === MoveTypes.take || moveType === MoveTypes.convert) && !timeoutRef.current) {
       timeoutRef.current = setInterval(() => {
         setPieceFlashingOn((p) => (!p))
       }, 100)
@@ -53,13 +53,18 @@ const SquareComponent: React.FC<{
     return clearMe
   }, [moveType, isOver])
 
-  const borderStyle = (!isOver || moveType === MoveTypes.invalid) ? 
-    'none' 
-    : 
-    (moveType === MoveTypes.take) ? 
-      ((pieceFlashingOn) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn
-      : 
-      '2px #2f2 solid' 
+  let borderStyle = 'none' 
+  if (isOver) {
+    if (moveType === MoveTypes.take) {
+      borderStyle = ((pieceFlashingOn) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn  
+    }
+    else if (moveType === MoveTypes.convert) {
+      borderStyle = ((pieceFlashingOn) ? '3px orange solid' : '1px orange solid') // border flashes   
+    }
+    else if (moveType === MoveTypes.move) {
+      borderStyle = '2px #2f2 solid'
+    }
+  }
 
   return (
     <div 
