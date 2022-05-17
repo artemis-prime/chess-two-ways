@@ -4,6 +4,7 @@ import { useDrop } from 'react-dnd'
 
 import Pawn from './Pawn'
 import Queen from './Queen'
+import Bishop from './Bishop'
 import { useGameService } from '../domain/GameServiceProvider'
 import { MoveTypes, PieceTypes, Square } from '../domain/types'
 
@@ -72,11 +73,14 @@ const SquareComponent: React.FC<{
       className={`grid-square row-${square.row} row-${(square.row % 2) ? 'even' : 'odd'} col-${square.col} col-${(square.col % 2) ? 'even' : 'odd'}`}
       style={{ border: borderStyle }}
     >
-      {(square.piece && square.piece.type === PieceTypes.pawn) && (
+      {(square.piece?.type === PieceTypes.pawn) && (
         <Pawn square={square} flashingOn={pieceFlashingOn}/>  
       )}
-      {(square.piece && square.piece.type === PieceTypes.queen) && (
+      {(square.piece?.type === PieceTypes.queen) && (
         <Queen square={square} flashingOn={pieceFlashingOn}/>  
+      )}
+      {(square.piece?.type === PieceTypes.bishop) && (
+        <Bishop square={square} flashingOn={pieceFlashingOn}/>  
       )}
     </div>  
   )

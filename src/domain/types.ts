@@ -1,3 +1,5 @@
+import { GameService } from "./GameService"
+
 export enum Colors {
   black = 'black', 
   white = 'white',
@@ -6,6 +8,7 @@ export enum Colors {
 export enum PieceTypes {
   pawn = 'pawn',
   queen = 'queen',
+  bishop = 'bishop'
 }
 
 export interface Piece {
@@ -13,11 +16,11 @@ export interface Piece {
   color: Colors
 } 
 
-export interface Content {
+export interface Occupant {
   piece: Piece | undefined
 } 
 
-export interface Square extends Content {
+export interface Square extends Occupant {
   row: number
   col: number
 }
@@ -27,4 +30,14 @@ export enum MoveTypes {
   take = 'take',
   convert = 'convert',
   invalid = 'invalid'
+}
+
+export interface MoveResolver {
+  (
+    game: GameService,
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): MoveTypes
 }

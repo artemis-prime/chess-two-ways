@@ -3,8 +3,9 @@ import React, {
   PropsWithChildren
  } from 'react'
  
- import type { GameService}  from './GameService'
- import gameServiceInst from './GameService'
+ import type { GameService }  from './GameService'
+ import GameServiceImpl from './GameService'
+ import resolverMap from './pieceResolvers/resolverMap'
  
  const GameServiceContext = React.createContext<GameService | undefined>(undefined) 
  
@@ -15,7 +16,7 @@ import React, {
  const GameServiceProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
    
    return (
-     <GameServiceContext.Provider value={gameServiceInst}>
+     <GameServiceContext.Provider value={new GameServiceImpl(resolverMap)}>
        {children}
      </GameServiceContext.Provider>
    )

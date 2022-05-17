@@ -10,7 +10,7 @@ const Board: React.FC<{}> = observer(() => {
   const game = useGameService()
   return (
     <main>
-      {game.getBoard().map((s: Square) => (<SquareComponent square={s} key={`key-${s.row}-${s.col}`}/>))}
+      {game.boardAsSquares().map((s: Square) => (<SquareComponent square={s} key={`key-${s.row}-${s.col}`}/>))}
     </main>
   )
 })

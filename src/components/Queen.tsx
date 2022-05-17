@@ -15,7 +15,7 @@ const Queen: React.FC<{
 }) => {
   const game = useGameService()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
-    type: 'Pawn',
+    type: 'piece',
     item: {...square},
     canDrag: (monitor) => (
       game.currentTurn() === square.piece!.color
