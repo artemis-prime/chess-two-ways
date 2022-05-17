@@ -1,43 +1,50 @@
-import { GameService } from "./GameService"
+import { Game } from './Game'
 
-export enum Colors {
-  black = 'black', 
-  white = 'white',
- }
+export type Color =
+  'black' | 
+  'white'
+ 
+export type Player = Color
 
-export enum PieceTypes {
-  pawn = 'pawn',
-  queen = 'queen',
-  bishop = 'bishop'
-}
+export type PieceType =
+  'pawn' |
+  'queen' |
+  'bishop' |
+  'rook'
+
 
 export interface Piece {
-  type: PieceTypes
-  color: Colors
+  type: PieceType
+  color: Color
 } 
 
-export interface Occupant {
-  piece: Piece | undefined
+export type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+export const RANKS: Rank[] = [1, 2, 3, 4, 5, 6, 7, 8]
+export const RANKS_REVERSE: Rank[] = [8, 7, 6, 5, 4, 3, 2, 1]
+export type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
+export const FILES: File[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] 
+
+export interface Square {
+  rank: Rank
+  file: File
+  piece?: Piece | undefined
+}
+
+export type RankArray = {
+  [key in File]: Square
+}
+
+export type Board = {
+  [key in Rank]: RankArray
 } 
 
-export interface Square extends Occupant {
-  row: number
-  col: number
-}
 
-export enum MoveTypes {
-  move = 'move',
-  take = 'take',
-  convert = 'convert',
-  invalid = 'invalid'
-}
+export type MoveType =
+  'move' |
+  'capture' |
+  'convert' | 
+  'invalid'
 
-export interface MoveResolver {
-  (
-    game: GameService,
-    fromRow: number, 
-    fromCol: number,
-    toRow: number, 
-    toCol: number,
-  ): MoveTypes
+export interface Resolver {
+  ( game: Game, from: Square,  to: Square ): MoveType
 }

@@ -3,12 +3,12 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import Board from './components/Board'
-import GameServiceProvider from './domain/GameServiceProvider'
+import GameProvider from './domain/GameProvider'
 
 import './App.scss'
 
 const App: React.FC<{}> = () => (
-  <GameServiceProvider >
+  <GameProvider >
     <DndProvider backend={HTML5Backend}>
       <div className="App">
         <header className="App-header">
@@ -17,7 +17,7 @@ const App: React.FC<{}> = () => (
         <Board />
       </div>
     </DndProvider>
-  </GameServiceProvider>
+  </GameProvider>
 )
 
 export default App

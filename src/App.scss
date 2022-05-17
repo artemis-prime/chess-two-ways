@@ -28,10 +28,10 @@ main {
 
 .grid-square {
 
-  &.col-odd.row-even {
+  &.col-odd.row-odd {
     background-color: $board-brown;
   }
-  &.col-even.row-odd {
+  &.col-even.row-even {
     background-color: $board-brown;
   }
 

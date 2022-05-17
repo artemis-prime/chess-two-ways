@@ -2,15 +2,15 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 import { Square }   from '../domain/types'
-import { useGameService } from '../domain/GameServiceProvider'
+import { useGame } from '../domain/GameProvider'
 import { default as SquareComponent } from './Square'
 
 const Board: React.FC<{}> = observer(() => {
 
-  const game = useGameService()
+  const game = useGame()
   return (
     <main>
-      {game.boardAsSquares().map((s: Square) => (<SquareComponent square={s} key={`key-${s.row}-${s.col}`}/>))}
+      {game.boardAsSquares().map((s: Square) => (<SquareComponent square={s} key={`key-${s.rank}-${s.file}`}/>))}
     </main>
   )
 })
