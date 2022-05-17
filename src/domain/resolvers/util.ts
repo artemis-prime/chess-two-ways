@@ -33,7 +33,7 @@ const isClearAlongRank = (
     if (delta < 0) {
         // zero based!
       for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-        if (!game.pieceAt({
+        if (!!game.pieceAt({
           rank: to.rank, 
           file: FILES[fileIndex]
         })) {
@@ -44,7 +44,7 @@ const isClearAlongRank = (
     else {
         // zero based!
       for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-        if (!game.pieceAt({
+        if (!!game.pieceAt({
           rank: to.rank, 
           file: FILES[fileIndex]
         })) {
@@ -67,7 +67,7 @@ const isClearAlongFile = (
     if (delta < 0) {
         // one-based
       for (let rank = from.rank - 1; rank > to.rank; rank--) {
-        if (!game.pieceAt({
+        if (!!game.pieceAt({
           rank: rank as Rank, 
           file: from.file
         })) {
@@ -78,7 +78,7 @@ const isClearAlongFile = (
     else {
         // one-based
       for (let rank = from.rank + 1; rank < to.rank; rank++) {
-        if (!game.pieceAt({
+        if (!!game.pieceAt({
           rank: rank as Rank, 
           file: from.file
         })) {
@@ -99,6 +99,7 @@ const isClearAlongDiagonal = (
 
   const deltaRank = to.rank - from.rank
   const deltaFile = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+  console.log(`DIAGONAL delta rank: ${deltaRank} : delta file: ${deltaFile}`)
 
   if (Math.abs(deltaRank) !== Math.abs(deltaFile)) {
     return false
@@ -107,9 +108,9 @@ const isClearAlongDiagonal = (
     // --> NE
   if (deltaFile > 0 && deltaRank > 0 ) {
     for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) + 1; rank < to.rank && fileIndex < FILES.indexOf(to.file); rank++, fileIndex++) {
-      if (!game.pieceAt({
+      if (!!game.pieceAt({
         rank: rank as Rank, 
-        file: FILES[fileIndex + 1] // zero-based
+        file: FILES[fileIndex] // zero-based
       })) {
         return false
       }
@@ -118,7 +119,7 @@ const isClearAlongDiagonal = (
     // --> SE
   else if (deltaFile > 0 && deltaRank < 0) {
     for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) + 1; rank > to.rank && fileIndex < FILES.indexOf(to.file); rank--, fileIndex++) {
-      if (!game.pieceAt({
+      if (!!game.pieceAt({
         rank: rank as Rank, 
         file: FILES[fileIndex] // zero-based
       })) {
@@ -129,7 +130,7 @@ const isClearAlongDiagonal = (
     // --> SW
   else if (deltaFile < 0 && deltaRank < 0) {
     for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) - 1; rank > to.rank && fileIndex > FILES.indexOf(to.file);  rank--, fileIndex--) {
-      if (!game.pieceAt({
+      if (!!game.pieceAt({
         rank: rank as Rank, 
         file: FILES[fileIndex] // zero-based
       })) {
@@ -140,7 +141,7 @@ const isClearAlongDiagonal = (
     // --> NW
     else if (deltaFile < 0 && deltaRank > 0) {
       for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) - 1; rank < to.rank && fileIndex > FILES.indexOf(to.file); rank++, fileIndex--) {
-        if (!game.pieceAt({
+        if (!!game.pieceAt({
           rank: rank as Rank, 
           file: FILES[fileIndex] // zero-based
         })) {

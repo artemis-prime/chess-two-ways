@@ -36,7 +36,7 @@ export default (
     && 
     (isClearAlongRank(game, from, to)
     ||
-    isClearAlongRank(game, from, to)
+    isClearAlongFile(game, from, to)
     ||
     isClearAlongDiagonal(game, from, to))
   ) {
