@@ -8,9 +8,9 @@ import {
  } from '../types'
 
 const pawnOnHomeRow = (sq: Square): boolean => (
-  sq.rank === 1 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'white'
+  sq.rank === 2 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'white'
   ||
-  sq.rank === 8 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'black'
+  sq.rank === 7 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'black'
 )
 
 

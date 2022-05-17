@@ -17,30 +17,21 @@ export default (
   to: Square, 
 ): MoveType => {
   
-  const fromPiece = game.pieceAt(from)
-  const toPiece = game.pieceAt(to)
-
   if (
-    droppingOnOpponent(fromPiece!, toPiece)
-    &&
-    (isClearAlongRank(game, from, to)
+    isClearAlongRank(game, from, to)
     ||
     isClearAlongFile(game, from, to)
     ||
-    isClearAlongDiagonal(game, from, to))
+    isClearAlongDiagonal(game, from, to)
   ) {
-    return 'capture'
-  }
-  else if (
-    !toPiece 
-    && 
-    (isClearAlongRank(game, from, to)
-    ||
-    isClearAlongFile(game, from, to)
-    ||
-    isClearAlongDiagonal(game, from, to))
-  ) {
-    return 'move'
+      const fromPiece = game.pieceAt(from)
+      const toPiece = game.pieceAt(to)
+      if (droppingOnOpponent(fromPiece!, toPiece)) {
+      return 'capture'
+    }
+    else if (!toPiece) {
+      return 'move'
+    }
   }
   return 'invalid'
 }

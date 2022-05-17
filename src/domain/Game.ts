@@ -3,6 +3,7 @@ import {
   makeObservable, 
   observable, 
 } from 'mobx'
+import queen from './resolvers/queen'
 
 import { 
   Board,
@@ -70,31 +71,80 @@ class GameImpl implements Game {
     const result: any = {}
     for (const rank of RANKS) {
       const rankArray: any = {}
-        // White pawns
+        // White pieces
       if (rank === 1) {
         for (const file of FILES) {
+          let type: PieceType | undefined = undefined
+          if (file === 'a' || file === 'h') {
+            type = 'rook'
+          }
+          else if (file === 'c' || file === 'f') {
+            type = 'bishop'
+          }
+          else if (file === 'd') {
+            type = 'queen'
+          }
           rankArray[file] = { 
+            rank,
+            file
+          }  
+          if (type) {
+            rankArray[file].piece = {
+              type,
+              color: 'white'
+            } 
+          }
+        }
+      }
+        // White pawns
+      else if (rank === 2) {
+        for (const file of FILES) {
+          rankArray[file] = {
             piece: {
-              type: (file === 'c') ? 'bishop' : 'pawn',
-              //type: 'pawn',
+              type: 'pawn',
               color: 'white'
             },
             rank,
             file
-          }  
+          }
         }
       }
-      else if (rank === 8) {
+        // Black pawns
+      else if (rank === 7) {
         for (const file of FILES) {
-          rankArray[file] = { 
+          rankArray[file] = {
             piece: {
-              type: (file === 'c') ? 'queen' : 'pawn',
-              //type: 'pawn',
+              type: 'pawn',
               color: 'black'
             },
             rank,
             file
+          }
+        }
+      }
+        // Black pawns
+      else if (rank === 8) {
+        for (const file of FILES) {
+          let type: PieceType | undefined = undefined
+          if (file === 'a' || file === 'h') {
+            type = 'rook'
+          }
+          else if (file === 'c' || file === 'f') {
+            type = 'bishop'
+          }
+          else if (file === 'd') {
+            type = 'queen'
+          }
+          rankArray[file] = { 
+            rank,
+            file
           }  
+          if (type) {
+            rankArray[file].piece = {
+              type,
+              color: 'black'
+            } 
+          }
         }
       }
       else {

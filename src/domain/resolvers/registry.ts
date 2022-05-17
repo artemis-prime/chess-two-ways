@@ -3,10 +3,12 @@ import type { Resolver } from '../types'
 
 import pawn from './pawn' 
 import queen from './queen' 
-import bishop from './queen' 
+import bishop from './queen'
+import rook from './rook' 
 
 export default new Map<PieceType, Resolver>([
   ['pawn', pawn],
   ['queen', queen],
-  ['bishop', bishop]
+  ['bishop', bishop],
+  ['rook', rook]
 ])

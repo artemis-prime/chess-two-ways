@@ -6,7 +6,8 @@ import {
 
 import { 
   droppingOnOpponent,
-  isClearAlongDiagonal
+  isClearAlongRank,
+  isClearAlongFile
 } from './util'
 
 export default (
@@ -15,7 +16,7 @@ export default (
   to: Square, 
 ): MoveType => {
   
-  if (isClearAlongDiagonal(game, from, to)) {
+  if (isClearAlongRank(game, from, to) || isClearAlongFile(game, from, to) ) {
       const fromPiece = game.pieceAt(from)
       const toPiece = game.pieceAt(to)
       if (droppingOnOpponent(fromPiece!, toPiece)) {
