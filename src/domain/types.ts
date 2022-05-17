@@ -30,14 +30,13 @@ export interface Square {
   piece?: Piece | undefined
 }
 
-export type RankArray = {
+export type RankSquares = {
   [key in File]: Square
 }
 
 export type Board = {
-  [key in Rank]: RankArray
+  [key in Rank]: RankSquares
 } 
-
 
 export type MoveType =
   'move' |
