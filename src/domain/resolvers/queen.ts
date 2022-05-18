@@ -11,22 +11,33 @@ import {
   isClearAlongDiagonal
 } from './util'
 
-export default (
+
+
+const legalMove = (
   game: Game,
   from: Square, 
   to: Square, 
-): MoveType => {
+): boolean => {
   
-  if (
+  return (
     isClearAlongRank(game, from, to)
     ||
     isClearAlongFile(game, from, to)
     ||
     isClearAlongDiagonal(game, from, to)
-  ) {
-      const fromPiece = game.pieceAt(from)
-      const toPiece = game.pieceAt(to)
-      if (droppingOnOpponent(fromPiece!, toPiece)) {
+  ) 
+}
+
+const moveType = (
+  game: Game,
+  from: Square, 
+  to: Square, 
+): MoveType => {
+  
+  if (legalMove(game, from, to)) {
+    const fromPiece = game.pieceAt(from)
+    const toPiece = game.pieceAt(to)
+    if (droppingOnOpponent(fromPiece!, toPiece)) {
       return 'capture'
     }
     else if (!toPiece) {
@@ -34,4 +45,9 @@ export default (
     }
   }
   return 'invalid'
+}
+
+export default {
+  canCapture: legalMove,
+  moveType
 }

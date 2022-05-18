@@ -27,6 +27,9 @@ export interface Game {
   drop(from: Square, to: Square): void
 
   moveType(from: Square, to: Square): MoveType
+
+  canBeCapturedFrom(toCapture: Square, p: Player): Square[]
+  canBeCaptured(toCapture: Square, p: Player): boolean
   
   currentTurn(): Player
   won(p: Player): boolean
@@ -217,7 +220,7 @@ class GameImpl implements Game {
       const resolver = this._resolvers!.get(fromPiece.type)
 
       if (resolver) {
-        return resolver(
+        return resolver.moveType(
           this,
           from, 
           to, 
@@ -248,6 +251,31 @@ class GameImpl implements Game {
       }
       this._toggleTurn()
     }
+  }
+
+  canBeCapturedFrom(toCapture: Square, p: Player): Square[] {
+    const result: Square[] = []
+    for (const rank of RANKS) {
+      for (const file of FILES) {
+        const piece = this.pieceAt({rank, file})
+        if (piece && piece.color !== p) {
+          const resolver = this._resolvers!.get(piece.type)
+          const toCaptureFrom = {
+            piece: {...piece},
+            rank,
+            file
+          }
+          if (resolver && resolver.canCapture(this, toCaptureFrom, toCapture)) {
+            result.push(toCaptureFrom)
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  canBeCaptured(toCapture: Square, p: Player): boolean {
+    return this.canBeCapturedFrom(toCapture, p).length > 0
   }
 
   won(pl: Player): boolean {

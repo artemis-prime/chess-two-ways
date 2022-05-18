@@ -46,5 +46,6 @@ export type MoveType =
   'invalid'
 
 export interface Resolver {
-  ( game: Game, from: Square,  to: Square ): MoveType
+  moveType( game: Game, from: Square,  to: Square ): MoveType
+  canCapture( game: Game, from: Square, to: Square): boolean
 }

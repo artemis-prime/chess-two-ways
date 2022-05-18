@@ -9,19 +9,30 @@ import {
   droppingOnOpponent
 } from './util'
 
-export default (
+
+const legalMove = (
+  game: Game,
+  from: Square, 
+  to: Square, 
+): boolean => {
+
+  const deltaRank = to.rank - from.rank
+  const deltaFile = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+  return (
+    Math.abs(deltaRank) === 2 && Math.abs(deltaFile) === 1    
+    ||
+    Math.abs(deltaFile) === 2 && Math.abs(deltaRank) === 1
+  ) 
+ }
+
+ const moveType = (
   game: Game,
   from: Square, 
   to: Square, 
 ): MoveType => {
   
-  const deltaRank = to.rank - from.rank
-  const deltaFile = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+  if (legalMove(game, from, to)) {
 
-  if (Math.abs(deltaRank) === 2 && Math.abs(deltaFile) === 1
-    ||
-    Math.abs(deltaFile) === 2 && Math.abs(deltaRank) === 1
-  ) {
     const fromPiece = game.pieceAt(from)
     const toPiece = game.pieceAt(to)
     if (droppingOnOpponent(fromPiece!, toPiece)) {
@@ -33,4 +44,9 @@ export default (
   }
 
   return 'invalid'
+}
+
+export default {
+  canCapture: legalMove,
+  moveType
 }

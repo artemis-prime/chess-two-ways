@@ -7,7 +7,26 @@ import {
 
 import { pawnOnHomeRow, droppingOnOpponent } from './util'
 
-export default (
+const canCapture = (
+  game: Game, 
+  from: Square,  
+  to: Square 
+): boolean => {
+  const fromPiece = game.pieceAt(from)
+  return (
+    // moving diagonally
+    Math.abs(FILES.indexOf(to.file) - FILES.indexOf(from.file)) === 1
+    &&
+      // correct vector
+    (
+      fromPiece!.color === 'black' && (to.rank - from.rank === -1)
+      ||
+      fromPiece!.color === 'white' && (to.rank - from.rank === 1)
+    )
+  ) 
+}
+
+const moveType = (
   game: Game, 
   from: Square,  
   to: Square 
@@ -48,19 +67,8 @@ export default (
     return 'move'
   }
 
-  // regular take? 
-  if (
-    droppingOnOpponent(fromPiece!, toPiece)
-    &&
-      // moving diagonally
-    Math.abs(FILES.indexOf(to.file) - FILES.indexOf(from.file)) === 1
-    &&
-    (
-      fromPiece!.color === 'black' && (to.rank - from.rank === -1)
-      ||
-      fromPiece!.color === 'white' && (to.rank - from.rank === 1)
-    )
-  ) {
+    // regular capture? 
+  if (canCapture(game, from, to)) {
     if ((fromPiece!.color === 'black' && to.rank  === 1) || (fromPiece!.color === 'white' && to.rank  === 8)) {
       return 'convert'
     }
@@ -68,4 +76,9 @@ export default (
   }
 
   return 'invalid'
+}
+
+export default {
+  canCapture,
+  moveType
 }

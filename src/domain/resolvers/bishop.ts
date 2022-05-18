@@ -9,7 +9,9 @@ import {
   isClearAlongDiagonal
 } from './util'
 
-export default (
+
+
+const moveType = (
   game: Game,
   from: Square, 
   to: Square, 
@@ -25,4 +27,16 @@ export default (
       return 'move'
     }
   }
-  return 'invalid'}
+  return 'invalid'
+}
+
+const canCapture = (
+  game: Game,
+  from: Square, 
+  to: Square, 
+): boolean => (isClearAlongDiagonal(game, from, to))
+
+export default {
+  moveType,
+  canCapture
+}
