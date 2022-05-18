@@ -68,7 +68,7 @@ const SquareComponent: React.FC<{
   return (
     <div 
       ref={drop}
-      className={`grid-square row-${square.rank} row-${(square.rank % 2) ? 'even' : 'odd'} col-${square.file} col-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}`}
+      className={`grid-square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}`}
       style={{ border: borderStyle }}
     >
       {(square.piece) && (

@@ -28,10 +28,10 @@ main {
 
 .grid-square {
 
-  &.col-odd.row-odd {
+  &.file-odd.rank-odd {
     background-color: $board-brown;
   }
-  &.col-even.row-even {
+  &.file-even.rank-even {
     background-color: $board-brown;
   }
 

@@ -10,8 +10,9 @@ export type PieceType =
   'pawn' |
   'queen' |
   'bishop' |
-  'rook'
-
+  'rook' |
+  'knight' | 
+  'king'
 
 export interface Piece {
   type: PieceType

@@ -27,7 +27,6 @@ const Piece: React.FC<{
   }), [square])
 
   const pieceRenderer = registry.get(square.piece!.type)
-  console.log("RENDERER: " + !!pieceRenderer)
 
   return (
     <div 

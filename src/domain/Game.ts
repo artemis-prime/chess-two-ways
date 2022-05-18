@@ -15,7 +15,8 @@ import {
   Resolver,
   RANKS,
   RANKS_REVERSE,
-  FILES
+  FILES,
+  File
  } from './types'
 
 export interface Game {
@@ -67,6 +68,27 @@ class GameImpl implements Game {
 
   private _resetGame(): void {
 
+
+    const pieceFromInitialFile = (file: File):  PieceType | undefined => {
+      let type: PieceType | undefined = undefined
+      if (file === 'a' || file === 'h') {
+        type = 'rook'
+      }
+      else if (file === 'c' || file === 'f') {
+        type = 'bishop'
+      }
+      else if (file === 'b' || file === 'g') {
+        type = 'knight'
+      }
+      else if (file === 'd') {
+        type = 'queen'
+      }
+      else if (file = 'e') {
+        type = 'king'
+      }
+      return type
+    }
+
     this._board = undefined
     const result: any = {}
     for (const rank of RANKS) {
@@ -74,20 +96,11 @@ class GameImpl implements Game {
         // White pieces
       if (rank === 1) {
         for (const file of FILES) {
-          let type: PieceType | undefined = undefined
-          if (file === 'a' || file === 'h') {
-            type = 'rook'
-          }
-          else if (file === 'c' || file === 'f') {
-            type = 'bishop'
-          }
-          else if (file === 'd') {
-            type = 'queen'
-          }
           rankArray[file] = { 
             rank,
             file
-          }  
+          }
+          const type = pieceFromInitialFile(file)  
           if (type) {
             rankArray[file].piece = {
               type,
@@ -125,20 +138,11 @@ class GameImpl implements Game {
         // Black pawns
       else if (rank === 8) {
         for (const file of FILES) {
-          let type: PieceType | undefined = undefined
-          if (file === 'a' || file === 'h') {
-            type = 'rook'
-          }
-          else if (file === 'c' || file === 'f') {
-            type = 'bishop'
-          }
-          else if (file === 'd') {
-            type = 'queen'
-          }
           rankArray[file] = { 
             rank,
             file
           }  
+          const type = pieceFromInitialFile(file)  
           if (type) {
             rankArray[file].piece = {
               type,

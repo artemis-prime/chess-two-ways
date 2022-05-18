@@ -99,7 +99,6 @@ const isClearAlongDiagonal = (
 
   const deltaRank = to.rank - from.rank
   const deltaFile = FILES.indexOf(to.file) - FILES.indexOf(from.file)
-  console.log(`DIAGONAL delta rank: ${deltaRank} : delta file: ${deltaFile}`)
 
   if (Math.abs(deltaRank) !== Math.abs(deltaFile)) {
     return false
