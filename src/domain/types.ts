@@ -43,6 +43,7 @@ export type MoveType =
   'move' |
   'capture' |
   'convert' | 
+  'castle'  |
   'invalid'
 
 export interface Resolver {

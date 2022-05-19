@@ -35,14 +35,31 @@ const moveType = (
   to: Square, 
 ): MoveType => {
   
+  const fromPiece = game.pieceAt(from)
+  const player = fromPiece!.color
   if (legalMove(game, from, to)) {
-    const fromPiece = game.pieceAt(from)
     const toPiece = game.pieceAt(to)
     if (droppingOnOpponent(fromPiece!, toPiece)) {
       return 'capture'
     }
     else if (!toPiece) {
       return 'move'
+    }
+  }
+  if (player === 'white') {
+    if (game.canCastle(from, true) && to.rank === 1 && to.file === 'g') {
+      return 'castle'
+    }
+    else if (game.canCastle(from, false) && to.rank === 1 && to.file === 'c') {
+      return 'castle'
+    }
+  }
+  else {
+    if (game.canCastle(from, true) && to.rank === 8 && to.file === 'g') {
+      return 'castle'
+    }
+    else if (game.canCastle(from, false) && to.rank === 8 && to.file === 'c') {
+      return 'castle'
     }
   }
 
