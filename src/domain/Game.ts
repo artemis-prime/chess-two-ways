@@ -395,17 +395,17 @@ class GameImpl implements Game {
         (
           this._canCastle.white.short 
           && 
-          isClearAlongRank(this, from, {rank: 8, file: 'h'})
+          isClearAlongRank(this, from, {rank: 1, file: 'h'})
           &&
-          this.canBeCapturedAlongRank(from, {rank: 8, file: 'h'})
+          this.canBeCapturedAlongRank(from, {rank: 1, file: 'h'})
         ) 
         : 
         (
           this._canCastle.white.long 
           && 
-          isClearAlongRank(this, from, {rank: 8, file: 'a'})
+          isClearAlongRank(this, from, {rank: 1, file: 'b'})
           &&
-          this.canBeCapturedAlongRank(from, {rank: 8, file: 'a'})
+          this.canBeCapturedAlongRank(from, {rank: 1, file: 'b'})
         )
     }
     else {
@@ -414,17 +414,17 @@ class GameImpl implements Game {
         (
           this._canCastle.black.short 
           && 
-          isClearAlongRank(this, from, {rank: 1, file: 'h'})
+          isClearAlongRank(this, from, {rank: 8, file: 'h'})
           &&
-          this.canBeCapturedAlongRank(from, {rank: 1, file: 'h'})
+          this.canBeCapturedAlongRank(from, {rank: 8, file: 'h'})
         ) 
         : 
         (
           this._canCastle.black.long 
           && 
-          isClearAlongRank(this, from, {rank: 1, file: 'a'})
+          isClearAlongRank(this, from, {rank: 8, file: 'b'})
           &&
-          this.canBeCapturedAlongRank(from, {rank: 1, file: 'a'})
+          this.canBeCapturedAlongRank(from, {rank: 8, file: 'b'})
         )
     }
     return result
