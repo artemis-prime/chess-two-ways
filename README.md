@@ -1,4 +1,4 @@
-# Getting Started with Pawn Chess
+# Getting Started with Chess Demo
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
