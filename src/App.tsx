@@ -14,7 +14,7 @@ const App: React.FC<{}> = () => (
       <DndProvider backend={HTML5Backend}>
         <div className="App">
           <header className="App-header">
-            <span className="App-header-text">Pawns only chess</span>
+            <span className="App-header-text">Chess Demo</span>
           </header>
           <Board />
         </div>

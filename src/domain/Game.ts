@@ -18,9 +18,8 @@ import {
   File
  } from './types'
 
- import { isClearAlongRank } from './resolvers/util'import { isGeneratorObject } from 'util/types'
-./GameProvider
-
+ import { isClearAlongRank } from './resolvers/util'
+ 
 export interface Game {
 
   pieceAt(sq: Square): Piece | undefined
@@ -43,7 +42,7 @@ export interface Game {
   boardAsSquares(): Square[]
 }
 
-class GameImpl implements Game {
+class GameInstance implements Game {
 
   private _board: Board | undefined = undefined
   private _currentTurn: Player = 'white' 
@@ -68,7 +67,7 @@ class GameImpl implements Game {
     })
 
       // https://mobx.js.org/observable-state.html#limitations
-    makeObservable<GameImpl, 
+    makeObservable<GameInstance, 
       '_board' |
       '_currentTurn'| 
       '_toggleTurn' | 
@@ -446,4 +445,4 @@ class GameImpl implements Game {
   
 }
 
-export default GameImpl
+export default GameInstance
