@@ -1,52 +1,34 @@
 import {
   action,
-  computed,
   makeObservable, 
   observable, 
-  reaction
 } from 'mobx'
 
 
-import { SquareState } from './SquareState'
-import { MoveType } from './MoveType'
+import { 
+  Content,
+  MoveTypes,
+  Colors,
+  PieceTypes,
+  Square
+ } from './types'
 
 export interface GameService {
 
-  getState(row: number, col: number): SquareState
-
-  moveType(fromRow: number, fromCol: number, toRow: number, toCol: number): MoveType
+  getContent(row: number, col: number): Content
+  moveType(fromRow: number, fromCol: number, toRow: number, toCol: number): MoveTypes
   canDrop(fromRow: number, fromCol: number, toRow: number, toCol: number): boolean
-  
   drop(fromRow: number, fromCol: number, toRow: number, toCol: number): void
-
-  currentTurn(): SquareState.white | SquareState.black
+  currentTurn(): Colors
+  getBoard(): Square[]
 }
 
 class GameServiceImpl implements GameService {
 
-  private _model: SquareState[][] = []
-  private _currentTurn: SquareState.white | SquareState.black = SquareState.white 
+  private _model: Content[][] = []
+  private _currentTurn: Colors = Colors.white 
 
   constructor() {
-    for (let row = 0; row < 8; row++) {
-      const rowStates: SquareState[] = []
-      if (row === 0) {
-        for (let col = 0; col < 8; col++) {
-          rowStates[col] = SquareState.black
-        }
-      }
-      else if (row === 7) {
-        for (let col = 0; col < 8; col++) {
-          rowStates[col] = SquareState.white
-        }
-      }
-      else {
-        for (let col = 0; col < 8; col++) {
-          rowStates[col] = SquareState.empty
-        }
-      }
-      this._model.push(rowStates)
-    } 
 
     makeObservable(this, {
       drop: action
@@ -57,17 +39,86 @@ class GameServiceImpl implements GameService {
       '_model' |
       '_currentTurn'| 
       '_toggleTurn' | 
-      '_move'
+      '_move' | 
+      '_resetGame'
     >(this, {
       _model: observable,
       _currentTurn: observable,
       _toggleTurn: action,
-      _move: action
+      _move: action,
+      _resetGame: action
     })
+
+    this._resetGame()
+  }
+
+  private _resetGame(): void {
+
+    this._model = []
+    for (let row = 0; row < 8; row++) {
+      const rowContents: Content[] = []
+      if (row === 0) {
+        for (let col = 0; col < 8; col++) {
+          rowContents[col] = { 
+            piece: {
+              //type: (col === 2) ? PieceTypes.queen : PieceTypes.pawn,
+              type: PieceTypes.pawn,
+              color: Colors.black
+            }
+          }  
+        }
+      }
+      else if (row === 7) {
+        for (let col = 0; col < 8; col++) {
+          rowContents[col] = {
+            piece: {
+              //type: (col === 5) ? PieceTypes.queen : PieceTypes.pawn,
+              type: PieceTypes.pawn,
+              color: Colors.white
+            }
+          }
+        }
+      }
+      else {
+        for (let col = 0; col < 8; col++) {
+          rowContents[col] = {
+            piece: undefined 
+          }
+        }
+      }
+      this._model.push(rowContents)
+    } 
+  }
+
+  getBoard(): Square[] {
+    const result: Square[] = []
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        result.push({
+          piece: this.getContent(row, col).piece,
+          row,
+          col
+        }) 
+      }
+    }
+    return result
+  }
+
+  private _won(color: Colors): boolean {
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.getContent(row, col).piece
+          // There is still the opponent's color on the board
+        if (piece && piece.color !== color) {
+          return false
+        }
+      }
+    }
+    return true
   }
 
   private _toggleTurn(): void {
-    this._currentTurn = (this._currentTurn === SquareState.white) ? SquareState.black : SquareState.white
+    this._currentTurn = (this._currentTurn === Colors.white) ? Colors.black : Colors.white
   }
 
   private _move(
@@ -76,25 +127,220 @@ class GameServiceImpl implements GameService {
     toRow: number, 
     toCol: number
   ): void {
-    this._model[toRow][toCol] = this._model[fromRow][fromCol]
-    this._model[fromRow][fromCol] = SquareState.empty
+    this._model[toRow][toCol] = { 
+      piece: {
+        ...this._model[fromRow][fromCol].piece!
+      }
+    }
+    this._model[fromRow][fromCol] = { piece: undefined }
   }
 
-  currentTurn(): SquareState.white | SquareState.black {
+  currentTurn(): Colors {
     return this._currentTurn
   }
 
-  getState(row: number, col: number): SquareState {
+  getContent(row: number, col: number): Content {
     return this._model[row][col]
   }
 
-  onHomeRow(row: number, state: SquareState): boolean {
+  _hasntMoved(row: number, square: Content): boolean {
 
     return (
-      row === 0 && state === SquareState.black
+      row === 0 && !!square.piece && square.piece.type === PieceTypes.pawn && square.piece.color === Colors.black
       ||
-      row === 7 && state === SquareState.white
+      row === 7 && !!square.piece && square.piece.type === PieceTypes.pawn && square.piece.color === Colors.white
     )
+  }
+
+  private _resolvePawnMove(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+    fromContent: Content,
+    toContent: Content,
+  ): MoveTypes {
+
+    // initial two row advance?
+    if (
+      !toContent.piece 
+      &&
+      this._hasntMoved(fromRow, fromContent)
+      &&
+      (fromCol === toCol) 
+      && 
+      Math.abs(toRow - fromRow) === 2
+    ) {
+      return MoveTypes.move
+    }
+
+    // regular advance? 
+    if (
+      !toContent.piece
+      &&
+      (fromCol === toCol) 
+      && 
+        // ensure correct direction
+      (
+        (fromContent.piece!.color === Colors.black && (toRow - fromRow === 1))
+        ||
+        (fromContent.piece!.color === Colors.white && (toRow - fromRow === -1))
+      )
+    ) {
+      if ((fromContent.piece!.color === Colors.black && toRow === 7) || (fromContent.piece!.color === Colors.white && toRow === 0)) {
+        return MoveTypes.convert
+      }
+      return MoveTypes.move
+    }
+
+    // regular take? 
+    if (
+      (fromContent.piece!.color === Colors.black && toContent.piece && toContent.piece.color === Colors.white
+      ||
+      fromContent.piece!.color === Colors.white && toContent .piece && toContent.piece.color === Colors.black)
+      &&
+        // moving diagonally
+      Math.abs(toCol - fromCol) === 1
+      &&
+      (
+        fromContent.piece!.color === Colors.black && (toRow - fromRow === 1)
+        ||
+        fromContent.piece!.color === Colors.white && (toRow - fromRow === -1)
+      )
+    ) {
+      if ((fromContent.piece!.color === Colors.black && toRow === 7) || (fromContent.piece!.color === Colors.white && toRow === 0)) {
+        return MoveTypes.convert
+      }
+      return MoveTypes.take
+    }
+    return MoveTypes.invalid
+  }
+
+  private _isClear(row: number, col: number): boolean {
+    return !this._model[row][col].piece
+  }
+
+  private _isClearAlongRow(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    if (fromRow === toRow) {
+      const delta = toCol - fromCol
+      if (delta < 0) {
+        for (let col = fromCol - 1; col > toCol; col--) {
+          if (!this._isClear(toRow, col)) return false
+        }
+      }
+      else {
+        for (let col = fromCol + 1; col < toCol; col++) {
+          if (!this._isClear(toRow, col)) return false
+        }
+      }
+      return true
+    }
+    return false
+  }
+
+  private _isClearAlongColumn(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    if (fromCol === toCol) {
+      const delta = toRow - fromRow
+      if (delta < 0) {
+        for (let row = fromRow - 1; row > toRow; row--) {
+          if (!this._isClear(row, toCol)) return false
+        }
+      }
+      else {
+        for (let row = fromRow + 1; row < toRow; row++) {
+          if (!this._isClear(row, toCol)) return false
+        }
+      }
+      return true
+    }
+    return false
+  }
+
+  private _isClearAlongDiagonal(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+  ): boolean {
+    const deltaX = toRow - fromRow
+    const deltaY = toCol - fromCol
+
+    if (Math.abs(deltaX) !== Math.abs(deltaY)) {
+      return false
+    }
+
+      // --> NE
+    if (deltaX > 0 && deltaY > 0) {
+      for (let row = fromRow + 1, col = fromCol + 1; row < toRow && col < toCol; row++, col++) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> SE
+    else if (deltaX > 0 && deltaY < 0) {
+      for (let row = fromRow + 1, col = fromCol - 1; row < toRow && col > toCol; row++, col--) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> SW
+    else if (deltaX < 0 && deltaY < 0) {
+      for (let row = fromRow - 1, col = fromCol - 1; row > toRow && col > toCol; row--, col--) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+      // --> NW
+    else if (deltaX < 0 && deltaY > 0) {
+      for (let row = fromRow - 1, col = fromCol + 1; row > toRow && col < toCol; row--, col++) {
+        if (!this._isClear(row, col)) return false
+      }
+    }
+        
+    return true
+  }
+
+  private _resolveQueenMove(
+    fromRow: number, 
+    fromCol: number,
+    toRow: number, 
+    toCol: number,
+    fromContent: Content,
+    toContent: Content,
+  ): MoveTypes {
+    if (
+      (fromContent.piece!.color === Colors.black && toContent.piece && toContent.piece.color === Colors.white
+      ||
+      fromContent.piece!.color === Colors.white && toContent.piece && toContent.piece.color === Colors.black)
+      &&
+      (this._isClearAlongRow(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongColumn(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongDiagonal(fromRow, fromCol, toRow, toCol))
+    ) {
+      return MoveTypes.take
+    }
+    else if (
+      !toContent.piece 
+      && 
+      (this._isClearAlongRow(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongColumn(fromRow, fromCol, toRow, toCol)
+      ||
+      this._isClearAlongDiagonal(fromRow, fromCol, toRow, toCol))
+    ) {
+      return MoveTypes.move
+    }
+    return MoveTypes.invalid
+
   }
 
   moveType(
@@ -102,68 +348,57 @@ class GameServiceImpl implements GameService {
     fromCol: number,
     toRow: number, 
     toCol: number
-  ): MoveType {
+  ): MoveTypes {
 
-    const toState = this.getState(toRow, toCol)
-    const fromState = this.getState(fromRow, fromCol)
+    const toContent = this.getContent(toRow, toCol)
+    const fromContent = this.getContent(fromRow, fromCol)
 
-    // initial two row advance?
-    if (
-      toState === SquareState.empty
-      &&
-      this.onHomeRow(fromRow, fromState)
-      &&
-      (fromCol === toCol) 
-      && 
-      Math.abs(toRow - fromRow) === 2
-    ) {
-      return MoveType.initialAdvance
+      // Dnd fw should ensure this doesn't happen, but whatevs
+    if (!fromContent.piece) {
+      return MoveTypes.invalid   
     }
-
-    // regular advance? 
-    if (
-      toState === SquareState.empty
-      &&
-      (fromCol === toCol) 
-      && 
-        // ensure correct direction
-      (
-        fromState === SquareState.black && (toRow - fromRow === 1)
-        ||
-        fromState === SquareState.white && (toRow - fromRow === -1)
+    
+    if (fromContent.piece.type === PieceTypes.pawn) {
+      return this._resolvePawnMove(
+        fromRow, 
+        fromCol,
+        toRow, 
+        toCol,
+        fromContent,
+        toContent,
       )
-    ) {
-      return MoveType.normalAdvance
     }
-
-    // regular take? 
-    if (
-      (fromState === SquareState.black && toState === SquareState.white
-        ||
-      fromState === SquareState.white && toState === SquareState.black)
-      &&
-      Math.abs(toCol - fromCol) === 1
-      &&
-      (
-        fromState === SquareState.black && (toRow - fromRow === 1)
-        ||
-        fromState === SquareState.white && (toRow - fromRow === -1)
+    else if (fromContent.piece.type === PieceTypes.queen) {
+      return this._resolveQueenMove(
+        fromRow, 
+        fromCol,
+        toRow, 
+        toCol,
+        fromContent,
+        toContent,
       )
-    ) {
-      return MoveType.take
     }
-
-    return MoveType.invalid
+    return MoveTypes.invalid
   }
 
   canDrop(fromRow: number, fromCol: number, toRow: number, toCol: number): boolean {
-    return this.moveType(fromRow, fromCol, toRow, toCol) !== MoveType.invalid
+    return this.moveType(fromRow, fromCol, toRow, toCol) !== MoveTypes.invalid
   }
 
   drop(fromRow: number, fromCol: number, toRow: number, toCol: number): void {
     const move = this.moveType(fromRow, fromCol, toRow, toCol)
-    if (move !== MoveType.invalid) {
+    if (move !== MoveTypes.invalid) {
       this._move(fromRow, fromCol, toRow, toCol)
+      if (move === MoveTypes.convert) {
+        this._model[toRow][toCol].piece!.type = PieceTypes.queen
+      }
+      if (move !== MoveTypes.move) {
+        if (this._won(this._model[toRow][toCol].piece!.color)) {
+          console.log("WON!")
+          this._resetGame()
+          return 
+        }
+      }
       this._toggleTurn()
     }
   }

@@ -1,23 +1,16 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import Square  from './Square'
+import { Square }   from '../domain/types'
 import { useGameService } from '../domain/GameServiceProvider'
-
+import { default as SquareComponent } from './Square'
 
 const Board: React.FC<{}> = observer(() => {
 
   const game = useGameService()
-  const squares: React.ReactNode[] = []
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      squares.push(<Square state={game.getState(row, col)} row={row} col={col} key={`key-${row}-${col}`}/>) 
-    }
-  }
-
   return (
     <main>
-    {squares}
+      {game.getBoard().map((s: Square) => (<SquareComponent square={s} key={`key-${s.row}-${s.col}`}/>))}
     </main>
   )
 })
