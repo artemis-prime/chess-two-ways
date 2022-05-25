@@ -1,31 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, } from 'react'
 import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
-import Pawn from './Pawn'
-import Queen from './Queen'
-import { useGameService } from '../domain/GameServiceProvider'
-import { MoveTypes, PieceTypes, Square } from '../domain/types'
+import { useGame } from '../domain/GameProvider'
+import { Square, FILES } from '../domain/types'
+import Piece from './Piece'
+import { useFeedback } from './Feedback'
 
 const SquareComponent: React.FC<{ 
   square: Square
+  flashingOn: boolean
+  feedback: string | undefined
 }> = observer(({ 
   square,
+  flashingOn,
+  feedback
 }) => {
 
-  const game = useGameService()
-  const timeoutRef = useRef<any | undefined>(undefined)
-  const [pieceFlashingOn, setPieceFlashingOn] = useState<boolean>(true)
-  
+  const game = useGame()
+  const feedbackService = useFeedback()
   const [{ isOver, moveType }, drop] = useDrop(
     () => ({
-      accept: 'Pawn',
-      drop: (item: Square, monitor) => { game.drop(item.row, item.col, square.row, square.col) },
-      canDrop: (item : Square, monitor) => (game.canDrop(item.row, item.col, square.row, square.col)),
+      accept: 'piece',
+      drop: (item: Square, monitor) => { game.drop(item, square) },
+      canDrop: (item : Square, monitor) => (game.canDrop(item, square)),
       collect: (monitor) => {
         const item = monitor.getItem() as Square
         return {
-          moveType: item ? game.moveType(item.row, item.col, square.row, square.col) : MoveTypes.invalid,
+          moveType: !!monitor.isOver() ? game.moveType(item, square) : 'invalid',
           isOver: (!!monitor.isOver())
         }
       }
@@ -35,33 +37,25 @@ const SquareComponent: React.FC<{
 
   useEffect(() => {
 
-    const clearMe = () => {
-      if (timeoutRef.current) {
-        clearInterval(timeoutRef.current)
-        timeoutRef.current = undefined 
-        setPieceFlashingOn(true)
+    if (isOver) {
+      if (moveType !== 'invalid') {
+        feedbackService.set(moveType)
+      }
+      else {
+        feedbackService.clear()
       }
     }
-    if (isOver && (moveType === MoveTypes.take || moveType === MoveTypes.convert) && !timeoutRef.current) {
-      timeoutRef.current = setInterval(() => {
-        setPieceFlashingOn((p) => (!p))
-      }, 100)
-    }
-    else if (timeoutRef.current) {
-      clearMe()
-    }
-    return clearMe
   }, [moveType, isOver])
 
   let borderStyle = 'none' 
   if (isOver) {
-    if (moveType === MoveTypes.take) {
-      borderStyle = ((pieceFlashingOn) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn  
+    if (feedback === 'capture') {
+      borderStyle = ((flashingOn) ? '3px blue solid' : '1px blue solid') // border flashes w existing pawn  
     }
-    else if (moveType === MoveTypes.convert) {
-      borderStyle = ((pieceFlashingOn) ? '3px orange solid' : '1px orange solid') // border flashes   
+    else if (feedback === 'convert') {
+      borderStyle = ((flashingOn) ? '3px orange solid' : '1px orange solid') // border flashes   
     }
-    else if (moveType === MoveTypes.move) {
+    else if (feedback === 'move') {
       borderStyle = '2px #2f2 solid'
     }
   }
@@ -69,14 +63,11 @@ const SquareComponent: React.FC<{
   return (
     <div 
       ref={drop}
-      className={`grid-square row-${square.row} row-${(square.row % 2) ? 'even' : 'odd'} col-${square.col} col-${(square.col % 2) ? 'even' : 'odd'}`}
+      className={`grid-square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}`}
       style={{ border: borderStyle }}
     >
-      {(square.piece && square.piece.type === PieceTypes.pawn) && (
-        <Pawn square={square} flashingOn={pieceFlashingOn}/>  
-      )}
-      {(square.piece && square.piece.type === PieceTypes.queen) && (
-        <Queen square={square} flashingOn={pieceFlashingOn}/>  
+      {(square.piece) && (
+        <Piece square={square} flashingOn={!isOver || flashingOn}/>  
       )}
     </div>  
   )
