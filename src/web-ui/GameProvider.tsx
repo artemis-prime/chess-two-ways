@@ -3,9 +3,9 @@ import React, {
   PropsWithChildren
  } from 'react'
  
- import type { Game }  from './Game'
- import GameInstance from './Game'
- import registry from './resolvers/registry'
+ import type { Game }  from '../chess/Game'
+ import GameImpl from '../chess/Game'
+ import registry from '../chess/resolverRegistry'
  
  const GameContext = React.createContext<Game | undefined>(undefined) 
  
@@ -16,7 +16,7 @@ import React, {
  const GameProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
    
    return (
-     <GameContext.Provider value={new GameInstance(registry)}>
+     <GameContext.Provider value={new GameImpl(registry)}>
        {children}
      </GameContext.Provider>
    )

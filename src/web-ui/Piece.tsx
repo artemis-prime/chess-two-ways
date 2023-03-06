@@ -2,12 +2,16 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { useDrag } from 'react-dnd'
 
-import { useGame } from '../domain/GameProvider'
-import { Square } from '../domain/types'
-import registry from './pieces/registry'
+import { useGame } from './GameProvider'
+import { BoardSquare } from '../chess'
+import registry from './pieceRegistry'
 
-const Piece: React.FC<{
-  square: Square
+export interface PieceComponentProps {
+  color: string
+}
+
+const PieceComponent: React.FC<{
+  square: BoardSquare
   flashingOn: boolean
 }> = observer(({
   square,
@@ -26,7 +30,7 @@ const Piece: React.FC<{
     }),
   }), [square])
 
-  const pieceRenderer = registry.get(square.piece!.type)
+  const SpecificPiece = registry.get(square.piece!.type) as React.ComponentType<PieceComponentProps>
 
   return (
     <div 
@@ -36,9 +40,9 @@ const Piece: React.FC<{
         cursor: canDrag ? (isDragging ? 'move' : 'pointer') : 'default', 
       }}
     >
-      {pieceRenderer && pieceRenderer(square.piece!.color)}
+      <SpecificPiece color={(square.piece!.color === 'white') ? '#cbb' : '#322' } />
     </div>
   )
 })
 
-export default Piece
+export default PieceComponent

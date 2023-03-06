@@ -1,11 +1,19 @@
 import { Game } from '../Game'
 import { 
-  MoveType,
+  Action,
   Square,
   FILES
-} from '../types'
+} from '..'
 
-import { pawnOnHomeRow, droppingOnOpponent } from './util'
+
+const pawnOnHomeRow = (game: Game, sq: Square): boolean => {
+  const piece = game.pieceAt(sq)
+  return (
+    sq.rank === 2 && !!piece && piece.type === 'pawn' && piece.color === 'white'
+    ||
+    sq.rank === 7 && !!piece && piece.type === 'pawn' && piece.color === 'black'
+  )
+}
 
 const canCapture = (
   game: Game, 
@@ -26,11 +34,11 @@ const canCapture = (
   ) 
 }
 
-const moveType = (
+const resolve = (
   game: Game, 
   from: Square,  
   to: Square 
-): MoveType => {
+): Action | undefined => {
   
   const fromPiece = game.pieceAt(from)
   const toPiece = game.pieceAt(to)
@@ -39,7 +47,7 @@ const moveType = (
   if (
     !toPiece
     &&
-    pawnOnHomeRow(from)
+    pawnOnHomeRow(game, from)
     &&
     (from.file === to.file) 
     && 
@@ -75,10 +83,7 @@ const moveType = (
     return 'capture'
   }
 
-  return 'invalid'
+  return undefined
 }
 
-export default {
-  canCapture,
-  moveType
-}
+export default resolve

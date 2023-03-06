@@ -1,27 +1,8 @@
-import { Game } from '../Game'
+import { Game } from './Game'
 
-import { 
-  Square,
-  FILES,
-  Piece,
-  Rank
- } from '../types'
+import Square from './Square'
 
-const pawnOnHomeRow = (sq: Square): boolean => (
-  sq.rank === 2 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'white'
-  ||
-  sq.rank === 7 && !!sq.piece && sq.piece.type === 'pawn' && sq.piece.color === 'black'
-)
-
-
-const droppingOnOpponent = (
-  fromPiece: Piece,
-  toPiece: Piece | undefined
-) => (
-  (fromPiece!.color === 'black' && toPiece?.color === 'white'
-  ||
-  fromPiece!.color === 'white' && toPiece?.color === 'black')
-)
+import { Rank, FILES } from './RankAndFile'
 
 const isClearAlongRank = (
   game: Game,
@@ -155,8 +136,6 @@ const isClearAlongDiagonal = (
 
 
 export {
-  pawnOnHomeRow,
-  droppingOnOpponent,
   isClearAlongRank, 
   isClearAlongFile,
   isClearAlongDiagonal

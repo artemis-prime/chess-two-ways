@@ -4,49 +4,48 @@ import {
   observable, 
 } from 'mobx'
 
-import { 
-  Board,
-  MoveType,
-  Player,
-  Piece,
-  PieceType,
-  Square,
-  Resolver,
+import Board from './Board'
+import Action from './Action'
+import Piece, { Color, PieceType, Side }  from './Piece'
+import Square from './Square'
+import BoardSquare from './BoardSquare'
+import ActionResolver from './ActionResolver'
+
+import {
   RANKS,
   RANKS_REVERSE,
   FILES,
   File
- } from './types'
+ } from './RankAndFile'
 
- import { isClearAlongRank } from './resolvers/util'
+ import { isClearAlongRank } from './util'
  
 export interface Game {
 
   pieceAt(sq: Square): Piece | undefined
+  colorAt(sq: Square): Color | undefined
 
-  canDrop(from: Square, to: Square): boolean
-  drop(from: Square, to: Square): void
-
-  moveType(from: Square, to: Square): MoveType
+  resolveAction(from: Square, to: Square): Action | undefined
+  takeAction(from: Square, to: Square): void
 
     // near vs far castle
   canCastle(from: Square, near: boolean): boolean
   castle(from: Square, near: boolean): void
 
-  canBeCapturedFrom(toCapture: Square, p: Player): Square[]
-  canBeCaptured(toCapture: Square, p: Player): boolean
+  canBeCapturedFrom(toCapture: Square, p: Side): Square[]
+  canBeCaptured(toCapture: Square, p: Side): boolean
   
-  currentTurn(): Player
-  won(p: Player): boolean
+  currentTurn(): Side
+  won(p: Side): boolean
   
-  boardAsSquares(): Square[]
+  boardAsSquares(): BoardSquare[]
 }
 
-class GameInstance implements Game {
+class GameImpl implements Game {
 
   private _board: Board | undefined = undefined
-  private _currentTurn: Player = 'white' 
-  private _resolvers: Map<PieceType, Resolver> | undefined = undefined 
+  private _currentTurn: Side = 'white' 
+  private _resolvers: Map<PieceType, ActionResolver> | undefined = undefined 
   private _canCastle = {
     white: {
       short: true,
@@ -58,16 +57,17 @@ class GameInstance implements Game {
     }
   }
 
-  constructor(map: Map<PieceType, Resolver>) {
+  constructor(map: Map<PieceType, ActionResolver>) {
 
     this._resolvers = map
 
     makeObservable(this, {
-      drop: action
+      takeAction: action,
+      castle: action
     })
 
       // https://mobx.js.org/observable-state.html#limitations
-    makeObservable<GameInstance, 
+    makeObservable<GameImpl, 
       '_board' |
       '_currentTurn'| 
       '_toggleTurn' | 
@@ -251,7 +251,7 @@ class GameInstance implements Game {
     }
   }
 
-  currentTurn(): Player {
+  currentTurn(): Side {
     return this._currentTurn
   }
 
@@ -259,44 +259,44 @@ class GameInstance implements Game {
     return this._board![sq.rank][sq.file].piece
   }
  
+  colorAt(sq: Square): Color | undefined {
+    if (this._board![sq.rank][sq.file].piece) {
+      return this._board![sq.rank][sq.file].piece!.color
+    }
+    return undefined
+  }
 
-  moveType(
+  resolveAction(
     from: Square, 
     to: Square, 
-  ): MoveType {
+  ): Action | undefined {
 
     const fromPiece = this.pieceAt(from)
-    const toPiece = this.pieceAt(to)
-
     if (fromPiece) {
       const resolver = this._resolvers!.get(fromPiece.type)
 
       if (resolver) {
-        return resolver.moveType(
+        return resolver(
           this,
           from, 
           to, 
         )
       } 
     }
-    return 'invalid'   
+    return undefined   
   }
 
-  canDrop(from: Square, to: Square): boolean {
-    return this.moveType(from, to) !== 'invalid'   
-  }
-
-  drop(from: Square, to: Square): void {
-    const move = this.moveType(from, to)
-    if (move !== 'invalid' ) {
+  takeAction(from: Square, to: Square): void {
+    const action = this.resolveAction(from, to)
+    if (action) {
       this._move(from, to)
-      if (move === 'convert') {
+      if (action === 'convert') {
         this._board![to.rank][to.file].piece!.type = 'queen'
       }
-      if (move !== 'move') {
+      if (action !== 'move') {
         const player = this._board![to.rank][to.file].piece!.color
         if (this.won(player)) {
-          console.log(`Player ${player} WON!`)
+          console.log(`Side ${player} WON!`)
           this._resetGame()
           return 
         }
@@ -305,7 +305,7 @@ class GameInstance implements Game {
     }
   }
     // toCapture need not be populated
-  canBeCapturedFrom(toCapture: Square, p: Player): Square[] {
+  canBeCapturedFrom(toCapture: Square, p: Side): Square[] {
     const result: Square[] = []
     for (const rank of RANKS) {
       for (const file of FILES) {
@@ -317,7 +317,7 @@ class GameInstance implements Game {
             rank,
             file
           }
-          if (resolver && resolver.canCapture(this, toCaptureFrom, toCapture)) {
+          if (resolver && resolver(this, toCaptureFrom, toCapture) === 'capture') {
             result.push(toCaptureFrom)
           }
         }
@@ -328,12 +328,13 @@ class GameInstance implements Game {
 
   // from must be populated
   canBeCapturedAlongRank(from: Square, to: Square): boolean {
+    const fromColor = this.colorAt(from)
     if (from.rank === to.rank) {
       const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
       if (delta < 0) {
           // zero based, but ok since indexed from FILES
         for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, from.piece!.color)) {
+          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
             return true
           }
         }
@@ -341,7 +342,7 @@ class GameInstance implements Game {
       else {
           // zero based, but ok since indexed from FILES
         for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, from.piece!.color)) {
+          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
             return true
           }
         }
@@ -350,14 +351,15 @@ class GameInstance implements Game {
     return false
   }
 
-  canBeCaptured(toCapture: Square, p: Player): boolean {
+  canBeCaptured(toCapture: Square, p: Side): boolean {
     return this.canBeCapturedFrom(toCapture, p).length > 0
   }
 
     // short vs long castle
     // assumes validity already tested
   castle(from: Square, short: boolean): void {
-    if (from.piece!.color === 'white') {
+    const fromColor = this.colorAt(from)
+    if (fromColor! === 'white') {
       if (short) {
         this._move(from, {rank: 1, file: 'g'}, true)  // king
         this._move({rank: 1, file: 'h'}, {rank: 1, file: 'f'}, true) // rook
@@ -377,18 +379,17 @@ class GameInstance implements Game {
         this._move({rank: 8, file: 'a'}, {rank: 8, file: 'd'}, true) // rook
       }
     }
-    this._canCastle[from.piece!.color].short = false
-    this._canCastle[from.piece!.color].long = false
+    this._canCastle[fromColor!].short = false
+    this._canCastle[fromColor!].long = false
   }
 
   canCastle(from: Square, short: boolean): boolean {
     // No need to test the position of 'from', since the this._canCastle flag 
     // indicates a move has taken place, same w position of participating rook
-    const player = from.piece!.color
+    const side = this.colorAt(from)
     let result: boolean = true
 
-    if (player === 'white') {
-      //const toPiece = this.pieceAt()
+    if (side === 'white') {
       result = (short) 
         ? 
         (
@@ -430,7 +431,7 @@ class GameInstance implements Game {
   }
 
     // TODO
-  won(pl: Player): boolean {
+  won(pl: Side): boolean {
     for (const rank of RANKS) {
       for (const file of FILES) {
         const piece = this.pieceAt({rank, file})
@@ -445,4 +446,4 @@ class GameInstance implements Game {
   
 }
 
-export default GameInstance
+export default GameImpl

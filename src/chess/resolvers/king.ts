@@ -1,14 +1,9 @@
 import { Game } from '../Game'
 import { 
-  MoveType,
+  Action,
   Square,
   FILES
-} from '../types'
-
-import { 
-  droppingOnOpponent
-} from './util'
-
+} from '..'
 
 const legalMove = (
   game: Game,
@@ -28,25 +23,23 @@ const legalMove = (
   ) 
 }
 
-
-const moveType = (
+const resolve = (
   game: Game,
   from: Square, 
   to: Square, 
-): MoveType => {
+): Action | undefined => {
   
-  const fromPiece = game.pieceAt(from)
-  const player = fromPiece!.color
+  const fromColor = game.colorAt(from)
   if (legalMove(game, from, to)) {
-    const toPiece = game.pieceAt(to)
-    if (droppingOnOpponent(fromPiece!, toPiece)) {
-      return 'capture'
-    }
-    else if (!toPiece) {
+    const toColor = game.colorAt(to)
+    if (!toColor) {
       return 'move'
     }
+    else if (fromColor && toColor && (fromColor !== toColor)) {
+      return 'capture'
+    }
   }
-  if (player === 'white') {
+  else if (fromColor === 'white') {
     if (game.canCastle(from, true) && to.rank === 1 && to.file === 'g') {
       return 'castle'
     }
@@ -63,10 +56,7 @@ const moveType = (
     }
   }
 
-  return 'invalid'
+  return undefined
 }
 
-export default {
-  canCapture: legalMove,
-  moveType
-}
+export default resolve

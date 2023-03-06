@@ -2,9 +2,9 @@ import React from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import Board from './components/Board'
-import GameProvider from './domain/GameProvider'
-import { FeedbackProvider } from './components/Feedback'
+import Board from './Board'
+import GameProvider from './GameProvider'
+import { FeedbackProvider } from './Feedback'
 
 import './App.scss'
 
