@@ -3,8 +3,7 @@ import React, {
   PropsWithChildren
  } from 'react'
  
- import type { Game }  from '../chess/Game'
- import GameImpl from '../chess/Game'
+ import Game, { GameImpl } from '../chess/Game'
  import registry from '../chess/resolverRegistry'
  
  const GameContext = React.createContext<Game | undefined>(undefined) 

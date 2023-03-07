@@ -1,4 +1,4 @@
-import { Game } from './Game'
+import Game from './Game'
 import Square from './Square'
 import Action from './Action'
 

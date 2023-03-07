@@ -8,9 +8,10 @@ import React, {
 
 import { Action } from '../chess'
 export interface Feedback {
-  setAction(a: Action | undefined): void
+  setFeedback(a: Action, enclosure?: any): void
   clear(): void
   action: Action | undefined
+  enclosure: any | undefined
   tick: boolean
 }
 
@@ -23,10 +24,19 @@ export const useFeedback = (): Feedback =>  {
 export const FeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   const intervalRef = useRef<any | undefined>(undefined)
-  const [tick, setTick] = useState<boolean>(true)
+  const [tick, setTick] = useState<boolean>(false)
   const [action, setAction] = useState<Action | undefined>(undefined)
+  const [enclosure, setEnclosure] = useState<any | undefined>(undefined)
 
-  const clear = (): void => { setAction(undefined)}
+  const clear = (): void => { 
+    setAction(undefined)
+    setEnclosure(undefined)
+  }
+
+  const setFeedback = (a: Action, enc?: any): void => {
+    setAction(a)
+    setEnclosure(enc) 
+  }
 
   useEffect(() => {
 
@@ -34,7 +44,7 @@ export const FeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children })
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
         intervalRef.current = undefined 
-        setTick(true)
+        setTick(false)
       }
     }
     if (action && !intervalRef.current) {
@@ -51,9 +61,10 @@ export const FeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children })
   
   return (
     <FeedbackContext.Provider value={{
-      setAction,
+      setFeedback,
       clear,
       action,
+      enclosure,
       tick
     }}>
       {children}

@@ -12,10 +12,10 @@ export interface PieceComponentProps {
 
 const PieceComponent: React.FC<{
   square: BoardSquare
-  flashingOn: boolean
+  dimmed: boolean
 }> = observer(({
   square,
-  flashingOn
+  dimmed
 }) => {
   const game = useGame()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
@@ -36,7 +36,7 @@ const PieceComponent: React.FC<{
     <div 
       ref={drag}
       style={{
-        opacity: (flashingOn) ? (isDragging ? 0.5 : 1) : 0.3, 
+        opacity: (dimmed) ?  0.3 : (isDragging ? 0.5 : 1), 
         cursor: canDrag ? (isDragging ? 'move' : 'pointer') : 'default', 
       }}
     >

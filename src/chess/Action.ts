@@ -2,6 +2,6 @@ type Action =
   'move' |
   'capture' |
   'convert' | 
-  'castle'  
+  'castle'
 
 export default Action

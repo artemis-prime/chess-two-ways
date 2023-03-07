@@ -1,9 +1,12 @@
-import { Game } from '../Game'
+import Game from '../Game'
 import { 
   Action,
   Square,
-  FILES
+  FILES,
+  Color
 } from '..'
+
+import { isClearAlongRank } from '../util'
 
 const legalMove = (
   game: Game,
@@ -23,6 +26,31 @@ const legalMove = (
   ) 
 }
 
+const amCastling = (
+  game: Game, 
+  from: Square, 
+  to: Square
+): boolean => {
+
+  // No need to test the position of 'from', since the this._canCastle flag 
+  // indicates a move has taken place, same w position of participating rook
+  const color = game.colorAt(from) as Color
+  const homeRank = (color === 'white') ? 1 : 8
+  const kingside = (to.file === 'g')
+  const queenside = (to.file === 'c')
+
+
+  return (
+    (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
+    &&
+    !game.kingOrRookHasMoved(color, kingside)
+    && 
+    isClearAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+    && 
+    !game.canBeCapturedAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+  ) 
+}
+
 const resolve = (
   game: Game,
   from: Square, 
@@ -39,24 +67,10 @@ const resolve = (
       return 'capture'
     }
   }
-  else if (fromColor === 'white') {
-    if (game.canCastle(from, true) && to.rank === 1 && to.file === 'g') {
-      return 'castle'
-    }
-    else if (game.canCastle(from, false) && to.rank === 1 && to.file === 'c') {
-      return 'castle'
-    }
+  else if (amCastling(game, from, to)) {
+    return 'castle'
   }
-  else {
-    if (game.canCastle(from, true) && to.rank === 8 && to.file === 'g') {
-      return 'castle'
-    }
-    else if (game.canCastle(from, false) && to.rank === 8 && to.file === 'c') {
-      return 'castle'
-    }
-  }
-
-  return undefined
+  return undefined 
 }
 
 export default resolve

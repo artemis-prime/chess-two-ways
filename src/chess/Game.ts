@@ -18,22 +18,19 @@ import {
   File
  } from './RankAndFile'
 
- import { isClearAlongRank } from './util'
- 
-export interface Game {
+ interface Game {
 
   pieceAt(sq: Square): Piece | undefined
-  colorAt(sq: Square): Color | undefined
+  colorAt(sq: Square): Color | undefined 
 
   resolveAction(from: Square, to: Square): Action | undefined
   takeAction(from: Square, to: Square): void
 
-    // near vs far castle
-  canCastle(from: Square, near: boolean): boolean
-  castle(from: Square, near: boolean): void
-
+  canBeCapturedAlongRank(from: Square, to: Square): boolean 
   canBeCapturedFrom(toCapture: Square, p: Side): Square[]
   canBeCaptured(toCapture: Square, p: Side): boolean
+    // ('kingside' vs 'queenside')
+  kingOrRookHasMoved(p: Side, kingside: boolean): boolean 
   
   currentTurn(): Side
   won(p: Side): boolean
@@ -41,20 +38,27 @@ export interface Game {
   boardAsSquares(): BoardSquare[]
 }
 
-class GameImpl implements Game {
+export class GameImpl implements Game {
 
   private _board: Board | undefined = undefined
   private _currentTurn: Side = 'white' 
   private _resolvers: Map<PieceType, ActionResolver> | undefined = undefined 
-  private _canCastle = {
+
+  private _castling = {
     white: {
-      short: true,
-      long: true
+      kingHasMoved: false,
+      rookHasMoved: {
+        kingside: false,
+        queenside: false
+      }
     },
     black: {
-      short: true,
-      long: true
-    }
+      kingHasMoved: false,
+      rookHasMoved: {
+        kingside: false,
+        queenside: false
+      }
+    },
   }
 
   constructor(map: Map<PieceType, ActionResolver>) {
@@ -63,22 +67,21 @@ class GameImpl implements Game {
 
     makeObservable(this, {
       takeAction: action,
-      castle: action
     })
 
       // https://mobx.js.org/observable-state.html#limitations
     makeObservable<GameImpl, 
       '_board' |
       '_currentTurn'| 
+      '_castling' | 
       '_toggleTurn' | 
       '_move' | 
       '_resetGame' | 
-      '_canCastle' | 
       '_trackCastling'
     >(this, {
       _board: observable,
       _currentTurn: observable,
-      _canCastle: observable,
+      _castling: observable,
       _toggleTurn: action,
       _move: action,
       _resetGame: action,
@@ -196,6 +199,10 @@ class GameImpl implements Game {
     return result
   }
 
+  kingOrRookHasMoved(color: Side, kingside: boolean): boolean {
+    return this._castling[color].kingHasMoved || this._castling[color].rookHasMoved[kingside ? 'kingside' : 'queenside']
+  }
+
   private _toggleTurn(): void {
     this._currentTurn = (this._currentTurn === 'white') ? 'black' : 'white'
   }
@@ -204,25 +211,14 @@ class GameImpl implements Game {
     const fromPieace = this._board![moved.rank][moved.file].piece!
 
     if (fromPieace.type === 'king') {
-      this._canCastle[fromPieace.color].short = false
-      this._canCastle[fromPieace.color].long = false
+      this._castling[fromPieace.color].kingHasMoved = true
     }
     else if (fromPieace.type === 'rook') {
-      if (fromPieace.color === 'white') {
-        if (moved.file === 'h' && moved.rank === 1 && this._canCastle[fromPieace.color].short) {
-          this._canCastle[fromPieace.color].short = false
-        }
-        else if (moved.file === 'a' && moved.rank === 1 && this._canCastle[fromPieace.color].long) {
-          this._canCastle[fromPieace.color].long = false
-        }
+      if (moved.file === 'h') {
+        this._castling[fromPieace.color].rookHasMoved.kingside = true
       }
-      else {
-        if (moved.file === 'h' && moved.rank === 8 && this._canCastle[fromPieace.color].short) {
-          this._canCastle[fromPieace.color].short = false
-        }
-        else if (moved.file === 'a' && moved.rank === 8 && this._canCastle[fromPieace.color].long) {
-          this._canCastle[fromPieace.color].long = false
-        }
+      else if (moved.file === 'a') {
+        this._castling[fromPieace.color].rookHasMoved.queenside = true
       }
     }
   }
@@ -289,16 +285,21 @@ class GameImpl implements Game {
   takeAction(from: Square, to: Square): void {
     const action = this.resolveAction(from, to)
     if (action) {
-      this._move(from, to)
-      if (action === 'convert') {
-        this._board![to.rank][to.file].piece!.type = 'queen'
+      if (action === 'castle') {
+        this._castle(from, to)
       }
-      if (action !== 'move') {
-        const player = this._board![to.rank][to.file].piece!.color
-        if (this.won(player)) {
-          console.log(`Side ${player} WON!`)
-          this._resetGame()
-          return 
+      else {
+        this._move(from, to)
+        if (action === 'convert') {
+          this._board![to.rank][to.file].piece!.type = 'queen'
+        }
+        if (action !== 'move') {
+          const player = this._board![to.rank][to.file].piece!.color
+          if (this.won(player)) {
+            console.log(`Side ${player} WON!`)
+            this._resetGame()
+            return 
+          }
         }
       }
       this._toggleTurn()
@@ -355,79 +356,17 @@ class GameImpl implements Game {
     return this.canBeCapturedFrom(toCapture, p).length > 0
   }
 
-    // short vs long castle
-    // assumes validity already tested
-  castle(from: Square, short: boolean): void {
-    const fromColor = this.colorAt(from)
-    if (fromColor! === 'white') {
-      if (short) {
-        this._move(from, {rank: 1, file: 'g'}, true)  // king
-        this._move({rank: 1, file: 'h'}, {rank: 1, file: 'f'}, true) // rook
-      }
-      else {
-        this._move(from, {rank: 1, file: 'c'}, true)  // king
-        this._move({rank: 1, file: 'a'}, {rank: 1, file: 'd'}, true) // rook
-      }
+  _castle(from: Square, to: Square): void {
+    if (to.file === 'g') {
+      this._move(from, {rank: from.rank, file: 'g'}, true)  
+      this._move({rank: from.rank, file: 'h'}, {rank: from.rank, file: 'f'}, true) 
     }
     else {
-      if (short) {
-        this._move(from, {rank: 8, file: 'g'}, true)  // king
-        this._move({rank: 8, file: 'h'}, {rank: 8, file: 'f'}, true) // rook
-      }
-      else {
-        this._move(from, {rank: 8, file: 'c'}, true)  // king
-        this._move({rank: 8, file: 'a'}, {rank: 8, file: 'd'}, true) // rook
-      }
+      this._move(from, {rank: from.rank, file: 'c'}, true)  
+      this._move({rank: from.rank, file: 'a'}, {rank: from.rank, file: 'd'}, true) 
     }
-    this._canCastle[fromColor!].short = false
-    this._canCastle[fromColor!].long = false
-  }
-
-  canCastle(from: Square, short: boolean): boolean {
-    // No need to test the position of 'from', since the this._canCastle flag 
-    // indicates a move has taken place, same w position of participating rook
-    const side = this.colorAt(from)
-    let result: boolean = true
-
-    if (side === 'white') {
-      result = (short) 
-        ? 
-        (
-          this._canCastle.white.short 
-          && 
-          isClearAlongRank(this, from, {rank: 1, file: 'h'})
-          &&
-          this.canBeCapturedAlongRank(from, {rank: 1, file: 'h'})
-        ) 
-        : 
-        (
-          this._canCastle.white.long 
-          && 
-          isClearAlongRank(this, from, {rank: 1, file: 'b'})
-          &&
-          this.canBeCapturedAlongRank(from, {rank: 1, file: 'b'})
-        )
-    }
-    else {
-      result = (short) 
-        ? 
-        (
-          this._canCastle.black.short 
-          && 
-          isClearAlongRank(this, from, {rank: 8, file: 'h'})
-          &&
-          this.canBeCapturedAlongRank(from, {rank: 8, file: 'h'})
-        ) 
-        : 
-        (
-          this._canCastle.black.long 
-          && 
-          isClearAlongRank(this, from, {rank: 8, file: 'b'})
-          &&
-          this.canBeCapturedAlongRank(from, {rank: 8, file: 'b'})
-        )
-    }
-    return result
+      // make sure we can't castle twice
+    this._castling[(from.rank === 1) ? 'white' : 'black'].kingHasMoved = true 
   }
 
     // TODO
@@ -446,4 +385,4 @@ class GameImpl implements Game {
   
 }
 
-export default GameImpl
+export default Game

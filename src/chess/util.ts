@@ -1,8 +1,10 @@
-import { Game } from './Game'
+import Game from './Game'
 
 import Square from './Square'
 
 import { Rank, FILES } from './RankAndFile'
+
+const castleIsKingside = (to: Square): boolean => (to.file === 'g')
 
 const isClearAlongRank = (
   game: Game,
@@ -136,6 +138,7 @@ const isClearAlongDiagonal = (
 
 
 export {
+  castleIsKingside,
   isClearAlongRank, 
   isClearAlongFile,
   isClearAlongDiagonal
