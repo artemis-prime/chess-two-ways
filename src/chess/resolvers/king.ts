@@ -6,10 +6,9 @@ import {
   Color
 } from '..'
 
-import { isClearAlongRank } from '../util'
+import { isClearAlongRank, canBeCapturedAlongRank } from '../util'
 
 const legalMove = (
-  game: Game,
   from: Square, 
   to: Square, 
 ): boolean => {
@@ -47,7 +46,7 @@ const amCastling = (
     && 
     isClearAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
     && 
-    !game.canBeCapturedAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+    !canBeCapturedAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
   ) 
 }
 
@@ -57,8 +56,8 @@ const resolve = (
   to: Square, 
 ): Action | undefined => {
   
-  const fromColor = game.colorAt(from)
-  if (legalMove(game, from, to)) {
+  if (legalMove(from, to)) {
+    const fromColor = game.colorAt(from)
     const toColor = game.colorAt(to)
     if (!toColor) {
       return 'move'

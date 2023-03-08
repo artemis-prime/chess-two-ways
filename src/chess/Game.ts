@@ -10,12 +10,12 @@ import Piece, { Color, PieceType, Side }  from './Piece'
 import Square from './Square'
 import BoardSquare from './BoardSquare'
 import ActionResolver from './ActionResolver'
+import newBoard from './newBoard'
 
 import {
   RANKS,
   RANKS_REVERSE,
   FILES,
-  File
  } from './RankAndFile'
 
  interface Game {
@@ -26,12 +26,10 @@ import {
   resolveAction(from: Square, to: Square): Action | undefined
   takeAction(from: Square, to: Square): void
 
-  canBeCapturedAlongRank(from: Square, to: Square): boolean 
-  canBeCapturedFrom(toCapture: Square, p: Side): Square[]
-  canBeCaptured(toCapture: Square, p: Side): boolean
     // ('kingside' vs 'queenside')
   kingOrRookHasMoved(p: Side, kingside: boolean): boolean 
   
+  newGame(): void
   currentTurn(): Side
   won(p: Side): boolean
   
@@ -67,6 +65,7 @@ export class GameImpl implements Game {
 
     makeObservable(this, {
       takeAction: action,
+      newGame: action
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -76,7 +75,6 @@ export class GameImpl implements Game {
       '_castling' | 
       '_toggleTurn' | 
       '_move' | 
-      '_resetGame' | 
       '_trackCastling'
     >(this, {
       _board: observable,
@@ -84,113 +82,19 @@ export class GameImpl implements Game {
       _castling: observable,
       _toggleTurn: action,
       _move: action,
-      _resetGame: action,
       _trackCastling: action
     })
 
-    this._resetGame()
+    this.newGame()
   }
 
-  private _resetGame(): void {
+  public newGame(): void {
 
-
-    const pieceFromInitialFile = (file: File):  PieceType | undefined => {
-      let type: PieceType | undefined = undefined
-      if (file === 'a' || file === 'h') {
-        type = 'rook'
-      }
-      else if (file === 'c' || file === 'f') {
-        type = 'bishop'
-      }
-      else if (file === 'b' || file === 'g') {
-        type = 'knight'
-      }
-      else if (file === 'd') {
-        type = 'queen'
-      }
-      else if (file = 'e') {
-        type = 'king'
-      }
-      return type
-    }
-
-    this._board = undefined
-    const result: any = {}
-    for (const rank of RANKS) {
-      const rankArray: any = {}
-        // White pieces
-      if (rank === 1) {
-        for (const file of FILES) {
-          rankArray[file] = { 
-            rank,
-            file
-          }
-          const type = pieceFromInitialFile(file)  
-          if (type) {
-            rankArray[file].piece = {
-              type,
-              color: 'white'
-            } 
-          }
-        }
-      }
-        // White pawns
-      else if (rank === 2) {
-        for (const file of FILES) {
-          rankArray[file] = {
-            piece: {
-              type: 'pawn',
-              color: 'white'
-            },
-            rank,
-            file
-          }
-        }
-      }
-        // Black pawns
-      else if (rank === 7) {
-        for (const file of FILES) {
-          rankArray[file] = {
-            piece: {
-              type: 'pawn',
-              color: 'black'
-            },
-            rank,
-            file
-          }
-        }
-      }
-        // Black pawns
-      else if (rank === 8) {
-        for (const file of FILES) {
-          rankArray[file] = { 
-            rank,
-            file
-          }  
-          const type = pieceFromInitialFile(file)  
-          if (type) {
-            rankArray[file].piece = {
-              type,
-              color: 'black'
-            } 
-          }
-        }
-      }
-      else {
-        for (const file of FILES) {
-          rankArray[file] = { 
-            rank,
-            file
-          }  
-        }
-      }
-      result[rank] = rankArray
-    } 
-    this._board = result as Board
+    this._board = newBoard()
   }
 
-  boardAsSquares(): Square[] {
-    const result: Square[] = []
+  boardAsSquares(): BoardSquare[] {
+    const result: BoardSquare[] = []
     for (const rank of RANKS_REVERSE) {
       for (const file of FILES) {
         result.push(this._board![rank][file]) 
@@ -297,63 +201,13 @@ export class GameImpl implements Game {
           const player = this._board![to.rank][to.file].piece!.color
           if (this.won(player)) {
             console.log(`Side ${player} WON!`)
-            this._resetGame()
+            this.newGame()
             return 
           }
         }
       }
       this._toggleTurn()
     }
-  }
-    // toCapture need not be populated
-  canBeCapturedFrom(toCapture: Square, p: Side): Square[] {
-    const result: Square[] = []
-    for (const rank of RANKS) {
-      for (const file of FILES) {
-        const piece = this.pieceAt({rank, file})
-        if (piece && piece.color !== p) {
-          const resolver = this._resolvers!.get(piece.type)
-          const toCaptureFrom = {
-            piece: {...piece},
-            rank,
-            file
-          }
-          if (resolver && resolver(this, toCaptureFrom, toCapture) === 'capture') {
-            result.push(toCaptureFrom)
-          }
-        }
-      }
-    }
-    return result
-  }
-
-  // from must be populated
-  canBeCapturedAlongRank(from: Square, to: Square): boolean {
-    const fromColor = this.colorAt(from)
-    if (from.rank === to.rank) {
-      const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
-      if (delta < 0) {
-          // zero based, but ok since indexed from FILES
-        for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
-            return true
-          }
-        }
-      }
-      else {
-          // zero based, but ok since indexed from FILES
-        for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-          if (this.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
-            return true
-          }
-        }
-      }
-    }
-    return false
-  }
-
-  canBeCaptured(toCapture: Square, p: Side): boolean {
-    return this.canBeCapturedFrom(toCapture, p).length > 0
   }
 
   _castle(from: Square, to: Square): void {

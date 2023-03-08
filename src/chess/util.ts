@@ -1,8 +1,10 @@
 import Game from './Game'
 
 import Square from './Square'
+import BoardSquare from './BoardSquare'
+import { Side } from './Piece'
 
-import { Rank, FILES } from './RankAndFile'
+import { Rank, FILES, RANKS } from './RankAndFile'
 
 const castleIsKingside = (to: Square): boolean => (to.file === 'g')
 
@@ -135,11 +137,66 @@ const isClearAlongDiagonal = (
   return true
 }
 
+  // If a piece from sideToCapture moved to squareToCapture,
+  // what Squares could it be captured from?
+  // Useful for checking the ability to castle (can't castle into or through check),
+  // or to test for check. 
+const canBeCapturedFrom = (
+  game: Game, 
+  squareToCapture: Square, 
+  sideToCapture: Side
+): Square[] => {
+  const result: Square[] = []
+  for (const rank of RANKS) {
+    for (const file of FILES) {
+      const captureFrom = {rank, file}
+      const color = game.colorAt({rank, file})
+      if (color && color !== sideToCapture && game.resolveAction(captureFrom, squareToCapture) === 'capture') {
+        result.push(captureFrom)
+      }
+    }
+  }
+  return result
+}
 
+const canBeCaptured = (game: Game, squareToCapture: Square, sideToCapture: Side): boolean  => {
+  return canBeCapturedFrom(game, squareToCapture, sideToCapture).length > 0
+}
+
+  // from must be populated
+const canBeCapturedAlongRank = (game: Game, from: Square, to: Square): boolean => {
+  const fromColor = game.colorAt(from)
+  if (!fromColor) {
+    throw new Error('From must contain a piece!')
+  }
+  if (from.rank === to.rank) {
+    const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+    if (delta < 0) {
+        // zero based, but ok since indexed from FILES
+      for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
+        if (canBeCaptured(game, {rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
+          return true
+        }
+      }
+    }
+    else {
+        // zero based, but ok since indexed from FILES
+      for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
+        if (canBeCaptured(game, {rank: from.rank, file: FILES[fileIndex] }, fromColor!)) {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
 
 export {
   castleIsKingside,
   isClearAlongRank, 
   isClearAlongFile,
-  isClearAlongDiagonal
+  isClearAlongDiagonal,
+  canBeCapturedFrom,
+  canBeCaptured,
+  canBeCapturedAlongRank
 }
