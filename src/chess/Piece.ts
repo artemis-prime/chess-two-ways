@@ -2,7 +2,7 @@ export type Color =
   'black' | 
   'white'
 
-export type PieceType =
+  export type PieceType =
   'pawn' |
   'queen' |
   'bishop' |
@@ -10,6 +10,11 @@ export type PieceType =
   'knight' | 
   'king'
 
+export type PromotedPieceType =
+  'queen' |
+  'bishop' |
+  'rook' |
+  'knight'  
 
 interface Piece {
   type: PieceType

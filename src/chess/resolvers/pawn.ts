@@ -70,7 +70,7 @@ const resolve = (
     )
   ) {
     if ((fromPiece!.color === 'black' && to.rank === 1) || (fromPiece!.color === 'white' && to.rank === 8)) {
-      return 'convert'
+      return 'promote'
     }
     return 'move'
   }
@@ -78,7 +78,7 @@ const resolve = (
     // regular capture? 
   if (canCapture(game, from, to)) {
     if ((fromPiece!.color === 'black' && to.rank  === 1) || (fromPiece!.color === 'white' && to.rank  === 8)) {
-      return 'convert'
+      return 'promote'
     }
     return 'capture'
   }

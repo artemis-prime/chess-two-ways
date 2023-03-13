@@ -86,7 +86,7 @@ const SquareComponent: React.FC<{
     if (feedback.action === 'capture') {
       borderStyle = `${(feedback.tick) ? '3' : '1'}px orange solid`  
     }
-    else if (feedback.action === 'convert') {
+    else if (feedback.action === 'promote') {
       borderStyle = `${(feedback.tick) ? '3' : '1'}px yellow solid`  
     }
     else if (feedback.action === 'move' || feedback.action === 'castle') {
