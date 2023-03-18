@@ -1,0 +1,12 @@
+{
+  "name": "@artemis-prime/chess-domain",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npx tsc",
+    "clean": "rm -rf ./dist && rm -rf ./node_modules"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "artemis-prime",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,70 @@
+$board-brown: rgb(105, 49, 49);
+$square-size: 100px;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.app-header {
+  background-color: #274070;
+  /* min-height: 100vh; */
+  display: flex;
+  padding:  0.5rem 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.app-header-text {
+  display: block;
+}
+
+
+main {
+  display: flex;
+  flex-direction: row;
+  
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); // $square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
+  grid-template-rows:  repeat(8, 1fr); //$square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
+  margin: 40px auto;
+  width: 800px; //$square-size * 8;
+  height: 800px; //$square-size * 8;
+  border: 2px $board-brown solid;   
+}
+
+.square {
+
+  &.file-odd.rank-odd {
+    background-color: $board-brown;
+  }
+  &.file-even.rank-even {
+    background-color: $board-brown;
+  }
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    display: block;
+  }
+}
+
+.dash {
+  width: 30%;
+}
