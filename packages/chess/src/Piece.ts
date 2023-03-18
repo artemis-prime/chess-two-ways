@@ -23,4 +23,5 @@ interface Piece {
 
 export type Side = Color
 
-export default Piece
+export { type Piece as default }
+

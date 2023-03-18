@@ -4,4 +4,4 @@ type Action =
   'promote' | 
   'castle'
 
-export default Action
+export { type Action as default }

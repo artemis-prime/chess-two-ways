@@ -33,8 +33,12 @@ code {
 
 
 main {
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  //background-color: #ccc;
   
 }
 

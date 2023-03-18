@@ -5,4 +5,4 @@ interface BoardSquare extends Square {
   piece?: Piece // if a piece is currently in the square
 }
 
-export default BoardSquare
+export { type BoardSquare as default }  

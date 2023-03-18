@@ -1,5 +1,5 @@
 import { ElementRef, forwardRef, ComponentPropsWithoutRef } from 'react'
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 export const StyledAnchor = styled('a', {
   cursor: 'pointer',

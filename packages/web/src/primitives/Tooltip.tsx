@@ -6,7 +6,7 @@ import { useMediaQuery } from 'react-responsive'
 import Box from './Box'
 import Flex from './Flex'
 import useMounted from '~/util/useMounted'
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 const TooltipArrow = styled(TooltipPrimitive.Arrow, {})
 const PopoverArrow = styled(Popover.Arrow, {})

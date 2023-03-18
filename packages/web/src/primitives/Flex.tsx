@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 const flexCss = {
   display: 'flex',

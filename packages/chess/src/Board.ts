@@ -9,4 +9,4 @@ type Board = {
   [key in Rank]: RankSquares
 } 
 
-export default Board
+export { type Board as default }  

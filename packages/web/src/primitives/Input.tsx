@@ -5,7 +5,7 @@ import {
   ReactNode,
 } from 'react'
 
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 import Flex from '~/primitives/Flex'
 import type { CSS } from '@stitches/react'
 

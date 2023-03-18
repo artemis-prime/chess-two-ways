@@ -7,6 +7,8 @@ import Board from '~/core/Board'
 import GameProvider from '~/core/GameProvider'
 import { FeedbackProvider } from '~/core/Feedback'
 
+import { Flex } from '~/primitives'
+
 import Dash from './Dash'
 
 import '~/styles/main.scss'
@@ -20,8 +22,10 @@ const App: React.FC<{}> = () => (
             <span className="app-header-text">Chess Demo</span>
           </header>
           <main>
-            <Board />
-            <Dash />
+            <Flex direction='row' align='center'>
+              <Board />
+              <Dash />
+            </Flex>
           </main>
         </div>
       </DndProvider>

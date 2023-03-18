@@ -71,7 +71,10 @@ class GameImpl implements Game {
   }
 
   private _actions = [] as ActionRecord[] 
-  private _undoRedoActionIndex = -1
+    // For managing undo / redo.  The index of the current state
+    // within _actions.  -1 is the original state of the board.
+    // That way, _action[0] is conveniently the first move
+  private _stateIndex = -1 
 
   constructor(map: Map<PieceType, ActionResolver>) {
 
@@ -93,7 +96,9 @@ class GameImpl implements Game {
       '_castling' | 
       '_toggleTurn' | 
       '_move' | 
-      '_trackCastling' 
+      '_trackCastling' |
+      '_stateIndex' |
+      '_actions'
     >(this, {
       _board: observable,
       _currentTurn: observable,
@@ -101,6 +106,8 @@ class GameImpl implements Game {
       _toggleTurn: action,
       _move: action,
       _trackCastling: action,
+      _stateIndex: observable,
+      _actions: observable
     })
 
     this.newGame()
@@ -199,28 +206,26 @@ class GameImpl implements Game {
   }
 
   get canUndo() {
-    return !!this._actions.length && (this._undoRedoActionIndex > 0 || this._undoRedoActionIndex == -1)
-  }
-
-  get canRedo() {
-    return (
-      this._undoRedoActionIndex > -1 
-      && 
-      this._undoRedoActionIndex + 1 < this._actions.length
-    )
+    return this._stateIndex >= 0
   }
 
   undo() {
     if (this.canUndo) {
-
+      this._undo(this._actions[this._stateIndex])
+      this._stateIndex--
     }
   }
 
-
-  redo() {
-    
+  get canRedo() {
+    return this._stateIndex + 1 < this._actions.length
   }
 
+  redo() {
+    if (this.canRedo) {
+      this._stateIndex++
+      this._redo(this._actions[this._stateIndex])
+    }
+  }
 
   private _redo(record: ActionRecord) {
     if (record.action === 'castle') {
@@ -273,11 +278,11 @@ class GameImpl implements Game {
     action: Action, 
     secondPiece?: Piece
   ): void {
-    if (this._undoRedoActionIndex > -1) {
-        // If we were doing undo / redo actions,
+    if (this._stateIndex + 1 < this._actions.length) {
+        // If we've undone actions since the most recent "actual" move,
         // truncate the stack since we can no longer meaningfully 
         // 'redo' actions more recent than the one we're currently on.
-      this._actions.length = this._undoRedoActionIndex + 1 
+      this._actions.length = this._stateIndex + 1 
     }
     this._actions.push({
       piece,
@@ -287,8 +292,7 @@ class GameImpl implements Game {
       action,
       secondPiece
     })
-      // mark that we are at the head of the undo / redo stack
-    this._undoRedoActionIndex = -1
+    this._stateIndex = this._actions.length - 1
   }
 
   private _toggleTurn(): void {
@@ -408,14 +412,14 @@ class GameImpl implements Game {
   
 }
 
-const gameSingleton = () => {
+const getGameSingleton = () => {
   if (!GameImpl.currentInstance) {
     GameImpl.currentInstance = new GameImpl(registry) 
   }
   return GameImpl.currentInstance
 }
 
-export default Game
 export {
-  gameSingleton  
+  getGameSingleton,
+  type Game as default  
 }

@@ -1,4 +1,4 @@
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 const Button = styled('button', {
   outline: 'none',

@@ -4,7 +4,7 @@ import React, {
  } from 'react'
  
  import type { Game } from '@artemis-prime/chess-domain'
- import { gameSingleton } from '@artemis-prime/chess-domain'
+ import { getGameSingleton } from '@artemis-prime/chess-domain'
  
  const GameContext = React.createContext<Game | undefined>(undefined) 
  
@@ -15,7 +15,7 @@ import React, {
  const GameProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
    
    return (
-     <GameContext.Provider value={gameSingleton()}>
+     <GameContext.Provider value={getGameSingleton()}>
        {children}
      </GameContext.Provider>
    )

@@ -13,4 +13,4 @@ interface ActionRecord {
   secondPiece?: Piece 
 }
 
-export default ActionRecord
+export { type ActionRecord as default }

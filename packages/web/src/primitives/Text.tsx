@@ -1,4 +1,4 @@
-import { styled } from 'stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 export default styled('span', {
   color: '$gray12',

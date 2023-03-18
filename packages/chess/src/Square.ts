@@ -5,4 +5,4 @@ interface Square {
   file: File
 }
 
-export default Square
+export { type Square as default }

@@ -6,4 +6,4 @@ interface ActionResolver {
   ( game: Game, from: Square, to: Square ): Action | undefined
 }
 
-export default ActionResolver
+export { type ActionResolver as default }  
