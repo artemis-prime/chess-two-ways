@@ -1,3 +1,4 @@
+  // @ts-ignore
 import React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import * as Popover from '@radix-ui/react-popover'
@@ -5,7 +6,7 @@ import { useMediaQuery } from 'react-responsive'
 
 import Box from './Box'
 import Flex from './Flex'
-import { useMounted } from 'hooks'
+import useMounted from '~/util/useMounted'
 import { styled } from 'stitches.config'
 
 const TooltipArrow = styled(TooltipPrimitive.Arrow, {})

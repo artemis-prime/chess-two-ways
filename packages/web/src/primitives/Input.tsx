@@ -1,12 +1,13 @@
-import { styled } from 'stitches.config'
-import Flex from 'components/primitives/Flex'
 import {
   ComponentPropsWithoutRef,
   ElementRef,
   forwardRef,
   ReactNode,
 } from 'react'
-import { CSS } from '@stitches/react'
+
+import { styled } from 'stitches.config'
+import Flex from '~/primitives/Flex'
+import type { CSS } from '@stitches/react'
 
 const StyledInput = styled('input', {
   all: 'unset',
