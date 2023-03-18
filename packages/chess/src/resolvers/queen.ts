@@ -1,11 +1,11 @@
-import type Game from '~c/Game'
-import type { Action, Square } from '~c'
+import type Game from '../Game'
+import type { Action, Square } from '..'
 
 import { 
   isClearAlongRank, 
   isClearAlongFile,
   isClearAlongDiagonal
-} from '~c'
+} from '../util'
 
 const legalMove = (
   game: Game,

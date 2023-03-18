@@ -1,7 +1,7 @@
-import type Game from '~c/Game'
-import type { Action, Square } from '~c'
+import type Game from '../Game'
+import type { Action, Square } from '..'
 
-import { FILES } from '~c/RankAndFile'
+import { FILES } from '..'
 
 const pawnOnHomeRow = (game: Game, sq: Square): boolean => {
   const piece = game.pieceAt(sq)

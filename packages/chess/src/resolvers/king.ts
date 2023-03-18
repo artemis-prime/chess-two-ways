@@ -1,11 +1,11 @@
-import type Game from '~c/Game'
+import type Game from '../Game'
 import type { 
   Action,
   Square,
   Color
-} from '~c'
+} from '..'
 
-import { FILES } from '~c'
+import { FILES } from '..'
 
 
 import { isClearAlongRank, canBeCapturedAlongRank } from '../util'

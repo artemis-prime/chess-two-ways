@@ -1,7 +1,7 @@
-import type Game from '~c/Game'
-import type { Action, Square } from '~c'
+import type Game from '../Game'
+import type { Action, Square } from '..'
 
-import { isClearAlongRank, isClearAlongFile } from '~c'
+import { isClearAlongRank, isClearAlongFile } from '../util'
 
 const resolve = (
   game: Game,
