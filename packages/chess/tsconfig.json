@@ -9,10 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "importsNotUsedAsValues": "error",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "ignoreDeprecations": "5.0",
+    "verbatimModuleSyntax": true
   },
   "exclude": [
     "node_modules",

@@ -1,5 +1,4 @@
-  // @ts-ignore
-import React from 'react'
+import type React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import * as Popover from '@radix-ui/react-popover'
 import { useMediaQuery } from 'react-responsive'
