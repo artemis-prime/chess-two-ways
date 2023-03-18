@@ -71,6 +71,7 @@ class GameImpl implements Game {
   }
 
   private _actions = [] as ActionRecord[] 
+  
     // For managing undo / redo.  The index of the current state
     // within _actions.  -1 is the original state of the board.
     // That way, _action[0] is conveniently the first move
