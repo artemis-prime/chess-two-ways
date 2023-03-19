@@ -44,7 +44,7 @@ const amCastling = (
   return (
     (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
     &&
-    !game.kingOrRookHasMoved(color, kingside)
+    game.eligableToCastle(color, kingside)
     && 
     isClearAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
     && 

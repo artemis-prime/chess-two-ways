@@ -4,22 +4,25 @@ import type { Action, Square } from '..'
 import { FILES } from '..'
 
 const pawnOnHomeRow = (game: Game, sq: Square): boolean => {
-  const piece = game.pieceAt(sq)
+  const color = game.colorAt(sq)
   return (
-    sq.rank === 2 && !!piece && piece.type === 'pawn' && piece.color === 'white'
+    sq.rank === 2 && color === 'white'
     ||
-    sq.rank === 7 && !!piece && piece.type === 'pawn' && piece.color === 'black'
+    sq.rank === 7 && color === 'black'
   )
 }
 
-const canCapture = (
+const isCapturing = (
   game: Game, 
   from: Square,  
   to: Square 
 ): boolean => {
   const fromPiece = game.pieceAt(from)
+  const toPiece = game.pieceAt(to)
   return (
-    // moving diagonally
+    !!toPiece && toPiece!.color !== fromPiece!.color
+    &&
+      // moving diagonally
     Math.abs(FILES.indexOf(to.file) - FILES.indexOf(from.file)) === 1
     &&
       // correct vector
@@ -53,6 +56,8 @@ const resolve = (
     return 'move'
   }
 
+  const isGettingPromoted = (fromPiece!.color === 'black' && to.rank  === 1) || (fromPiece!.color === 'white' && to.rank  === 8)
+
   // regular advance? 
   if (
     !toPiece
@@ -66,16 +71,15 @@ const resolve = (
       (fromPiece!.color === 'white' && (to.rank - from.rank === 1))
     )
   ) {
-    if ((fromPiece!.color === 'black' && to.rank === 1) || (fromPiece!.color === 'white' && to.rank === 8)) {
+    if (isGettingPromoted) {
       return 'promote'
     }
     return 'move'
   }
 
-    // regular capture? 
-  if (canCapture(game, from, to)) {
-    if ((fromPiece!.color === 'black' && to.rank  === 1) || (fromPiece!.color === 'white' && to.rank  === 8)) {
-      return 'promote'
+  if (isCapturing(game, from, to)) {
+    if (isGettingPromoted) {
+      return 'capture-promote'  
     }
     return 'capture'
   }

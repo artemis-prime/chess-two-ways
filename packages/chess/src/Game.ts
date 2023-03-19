@@ -13,6 +13,7 @@ import type Square from './Square'
 import type BoardSquare from './BoardSquare'
 import type ActionResolver from './ActionResolver'
 import type ActionRecord from './ActionRecord'
+import type Console from './Console'
 import newBoard from './newBoard'
 import registry from './resolverRegistry'
  
@@ -35,10 +36,11 @@ import {
   get canRedo(): boolean
 
     // ('kingside' vs 'queenside')
-  kingOrRookHasMoved(p: Side, kingside: boolean): boolean 
+  eligableToCastle(p: Side, kingside: boolean): boolean 
   
   newGame(): void
   currentTurn(): Side
+  setConsole(c: Console): void
 
   won(p: Side): boolean
   
@@ -52,6 +54,10 @@ class GameImpl implements Game {
   private _board: Board | undefined = undefined
   private _currentTurn: Side = 'white' 
   private _resolvers: Map<PieceType, ActionResolver> | undefined = undefined 
+  private _console: Console = {
+    write: (t: string): void => {},
+    writeln: (t?: string): void => {console.log(t)}
+  }
 
   private _castling = {
     white: {
@@ -71,7 +77,7 @@ class GameImpl implements Game {
   }
 
   private _actions = [] as ActionRecord[] 
-  
+
     // For managing undo / redo.  The index of the current state
     // within _actions.  -1 is the original state of the board.
     // That way, _action[0] is conveniently the first move
@@ -129,13 +135,25 @@ class GameImpl implements Game {
     return result
   }
 
-  kingOrRookHasMoved(color: Side, kingside: boolean): boolean {
-    return this._castling[color].kingHasMoved || this._castling[color].rookHasMoved[kingside ? 'kingside' : 'queenside']
+  eligableToCastle(color: Side, kingside: boolean): boolean {
+    const castleSide = kingside ? 'kingside' : 'queenside'
+    const eligable = !this._castling[color].kingHasMoved && !this._castling[color].rookHasMoved[castleSide]
+    if (!eligable) {
+      const msg = `${color} is no longer eligable to castle ${castleSide} because \
+        ${this._castling[color].kingHasMoved ? 'the king has moved' : ''}\
+        ${this._castling[color].kingHasMoved && this._castling[color].rookHasMoved[castleSide] ? ' and ' : ''}\
+        ${this._castling[color].rookHasMoved[castleSide] ? 'that rook has moved' : ''}!`
+      this._console.writeln(msg)
+    }
+    return eligable
   }
-
 
   currentTurn(): Side {
     return this._currentTurn
+  }
+
+  setConsole(c: Console): void {
+    this._console = c
   }
 
   pieceAt(sq: Square): Piece | undefined {
@@ -169,7 +187,6 @@ class GameImpl implements Game {
     return undefined   
   }
 
-
   takeAction(
     from: Square, 
     to: Square, 
@@ -179,27 +196,22 @@ class GameImpl implements Game {
     const action = this.resolveAction(from, to)
     if (action) {
 
+      const involvesPromote = action.includes('promote')
+      const promoteTo_ = !involvesPromote ? undefined : (promoteTo ? promoteTo : 'queen') 
       this._recordAction(
-        this._board![from.rank][from.file].piece!,
         from,
         to,
         action,
-        this._secondPieceForRecord(
-          from, 
-          to, 
-          action,
-          promoteTo
-        )
+        promoteTo_
       )
       if (action === 'castle') {
         this._castle(from, to)
       }
       else {
-          // _move also takes care of capture ;)
+          // Note that _move also takes care of capture ;)
         this._move(from, to)
-        if (action === 'promote') {
-          this._board![to.rank][to.file].piece!.type = (promoteTo ? promoteTo : 'queen') 
-            
+        if (involvesPromote) {
+          this._board![to.rank][to.file].piece!.type = promoteTo_
         }
       }
       this._toggleTurn()
@@ -229,14 +241,16 @@ class GameImpl implements Game {
   }
 
   private _redo(record: ActionRecord) {
+    this._console.writeln('Redoing: ' + this._actionRecordToLogString(record))
+
     if (record.action === 'castle') {
       this._castle(record.from, record.to)
     }
     else {
         // _move also takes care of capture ;)
       this._move(record.from, record.to)
-      if (record.action === 'promote') {
-        this._board![record.to.rank][record.to.file].piece!.type = (record.secondPiece ? record.secondPiece.type : 'queen') 
+      if (record.action === 'promote' || record.action === 'capture-promote' ) {
+        this._board![record.to.rank][record.to.file].piece!.type = record.promotedTo
           
       }
     }
@@ -244,40 +258,34 @@ class GameImpl implements Game {
 
   } 
 
+  private _actionRecordToLogString(r: ActionRecord): string {
 
-  private _secondPieceForRecord(
-    from: Square, 
-    to: Square, 
-    action: Action, 
-    promoteTo?: PromotedPieceType
-  ): Piece | undefined {
-    return (action === 'capture') 
-    ?
-      // who did we capture?
-    this._board![to.rank][to.file].piece!
-    :
-    (
-      (action === 'promote')
-        ?
-          // who did we promote a pawn to?  
-          // if not supplied, then default to queen 
-        (promoteTo 
-          ? 
-          {type: promoteTo, color: this._board![from.rank][from.file].piece!.color} 
-          : 
-          {type: 'queen' as PieceType, color: this._board![from.rank][from.file].piece!.color}
-        ) 
-        :
-        undefined
-    ) 
+    if (r.action === 'castle') {
+      return `${r.piece.color} castles ${r.to.file === 'g' ? 'kingside' : 'queenside'}`
+    }
+    let log = `${r.piece.color} ${r.piece.type} (${r.from.rank}${r.from.file}) `
+    switch (r.action) {
+      case 'capture':
+        log += `captures ${r.captured!.type} (${r.to.rank}${r.to.file})`
+      break
+      case 'move':
+        log += `moves to ${r.to.rank}${r.to.file}`
+      break
+      case 'promote':
+        log += `is promoted to a ${r.promotedTo!} at ${r.to.rank}${r.to.file}`
+      break
+      case 'capture-promote':
+        log += `captures ${r.captured!.type} and is promoted to a ${r.promotedTo!} at ${r.to.rank}${r.to.file}`
+      break
+    } 
+    return log
   }
 
   private _recordAction(
-    piece: Piece, 
-    from: Square, 
-    to: Square, 
+    from: BoardSquare, 
+    to: BoardSquare, 
     action: Action, 
-    secondPiece?: Piece
+    promotedTo?: PromotedPieceType
   ): void {
     if (this._stateIndex + 1 < this._actions.length) {
         // If we've undone actions since the most recent "actual" move,
@@ -286,14 +294,21 @@ class GameImpl implements Game {
       this._actions.length = this._stateIndex + 1 
     }
     this._actions.push({
-      piece,
+      piece: this._board[from.rank][from.file].piece,
         // prevent reference copies of Squares
       from: {...from}, 
       to: {...to},
       action,
-      secondPiece
+      promotedTo,
+      captured: (action === 'capture' || action === 'capture-promote') 
+        ? 
+        this._board[to.rank][to.file].piece 
+        : 
+        undefined
     })
     this._stateIndex = this._actions.length - 1
+
+    this._console.writeln('Action: ' + this._actionRecordToLogString(this._actions[this._stateIndex]))
   }
 
   private _toggleTurn(): void {
@@ -339,25 +354,26 @@ class GameImpl implements Game {
   }
 
   private _undo(record: ActionRecord): void {
+
+    this._console.writeln('Undoing: ' + this._actionRecordToLogString(record))
     if (record.action === 'castle') {
       this._undo_castle(record)
-
     }
     else {
       this._move(record.to, record.from, true)
-      if (record.action === 'capture') {
+      if (record.action.includes('capture')) {
         this._board![record.to.rank][record.to.file] = {
           ...record.to,
           piece: {
-            ...record.secondPiece!
+            ...record.captured!
           },
         }  
       }
-      else if (record.action === 'promote') {
-        this._board![record.to.rank][record.to.file] = {
-          ...record.to,
+      if (record.action.includes('promote')) {
+        this._board![record.from.rank][record.from.file] = {
+          ...record.from,
           piece: {
-            color: record.secondPiece!.color,
+            color: record.piece.color,
             type: 'pawn'
           },
         }  
