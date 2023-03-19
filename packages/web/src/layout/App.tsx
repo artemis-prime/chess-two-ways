@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import Board from '~/core/Board'
 import GameProvider from '~/core/GameProvider'
-import { FeedbackProvider } from '~/core/Feedback'
+import { VisualFeedbackProvider } from '~/core/VisualFeedback'
 
 import { Flex } from '~/primitives'
 
@@ -16,7 +16,7 @@ import '~/styles/main.scss'
 
 const App: React.FC<{}> = () => (
   <GameProvider >
-    <FeedbackProvider >
+    <VisualFeedbackProvider >
       <DndProvider backend={HTML5Backend}>
         <div className="App">
           <header className="app-header">
@@ -30,7 +30,7 @@ const App: React.FC<{}> = () => (
           </main>
         </div>
       </DndProvider>
-    </FeedbackProvider>
+    </VisualFeedbackProvider>
   </GameProvider>
 )
 
