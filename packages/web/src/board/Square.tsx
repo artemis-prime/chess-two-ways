@@ -5,8 +5,6 @@ import { useDrop } from 'react-dnd'
 import type { BoardSquare, Square, } from '@artemis-prime/chess-domain'
 import { castleIsKingside, FILES } from '@artemis-prime/chess-domain'
 
-
-
 import { useGame } from './GameProvider'
 import Piece from './Piece'
 import { useVisualFeedback } from './VisualFeedback'

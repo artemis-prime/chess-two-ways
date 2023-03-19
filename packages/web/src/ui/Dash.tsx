@@ -2,7 +2,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/core/GameProvider'
+import { useGame } from '~/board/GameProvider'
 
 import {
   Button,

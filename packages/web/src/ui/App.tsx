@@ -3,9 +3,9 @@ import React from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import Board from '~/core/Board'
-import GameProvider from '~/core/GameProvider'
-import { VisualFeedbackProvider } from '~/core/VisualFeedback'
+import Board from '~/board/Board'
+import GameProvider from '~/board/GameProvider'
+import { VisualFeedbackProvider } from '~/board/VisualFeedback'
 
 import { Flex } from '~/primitives'
 
