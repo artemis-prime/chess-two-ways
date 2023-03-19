@@ -1,7 +1,7 @@
   // @ts-ignore
 import React from 'react'
 
-import type { PieceComponentProps } from '../core/Piece'
+import type { PieceComponentProps } from '../Piece'
 
 const King: React.FC<PieceComponentProps> = ({
   color, 
