@@ -11,6 +11,7 @@ import { Flex } from '~/primitives'
 
 import Dash from './Dash'
 
+import '~/styles/fonts.scss'
 import '~/styles/main.scss'
 
 const App: React.FC<{}> = () => (
@@ -19,7 +20,7 @@ const App: React.FC<{}> = () => (
       <DndProvider backend={HTML5Backend}>
         <div className="App">
           <header className="app-header">
-            <span className="app-header-text">Chess Demo</span>
+            <h1 className="app-header-text">Chess Three Ways (web souffl&eacute;)</h1>
           </header>
           <main>
             <Flex direction='row' align='center'>

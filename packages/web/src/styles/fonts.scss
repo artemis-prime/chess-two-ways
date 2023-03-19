@@ -1,0 +1,92 @@
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-Extrabold-web.woff2') format('woff2');
+  font-weight: 800;
+}
+
+  // No semi-bold in this family, grr
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-Bold-web.woff2') format('woff2');
+  font-weight: 600 700;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-Medium-web.woff2') format('woff2');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-Regular-web.woff2') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-Light-web.woff2') format('woff2');
+  font-weight: 300;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-ExtraboldItalic-web.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+}
+
+  // No semi-bold in this family, grr
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-BoldItalic-web.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-MediumItalic-web.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-RegularItalic-web.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'TWK Everett';
+  src: url('assets/fonts/TWKEverett/TWKEverett-LightItalic-web.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+}
+
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'TWK Everett', sans-serif;
+}
+
+button {
+  font-family: 'TWK Everett', sans-serif;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+
+

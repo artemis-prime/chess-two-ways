@@ -22,8 +22,10 @@ module.exports = {
     ["module-resolver", {
         // These are applied way before the webpack ones, so have to be 
         // reproduced here so that inline-react-svg can import svg's using asiases
+      root: ["./"],
       alias: {
         "~": "./src/",
+        "assets": "../../assets/"
       },
     }],
     ["inline-react-svg", {

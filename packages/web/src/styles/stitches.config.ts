@@ -132,8 +132,8 @@ export const {
       fontSizes: {},
       fontWeights: {},
       fonts: {
-        body: 'Inter',
-        button: '$body',
+        body: 'Source Sans Pro',
+        button: 'TWK Everett',
       },
       lineHeights: {},
       letterSpacings: {},
