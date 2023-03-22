@@ -171,7 +171,7 @@ class GameImpl implements Game {
     if (action) {
       const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
       this._checkCheckingBoard.applyAction(desc, 'do')
-      const imInCheckFrom = this._checkCheckingBoard.inCheck(desc.piece.color)
+      const imInCheckFrom = this._checkCheckingBoard.inCheckFrom(desc.piece.color)
         // My proposed move would result in putting myself in check!
       if (imInCheckFrom.length) {
         this._console.writeln(`Resulting action by ${desc.piece.color} would put it in check!`)  
@@ -193,7 +193,7 @@ class GameImpl implements Game {
         this._actions.push(desc)
         this._stateIndex = this._actions.length - 1
         const oppositeSide = (desc.piece.color === 'white') ? 'black' : 'white'
-        const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
+        const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
         const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
         this._inCheckListener(kingInCheckSquare, inCheckFrom)
         this._toggleTurn()
@@ -212,7 +212,7 @@ class GameImpl implements Game {
       this._mainBoard.applyAction(r, 'undo')
       this._checkCheckingBoard.applyAction(r, 'undo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
-      const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
+      const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
       const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._stateIndex--
@@ -232,7 +232,7 @@ class GameImpl implements Game {
       this._mainBoard.applyAction(r, 'redo')
       this._checkCheckingBoard.applyAction(r, 'redo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
-      const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
+      const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
       const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._toggleTurn()

@@ -41,7 +41,8 @@ interface Board {
   canBeCaptured(sq: Square, as: Side): boolean 
 
     // 'side' is in check from Square[] (or empty array)
-  inCheck(side: Side) : Square[] 
+  inCheckFrom(side: Side) : Square[] 
+  inCheck(side: Side) : boolean 
 
     // Utility method for easy rendering (mobx 'computed')
   get boardAsSquares(): BoardSquare[]
@@ -91,12 +92,20 @@ class BoardImpl implements BoardInternal {
     return undefined
   }
 
-  inCheck(side: Side): BoardSquare[] {
+  inCheckFrom(side: Side): Square[] {
     return this._canBeCapturedFrom(
       this._tracking[side].king,
       side,
       'squares'
-    ) as BoardSquare[]
+    ) as Square[]
+  }
+
+  inCheck(side: Side): boolean {
+    return this._canBeCapturedFrom(
+      this._tracking[side].king,
+      side,
+      'boolean'
+    ) as boolean
   }
 
   kingsLocation(side: Color): Square {
