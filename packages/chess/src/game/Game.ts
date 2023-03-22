@@ -9,6 +9,7 @@ import type { default as Board, BoardInternal } from '../board/Board'
 import { createBoard } from '../board/Board'
 import type Action from '../Action'
 import type { PieceType, PrimaryPieceType, Side } from '../Piece'
+import type Piece from '../Piece'
 import type Square from '../Square'
 import type BoardSquare from '../BoardSquare'
 
@@ -26,8 +27,8 @@ interface Game {
 
   getBoard(): Board
 
-  resolveAction(from: Square, to: Square): Action | undefined
-  takeAction(from: Square, to: Square): void
+  resolveAction(p: Piece, from: Square, to: Square): Action | undefined
+  takeAction(p: Piece, from: Square, to: Square): void
   
   undo(): void
   redo(): void
@@ -56,7 +57,8 @@ class GameImpl implements Game {
   private _actions = [] as ActionDescriptor[] 
     // For managing undo / redo.  The index of the current state
     // within _actions.  -1 is the original state of the board.
-    // That way, _action[0] is conveniently the first move
+    // That way, _action[0] is conveniently the first move,
+    // and you can move back and forth via undo / redo
   private _stateIndex = -1 
 
   private _console: Console = {
@@ -70,7 +72,7 @@ class GameImpl implements Game {
 
   constructor() {
 
-    this._mainBoard = createBoard(this._canCapture.bind(this))
+    this._mainBoard = createBoard(this._canCapture.bind(this), true)
     this._checkCheckingBoard = createBoard(this._canCapture.bind(this))
   
     makeObservable(this, {
@@ -103,8 +105,8 @@ class GameImpl implements Game {
 
   reset() {
     this._currentTurn = 'white'
-    this._mainBoard = createBoard(this._canCapture, true)
-    this._checkCheckingBoard = createBoard(this._canCapture)
+    this._mainBoard.reset()
+    this._checkCheckingBoard.reset()
     this._actions = [] as ActionDescriptor[]
     this._stateIndex = -1 
   }
@@ -131,60 +133,54 @@ class GameImpl implements Game {
 
     // Do not call directly.  Passed to Board instance to 
     // implement checkChecking
-  _canCapture(board: Board, from: BoardSquare, to: Square) {
+  private _canCapture(board: Board, pieceType: PieceType, from: Square, to: Square) {
     let result: Action | undefined = undefined
-    if (from.piece) {
-      const resolver = this._resolvers.get(from.piece!.type)
+    const resolver = this._resolvers.get(pieceType)
 
-      if (resolver) {
-        result = resolver(
-          board,
-          from, 
-          to, 
-        )
-      } 
-    }
+    if (resolver) {
+      result = resolver(board, from, to)
+    } 
     return result?.includes('capture')
   }
 
   resolveAction(
-    from: BoardSquare, 
+    piece: Piece, 
+    from: Square, 
     to: Square, 
   ): Action | undefined {
 
-    if (from.piece) {
-      const resolver = this._resolvers.get(from.piece!.type)
-      if (resolver) {
-        const action = resolver(this._mainBoard, from, to)
-        if (action && this._actionResolvedCallback) {
-          this._actionResolvedCallback(action, from, to)
-        }
-        return action
-      } 
-    }
+    const resolver = this._resolvers.get(piece.type)
+    if (resolver) {
+      const action = resolver(this._mainBoard, from, to)
+      if (this._actionResolvedCallback) {
+        this._actionResolvedCallback(action, from, to)
+      }
+      return action
+    } 
     return undefined   
   }
 
   takeAction(
+    piece: Piece, 
     from: Square, 
     to: Square, 
     promoteTo?: PrimaryPieceType
   ): void {
 
-    const action = this.resolveAction(from, to)
+    const action = this.resolveAction(piece, from, to)
     if (action) {
-      const rec = this._createActionRecord(from, to, action, promoteTo)
-      this._checkCheckingBoard.applyAction(rec, 'do')
-      const imInCheckFrom = this._checkCheckingBoard.inCheck(rec.piece.color)
+      const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
+      this._checkCheckingBoard.applyAction(desc, 'do')
+      const imInCheckFrom = this._checkCheckingBoard.inCheck(desc.piece.color)
         // My proposed move would result in putting myself in check!
       if (imInCheckFrom.length) {
-        this._console.writeln(`Resulting action by ${rec.piece.color} would put it in check!`)  
+        this._console.writeln(`Resulting action by ${desc.piece.color} would put it in check!`)  
         console.log(boardSquareToString(imInCheckFrom))
-        this._checkCheckingBoard.applyAction(rec, 'undo')
+        this._checkCheckingBoard.applyAction(desc, 'undo')
       }
       else {
-        this._console.writeln('Action: ' + actionRecordToLogString(rec))
-        this._mainBoard.applyAction(rec, 'do')
+        this._console.writeln('Action: ' + actionRecordToLogString(desc))
+        this._mainBoard.applyAction(desc, 'do')
         if (this._actionTakenCallback) {
           this._actionTakenCallback(action, from, to)
         }
@@ -194,11 +190,11 @@ class GameImpl implements Game {
             // 'redo' actions more recent than the one we're currently on.
           this._actions.length = this._stateIndex + 1 
         }
-        this._actions.push(rec)
+        this._actions.push(desc)
         this._stateIndex = this._actions.length - 1
-        const oppositeSide = (rec.piece.color === 'white') ? 'black' : 'white'
+        const oppositeSide = (desc.piece.color === 'white') ? 'black' : 'white'
         const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
-        const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.wheresTheKing(oppositeSide) : undefined
+        const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
         this._inCheckListener(kingInCheckSquare, inCheckFrom)
         this._toggleTurn()
       }
@@ -217,7 +213,7 @@ class GameImpl implements Game {
       this._checkCheckingBoard.applyAction(r, 'undo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
       const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
-      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.wheresTheKing(oppositeSide) : undefined
+      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._stateIndex--
       this._toggleTurn()
@@ -237,23 +233,24 @@ class GameImpl implements Game {
       this._checkCheckingBoard.applyAction(r, 'redo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
       const inCheckFrom = this._mainBoard.inCheck(oppositeSide)
-      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.wheresTheKing(oppositeSide) : undefined
+      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._toggleTurn()
     }
   }
 
-  private _createActionRecord(
-    from: BoardSquare, 
-    to: BoardSquare, 
+  private _createActionDescriptor(
+    piece: Piece,
+    from: Square, 
+    to: Square, 
     action: Action,
     promoteTo?: PrimaryPieceType, 
   ): ActionDescriptor {
     return {
-      piece: this._mainBoard.pieceAt(from),
+      piece,
         // prevent reference copies of Squares
-      from: {...from}, 
-      to: {...to},
+      from, 
+      to,
       action,
       promotedTo: action.includes('promote') ? (promoteTo ? promoteTo : 'queen') : undefined,
       captured: (action === 'capture' || action === 'capture-promote') 

@@ -65,7 +65,7 @@ const amCastling = (
   return (
     (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
     &&
-    !board.ineligableToCastleBecause(color, kingside)
+    board.castlingEligability(color, kingside) === 'eligable'
     && 
     board.isClearAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
     && 

@@ -1,4 +1,5 @@
 import type BoardSquare from '../BoardSquare'
+import type Square from '../Square'
 import type ActionDescriptor from './ActionDescriptor'
 
 const actionRecordToLogString = (r: ActionDescriptor): string => {
@@ -24,11 +25,11 @@ const actionRecordToLogString = (r: ActionDescriptor): string => {
   return log
 }
 
-const _boardSquareToString = (sq: BoardSquare ): string => (
+const _boardSquareToString = (sq: any /* cheating */ ): string => (
   `(${sq.piece ? ((sq.piece.color === 'white' ? 'w-' : 'b-') + sq.piece.type.slice(0, 2)) + ': ' : ''}${sq.file}, ${sq.rank})`  
 )
 
-const boardSquareToString = (s: BoardSquare | BoardSquare[]): string => {
+const boardSquareToString = (s: Square | Square[]): string => {
   let result = ''
   if (Array.isArray(s)) {
     result += '['

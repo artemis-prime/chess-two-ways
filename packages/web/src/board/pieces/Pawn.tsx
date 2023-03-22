@@ -1,9 +1,9 @@
   // @ts-ignore
 import React from 'react'
 
-import type { PieceComponentProps } from '../Piece'
+import type { SpecificPieceProps } from '../Piece'
 
-const Pawn: React.FC<PieceComponentProps> = ({
+const Pawn: React.FC<SpecificPieceProps> = ({
   color,
   size
 }) => (

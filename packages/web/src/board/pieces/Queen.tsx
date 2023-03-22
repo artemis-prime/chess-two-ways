@@ -1,9 +1,9 @@
   // @ts-ignore
 import React from 'react'
 
-import type { PieceComponentProps } from '../Piece'
+import type { SpecificPieceProps } from '../Piece'
 
-const Queen: React.FC<PieceComponentProps> = ({
+const Queen: React.FC<SpecificPieceProps> = ({
   color,
   size
 }) => (

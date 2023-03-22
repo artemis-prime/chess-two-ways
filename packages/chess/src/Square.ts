@@ -1,8 +1,8 @@
 import type { Rank, File } from './RankAndFile'
 
 interface Square {
-  rank: Rank
-  file: File
+  readonly rank: Rank
+  readonly file: File
 }
 
 export { type Square as default }

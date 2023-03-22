@@ -41,17 +41,22 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   const [action, _setAction] = useState<Action | undefined>(undefined)
   const [note, setNote] = useState<any | undefined>(undefined)
   const [inCheckFrom, setInCheckFrom] = useState<Square[]>([])
-  const [kingInCheck, setKingInCheck] = useState<BoardSquare | undefined>(undefined)
+  const [kingInCheck, setKingInCheck] = useState<Square | undefined>(undefined)
 
   const game = useGame()
 
-  const inCheck = (kingInCheck_: BoardSquare | undefined, inCheckFrom_: Square[]): void => {
+  const inCheck = (kingInCheck_: Square | undefined, inCheckFrom_: Square[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
   }
 
   const actionResolved = (action: Action, from: Square, to: Square) => {
-    setAction(action, {from, to})  
+    if (!action) {
+      clear()  
+    }
+    else {
+      setAction(action, {from, to})  
+    }
   }
 
   const actionTaken = (action: Action, from: Square, to: Square) => {

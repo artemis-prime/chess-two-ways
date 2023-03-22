@@ -13,7 +13,7 @@ const Board: React.FC<{}> = observer(() => {
   return (
     <div className='board'>
     {gameBoard.boardAsSquares.map((s: BoardSquare) => (
-      <SquareComponent square={s} key={`key-${s.rank}-${s.file}`} />
+      <SquareComponent square={s} piece={s.piece} key={`key-${s.rank}-${s.file}`} />
     ))}
     </div>
   )

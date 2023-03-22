@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
-import type { BoardSquare, Square, } from '@artemis-prime/chess-domain'
-import { FILES } from '@artemis-prime/chess-domain'
+import type { Square, Piece } from '@artemis-prime/chess-domain'
+import { FILES, sameSquare } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
-import Piece from './Piece'
+import PieceComponent from './Piece'
 import { useVisualFeedback } from './VisualFeedback'
+import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
 
 const SquareComponent: React.FC<{ 
-  square: BoardSquare
+  square: Square
+  piece?: Piece | undefined
 }> = observer(({ 
-  square: mySquare
+  square,
+  piece
 }) => {
 
   const game = useGame()
@@ -22,39 +25,15 @@ const SquareComponent: React.FC<{
   const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
   const [dimPiece, setDimPiece] = useState<boolean>(false)
 
-  const [{ isOver, /*action, origin*/ }, drop] = useDrop(
+  const [{ isOver }, drop] = useDrop(
     () => ({
-      accept: 'square',
-      drop: (origin: BoardSquare, monitor) => { game.takeAction(origin, mySquare) },
-      canDrop: (origin : BoardSquare, monitor) => (!!game.resolveAction(origin, mySquare)),
-      collect: (monitor) => {
-        const origin = monitor.getItem() as BoardSquare
-        return {
-          //action: !!monitor.isOver() ? game.resolveAction(origin, mySquare) : undefined,
-          isOver: (!!monitor.isOver()),
-          //origin: origin
-        }
-      }
+      accept: DND_ITEM_NAME,
+      drop: (item: DnDPiece, monitor) => { game.takeAction(item.piece, item.from, square); console.log('DROP')},
+      canDrop: (item: DnDPiece, monitor) => (!!game.resolveAction(item.piece, item.from, square)),
+      collect: (monitor) => ({isOver: (!!monitor.isOver())})
     }),
-    [mySquare, mySquare.piece]
+    [square]
   )
-/*
-  useEffect(() => {
-
-    if (isOver) {
-      if (action) {
-        const enc = (action !== 'castle') ? undefined : {
-          kingside: (mySquare.file === 'g'),
-          color: origin.piece!.color
-        }
-        feedback.setAction(action, enc)
-      }
-      else {
-        feedback.clear()
-      }
-    }
-  }, [action, isOver])
-*/
 
   useEffect(() => {
     if (feedback.action === 'castle') {
@@ -62,7 +41,7 @@ const SquareComponent: React.FC<{
       const rookFiles = (feedback.note.from.file === 'g') ? ['h', 'f'] : ['a', 'd']  
       const rookRank = (feedback.note.from.piece?.color === 'white') ? 1 : 8
       
-      if ((mySquare.rank === rookRank) && rookFiles.includes(mySquare.file)) {
+      if ((square.rank === rookRank) && rookFiles.includes(square.file)) {
         setRookSquareFlashing(feedback.fastTick ? 'from' : 'to') // alternate via tick 
       } 
       else {
@@ -72,23 +51,23 @@ const SquareComponent: React.FC<{
     else {
       setRookSquareFlashing(undefined) 
     }
-  }, [feedback.action, mySquare.rank, mySquare.file, feedback.fastTick, mySquare.piece] )
+  }, [feedback.action, square, feedback.fastTick] )
 
   useEffect(() => {
     if (rookSquareFlashing) {
-      setDimPiece(rookSquareFlashing === 'from' && !!mySquare.piece)
+      setDimPiece(rookSquareFlashing === 'from' && !!piece)
     }
     else {
-      setDimPiece(!!feedback.action && feedback.fastTick) 
+      setDimPiece(isOver && !!feedback.action && feedback.fastTick) 
     }
-  }, [rookSquareFlashing, !!feedback.action, !!mySquare.piece, feedback.fastTick])
+  }, [rookSquareFlashing, !!feedback.action, !!piece, feedback.fastTick, isOver])
 
   useEffect(() => {
-    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === mySquare.file && feedback.kingInCheck.rank === mySquare.rank)
+    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === square.file && feedback.kingInCheck.rank === square.rank)
     if (kingInCheckHere_ !== kingInCheckHere) {
       setKingInCheckHere(kingInCheckHere_)
     }
-    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === mySquare.file && e.rank === mySquare.rank)) 
+    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === square.file && e.rank === square.rank)) 
     if (inCheckFromHere != inCheckFromMe) {
       setInCheckFromHere(inCheckFromMe) 
     }
@@ -103,7 +82,7 @@ const SquareComponent: React.FC<{
     else if (feedback.action && feedback.action.includes('promote')) {
       borderStyle = `${(feedback.fastTick) ? '3' : '1'}px yellow solid`  
     }
-    else if (feedback.action === 'move' || feedback.action === 'castle') {
+    else if (feedback.action === 'move' || (feedback.action === 'castle' && !rookSquareFlashing)) {
       borderStyle = '2px green solid'
     }
   }
@@ -111,9 +90,9 @@ const SquareComponent: React.FC<{
   else if (feedback.action === 'castle' && rookSquareFlashing) {
 
     const amRookSquareFlashing = (
-      mySquare.piece && rookSquareFlashing === 'from' 
+      !!piece && rookSquareFlashing === 'from' 
       || 
-      !mySquare.piece && rookSquareFlashing === 'to'
+      !piece && rookSquareFlashing === 'to'
     )
     borderStyle = `${(amRookSquareFlashing) ? '3' : '1'}px orange solid` 
   } 
@@ -125,14 +104,23 @@ const SquareComponent: React.FC<{
     borderStyle = `${(feedback.slowTick) ? '1' : '3' }px red solid`  
   }
 
+  if (sameSquare(square, {rank: 2, file: 'e'}) || sameSquare(square, {rank: 4, file: 'e'}) ) {
+    console.log(`SQ ${square.rank}:${square.file} -> ${piece?.type}`)
+  }
+
   return (
     <div 
       ref={drop}
-      className={`square rank-${mySquare.rank} rank-${(mySquare.rank % 2) ? 'odd' : 'even'} file-${mySquare.file} file-${(FILES.indexOf(mySquare.file) % 2) ? 'even' : 'odd'}`}
+      className={`square \
+        rank-${square.rank} \
+        rank-${(square.rank % 2) ? 'odd' : 'even'} \
+        file-${square.file} \
+        file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}`
+      }
       style={{ border: borderStyle }}
     >
-      {(mySquare.piece) && (
-        <Piece square={mySquare} dimmed={dimPiece}/>  
+      {(!!piece) && (
+        <PieceComponent square={square} piece={piece} dimmed={dimPiece}/>  
       )}
     </div>  
   )

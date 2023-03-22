@@ -8,5 +8,6 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "author": "artemis-prime",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {}
 }

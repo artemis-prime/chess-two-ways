@@ -35,11 +35,10 @@ export type PrimaryPieceType =
 */
 
 interface Piece {
-  type: PieceType
-  color: Color
+  readonly type: PieceType
+  readonly color: Color
 } 
 
 export type Side = Color
 
 export { type Piece as default }
-

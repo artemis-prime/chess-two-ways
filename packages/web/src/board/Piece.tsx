@@ -3,37 +3,38 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { useDrag } from 'react-dnd'
 
-import type { BoardSquare } from '@artemis-prime/chess-domain'
+import type { Square, Piece } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
+import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
 import registry from './pieceRegistry'
 
-export interface PieceComponentProps {
+export interface SpecificPieceProps {
   color: string
   size?: string 
 }
 
 const PieceComponent: React.FC<{
-  square: BoardSquare
+  piece: Piece,
+  square: Square,
   dimmed: boolean
 }> = observer(({
+  piece,
   square,
   dimmed
 }) => {
   const game = useGame()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
-    type: 'square',
-    item: {...square},
-    canDrag: (monitor) => (
-      game.currentTurn === square.piece!.color
-    ),
+    type: DND_ITEM_NAME,
+    item: {piece, from: square} as DnDPiece,
+    canDrag: (monitor) => (game.currentTurn === piece.color),
     collect: (monitor) => ({
-      isDragging: (game.currentTurn === square.piece!.color) && !!monitor.isDragging(),
-      canDrag: monitor.canDrag()
+      isDragging: !!monitor.isDragging(),
+      canDrag: !!monitor.canDrag()
     }),
-  }), [square])
+  }), [square, piece])
 
-  const SpecificPiece = registry.get(square.piece!.type) as React.ComponentType<PieceComponentProps>
+  const SpecificPiece = registry.get(piece.type) as React.ComponentType<SpecificPieceProps>
 
   return (
     <div 
@@ -47,7 +48,7 @@ const PieceComponent: React.FC<{
       }}
     >
       <SpecificPiece 
-        color={(square.piece!.color === 'white') ? '#cbb' : '#322' } 
+        color={(piece!.color === 'white') ? '#cbb' : '#322' } 
         size='85%'
       />
     </div>

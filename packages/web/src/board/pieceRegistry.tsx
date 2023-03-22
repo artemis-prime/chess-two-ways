@@ -10,9 +10,9 @@ import Rook from './pieces/Rook'
 import Knight from './pieces/Knight'
 import King from './pieces/King'
 
-import type { PieceComponentProps } from './Piece'
+import type { SpecificPieceProps } from './Piece'
 
-export default new Map<PieceType, React.ComponentType<PieceComponentProps>>([
+export default new Map<PieceType, React.ComponentType<SpecificPieceProps>>([
   ['pawn', Pawn],
   ['queen', Queen],
   ['bishop', Bishop],
