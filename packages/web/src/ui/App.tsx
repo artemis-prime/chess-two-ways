@@ -20,7 +20,7 @@ const App: React.FC<{}> = () => (
       <DndProvider backend={HTML5Backend}>
         <div className="App">
           <header className="app-header">
-            <h1 className="app-header-text">Chess Three Ways (web souffl&eacute;)</h1>
+            <h1 className="app-header-text">Chess Three Ways - Web Souffl&eacute;</h1>
           </header>
           <main>
             <Flex direction='row' align='center'>

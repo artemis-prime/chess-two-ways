@@ -1,10 +1,10 @@
-import type Game from '../Game'
+import type Board from '../board/Board'
 import type { Action, Square } from '..'
 
 import { FILES } from '..'
 
-const pawnOnHomeRow = (game: Game, sq: Square): boolean => {
-  const color = game.colorAt(sq)
+const pawnOnHomeRow = (board: Board, sq: Square): boolean => {
+  const color = board.colorAt(sq)
   return (
     sq.rank === 2 && color === 'white'
     ||
@@ -13,12 +13,12 @@ const pawnOnHomeRow = (game: Game, sq: Square): boolean => {
 }
 
 const isCapturing = (
-  game: Game, 
+  board: Board, 
   from: Square,  
   to: Square 
 ): boolean => {
-  const fromPiece = game.pieceAt(from)
-  const toPiece = game.pieceAt(to)
+  const fromPiece = board.pieceAt(from)
+  const toPiece = board.pieceAt(to)
   return (
     !!toPiece && toPiece!.color !== fromPiece!.color
     &&
@@ -35,19 +35,19 @@ const isCapturing = (
 }
 
 const resolve = (
-  game: Game, 
+  board: Board, 
   from: Square,  
   to: Square 
 ): Action | undefined => {
   
-  const fromPiece = game.pieceAt(from)
-  const toPiece = game.pieceAt(to)
+  const fromPiece = board.pieceAt(from)
+  const toPiece = board.pieceAt(to)
 
   // initial two row advance?
   if (
     !toPiece
     &&
-    pawnOnHomeRow(game, from)
+    pawnOnHomeRow(board, from)
     &&
     (from.file === to.file) 
     && 
@@ -77,7 +77,7 @@ const resolve = (
     return 'move'
   }
 
-  if (isCapturing(game, from, to)) {
+  if (isCapturing(board, from, to)) {
     if (isGettingPromoted) {
       return 'capture-promote'  
     }

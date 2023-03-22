@@ -1,10 +1,9 @@
-import type Game from '../Game'
+import type Board from '../board/Board'
 import type { Action, Square } from '..'
 
 import { FILES } from '..'
 
 const legalMove = (
-  game: Game,
   from: Square, 
   to: Square, 
 ): boolean => {
@@ -19,14 +18,14 @@ const legalMove = (
  }
 
  const resolve = (
-  game: Game,
+  board: Board,
   from: Square, 
   to: Square, 
 ): Action | undefined=> {
   
-  const fromColor = game.colorAt(from)
-  if (legalMove(game, from, to)) {
-    const toColor = game.colorAt(to)
+  const fromColor = board.colorAt(from)
+  if (legalMove(from, to)) {
+    const toColor = board.colorAt(to)
     if (!toColor) {
       return 'move'
     }

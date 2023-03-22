@@ -1,7 +1,10 @@
-import type { File } from './RankAndFile'
-import { RANKS, FILES} from './RankAndFile'
-import type { PieceType } from './Piece'
-import type Board from './Board'
+import type { File } from '../RankAndFile'
+import { RANKS, FILES} from '../RankAndFile'
+import type { PieceType, PrimaryPieceType } from '../Piece'
+import { PRIMARY_PIECES } from '../Piece'
+import type BoardSquare from '../BoardSquare'
+import type { Tracking } from './Tracking'
+import type Squares from './Squares'
 
 const pieceFromInitialFile = (file: File):  PieceType | undefined => {
   let type: PieceType | undefined = undefined
@@ -23,7 +26,26 @@ const pieceFromInitialFile = (file: File):  PieceType | undefined => {
   return type
 }
 
-const newBoard = (): Board => {
+  // call for all BoardSquare that contains a piece
+const track = (tr: Tracking, sq: BoardSquare): void => {
+  if (sq.piece!.type === 'king') {
+    tr[sq.piece!.color].king = sq
+  }
+  else {
+    if (PRIMARY_PIECES.includes(sq.piece!.type)) {
+      const type = sq.piece!.type as PrimaryPieceType
+      const squares = tr[sq.piece!.color].primaries.get(type)
+      if (!squares) {
+        tr[sq.piece!.color].primaries.set(type, [sq])
+      }
+      else {
+        squares.push(sq)  
+      }
+    }  
+  }
+}
+
+const newBoard = (tr: Tracking): Squares => {
 
   const result: any = {}
   for (const rank of RANKS) {
@@ -41,6 +63,7 @@ const newBoard = (): Board => {
             type,
             color: 'white'
           } 
+          track(tr, rankArray[file])
         }
       }
     }
@@ -70,7 +93,7 @@ const newBoard = (): Board => {
         }
       }
     }
-      // Black pawns
+      // Black pieces
     else if (rank === 8) {
       for (const file of FILES) {
         rankArray[file] = { 
@@ -83,6 +106,7 @@ const newBoard = (): Board => {
             type,
             color: 'black'
           } 
+          track(tr, rankArray[file])
         }
       }
     }
@@ -96,7 +120,7 @@ const newBoard = (): Board => {
     }
     result[rank] = rankArray
   } 
-  return result as Board
+  return result as Squares
 }
 
 export default newBoard

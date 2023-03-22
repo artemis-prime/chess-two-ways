@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
 import type { BoardSquare, Square, } from '@artemis-prime/chess-domain'
-import { castleIsKingside, FILES } from '@artemis-prime/chess-domain'
+import { FILES } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 import Piece from './Piece'
@@ -18,31 +18,33 @@ const SquareComponent: React.FC<{
   const game = useGame()
   const feedback = useVisualFeedback()
   const [rookSquareFlashing, setRookSquareFlashing] = useState<'from' | 'to' | undefined>(undefined)
+  const [inCheckFromHere, setInCheckFromHere] = useState<boolean>(false)
+  const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
   const [dimPiece, setDimPiece] = useState<boolean>(false)
 
-  const [{ isOver, action, origin }, drop] = useDrop(
+  const [{ isOver, /*action, origin*/ }, drop] = useDrop(
     () => ({
-      accept: 'piece',
-      drop: (origin: Square, monitor) => { game.takeAction(origin, mySquare);  feedback.clear() },
-      canDrop: (origin : Square, monitor) => (!!game.resolveAction(origin, mySquare)),
+      accept: 'square',
+      drop: (origin: BoardSquare, monitor) => { game.takeAction(origin, mySquare) },
+      canDrop: (origin : BoardSquare, monitor) => (!!game.resolveAction(origin, mySquare)),
       collect: (monitor) => {
         const origin = monitor.getItem() as BoardSquare
         return {
-          action: !!monitor.isOver() ? game.resolveAction(origin, mySquare) : undefined,
+          //action: !!monitor.isOver() ? game.resolveAction(origin, mySquare) : undefined,
           isOver: (!!monitor.isOver()),
-          origin: origin
+          //origin: origin
         }
       }
     }),
     [mySquare, mySquare.piece]
   )
-
+/*
   useEffect(() => {
 
     if (isOver) {
       if (action) {
         const enc = (action !== 'castle') ? undefined : {
-          kingside: castleIsKingside(mySquare),
+          kingside: (mySquare.file === 'g'),
           color: origin.piece!.color
         }
         feedback.setAction(action, enc)
@@ -52,15 +54,16 @@ const SquareComponent: React.FC<{
       }
     }
   }, [action, isOver])
+*/
 
   useEffect(() => {
     if (feedback.action === 'castle') {
 
-      const rookFiles = feedback.note.kingside ? ['h', 'f'] : ['a', 'd']  
-      const rookRank = (feedback.note.color === 'white') ? 1 : 8
+      const rookFiles = (feedback.note.from.file === 'g') ? ['h', 'f'] : ['a', 'd']  
+      const rookRank = (feedback.note.from.piece?.color === 'white') ? 1 : 8
       
       if ((mySquare.rank === rookRank) && rookFiles.includes(mySquare.file)) {
-        setRookSquareFlashing(feedback.tick ? 'from' : 'to') // alternate via tick 
+        setRookSquareFlashing(feedback.fastTick ? 'from' : 'to') // alternate via tick 
       } 
       else {
         setRookSquareFlashing(undefined) 
@@ -69,26 +72,36 @@ const SquareComponent: React.FC<{
     else {
       setRookSquareFlashing(undefined) 
     }
-  }, [feedback.action, mySquare.rank, mySquare.file, feedback.tick, mySquare.piece] )
+  }, [feedback.action, mySquare.rank, mySquare.file, feedback.fastTick, mySquare.piece] )
 
   useEffect(() => {
     if (rookSquareFlashing) {
       setDimPiece(rookSquareFlashing === 'from' && !!mySquare.piece)
     }
     else {
-      setDimPiece(!!action && feedback.tick) 
+      setDimPiece(!!feedback.action && feedback.fastTick) 
     }
-  }, [rookSquareFlashing, action, !!mySquare.piece, feedback.tick])
+  }, [rookSquareFlashing, !!feedback.action, !!mySquare.piece, feedback.fastTick])
 
+  useEffect(() => {
+    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === mySquare.file && feedback.kingInCheck.rank === mySquare.rank)
+    if (kingInCheckHere_ !== kingInCheckHere) {
+      setKingInCheckHere(kingInCheckHere_)
+    }
+    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === mySquare.file && e.rank === mySquare.rank)) 
+    if (inCheckFromHere != inCheckFromMe) {
+      setInCheckFromHere(inCheckFromMe) 
+    }
+  },[feedback.inCheckFrom, feedback.kingInCheck])
 
   let borderStyle = 'none' 
 
   if (isOver) {
     if (feedback.action === 'capture') {
-      borderStyle = `${(feedback.tick) ? '3' : '1'}px orange solid`  
+      borderStyle = `${(feedback.fastTick) ? '3' : '1'}px orange solid`  
     }
     else if (feedback.action && feedback.action.includes('promote')) {
-      borderStyle = `${(feedback.tick) ? '3' : '1'}px yellow solid`  
+      borderStyle = `${(feedback.fastTick) ? '3' : '1'}px yellow solid`  
     }
     else if (feedback.action === 'move' || feedback.action === 'castle') {
       borderStyle = '2px green solid'
@@ -104,6 +117,13 @@ const SquareComponent: React.FC<{
     )
     borderStyle = `${(amRookSquareFlashing) ? '3' : '1'}px orange solid` 
   } 
+
+  if (kingInCheckHere) {
+    borderStyle = `${(feedback.slowTick) ? '3' : '1'}px red solid`  
+  }
+  else if (inCheckFromHere) {
+    borderStyle = `${(feedback.slowTick) ? '1' : '3' }px red solid`  
+  }
 
   return (
     <div 

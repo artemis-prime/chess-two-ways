@@ -22,13 +22,13 @@ const PieceComponent: React.FC<{
 }) => {
   const game = useGame()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
-    type: 'piece',
+    type: 'square',
     item: {...square},
     canDrag: (monitor) => (
-      game.currentTurn() === square.piece!.color
+      game.currentTurn === square.piece!.color
     ),
     collect: (monitor) => ({
-      isDragging: game.currentTurn() === square.piece!.color && !!monitor.isDragging(),
+      isDragging: (game.currentTurn === square.piece!.color) && !!monitor.isDragging(),
       canDrag: monitor.canDrag()
     }),
   }), [square])

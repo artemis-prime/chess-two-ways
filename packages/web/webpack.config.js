@@ -37,7 +37,8 @@ module.exports = {
     historyApiFallback: true,
     port: 8080,
     open: ['/'],
-    hot: true
+    hot: true,
+    watchFiles: ['../chess/src/**/*.ts*', 'src/**/*.ts*', 'src/**/*.scss'],
   },
   module: {
     rules: [

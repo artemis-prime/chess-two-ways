@@ -1,14 +1,36 @@
-import type Game from '../Game'
+import type Board from '../board/Board'
 import type { 
   Action,
   Square,
-  Color
+  Color,
+  Side
 } from '..'
 
 import { FILES } from '..'
 
-
-import { isClearAlongRank, canBeCapturedAlongRank } from '../util'
+  // from must be populated
+const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, sideToCapture: Side): boolean => {
+  if (from.rank === to.rank) {
+    const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+    if (delta < 0) {
+        // zero based, but ok since indexed from FILES
+      for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
+        if (board.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, sideToCapture)) {
+          return true
+        }
+      }
+    }
+    else {
+        // zero based, but ok since indexed from FILES
+      for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
+        if (board.canBeCaptured({rank: from.rank, file: FILES[fileIndex] },sideToCapture)) {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
 
 const legalMove = (
   from: Square, 
@@ -28,39 +50,38 @@ const legalMove = (
 }
 
 const amCastling = (
-  game: Game, 
+  board: Board, 
   from: Square, 
   to: Square
 ): boolean => {
 
   // No need to test the position of 'from', since the this._canCastle flag 
   // indicates a move has taken place, same w position of participating rook
-  const color = game.colorAt(from) as Color
+  const color = board.colorAt(from) as Color
   const homeRank = (color === 'white') ? 1 : 8
   const kingside = (to.file === 'g')
   const queenside = (to.file === 'c')
 
-
   return (
     (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
     &&
-    game.eligableToCastle(color, kingside)
+    !board.ineligableToCastleBecause(color, kingside)
     && 
-    isClearAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+    board.isClearAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
     && 
-    !canBeCapturedAlongRank(game, from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+    !canBeCapturedAlongRank(board, from, {rank: homeRank, file: (kingside ? 'h' : 'b')}, color)
   ) 
 }
 
 const resolve = (
-  game: Game,
+  board: Board,
   from: Square, 
   to: Square, 
 ): Action | undefined => {
   
   if (legalMove(from, to)) {
-    const fromColor = game.colorAt(from)
-    const toColor = game.colorAt(to)
+    const fromColor = board.colorAt(from)
+    const toColor = board.colorAt(to)
     if (!toColor) {
       return 'move'
     }
@@ -68,7 +89,7 @@ const resolve = (
       return 'capture'
     }
   }
-  else if (amCastling(game, from, to)) {
+  else if (amCastling(board, from, to)) {
     return 'castle'
   }
   return undefined 

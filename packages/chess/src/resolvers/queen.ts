@@ -1,36 +1,30 @@
-import type Game from '../Game'
+import type Board from '../board/Board'
 import type { Action, Square } from '..'
 
-import { 
-  isClearAlongRank, 
-  isClearAlongFile,
-  isClearAlongDiagonal
-} from '../util'
-
 const legalMove = (
-  game: Game,
+  board: Board,
   from: Square, 
   to: Square, 
 ): boolean => {
   
   return (
-    isClearAlongRank(game, from, to)
+    board.isClearAlongRank(from, to)
     ||
-    isClearAlongFile(game, from, to)
+    board.isClearAlongFile(from, to)
     ||
-    isClearAlongDiagonal(game, from, to)
+    board.isClearAlongDiagonal(from, to)
   ) 
 }
 
 const resolve = (
-  game: Game,
+  board: Board,
   from: Square, 
   to: Square, 
 ): Action | undefined => {
   
-  if (legalMove(game, from, to)) {
-    const fromColor = game.colorAt(from)
-    const toColor = game.colorAt(to)
+  if (legalMove(board, from, to)) {
+    const fromColor = board.colorAt(from)
+    const toColor = board.colorAt(to)
     if (!toColor) {
       return 'move'
     }

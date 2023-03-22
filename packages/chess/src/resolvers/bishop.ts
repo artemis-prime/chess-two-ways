@@ -1,17 +1,15 @@
-import type Game from '../Game'
+import type Board from '../board/Board'
 import type { Action, Square } from '..'
 
-import { isClearAlongDiagonal } from '../util'
-
 const resolve = (
-  game: Game,
+  board: Board,
   from: Square, 
   to: Square, 
 ): Action | undefined => {
   
-  if (isClearAlongDiagonal(game, from, to)) {
-    const fromColor = game.colorAt(from)
-    const toColor = game.colorAt(to)
+  if (board.isClearAlongDiagonal(from, to)) {
+    const fromColor = board.colorAt(from)
+    const toColor = board.colorAt(to)
     if (!toColor) {
       return 'move'
     }
