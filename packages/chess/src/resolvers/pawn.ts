@@ -38,15 +38,9 @@ const resolve = (
   board: Board, 
   from: Square,  
   to: Square 
-): Action | undefined => {
+): Action | null => {
   
   const fromPiece = board.pieceAt(from)
-
-  if (!fromPiece) {
-    console.log("FROM PIECE NULL for " + squareToString(from) + " DUMPING SQUARES...");
-    (board as any)._dumpSquares()
-  }
-
   const toPiece = board.pieceAt(to)
 
   // initial two row advance?
@@ -62,7 +56,10 @@ const resolve = (
     return 'move'
   }
 
-  const isGettingPromoted = (fromPiece!.color === 'black' && to.rank  === 1) || (fromPiece!.color === 'white' && to.rank  === 8)
+  const isGettingPromoted = 
+    (fromPiece!.color === 'black' && to.rank  === 1) 
+    || 
+    (fromPiece!.color === 'white' && to.rank  === 8)
 
   // regular advance? 
   if (
@@ -90,7 +87,7 @@ const resolve = (
     return 'capture'
   }
 
-  return undefined
+  return null
 }
 
 export default resolve

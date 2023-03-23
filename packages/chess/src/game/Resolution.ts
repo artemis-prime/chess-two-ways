@@ -8,7 +8,7 @@ interface Resolution {
   piece: Piece,
   from: Square,
   to: Square,
-  resolvedAction: Action | undefined
+  resolvedAction: Action | null
 }
 
 const resolutionsEqual = (r1: Resolution, r2: Resolution): boolean => (

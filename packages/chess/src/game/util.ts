@@ -34,13 +34,13 @@ const actionDescToString = (r: ActionDescriptor, verbose?: boolean): string => {
       str += verbose ?
         `is promoted to a ${r.promotedTo} at (${squareToString(r.to)})`
         :
-        `${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo].short}`
+        `${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo!].short}`
     break
     case 'capture-promote':
       str += verbose ?
         `captures ${r.captured!.type} and is promoted to a ${r.promotedTo} at (${squareToString(r.to)})`
         :
-        `x${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo].short}`
+        `x${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo!].short}`
     break
   } 
   return str

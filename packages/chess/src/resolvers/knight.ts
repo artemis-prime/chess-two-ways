@@ -21,7 +21,7 @@ const legalMove = (
   board: Board,
   from: Square, 
   to: Square, 
-): Action | undefined=> {
+): Action | null => {
   
   const fromColor = board.colorAt(from)
   if (legalMove(from, to)) {
@@ -34,7 +34,7 @@ const legalMove = (
     }
   }
 
-  return undefined
+  return null
 }
 
 export default resolve

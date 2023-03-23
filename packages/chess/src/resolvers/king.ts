@@ -77,7 +77,7 @@ const resolve = (
   board: Board,
   from: Square, 
   to: Square, 
-): Action | undefined => {
+): Action | null => {
   
   if (legalMove(from, to)) {
     const fromColor = board.colorAt(from)
@@ -92,7 +92,7 @@ const resolve = (
   else if (amCastling(board, from, to)) {
     return 'castle'
   }
-  return undefined 
+  return null 
 }
 
 export default resolve

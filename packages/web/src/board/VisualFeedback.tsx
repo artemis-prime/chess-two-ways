@@ -13,10 +13,10 @@ import { useGame } from './GameProvider'
 export interface VisualFeedback {
   //setAction(a: Action, note?: any): void
   //clear(): void
-  kingInCheck: Square | undefined
+  kingInCheck: Square | null
   inCheckFrom: Square[]
-  action: Action | undefined
-  note: any | undefined
+  action: Action | null
+  note: any | null
   fastTick: boolean
   slowTick: boolean
 }
@@ -29,24 +29,24 @@ export const useVisualFeedback = (): VisualFeedback =>  {
 
 export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
-  const fastIntervalRef = useRef<any | undefined>(undefined)
-  const slowIntervalRef = useRef<any | undefined>(undefined)
+  const fastIntervalRef = useRef<any>(undefined)
+  const slowIntervalRef = useRef<any>(undefined)
 
   const [fastTick, setFastTick] = useState<boolean>(false)
   const [slowTick, setSlowTick] = useState<boolean>(false)
-  const [action, _setAction] = useState<Action | undefined>(undefined)
-  const [note, setNote] = useState<any | undefined>(undefined)
+  const [action, _setAction] = useState<Action | null>(null)
+  const [note, setNote] = useState<any | null>(null)
   const [inCheckFrom, setInCheckFrom] = useState<Square[]>([])
-  const [kingInCheck, setKingInCheck] = useState<Square | undefined>(undefined)
+  const [kingInCheck, setKingInCheck] = useState<Square | null>(null)
 
   const game = useGame()
 
-  const inCheck = (kingInCheck_: Square | undefined, inCheckFrom_: Square[]): void => {
+  const inCheck = (kingInCheck_: Square | null, inCheckFrom_: Square[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
   }
 
-  const actionResolved = (action: Action, from: Square, to: Square) => {
+  const actionResolved = (action: Action | null, from: Square, to: Square) => {
     if (!action) {
       clear()  
     }
@@ -66,8 +66,8 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   })
 
   const clear = (): void => { 
-    _setAction(undefined)
-    setNote(undefined)
+    _setAction(null)
+    setNote(null)
   }
 
   const setAction = (a: Action, _note?: any): void => {
@@ -80,14 +80,14 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     const clearFast = () => {
       if (fastIntervalRef.current) {
         clearInterval(fastIntervalRef.current)
-        fastIntervalRef.current = undefined 
+        fastIntervalRef.current = null 
         setFastTick(false)
       }
     }
     const clearSlow = () => {
       if (slowIntervalRef.current) {
         clearInterval(slowIntervalRef.current)
-        slowIntervalRef.current = undefined 
+        slowIntervalRef.current = null 
         setSlowTick(false)
       }
     }

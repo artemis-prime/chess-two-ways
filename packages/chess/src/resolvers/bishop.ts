@@ -5,7 +5,7 @@ const resolve = (
   board: Board,
   from: Square, 
   to: Square, 
-): Action | undefined => {
+): Action | null => {
   
   if (board.isClearAlongDiagonal(from, to)) {
     const fromColor = board.colorAt(from)
@@ -17,7 +17,7 @@ const resolve = (
       return 'capture'
     }
   }
-  return undefined
+  return null
 }
 
 

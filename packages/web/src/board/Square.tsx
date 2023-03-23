@@ -12,7 +12,7 @@ import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
 
 const SquareComponent: React.FC<{ 
   square: Square
-  piece?: Piece | undefined
+  piece?: Piece | null
 }> = observer(({ 
   square,
   piece

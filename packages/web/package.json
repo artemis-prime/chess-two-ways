@@ -46,6 +46,7 @@
     "html-webpack-plugin": "^5.3.2",
     "react-hot-loader": "^4.13.0",
     "sass-loader": "^13.2.0",
+    "source-map-loader": "^4.0.1",
     "style-loader": "^3.3.2",
     "webpack": "^5.53.0",
     "webpack-cli": "^4.8.0",
@@ -66,6 +67,9 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ],
+    "bundledDependencies": [
+      "@artemis-prime/chess-domain"
     ]
   }
 }

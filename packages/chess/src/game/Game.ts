@@ -34,7 +34,7 @@ interface Game {
     //  1) takeAction is called for the same params
     //  2) endResolution is called 
     // (This is akin to debouncing but not specific to web)
-  resolveAction(p: Piece, from: Square, to: Square): Action | undefined
+  resolveAction(p: Piece, from: Square, to: Square): Action | null
   takeAction(p: Piece, from: Square, to: Square): void
   endResolution(): void
   
@@ -55,7 +55,7 @@ interface Game {
 
 class GameImpl implements Game {
 
-  public static currentInstance: GameImpl | undefined = undefined
+  public static currentInstance: GameImpl 
 
   private _mainBoard: BoardInternal
   private _checkCheckingBoard: BoardInternal
@@ -75,9 +75,9 @@ class GameImpl implements Game {
     writeln: (t?: string): void => {console.log(t)}
   }
 
-  private _inCheckListener: InCheckCallback | undefined = undefined
-  private _actionResolvedCallback: ActionResolvedCallback | undefined = undefined
-  private _actionTakenCallback: ActionTakenCallback | undefined = undefined
+  private _inCheckListener: InCheckCallback 
+  private _actionResolvedCallback: ActionResolvedCallback 
+  private _actionTakenCallback: ActionTakenCallback 
 
   constructor() {
 
@@ -142,36 +142,43 @@ class GameImpl implements Game {
 
     // Do not call directly.  Passed to Board instance to 
     // implement checkChecking
-  private _canCapture(board: Board, pieceType: PieceType, from: Square, to: Square) {
-    let result: Action | undefined = undefined
+  private _canCapture(board: Board, pieceType: PieceType, from: Square, to: Square): boolean {
+    let result: Action | null = null
     const resolver = this._resolvers.get(pieceType)
 
     if (resolver) {
       result = resolver(board, from, to)
     } 
-    return result?.includes('capture')
+    return !!result?.includes('capture')
   }
 
   resolveAction(
     piece: Piece, 
     from: Square, 
     to: Square, 
-  ): Action | undefined {
+  ): Action | null {
 
     if (
       !this._currentResolution 
       ||
-      !resolutionsEqual(this._currentResolution, {to, from, piece, resolvedAction: undefined /* ignored */})
+      !resolutionsEqual(this._currentResolution, {to, from, piece, resolvedAction: null /* ignored */})
     ) {
       this._currentResolution = {
         piece,
         from,
         to,
-        resolvedAction: undefined 
+        resolvedAction: null 
       }
+
+
       const resolver = this._resolvers.get(piece.type)
       if (resolver) {
         this._checkCheckingBoard.syncToBoard(this._mainBoard)
+        const toRank = to.rank
+        console.log("to.rank: " + toRank)
+        if (toRank === 3) {
+          console.log("tto.rank: " + toRank)
+        }
         let action = resolver(this._checkCheckingBoard, from, to)
         if (action) {
           const desc = this._createActionDescriptor(piece, from, to, action)
@@ -181,7 +188,7 @@ class GameImpl implements Game {
             this._console.writeln(`Resulting action by ${desc.piece.color} not allowed \
               as it would ${wasInCheck ? 'leave it' : 'put it'}) in check!`
             )  
-            action = undefined
+            action = null
           }
         } 
         if (this._actionResolvedCallback) {
@@ -212,18 +219,6 @@ class GameImpl implements Game {
 
     const action = this._currentResolution?.resolvedAction
     if (action) {
-      /*
-      const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
-      this._checkCheckingBoard.applyAction(desc, 'do')
-      const imInCheckFrom = this._checkCheckingBoard.inCheckFrom(desc.piece.color)
-        // My proposed move would result in putting myself in check!
-      if (imInCheckFrom.length) {
-        this._console.writeln(`Resulting action by ${desc.piece.color} would put it in check!`)  
-        console.log(boardSquareToString(imInCheckFrom))
-        this._checkCheckingBoard.applyAction(desc, 'undo')
-      }
-      else {
-        */
         this.endResolution()
         const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
         this._console.writeln('[action]: ' + actionDescToString(desc))
@@ -241,10 +236,9 @@ class GameImpl implements Game {
         this._stateIndex = this._actions.length - 1
         const oppositeSide = (desc.piece.color === 'white') ? 'black' : 'white'
         const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
-        const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
+        const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : null
         this._inCheckListener(kingInCheckSquare, inCheckFrom)
         this._toggleTurn()
-      //}
     }
   }
 
@@ -260,7 +254,7 @@ class GameImpl implements Game {
       //this._checkCheckingBoard.applyAction(r, 'undo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
       const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
-      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
+      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : null
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._stateIndex--
       this._toggleTurn()
@@ -280,7 +274,7 @@ class GameImpl implements Game {
       //this._checkCheckingBoard.applyAction(r, 'redo')
       const oppositeSide = (r.piece.color === 'white') ? 'black' : 'white'
       const inCheckFrom = this._mainBoard.inCheckFrom(oppositeSide)
-      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : undefined
+      const kingInCheckSquare = inCheckFrom.length ? this._mainBoard.kingsLocation(oppositeSide) : null
       this._inCheckListener(kingInCheckSquare, inCheckFrom)
       this._toggleTurn()
     }
@@ -302,7 +296,7 @@ class GameImpl implements Game {
       promotedTo: action.includes('promote') ? (promoteTo ? promoteTo : 'queen') : undefined,
       captured: (action === 'capture' || action === 'capture-promote') 
         ? 
-        {...this._mainBoard.pieceAt(to)} 
+        {...this._mainBoard.pieceAt(to)!} 
         : 
         undefined
     }

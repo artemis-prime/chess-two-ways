@@ -1,22 +1,39 @@
+import { makeObservable, observable } from 'mobx'
+
 import type Square from './Square'
 import { squareToString } from './Square'
 import type Piece from './Piece'
 import { pieceToString } from './Piece'
-interface BoardSquare extends Square {
-  piece: Piece | undefined // if a piece is currently in the square
+import type { Rank, File} from './RankAndFile'
+
+class BoardSquare implements Square {
+
+  rank: Rank
+  file: File
+  piece: Piece | null 
+
+  constructor(rank: Rank, file: File, piece: Piece | null, observePiece?: boolean) {
+    this.rank = rank
+    this.file = file
+    this.piece = piece
+    
+    if (observePiece) {
+      makeObservable(this, { piece: observable})
+    }
+  }
+
+  static copy(s: BoardSquare): BoardSquare {
+    return new BoardSquare(
+      s.rank,
+      s.file,
+      s.piece ? {...s.piece} : null
+    )
+  }
+
+  toString = (specifyColor?: boolean): string => {
+    const formatForPiece = (specifyColor) ? 'cT' : 'T'
+    return (this.piece ? pieceToString(this.piece, formatForPiece) : '') + squareToString(this)
+  }
 }
 
-  // used in internal syncing
-const copyBoardSquare = (toCopy: BoardSquare) => ({
-  rank: toCopy.rank,
-  file: toCopy.file,
-  piece: {...toCopy.piece}
-})
-
-const boardSquareToString = (sq: BoardSquare, specifyColor?: boolean) => {
-  const formatForPiece = (specifyColor) ? 'cT' : 'T'
-  return pieceToString(sq.piece, formatForPiece) + squareToString(sq)
-}
-
-
-export { type BoardSquare as default, copyBoardSquare, boardSquareToString }  
+export default BoardSquare   

@@ -5,11 +5,15 @@ const Dotenv = require('dotenv-webpack')
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.tsx',
+  entry: {
+    "chess-web": './src/index.tsx',
+  },
   output: { 
     path: path.join(__dirname, 'dist'), 
-    filename: 'index.bundle.js',
-    publicPath: '/' 
+    filename: '[name].[hash:8].js',
+    publicPath: '/', 
+    sourceMapFilename: "[name].[hash:8].js.map",
+    chunkFilename: '[id].[hash:8].js'
   },
   resolve: {
     extensions: [
@@ -28,7 +32,7 @@ module.exports = {
       "assets": path.resolve(__dirname, '../../assets/')
     },
   },
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   devServer: {
     static: [{
       directory: path.join(__dirname, 'public'),
@@ -67,7 +71,13 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
-      }
+      },
+      {
+          // brings in source maps for bundled dependincies
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
+      },
     ],
   },
   plugins: [

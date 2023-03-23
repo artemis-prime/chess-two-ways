@@ -32,6 +32,7 @@ const Dash: React.FC<{}> = observer(() => {
           onClick={game.redo.bind(game)}
         >Redo</Button>
       </Flex>
+      {/*
       <Flex direction='row' align='center'>
 
       <Button 
@@ -45,6 +46,7 @@ const Dash: React.FC<{}> = observer(() => {
           onClick={(board as any)._dumpSquares.bind(board)}
         >Dump Main Board </Button>
       </Flex>
+    */}
     </div>
   )
 })

@@ -2,33 +2,27 @@ import type { File } from '../RankAndFile'
 import { RANKS, FILES} from '../RankAndFile'
 import type { PieceType, PrimaryPieceType } from '../Piece'
 import { PRIMARY_PIECES } from '../Piece'
-import type BoardSquare from '../BoardSquare'
+import BoardSquare from '../BoardSquare'
 import type { Tracking } from './Tracking'
 import type Squares from './Squares'
+import { copySquare } from '../Square'
 
-const pieceFromInitialFile = (file: File):  PieceType | undefined => {
-  let type: PieceType | undefined = undefined
-  if (file === 'a' || file === 'h') {
-    type = 'rook'
-  }
-  else if (file === 'c' || file === 'f') {
-    type = 'bishop'
-  }
-  else if (file === 'b' || file === 'g') {
-    type = 'knight'
-  }
-  else if (file === 'd') {
-    type = 'queen'
-  }
-  else if (file === 'e') {
-    type = 'king'
-  }
-  return type
+const PIECES_BY_FILE = {
+  'a': 'rook',
+  'b': 'knight',
+  'c': 'bishop',
+  'd': 'queen',
+  'e': 'king',
+  'f': 'bishop',
+  'g': 'knight',
+  'h': 'rook',
+} as {
+  [key in File]: PieceType
 }
 
   // call for all BoardSquare that contains a piece
 const track = (tr: Tracking, sq: BoardSquare): void => {
-  const sqCopy = {rank: sq.rank, file: sq.file}
+  const sqCopy = copySquare(sq)
   if (sq.piece!.type === 'king') {
     tr[sq.piece!.color].king = sqCopy
   }
@@ -46,7 +40,7 @@ const track = (tr: Tracking, sq: BoardSquare): void => {
   }
 }
 
-const freshBoard = (tr: Tracking): Squares => {
+const freshBoard = (tr: Tracking, observePieces? : boolean): Squares => {
 
   const result: any = {}
   for (const rank of RANKS) {
@@ -54,72 +48,69 @@ const freshBoard = (tr: Tracking): Squares => {
       // White pieces
     if (rank === 1) {
       for (const file of FILES) {
-        rankArray[file] = { 
+        rankArray[file] = new BoardSquare(
           rank,
           file,
-          piece: undefined
-        }
-        const type = pieceFromInitialFile(file)  
-        if (type) {
-          rankArray[file].piece = {
-            type,
+          {
+            type: PIECES_BY_FILE[file],
             color: 'white'
-          } 
-          track(tr, rankArray[file])
-        }
+          },
+          observePieces
+        )
+        track(tr, rankArray[file])
       }
     }
       // White pawns
     else if (rank === 2) {
       for (const file of FILES) {
-        rankArray[file] = {
-          piece: {
+        rankArray[file] = new BoardSquare(
+          rank,
+          file,
+          {
             type: 'pawn',
             color: 'white'
           },
-          rank,
-          file
-        }
+          observePieces
+        )
       }
     }
       // Black pawns
     else if (rank === 7) {
       for (const file of FILES) {
-        rankArray[file] = {
-          piece: {
+        rankArray[file] = new BoardSquare(
+          rank,
+          file,
+          {
             type: 'pawn',
             color: 'black'
           },
-          rank,
-          file
-        }
+          observePieces
+        )
       }
     }
       // Black pieces
     else if (rank === 8) {
       for (const file of FILES) {
-        rankArray[file] = { 
+        rankArray[file] = new BoardSquare(
           rank,
           file,
-          piece: undefined
-        }  
-        const type = pieceFromInitialFile(file)  
-        if (type) {
-          rankArray[file].piece = {
-            type,
+          {
+            type: PIECES_BY_FILE[file],
             color: 'black'
-          } 
-          track(tr, rankArray[file])
-        }
+          },
+          observePieces
+        )
+        track(tr, rankArray[file])
       }
     }
     else {
       for (const file of FILES) {
-        rankArray[file] = { 
+        rankArray[file] = new BoardSquare( 
           rank,
           file,
-          piece: undefined
-        }  
+          null,
+          observePieces
+        )  
       }
     }
     result[rank] = rankArray
