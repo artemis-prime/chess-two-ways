@@ -28,18 +28,19 @@ const pieceFromInitialFile = (file: File):  PieceType | undefined => {
 
   // call for all BoardSquare that contains a piece
 const track = (tr: Tracking, sq: BoardSquare): void => {
+  const sqCopy = {rank: sq.rank, file: sq.file}
   if (sq.piece!.type === 'king') {
-    tr[sq.piece!.color].king = {...sq}
+    tr[sq.piece!.color].king = sqCopy
   }
   else {
     if (PRIMARY_PIECES.includes(sq.piece!.type)) {
       const type = sq.piece!.type as PrimaryPieceType
       const squares = tr[sq.piece!.color].primaries.get(type)
       if (!squares) {
-        tr[sq.piece!.color].primaries.set(type, [{...sq}])
+        tr[sq.piece!.color].primaries.set(type, [sqCopy])
       }
       else {
-        squares.push({...sq})  
+        squares.push(sqCopy)  
       }
     }  
   }
@@ -55,7 +56,8 @@ const freshBoard = (tr: Tracking): Squares => {
       for (const file of FILES) {
         rankArray[file] = { 
           rank,
-          file
+          file,
+          piece: undefined
         }
         const type = pieceFromInitialFile(file)  
         if (type) {
@@ -98,7 +100,8 @@ const freshBoard = (tr: Tracking): Squares => {
       for (const file of FILES) {
         rankArray[file] = { 
           rank,
-          file
+          file,
+          piece: undefined
         }  
         const type = pieceFromInitialFile(file)  
         if (type) {
@@ -114,7 +117,8 @@ const freshBoard = (tr: Tracking): Squares => {
       for (const file of FILES) {
         rankArray[file] = { 
           rank,
-          file
+          file,
+          piece: undefined
         }  
       }
     }

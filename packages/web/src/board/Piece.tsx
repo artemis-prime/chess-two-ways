@@ -28,6 +28,10 @@ const PieceComponent: React.FC<{
     type: DND_ITEM_NAME,
     item: {piece, from: square} as DnDPiece,
     canDrag: (monitor) => (game.currentTurn === piece.color),
+    end: (item, monitor) => {
+      game.endResolution()
+      console.log("DRAG-END")
+    },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
       canDrag: !!monitor.canDrag()

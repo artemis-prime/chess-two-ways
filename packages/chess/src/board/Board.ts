@@ -6,7 +6,7 @@ import {
 } from 'mobx'
 
 import type Square from '../Square'
-import { PRIMARY_PIECES } from '../Piece'
+import { squaresEqual } from '../Square'
 import type BoardSquare from '../BoardSquare'
 
 import type ActionDescriptor from '../game/ActionDescriptor'
@@ -17,15 +17,16 @@ import type {
   PrimaryPieceType, 
   Side 
 } from '../Piece'
+import { PRIMARY_PIECES, pieceToString } from '../Piece'
 import {
   type Rank,
   RANKS_REVERSE,
   FILES,
 } from '../RankAndFile'
-import { sameSquare } from '../util'
 
-import {type Tracking, newTracking} from './Tracking'
+import {type Tracking, newTracking, syncTracking} from './Tracking'
 import type Squares from './Squares'
+import { syncSquares } from './Squares'
 import freshBoard from './freshBoard'
 
 interface Board {
@@ -55,6 +56,9 @@ interface Board {
   // This interface is visable to GameImpl, but not to any UI
 interface BoardInternal extends Board {
 
+  tracking: Tracking
+  squares: Squares
+  syncToBoard(other: BoardInternal): void 
   applyAction(r: ActionDescriptor, mode: 'undo' | 'redo' | 'do'): void 
   kingsLocation(side: Color): Square
   reset(): void
@@ -62,9 +66,10 @@ interface BoardInternal extends Board {
 
 class BoardImpl implements BoardInternal {
 
-  private _tracking: Tracking = newTracking()
-  private _squares: Squares = freshBoard(this._tracking)
   private _canCapture: CanCaptureFunction
+
+  tracking: Tracking = newTracking()
+  squares: Squares = freshBoard(this.tracking)
 
   constructor(f: CanCaptureFunction, isObservable?: boolean) {
 
@@ -75,41 +80,50 @@ class BoardImpl implements BoardInternal {
         applyAction: action,
         reset: action,
         boardAsSquares: computed,
+        squares: observable
       })
-        // Limitation of Typescript, cf: https://mobx.js.org/observable-state.html#limitations
-      makeObservable<BoardImpl, '_squares'>(this, {_squares: observable})
     }
   }
 
+  syncToBoard(other: BoardInternal): void {
+    syncSquares(this.squares, other.squares) 
+    syncTracking(this.tracking, other.tracking) 
+  }
+
   pieceAt(sq: Square): Piece | undefined {
-    return this._squares[sq.rank][sq.file].piece
+    return this.squares[sq.rank][sq.file].piece
   }
  
   colorAt(sq: Square): Color | undefined {
-    if (this._squares[sq.rank][sq.file].piece) {
-      return this._squares[sq.rank][sq.file].piece!.color
+    if (this.squares[sq.rank][sq.file].piece) {
+      return this.squares[sq.rank][sq.file].piece!.color
     }
     return undefined
   }
 
   inCheckFrom(side: Side): Square[] {
     return this._canBeCapturedFrom(
-      this._tracking[side].king,
+      this.tracking[side].king,
       side,
       'squares'
     ) as Square[]
   }
 
   inCheck(side: Side): boolean {
-    return this._canBeCapturedFrom(
-      this._tracking[side].king,
+    const result = 
+     this._canBeCapturedFrom(
+      this.tracking[side].king,
       side,
       'boolean'
     ) as boolean
+
+    //console.log('IN CHECK CALLED for ' + side + ': ' + result)
+
+    return result
   }
 
   kingsLocation(side: Color): Square {
-    return this._tracking[side].king
+    return this.tracking[side].king
   }
 
   isClearAlongRank(from: Square, to: Square): boolean {
@@ -119,7 +133,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-          if (!!this._squares[to.rank][FILES[fileIndex]].piece) {
+          if (!!this.squares[to.rank][FILES[fileIndex]].piece) {
             return false
           }
         }
@@ -127,7 +141,7 @@ class BoardImpl implements BoardInternal {
       else {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-          if (!!this._squares[to.rank][FILES[fileIndex]].piece) {
+          if (!!this.squares[to.rank][FILES[fileIndex]].piece) {
             return false
           }
         }
@@ -144,7 +158,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // one-based
         for (let rank = from.rank - 1; rank > to.rank; rank--) {
-          if (!!this._squares[rank][from.file].piece) {
+          if (!!this.squares[rank][from.file].piece) {
             return false
           }
         }
@@ -152,7 +166,7 @@ class BoardImpl implements BoardInternal {
       else {
           // one-based
         for (let rank = from.rank + 1; rank < to.rank; rank++) {
-          if (!!this._squares[rank][from.file].piece) {
+          if (!!this.squares[rank][from.file].piece) {
             return false
           }
         }
@@ -174,7 +188,7 @@ class BoardImpl implements BoardInternal {
       // --> NE
     if (deltaFile > 0 && deltaRank > 0 ) {
       for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) + 1; rank < to.rank && fileIndex < FILES.indexOf(to.file); rank++, fileIndex++) {
-        if (!!this._squares[rank][FILES[fileIndex]].piece) {
+        if (!!this.squares[rank][FILES[fileIndex]].piece) {
           return false
         }
       }
@@ -182,7 +196,7 @@ class BoardImpl implements BoardInternal {
       // --> SE
     else if (deltaFile > 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) + 1; rank > to.rank && fileIndex < FILES.indexOf(to.file); rank--, fileIndex++) {
-        if (!!this._squares[rank][FILES[fileIndex]].piece) {
+        if (!!this.squares[rank][FILES[fileIndex]].piece) {
           return false
         }
       }
@@ -190,7 +204,7 @@ class BoardImpl implements BoardInternal {
       // --> SW
     else if (deltaFile < 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) - 1; rank > to.rank && fileIndex > FILES.indexOf(to.file);  rank--, fileIndex--) {
-        if (!!this._squares[rank][FILES[fileIndex]].piece) {
+        if (!!this.squares[rank][FILES[fileIndex]].piece) {
           return false
         }
       }
@@ -198,7 +212,7 @@ class BoardImpl implements BoardInternal {
       // --> NW
       else if (deltaFile < 0 && deltaRank > 0) {
         for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) - 1; rank < to.rank && fileIndex > FILES.indexOf(to.file); rank++, fileIndex--) {
-          if (!!this._squares[rank][FILES[fileIndex]].piece) {
+          if (!!this.squares[rank][FILES[fileIndex]].piece) {
             return false
           }
         }
@@ -209,8 +223,8 @@ class BoardImpl implements BoardInternal {
   castlingEligability(side: Side, kingside: boolean): 'eligible' | string {
 
     const castleSide = kingside ? 'kingside' : 'queenside'
-    const { hasCastled, kingHasMoved } = this._tracking[side].castling
-    const rookHasMoved = this._tracking[side].castling.rookHasMoved[castleSide]
+    const { hasCastled, kingHasMoved } = this.tracking[side].castling
+    const rookHasMoved = this.tracking[side].castling.rookHasMoved[castleSide]
     const eligable = !hasCastled && !kingHasMoved && !rookHasMoved
 
     return (eligable) ? 'eligable' : (
@@ -232,19 +246,19 @@ class BoardImpl implements BoardInternal {
     else if (mode === 'undo') {
       this._move(desc.to, desc.from, true)
       if (desc.action.includes('capture')) {
-        this._squares[desc.to.rank][desc.to.file].piece = desc.captured
+        this.squares[desc.to.rank][desc.to.file].piece = desc.captured
       }
       if (desc.action.includes('promote')) {
-        const self = this._squares[desc.from.rank][desc.from.file].piece
-        this._squares[desc.from.rank][desc.from.file].piece = {...self, type: 'pawn'}
+        const self = this.squares[desc.from.rank][desc.from.file].piece
+        this.squares[desc.from.rank][desc.from.file].piece = {color: self.color, type: 'pawn'}
       }
     }
     else {
         // Note that _move also takes care of capture ;)
       this._move(desc.from, desc.to, (mode !== 'do'))
       if (desc.action.includes('promote')) {
-        const self = this._squares[desc.to.rank][desc.to.file].piece
-        this._squares[desc.to.rank][desc.to.file].piece = {...self, type: desc.promotedTo}
+        const self = this.squares[desc.to.rank][desc.to.file].piece
+        this.squares[desc.to.rank][desc.to.file].piece = {color: self.color, type: desc.promotedTo}
       }
     }
 
@@ -253,15 +267,15 @@ class BoardImpl implements BoardInternal {
 
   reset(): void {
 
-    this._tracking = newTracking()
-    this._squares = freshBoard(this._tracking)
+    this.tracking = newTracking()
+    this.squares = freshBoard(this.tracking)
   }
 
   get boardAsSquares(): BoardSquare[] {
     const result: BoardSquare[] = []
     for (const rank of RANKS_REVERSE) {
       for (const file of FILES) {
-        result.push(this._squares![rank][file]) 
+        result.push(this.squares![rank][file]) 
       }
     }
     return result
@@ -271,17 +285,17 @@ class BoardImpl implements BoardInternal {
   
   private _trackCastlingEligability(moved: Square): void {
 
-    const fromPieace = this._squares[moved.rank][moved.file].piece
+    const fromPieace = this.squares[moved.rank][moved.file].piece
 
     if (fromPieace?.type === 'king') {
-      this._tracking[fromPieace!.color].castling.kingHasMoved = true
+      this.tracking[fromPieace!.color].castling.kingHasMoved = true
     }
     else if (fromPieace?.type === 'rook') {
       if (moved.file === 'h') {
-        this._tracking[fromPieace.color].castling.rookHasMoved.kingside = true
+        this.tracking[fromPieace.color].castling.rookHasMoved.kingside = true
       }
       else if (moved.file === 'a') {
-        this._tracking[fromPieace.color].castling.rookHasMoved.queenside = true
+        this.tracking[fromPieace.color].castling.rookHasMoved.queenside = true
       }
     }
   }
@@ -292,8 +306,8 @@ class BoardImpl implements BoardInternal {
       this._trackCastlingEligability(from)
     }
 
-    this._squares[to.rank][to.file].piece = this._squares[from.rank][from.file].piece
-    this._squares[from.rank][from.file].piece = undefined 
+    this.squares[to.rank][to.file].piece = this.squares[from.rank][from.file].piece
+    this.squares[from.rank][from.file].piece = undefined 
   }
 
   private _castle(desc: ActionDescriptor, mode: 'undo' | 'redo' | 'do'): void {
@@ -310,10 +324,10 @@ class BoardImpl implements BoardInternal {
       }
         // undo ineligabiliy for castling 
       const color = (desc.from.rank === 1) ? 'white' : 'black'
-      this._tracking[color].castling.hasCastled = false 
+      this.tracking[color].castling.hasCastled = false 
         // just in case
-      this._tracking[color].castling.kingHasMoved = false 
-      this._tracking[color].castling.rookHasMoved[castleSide] = false
+      this.tracking[color].castling.kingHasMoved = false 
+      this.tracking[color].castling.rookHasMoved[castleSide] = false
     }
     else {
       if (desc.to.file === 'g') {
@@ -326,33 +340,35 @@ class BoardImpl implements BoardInternal {
       }
 
         // make sure we can't castle twice
-      this._tracking[(desc.from.rank === 1) ? 'white' : 'black'].castling.hasCastled = true 
+      this.tracking[(desc.from.rank === 1) ? 'white' : 'black'].castling.hasCastled = true 
     }
   }
 
   private _trackPrimaries(r: ActionDescriptor, mode: 'do' | 'undo' | 'redo'): void {
 
+    // Safe to copy refs of r.to and r.from since they are deep copies and don't point to the board
+
     const side = r.piece.color
     if (r.piece.type === 'king') {
       if (mode === 'undo') {
-        this._tracking[side].king = r.from
+        this.tracking[side].king = r.from
       }
       else {
-        this._tracking[side].king = r.to
+        this.tracking[side].king = r.to
       }
     }
     if (r.action === 'castle') {
         // track the rook
-      const squares = this._tracking[side].primaries.get('rook')
+      const squares = this.tracking[side].primaries.get('rook')
       if (r.to.file === 'g') {
         if (mode === 'undo') {
-          const index = squares.findIndex((e) => (sameSquare(e, {...r.from, file: 'f'})))
+          const index = squares.findIndex((e) => (squaresEqual(e, {...r.from, file: 'f'})))
           if (index !== -1) {
             squares[index] = {...squares[index], file: 'h'}
           }
         }
         else {
-          const index = squares.findIndex((e) => (sameSquare(e, {...r.from, file: 'h'})))
+          const index = squares.findIndex((e) => (squaresEqual(e, {...r.from, file: 'h'})))
           if (index !== -1) {
             squares[index] = {...r.from, file: 'f'}
           }
@@ -360,13 +376,13 @@ class BoardImpl implements BoardInternal {
       }
       else {
         if (mode === 'undo') {
-          const index = squares.findIndex((e) => (sameSquare(e, {...r.from, file: 'd'})))
+          const index = squares.findIndex((e) => (squaresEqual(e, {...r.from, file: 'd'})))
           if (index !== -1) {
             squares[index] = {...squares[index], file: 'a'}
           }
         }
         else {
-          const index = squares.findIndex((e) => (sameSquare(e, {...r.from, file: 'a'})))
+          const index = squares.findIndex((e) => (squaresEqual(e, {...r.from, file: 'a'})))
           if (index !== -1) {
             squares[index] = {...squares[index], file: 'd'}
           }
@@ -378,10 +394,10 @@ class BoardImpl implements BoardInternal {
           // Track the new piece of the promoted to type.
           // Either create a new slot of it with the to square,
           // or destroy said slot if undo
-        const squares = this._tracking[side].primaries.get(r.promotedTo)
+        const squares = this.tracking[side].primaries.get(r.promotedTo)
         if (mode === 'undo') {
             // remove the slot created for the piece promoted to. 
-          const index = squares.findIndex((e) => (sameSquare(e, r.to)))
+          const index = squares.findIndex((e) => (squaresEqual(e, r.to)))
           if (index !== -1) {
             squares.splice(index, 1)
           }
@@ -395,8 +411,8 @@ class BoardImpl implements BoardInternal {
       if (r.action.includes('capture')) {
           // track the captured piece, if it is of interest
         if (PRIMARY_PIECES.includes(r.captured.type)) {
-          const squares = this._tracking[r.captured.color].primaries.get(r.captured.type as PrimaryPieceType)
-          const index = squares.findIndex((e) => (sameSquare(e, r.to)))
+          const squares = this.tracking[r.captured.color].primaries.get(r.captured.type as PrimaryPieceType)
+          const index = squares.findIndex((e) => (squaresEqual(e, r.to)))
           if (mode === 'undo') {
               // shouldn't find it, since we're undoing a capture
             if (index === -1) {
@@ -413,15 +429,15 @@ class BoardImpl implements BoardInternal {
       if (r.action === 'move' || r.action.includes('capture')) {
             // track the moved or capturing piece, if it is of interest
         if ((PRIMARY_PIECES as readonly string[]).includes(r.piece.type)) {
-          const squares = this._tracking[side].primaries.get(r.piece.type as PrimaryPieceType)
+          const squares = this.tracking[side].primaries.get(r.piece.type as PrimaryPieceType)
           if (mode === 'undo') {
-            const index = squares.findIndex((e) => (sameSquare(e, r.to)))
+            const index = squares.findIndex((e) => (squaresEqual(e, r.to)))
             if (index !== -1) {
               squares[index] = r.from
             }
           }
           else {
-            const index = squares.findIndex((e) => (sameSquare(e, r.from)))
+            const index = squares.findIndex((e) => (squaresEqual(e, r.from)))
             if (index !== -1) {
               squares[index] = r.to
             }
@@ -498,7 +514,7 @@ class BoardImpl implements BoardInternal {
     }
 
     for (let pieceType of typesToCheck) {
-      const squaresWithOpponent = this._tracking[sideToCapture === 'white' ? 'black' : 'white'].primaries.get(pieceType) 
+      const squaresWithOpponent = this.tracking[sideToCapture === 'white' ? 'black' : 'white'].primaries.get(pieceType) 
       if (squaresWithOpponent.length) {
         for (let tryCaptureFrom of squaresWithOpponent) {
           if (this._canCapture(this, pieceType, tryCaptureFrom, sq) ) {
@@ -515,9 +531,23 @@ class BoardImpl implements BoardInternal {
 
     const nearDangers = surrounding.getOpposingPawnsOrKing(sideToCapture)
     if (booleanOrSquares === 'boolean') {
-      return nearDangers.length > 0
+      return !!(nearDangers.length > 0)
     }
     return [...allCapturingSquares, ...nearDangers]
+  }
+
+  _dumpTracking(): void {
+    //const target = newTracking()
+    //syncTracking(target, this.tracking)
+    console.log(this.tracking)
+  }
+  _syncTrackingTest(): void {
+    const target = newTracking()
+    syncTracking(target, this.tracking)
+    console.log(target)
+  }
+  _dumpSquares(): void {
+    console.log(this.squares)
   }
 }
 

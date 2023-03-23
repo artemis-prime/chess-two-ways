@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
 import type { Square, Piece } from '@artemis-prime/chess-domain'
-import { FILES, sameSquare } from '@artemis-prime/chess-domain'
+import { FILES, squaresEqual } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
@@ -29,7 +29,10 @@ const SquareComponent: React.FC<{
     () => ({
       accept: DND_ITEM_NAME,
       drop: (item: DnDPiece, monitor) => { game.takeAction(item.piece, item.from, square); console.log('DROP')},
-      canDrop: (item: DnDPiece, monitor) => (!!game.resolveAction(item.piece, item.from, square)),
+      canDrop: (item: DnDPiece, monitor) => {
+        //console.log(`CAN_DROP: (${square.rank}:${square.file})`)
+        return !!game.resolveAction(item.piece, item.from, square); 
+      },
       collect: (monitor) => ({isOver: (!!monitor.isOver())})
     }),
     [square]
@@ -102,10 +105,6 @@ const SquareComponent: React.FC<{
   }
   else if (inCheckFromHere) {
     borderStyle = `${(feedback.slowTick) ? '1' : '3' }px red solid`  
-  }
-
-  if (sameSquare(square, {rank: 2, file: 'e'}) || sameSquare(square, {rank: 4, file: 'e'}) ) {
-    console.log(`SQ ${square.rank}:${square.file} -> ${piece?.type}`)
   }
 
   return (

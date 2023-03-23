@@ -1,52 +1,52 @@
-import type BoardSquare from '../BoardSquare'
-import type Square from '../Square'
+import { squareToString } from '../Square'
+import { pieceToString, PIECE_TYPE_NAMES } from '../Piece'
 import type ActionDescriptor from './ActionDescriptor'
 
-const actionRecordToLogString = (r: ActionDescriptor): string => {
+// Something like "long algebraic notation" cf: https://en.wikipedia.org/wiki/Algebraic_notation_(chess)
+const actionDescToString = (r: ActionDescriptor, verbose?: boolean): string => {
 
   if (r.action === 'castle') {
-    return `${r.piece.color} castles ${r.to.file === 'g' ? 'kingside' : 'queenside'}`
+    return verbose ? 
+      `${r.piece.color} castles ${r.to.file === 'g' ? 'kingside' : 'queenside'}`
+      :
+      `${r.piece.color === 'white' ? 'w' : 'b'}${r.to.file === 'g' ? '0-0' : '0-0-0'}`
   }
-  let log = `${r.piece.color} ${r.piece.type} (${r.from.rank}${r.from.file}) `
+
+  let str = verbose ? 
+    `${pieceToString(r.piece, 'color Type')} (${squareToString(r.to)}) `
+    :
+    pieceToString(r.piece, 'cT') + squareToString(r.from)
+
   switch (r.action) {
     case 'capture':
-      log += `captures ${r.captured!.type} (${r.to.rank}${r.to.file})`
+      str += verbose ?
+        `captures ${r.captured!.type} (${squareToString(r.to)})`
+        :
+        `x${squareToString(r.to)}`
     break
     case 'move':
-      log += `moves to ${r.to.rank}${r.to.file}`
+      str += verbose ?
+        `moves to ${squareToString(r.to)}`
+        :
+        squareToString(r.to)
     break
     case 'promote':
-      log += `is promoted to a ${r.promotedTo!} at ${r.to.rank}${r.to.file}`
+      str += verbose ?
+        `is promoted to a ${r.promotedTo} at (${squareToString(r.to)})`
+        :
+        `${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo].short}`
     break
     case 'capture-promote':
-      log += `captures ${r.captured!.type} and is promoted to a ${r.promotedTo!} at ${r.to.rank}${r.to.file}`
+      str += verbose ?
+        `captures ${r.captured!.type} and is promoted to a ${r.promotedTo} at (${squareToString(r.to)})`
+        :
+        `x${squareToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo].short}`
     break
   } 
-  return log
+  return str
 }
-
-const _boardSquareToString = (sq: any /* cheating */ ): string => (
-  `(${sq.piece ? ((sq.piece.color === 'white' ? 'w-' : 'b-') + sq.piece.type.slice(0, 2)) + ': ' : ''}${sq.file}, ${sq.rank})`  
-)
-
-const boardSquareToString = (s: Square | Square[]): string => {
-  let result = ''
-  if (Array.isArray(s)) {
-    result += '['
-    for (let sq of s) {
-      result += _boardSquareToString(sq)
-    }
-    result += ']'
-  }
-  else {
-    result = _boardSquareToString(s)
-  }
-  return result
-}
-
 
 
 export {
-  actionRecordToLogString,
-  boardSquareToString
+  actionDescToString,
 }

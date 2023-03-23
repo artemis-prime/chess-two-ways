@@ -48,4 +48,23 @@ const newTracking = () => {
   return new Tracking()
 }
 
-export { type Tracking, newTracking }
+const syncTrackingForSide = (target: TrackingForSide, source: TrackingForSide) => {
+  const sourceMapAsArray = Array.from(source.primaries)
+  const deepArrayCopy = sourceMapAsArray.map(([key, value]) => (
+    [key, [...value]]
+  ))
+  //console.log(deepArrayCopy)
+  target.primaries = new Map<PrimaryPieceType, Square[]>(deepArrayCopy as typeof sourceMapAsArray)
+
+  target.king = source.king
+  target.castling.hasCastled = source.castling.hasCastled 
+  target.castling.kingHasMoved = source.castling.kingHasMoved 
+  Object.assign(target.castling.rookHasMoved, source.castling.rookHasMoved)
+}
+
+const syncTracking = (target: Tracking, source: Tracking) => {
+  syncTrackingForSide(target.white, source.white)
+  syncTrackingForSide(target.black, source.black)
+}
+
+export { type Tracking, newTracking, syncTracking }

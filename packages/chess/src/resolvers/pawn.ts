@@ -1,7 +1,7 @@
 import type Board from '../board/Board'
 import type { Action, Square } from '..'
 
-import { FILES } from '..'
+import { FILES, squareToString } from '..'
 
 const pawnOnHomeRow = (board: Board, sq: Square): boolean => {
   const color = board.colorAt(sq)
@@ -41,6 +41,12 @@ const resolve = (
 ): Action | undefined => {
   
   const fromPiece = board.pieceAt(from)
+
+  if (!fromPiece) {
+    console.log("FROM PIECE NULL for " + squareToString(from) + " DUMPING SQUARES...");
+    (board as any)._dumpSquares()
+  }
+
   const toPiece = board.pieceAt(to)
 
   // initial two row advance?

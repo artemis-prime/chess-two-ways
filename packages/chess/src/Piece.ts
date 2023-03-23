@@ -1,8 +1,8 @@
-export type Color =
+type Color =
   'black' | 
   'white'
 
-export type PieceType =
+type PieceType =
   'pawn' |
   'queen' |
   'bishop' |
@@ -17,28 +17,84 @@ const _PRIMARY_PIECES = [
   'bishop',
   'knight'
 ] as const 
-type PrimaryPiecesArrayType = typeof _PRIMARY_PIECES
-export type PrimaryPieceType = PrimaryPiecesArrayType[number]
+type _PrimaryPiecesArrayType = typeof _PRIMARY_PIECES
+type PrimaryPieceType = _PrimaryPiecesArrayType[number]
 
   // more convenient to coerce here
-export const PRIMARY_PIECES = _PRIMARY_PIECES as readonly string[]
+const PRIMARY_PIECES = _PRIMARY_PIECES as readonly string[]
 
-
+  // see above
   // pawns can only be promoted to these.
   // (Also, only the locations of these pieces get cached for testing inCheck) 
-/* please leave
-export type PrimaryPieceType = 
+/**  please leave
+type PrimaryPieceType = 
   'queen' |
   'rook' |
   'bishop' |
   'knight'  
 */
 
+const PIECE_TYPE_NAMES = {
+  pawn: {
+    short: 'P',
+    long: 'Pawn'
+  },
+  queen: {
+    short: 'Q',
+    long: 'Queen'
+  },
+  bishop: {
+    short: 'B',
+    long: 'Bishop'
+  },
+  rook: {
+    short: 'R',
+    long: 'Rook'
+  },
+  knight: {
+    short: 'N',
+    long: 'Knight'
+  },
+  king: {
+    short: 'K',
+    long: 'King'
+  },
+}
+
 interface Piece {
   readonly type: PieceType
   readonly color: Color
 } 
 
-export type Side = Color
+type Side = Color
 
-export { type Piece as default }
+const piecesEqual = (p1: Piece, p2: Piece) => (
+  (p1.type === p2.type) && (p1.color === p2.color)
+)
+
+type PieceFormat = 'T' | 'Type' | 'cT' | 'c-Type' | 'color Type'
+
+const pieceToString = (p: Piece, format?: PieceFormat): string => {
+  const form: PieceFormat = format ?? 'cT'
+  switch (form) {
+    case 'T': return PIECE_TYPE_NAMES[p.type].short
+    case 'Type': return PIECE_TYPE_NAMES[p.type].long
+    case 'cT': return (p.color === 'white' ? 'w' : 'b') + PIECE_TYPE_NAMES[p.type].short
+    case 'c-Type': return (p.color === 'white' ? 'w-' : 'b-') + PIECE_TYPE_NAMES[p.type].long
+    case 'color Type': return `${p.color} ${PIECE_TYPE_NAMES[p.type].long}`
+  }
+}
+
+
+export { 
+  type Piece as default, 
+  type Color,
+  type PieceType,
+  type PrimaryPieceType,
+  type Side,
+  type PieceFormat,
+  PRIMARY_PIECES,
+  piecesEqual,
+  pieceToString,
+  PIECE_TYPE_NAMES 
+}

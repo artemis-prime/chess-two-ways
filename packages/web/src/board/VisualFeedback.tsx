@@ -6,18 +6,14 @@ import React, {
   useState
 } from 'react'
 
-import type { 
-  Action, 
-  BoardSquare, 
-  Square
-} from '@artemis-prime/chess-domain'
+import type { Action, Square } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 
 export interface VisualFeedback {
   //setAction(a: Action, note?: any): void
   //clear(): void
-  kingInCheck: BoardSquare | undefined
+  kingInCheck: Square | undefined
   inCheckFrom: Square[]
   action: Action | undefined
   note: any | undefined
