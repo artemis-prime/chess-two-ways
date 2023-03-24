@@ -4,6 +4,7 @@ import type {
   Color,
   Side,
   Square,
+  Console,
 } from '..'
 
 import { FILES } from '..'
@@ -52,7 +53,8 @@ const legalMove = (
 const amCastling = (
   board: Board, 
   from: Square, 
-  to: Square
+  to: Square,
+  con?: Console
 ): boolean => {
 
   // No need to test the position of 'from', since the this._canCastle flag 
@@ -62,13 +64,22 @@ const amCastling = (
   const kingside = (to.file === 'g')
   const queenside = (to.file === 'c')
 
+  const correctSquares = (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
+  let eligable = false
+  if (correctSquares) {
+    const reasonDenied = [] as string[]
+    eligable = board.eligableToCastle(color, kingside, reasonDenied)
+    if (!eligable && con) {
+      con.writeln(reasonDenied[0])
+    }
+  }
+
   return (
-    (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
-    &&
-    board.eligableToCastle(color, kingside)
+    eligable
     && 
     board.isClearAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
-    && 
+    &&  
+      // Cannot castle THROUGH check either!
     !canBeCapturedAlongRank(board, from, {rank: homeRank, file: (kingside ? 'h' : 'b')}, color)
   ) 
 }
@@ -77,6 +88,7 @@ const resolve = (
   board: Board,
   from: Square, 
   to: Square, 
+  con?: Console
 ): Action | null => {
   
   if (legalMove(from, to)) {
@@ -89,7 +101,7 @@ const resolve = (
       return 'capture'
     }
   }
-  else if (amCastling(board, from, to)) {
+  else if (amCastling(board, from, to, con)) {
     return 'castle'
   }
   return null 

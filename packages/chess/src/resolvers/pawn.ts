@@ -1,4 +1,4 @@
-import type { Action, Board, Square } from '..'
+import type { Action, Board, Square, Console } from '..'
 
 import { FILES } from '..'
 
@@ -36,7 +36,8 @@ const isCapturing = (
 const resolve = (
   board: Board, 
   from: Square,  
-  to: Square 
+  to: Square,
+  con?: Console 
 ): Action | null => {
   
   const fromPiece = board.pieceAt(from)

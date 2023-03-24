@@ -1,4 +1,4 @@
-import type { Action, Board, Square } from '..'
+import type { Action, Board, Square, Console } from '..'
 
 import { FILES } from '..'
 
@@ -20,6 +20,7 @@ const legalMove = (
   board: Board,
   from: Square, 
   to: Square, 
+  con?: Console
 ): Action | null => {
   
   const fromColor = board.colorAt(from)

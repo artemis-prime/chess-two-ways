@@ -1,4 +1,4 @@
-import type { Action, Board, Square } from '..'
+import type { Action, Board, Square, Console } from '..'
 
 const legalMove = (
   board: Board,
@@ -19,6 +19,7 @@ const resolve = (
   board: Board,
   from: Square, 
   to: Square, 
+  con?: Console
 ): Action | null => {
   
   if (legalMove(board, from, to)) {

@@ -19,7 +19,7 @@ import type ActionResolver from './game/ActionResolver'
 import type ActionDescriptor from './game/ActionDescriptor'
 import type Resolution from './game/Resolution'
 import { resolutionsEqual } from './game/Resolution'
-import type Console from './game/Console'
+import type Console from './Console'
 import { actionDescToString } from './game/util'
 
 import registry from './game/resolverRegistry'
