@@ -47,17 +47,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(ts|js)x?$/i,
+        test: /\.[jt]sx?$/i,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-env',
-              '@babel/preset-react',
-              '@babel/preset-typescript',
-            ],
-          },
+          loader: 'esbuild-loader',
+          options: { target: 'es2015'}
         },
       },
       {            
