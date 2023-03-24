@@ -1,11 +1,9 @@
-import type { File } from '../RankAndFile'
-import { RANKS, FILES} from '../RankAndFile'
 import type { PieceType, PrimaryPieceType } from '../Piece'
 import { PRIMARY_PIECES } from '../Piece'
 import BoardSquare from '../BoardSquare'
 import type { Tracking } from './Tracking'
 import type Squares from './Squares'
-import { copySquare } from '../Square'
+import { type File, copySquare, RANKS, FILES } from '../Square'
 
 const PIECES_BY_FILE = {
   'a': 'rook',

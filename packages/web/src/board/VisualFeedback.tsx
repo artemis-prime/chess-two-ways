@@ -14,7 +14,7 @@ export interface VisualFeedback {
   //setAction(a: Action, note?: any): void
   //clear(): void
   kingInCheck: Square | null
-  inCheckFrom: Square[]
+  sideIsInCheckFrom: Square[]
   action: Action | null
   note: any | null
   fastTick: boolean
@@ -36,12 +36,12 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   const [slowTick, setSlowTick] = useState<boolean>(false)
   const [action, _setAction] = useState<Action | null>(null)
   const [note, setNote] = useState<any | null>(null)
-  const [inCheckFrom, setInCheckFrom] = useState<Square[]>([])
+  const [sideIsInCheckFrom, setInCheckFrom] = useState<Square[]>([])
   const [kingInCheck, setKingInCheck] = useState<Square | null>(null)
 
   const game = useGame()
 
-  const inCheck = (kingInCheck_: Square | null, inCheckFrom_: Square[]): void => {
+  const sideIsInCheck = (kingInCheck_: Square | null, inCheckFrom_: Square[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
   }
@@ -60,7 +60,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   }
 
   useEffect(() => {
-    game.setInCheckCallback(inCheck)
+    game.setInCheckCallback(sideIsInCheck)
     game.setActionResolvedCallback(actionResolved)
     game.setActionTakenCallback(actionTaken)
   })
@@ -123,7 +123,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       //clear,
       action,
       kingInCheck,
-      inCheckFrom,
+      sideIsInCheckFrom,
       note,
       fastTick,
       slowTick

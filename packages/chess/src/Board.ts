@@ -2,48 +2,48 @@ import {
   action,
   computed,
   makeObservable, 
-  observable, 
 } from 'mobx'
 
-import type Square from '../Square'
-import { squaresEqual } from '../Square'
-import type BoardSquare from '../BoardSquare'
-
-import type ActionDescriptor from '../game/ActionDescriptor'
-import type CanCaptureFunction from '../game/CanCaptureFunction'
+import type Square from './Square'
+import { 
+  squaresEqual,   
+  type Rank,
+  RANKS_REVERSE,
+  FILES,
+ } from './Square'
 import type { 
   default as Piece, 
   Color, 
   PrimaryPieceType, 
   Side 
-} from '../Piece'
-import { PRIMARY_PIECES, pieceToString } from '../Piece'
-import {
-  type Rank,
-  RANKS_REVERSE,
-  FILES,
-} from '../RankAndFile'
+} from './Piece'
+import { PRIMARY_PIECES } from './Piece'
+import type BoardSquare from './BoardSquare'
 
-import {type Tracking, newTracking, syncTracking} from './Tracking'
-import type Squares from './Squares'
-import { syncSquares } from './Squares'
-import freshBoard from './freshBoard'
+import type ActionDescriptor from './game/ActionDescriptor'
+import type CanCaptureFunction from './game/CanCaptureFunction'
+
+import {type Tracking, newTracking, syncTracking} from './board/Tracking'
+import type Squares from './board/Squares'
+import { syncSquares } from './board/Squares'
+import freshBoard from './board/freshBoard'
 
 interface Board {
 
   pieceAt(sq: Square): Piece | null
   colorAt(sq: Square): Color | null 
-  
-    // 'eligible' | <reason ineligable> (clearer w this return type syntax)
+  squareCanBeCaptured(sq: Square, asSide: Side): boolean 
+
+    // If false, and reasonDenied is supplied, 
+    // it will be populated with a human readable reason 
+    // why side is not eliable
     // 'kingside' vs 'queenside'
-  castlingEligability(p: Side, kingside: boolean): 'eligible' | string 
+  eligableToCastle(side: Side, kingside: boolean, reasonDenied?: string[]): boolean 
 
-    // If an 'as' piece is in 'sq', can it be captured? 
-  canBeCaptured(sq: Square, as: Side): boolean 
-
+  
     // 'side' is in check from Square[] (or empty array)
-  inCheckFrom(side: Side) : Square[] 
-  inCheck(side: Side) : boolean 
+  sideIsInCheckFrom(side: Side) : Square[] 
+  sideIsInCheck(side: Side) : boolean 
 
     // Utility method for easy rendering (mobx 'computed')
   get boardAsSquares(): BoardSquare[]
@@ -58,9 +58,9 @@ interface BoardInternal extends Board {
 
   tracking: Tracking
   squares: Squares
-  syncToBoard(other: BoardInternal): void 
+  sync(other: BoardInternal): void 
   applyAction(r: ActionDescriptor, mode: 'undo' | 'redo' | 'do'): void 
-  kingsLocation(side: Color): Square
+  kingsSquare(side: Side): Square
   reset(): void
 }
 
@@ -69,9 +69,7 @@ class BoardImpl implements BoardInternal {
   private _canCapture: CanCaptureFunction
 
   tracking: Tracking = newTracking()
-  squares: Squares //= freshBoard(this.tracking)
-
-  __debug_id: string
+  squares: Squares 
 
   constructor(f: CanCaptureFunction, isObservable?: boolean) {
 
@@ -83,17 +81,11 @@ class BoardImpl implements BoardInternal {
         reset: action,
         boardAsSquares: computed,
       })
-
-      this.__debug_id = 'main board'
-    }
-    else {
-      this.__debug_id = 'checking board'
     }
     this.squares = freshBoard(this.tracking, isObservable)
-    //this.squares = freshBoard(this.tracking)
   }
 
-  syncToBoard(other: BoardInternal): void {
+  sync(other: BoardInternal): void {
     syncSquares(this.squares, other.squares) 
     syncTracking(this.tracking, other.tracking) 
   }
@@ -109,17 +101,17 @@ class BoardImpl implements BoardInternal {
     return null
   }
 
-  inCheckFrom(side: Side): Square[] {
-    return this._canBeCapturedFrom(
+  sideIsInCheckFrom(side: Side): Square[] {
+    return this._squareCanBeCaptureFrom(
       this.tracking[side].king,
       side,
       'squares'
     ) as Square[]
   }
 
-  inCheck(side: Side): boolean {
+  sideIsInCheck(side: Side): boolean {
     const result = 
-     this._canBeCapturedFrom(
+     this._squareCanBeCaptureFrom(
       this.tracking[side].king,
       side,
       'boolean'
@@ -128,7 +120,7 @@ class BoardImpl implements BoardInternal {
     return result
   }
 
-  kingsLocation(side: Color): Square {
+  kingsSquare(side: Side): Square {
     return this.tracking[side].king
   }
 
@@ -226,22 +218,25 @@ class BoardImpl implements BoardInternal {
     return true
   }
 
-  castlingEligability(side: Side, kingside: boolean): 'eligible' | string {
+  eligableToCastle(side: Side, kingside: boolean, reasonDenied?: string[]): boolean  {
 
     const castleSide = kingside ? 'kingside' : 'queenside'
     const { hasCastled, kingHasMoved } = this.tracking[side].castling
     const rookHasMoved = this.tracking[side].castling.rookHasMoved[castleSide]
     const eligable = !hasCastled && !kingHasMoved && !rookHasMoved
 
-    return (eligable) ? 'eligable' : (
-      `${side} is no longer eligable to castle\
-      ${(kingHasMoved || hasCastled) ?  '' : ` ${castleSide}`} because \
-      ${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
-    )
+    if (!eligable && reasonDenied && Array.isArray(reasonDenied)) {
+      reasonDenied.push(
+        `${side} is no longer eligable to castle\
+        ${(kingHasMoved || hasCastled) ?  '' : ` ${castleSide}`} because \
+        ${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
+      )  
+    }  
+    return eligable
   }
 
-  canBeCaptured(squareToCapture: Square, sideToCapture: Side): boolean {
-    return this._canBeCapturedFrom(squareToCapture, sideToCapture, 'boolean') as boolean
+  squareCanBeCaptured(sq: Square, asSide: Side): boolean {
+    return this._squareCanBeCaptureFrom(sq, asSide, 'boolean') as boolean
   }
 
   applyAction(desc: ActionDescriptor, mode: 'undo' | 'redo' | 'do'): void {
@@ -309,11 +304,6 @@ class BoardImpl implements BoardInternal {
 
   private _move(from: Square, to: Square, ignoreCastling?: boolean): void {
 
-    if (from.file === 'e' && from.rank === 2 ) {
-      console.log('IN _MOVE: ' + this.__debug_id)
-      console.trace()
-    }
-
     if (!ignoreCastling) {
       this._trackCastlingEligability(from)
     }
@@ -359,7 +349,6 @@ class BoardImpl implements BoardInternal {
   private _trackPrimaries(r: ActionDescriptor, mode: 'do' | 'undo' | 'redo'): void {
 
     // Safe to copy refs of r.to and r.from since they are deep copies and don't point to the board
-
     const side = r.piece.color
     if (r.piece.type === 'king') {
       if (mode === 'undo') {
@@ -499,13 +488,9 @@ class BoardImpl implements BoardInternal {
     }
   }
 
-    // If a piece from sideToCapture moved to squareToCapture,
-    // what Squares could it be captured from?
-    // Useful for checking the ability to castle (can't castle into or through check),
-    // or to test for check. 
-  private _canBeCapturedFrom(
+  private _squareCanBeCaptureFrom(
     sq: Square, 
-    sideToCapture: Side,
+    asSide: Side,
     booleanOrSquares: 'boolean' | 'squares' // boolean is faster
   ): Square[] | boolean {
 
@@ -526,7 +511,7 @@ class BoardImpl implements BoardInternal {
     }
 
     for (let pieceType of typesToCheck) {
-      const squaresWithOpponent = this.tracking[sideToCapture === 'white' ? 'black' : 'white'].primaries.get(pieceType)! 
+      const squaresWithOpponent = this.tracking[asSide === 'white' ? 'black' : 'white'].primaries.get(pieceType)! 
       if (squaresWithOpponent.length) {
         for (let tryCaptureFrom of squaresWithOpponent) {
           if (this._canCapture(this, pieceType, tryCaptureFrom, sq) ) {
@@ -541,7 +526,7 @@ class BoardImpl implements BoardInternal {
       } 
     }
 
-    const nearDangers = surrounding.getOpposingPawnsOrKing(sideToCapture)
+    const nearDangers = surrounding.getOpposingPawnsOrKing(asSide)
     if (booleanOrSquares === 'boolean') {
       return !!(nearDangers.length > 0)
     }

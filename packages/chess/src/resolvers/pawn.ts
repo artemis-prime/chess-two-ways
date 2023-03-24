@@ -1,7 +1,6 @@
-import type Board from '../board/Board'
-import type { Action, Square } from '..'
+import type { Action, Board, Square } from '..'
 
-import { FILES, squareToString } from '..'
+import { FILES } from '..'
 
 const pawnOnHomeRow = (board: Board, sq: Square): boolean => {
   const color = board.colorAt(sq)

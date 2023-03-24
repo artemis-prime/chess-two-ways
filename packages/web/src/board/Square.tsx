@@ -70,11 +70,11 @@ const SquareComponent: React.FC<{
     if (kingInCheckHere_ !== kingInCheckHere) {
       setKingInCheckHere(kingInCheckHere_)
     }
-    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === square.file && e.rank === square.rank)) 
+    const inCheckFromMe = !!feedback.sideIsInCheckFrom.find((e) => (e.file === square.file && e.rank === square.rank)) 
     if (inCheckFromHere != inCheckFromMe) {
       setInCheckFromHere(inCheckFromMe) 
     }
-  },[feedback.inCheckFrom, feedback.kingInCheck])
+  },[feedback.sideIsInCheckFrom, feedback.kingInCheck])
 
   let borderStyle = 'none' 
 

@@ -1,21 +1,21 @@
-import type Board from '../board/Board'
 import type { 
   Action,
-  Square,
+  Board,
   Color,
-  Side
+  Side,
+  Square,
 } from '..'
 
 import { FILES } from '..'
 
   // from must be populated
-const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, sideToCapture: Side): boolean => {
+const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, asSide: Side): boolean => {
   if (from.rank === to.rank) {
     const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
     if (delta < 0) {
         // zero based, but ok since indexed from FILES
       for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-        if (board.canBeCaptured({rank: from.rank, file: FILES[fileIndex] }, sideToCapture)) {
+        if (board.squareCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
           return true
         }
       }
@@ -23,7 +23,7 @@ const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, sideToCa
     else {
         // zero based, but ok since indexed from FILES
       for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-        if (board.canBeCaptured({rank: from.rank, file: FILES[fileIndex] },sideToCapture)) {
+        if (board.squareCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
           return true
         }
       }
@@ -65,7 +65,7 @@ const amCastling = (
   return (
     (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
     &&
-    board.castlingEligability(color, kingside) === 'eligable'
+    board.eligableToCastle(color, kingside)
     && 
     board.isClearAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
     && 

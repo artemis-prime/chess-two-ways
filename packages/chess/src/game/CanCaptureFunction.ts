@@ -1,6 +1,6 @@
 import type { PieceType } from '../Piece'
 import type Square from '../Square'
-import type Board from '../board/Board'
+import type Board from '../Board'
 
 interface CanCaptureFunction {
   (board: Board, type: PieceType, from: Square, to: Square): boolean

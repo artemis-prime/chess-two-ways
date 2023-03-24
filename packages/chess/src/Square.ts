@@ -1,4 +1,8 @@
-import type { Rank, File } from './RankAndFile'
+type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+const RANKS: Rank[] = [1, 2, 3, 4, 5, 6, 7, 8]
+const RANKS_REVERSE: Rank[] = [8, 7, 6, 5, 4, 3, 2, 1]
+type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
+const FILES: File[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] 
 
 interface Square {
   readonly rank: Rank
@@ -20,4 +24,14 @@ const squareToString = (sq: Square) => (
   `${sq.file}${sq.rank}`  
 )
 
-export { type Square as default, squaresEqual, copySquare, squareToString}
+export { 
+  type Square as default, 
+  type Rank,
+  type File,
+  RANKS,
+  RANKS_REVERSE,
+  FILES,
+  squaresEqual, 
+  copySquare, 
+  squareToString
+}

@@ -1,10 +1,9 @@
 import { makeObservable, observable } from 'mobx'
 
 import type Square from './Square'
-import { squareToString } from './Square'
+import { squareToString, type Rank, type File } from './Square'
 import type Piece from './Piece'
 import { pieceToString } from './Piece'
-import type { Rank, File} from './RankAndFile'
 
 class BoardSquare implements Square {
 

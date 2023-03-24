@@ -1,5 +1,4 @@
-import type Board from '../board/Board'
-import type { Action, Square } from '..'
+import type { Action, Board, Square } from '..'
 
 import { FILES } from '..'
 

@@ -1,4 +1,4 @@
-import type { File, Rank } from '../RankAndFile'
+import type { File, Rank } from '../Square'
 import BoardSquare from '../BoardSquare'
 
 type RankSquares = {

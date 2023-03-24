@@ -1,4 +1,4 @@
-import type Board from '../board/Board'
+import type Board from '../Board'
 import type Square from '../Square'
 import type Action from '../Action'
 

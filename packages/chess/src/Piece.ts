@@ -25,7 +25,7 @@ const PRIMARY_PIECES = _PRIMARY_PIECES as readonly string[]
 
   // see above
   // pawns can only be promoted to these.
-  // (Also, only the locations of these pieces get cached for testing inCheck) 
+  // (Also, only the locations of these pieces get cached for testing sideIsInCheck) 
 /**  please leave
 type PrimaryPieceType = 
   'queen' |
@@ -85,6 +85,9 @@ const pieceToString = (p: Piece, format?: PieceFormat): string => {
   }
 }
 
+const opponent = (side: Side): Side => (
+  (side === 'white') ? 'black' : 'white'
+)
 
 export { 
   type Piece as default, 
@@ -96,5 +99,6 @@ export {
   PRIMARY_PIECES,
   piecesEqual,
   pieceToString,
-  PIECE_TYPE_NAMES 
+  PIECE_TYPE_NAMES,
+  opponent 
 }
