@@ -53,7 +53,6 @@ const syncTrackingForSide = (target: TrackingForSide, source: TrackingForSide) =
   const deepArrayCopy = sourceMapAsArray.map(([key, value]) => (
     [key, [...value]]
   ))
-  //console.log(deepArrayCopy)
   target.primaries = new Map<PrimaryPieceType, Square[]>(deepArrayCopy as typeof sourceMapAsArray)
 
   target.king = source.king

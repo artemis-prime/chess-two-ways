@@ -227,9 +227,9 @@ class BoardImpl implements BoardInternal {
 
     if (!eligable && reasonDenied && Array.isArray(reasonDenied)) {
       reasonDenied.push(
-        `${side} is no longer eligable to castle\
-        ${(kingHasMoved || hasCastled) ?  '' : ` ${castleSide}`} because \
-        ${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
+        `${side} is no longer eligable to castle` + 
+        `${(kingHasMoved || hasCastled) ?  '' : ` ${castleSide}`} because ` + 
+        `${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
       )  
     }  
     return eligable

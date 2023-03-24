@@ -163,19 +163,13 @@ class GameImpl implements Game {
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
         const toRank = to.rank
-        console.log("to.rank: " + toRank)
-        if (toRank === 3) {
-          console.log("tto.rank: " + toRank)
-        }
-        let action = resolver(this._checkCheckingBoard, from, to)
+        let action = resolver(this._checkCheckingBoard, from, to, this._console)
         if (action) {
           const desc = this._createActionDescriptor(piece, from, to, action)
           const wasInCheck = this._mainBoard.sideIsInCheck(desc.piece.color) 
           this._checkCheckingBoard.applyAction(desc, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(desc.piece.color)) {
-            this._console.writeln(`Resulting action by ${desc.piece.color} not allowed \
-              as it would ${wasInCheck ? 'leave it' : 'put it'}) in check!`
-            )  
+            this._console.writeln(`Resulting action by ${desc.piece.color} not allowed as it would ${wasInCheck ? 'leave it' : 'put it'}) in check!`)  
             action = null
           }
         } 
@@ -183,12 +177,7 @@ class GameImpl implements Game {
           this._chessListener.actionResolved(action, from, to)
         }
         this._currentResolution.resolvedAction = action
-        console.log('First resolution for ' + pieceToString(piece) + ': ' + squareToString(from) + ' --> ' + squareToString(to) + ' is ' + action)
       } 
-    }
-    else {
-      console.log('Cached resolution is ' + this._currentResolution.resolvedAction)
-
     }
     return this._currentResolution.resolvedAction
   }

@@ -28,9 +28,8 @@ const SquareComponent: React.FC<{
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: DND_ITEM_NAME,
-      drop: (item: DnDPiece, monitor) => { game.takeAction(item.piece, item.from, square); console.log('DROP')},
+      drop: (item: DnDPiece, monitor) => { game.takeAction(item.piece, item.from, square)},
       canDrop: (item: DnDPiece, monitor) => {
-        //console.log(`CAN_DROP: (${square.rank}:${square.file})`)
         return !!game.resolveAction(item.piece, item.from, square); 
       },
       collect: (monitor) => ({isOver: (!!monitor.isOver())})
