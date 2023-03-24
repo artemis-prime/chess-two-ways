@@ -6,13 +6,11 @@ import React, {
   useState
 } from 'react'
 
-import type { Action, Square } from '@artemis-prime/chess-domain'
+import type { Action, Square, Side } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 
 export interface VisualFeedback {
-  //setAction(a: Action, note?: any): void
-  //clear(): void
   kingInCheck: Square | null
   sideIsInCheckFrom: Square[]
   action: Action | null
@@ -41,12 +39,17 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
 
   const game = useGame()
 
-  const sideIsInCheck = (kingInCheck_: Square | null, inCheckFrom_: Square[]): void => {
+  const sideIsInCheck = (side: Side, kingInCheck_: Square, inCheckFrom_: Square[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
   }
 
-  const actionResolved = (action: Action | null, from: Square, to: Square) => {
+  const sideIsNotInCheck = (side: Side): void => {
+    setKingInCheck(null)
+    setInCheckFrom([])
+  }
+
+  const actionResolved = (action: Action | null, from: Square, to: Square): void => {
     if (!action) {
       clear()  
     }
@@ -55,14 +58,17 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     }
   }
 
-  const actionTaken = (action: Action, from: Square, to: Square) => {
+  const actionTaken = (action: Action, from: Square, to: Square): void => {
     clear()
   }
 
   useEffect(() => {
-    game.setInCheckCallback(sideIsInCheck)
-    game.setActionResolvedCallback(actionResolved)
-    game.setActionTakenCallback(actionTaken)
+    game.setChessListener({
+      actionResolved,
+      actionTaken,
+      sideIsInCheck,
+      sideIsNotInCheck
+    })
   })
 
   const clear = (): void => { 
@@ -119,8 +125,6 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   
   return (
     <VisualFeedbackContext.Provider value={{
-      //setAction,
-      //clear,
       action,
       kingInCheck,
       sideIsInCheckFrom,

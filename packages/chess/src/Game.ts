@@ -288,7 +288,7 @@ class GameImpl implements Game {
 
       }
       else {
-        this._chessListener.notInCheck(side)  
+        this._chessListener.sideIsNotInCheck(side)  
       }
     }
   }
