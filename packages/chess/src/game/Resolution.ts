@@ -4,18 +4,30 @@ import { piecesEqual } from '../Piece'
 import type Square from '../Square'
 import { squaresEqual } from '../Square'
 
-interface Resolution {
-  piece: Piece,
-  from: Square,
-  to: Square,
-  resolvedAction: Action | null
+class Resolution {
+  readonly piece: Piece
+  readonly from: Square
+  readonly to: Square
+  readonly action: Action | null
+
+  constructor(
+    piece: Piece,
+    from: Square,
+    to: Square,
+    action: Action | null
+  ) {
+    this.piece = piece
+    this.from = from
+    this.to = to,
+    this.action = action
+  }
+
+  samePieceAndSquares(toTry: Omit<Resolution, 'action' | 'samePieceAndSquares'>): boolean {
+    return squaresEqual(this.to, toTry.to) &&
+    squaresEqual(this.from, toTry.from) &&
+    piecesEqual(this.piece, toTry.piece) 
+  }
+  
 }
 
-const resolutionsEqual = (r1: Resolution, r2: Resolution): boolean => (
-  squaresEqual(r1.to, r2.to) &&
-  squaresEqual(r1.from, r2.from) &&
-  piecesEqual(r1.piece, r2.piece) 
-  // no need to compare resolvedAction
-)
-
-export { type Resolution as default, resolutionsEqual }
+export { Resolution as default }

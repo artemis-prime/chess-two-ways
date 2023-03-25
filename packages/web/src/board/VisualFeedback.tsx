@@ -12,7 +12,7 @@ import { useGame } from './GameProvider'
 
 export interface VisualFeedback {
   kingInCheck: Square | null
-  sideIsInCheckFrom: Square[]
+  inCheckFrom: Square[]
   action: Action | null
   note: any | null
   fastTick: boolean
@@ -34,7 +34,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   const [slowTick, setSlowTick] = useState<boolean>(false)
   const [action, _setAction] = useState<Action | null>(null)
   const [note, setNote] = useState<any | null>(null)
-  const [sideIsInCheckFrom, setInCheckFrom] = useState<Square[]>([])
+  const [inCheckFrom, setInCheckFrom] = useState<Square[]>([])
   const [kingInCheck, setKingInCheck] = useState<Square | null>(null)
 
   const game = useGame()
@@ -105,7 +105,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     if (action && !fastIntervalRef.current) {
       fastIntervalRef.current = setInterval(() => {
         setFastTick((p) => (!p))
-      }, 100)
+      }, 300)
     }
     else if (!action && fastIntervalRef.current) {
       clearFast()
@@ -127,7 +127,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     <VisualFeedbackContext.Provider value={{
       action,
       kingInCheck,
-      sideIsInCheckFrom,
+      inCheckFrom,
       note,
       fastTick,
       slowTick

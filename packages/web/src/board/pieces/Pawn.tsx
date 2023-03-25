@@ -19,4 +19,5 @@ const Pawn: React.FC<SpecificPieceProps> = ({
     </svg>
 )
 
+
 export default Pawn

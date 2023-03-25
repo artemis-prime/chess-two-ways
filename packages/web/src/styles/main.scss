@@ -40,7 +40,7 @@ body {
 
 .square {
 
-  box-sizing: content-box;
+ // box-sizing: content-box;
 
   &.file-odd.rank-odd {
     background-color: $board-brown;
@@ -48,57 +48,80 @@ body {
   &.file-even.rank-even {
     background-color: $board-brown;
   }
+  //border: 0.5px blue solid;
 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 
   .piece {
-    display: flex;
-    flex-direction: row;
-    justify-content: center; 
+    //display: flex;
+    //flex-direction: row;
+    //justify-content: center; 
+    //align-items: center; 
   }
-  .white-piece svg {
-    fill: #f7f0be;
-    filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45)); 
-  }
-  .black-piece svg { 
+}
+
+svg {
+  .black-piece & {
     fill: #573131;
     filter: drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3));
+    .fast-tick .capture &, 
+    .slow-tick .in-check.in-check-king &,
+    .no-slow-tick .in-check.in-check-from & {
+      filter: drop-shadow(2px 4px 8px rgb(145, 23, 2));
+      transform: scale(1.1);
+    } 
+    .no-fast-tick .capture &, 
+    .no-slow-tick .in-check.in-check-king &,
+    .slow-tick .in-check.in-check-from & {
+      filter: drop-shadow(1px 4px 2px rgb(0 0 0 / 0.2));
+    } 
   }
-  svg {
-    display: block;
+  .white-piece & {
+    fill: #f7f0be;
+    filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45));
+    .fast-tick .capture &, 
+    .slow-tick .in-check.in-check-king &,
+    .no-slow-tick .in-check.in-check-from & {
+      filter: drop-shadow(2px 4px 8px rgb(145, 2, 2));
+      transform: scale(1.1);
+    } 
+    .no-fast-tick .capture &, 
+    .no-slow-tick .in-check.in-check-king &,
+    .slow-tick .in-check.in-check-from & {
+      filter: drop-shadow(1px 4px 2px rgb(0 0 0 / 0.35));
+    } 
   }
+  display: block;
+  //border: 0.5px darkgreen solid;
+}
 
+
+.effects {
   &.move-or-castle {
     border-radius: 50%;
     border: 2px green solid;
   }
   
-  &.capture {
-    border: 1px orange solid;
-    &.fast-tick {
-      border-width: 3px;
-    }
-    &.in-check {
-      border-color: orange !important;  
-    }
-  }
-
   &.castling-rook {
     border: 1px darkgreen solid; 
-    &.from {
+    .fast-tick &.from {
+      border-width: 3px; 
+    }
+    .no-fast-tick &.to {
       border-width: 3px; 
     }
   }
 
   &.promote {
     border: 1px yellow solid;
-    &.fast-tick {
+    .fast-tick & {
       border-width: 3px;
     }
   }
 
+  /*
   &.in-check {
     border-radius: 20px;
     &.in-check-from.no-slow-tick {
@@ -111,7 +134,7 @@ body {
       opacity: 0.7;
     }
   }
-
+  */
 }
 
 .dash {
