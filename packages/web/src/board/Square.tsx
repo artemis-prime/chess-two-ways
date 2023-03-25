@@ -20,7 +20,7 @@ const SquareComponent: React.FC<{
 
   const game = useGame()
   const feedback = useVisualFeedback()
-  const [rookSquareFlashing, setRookSquareFlashing] = useState<'from' | 'to' | undefined>(undefined)
+  const [rookSquareFlashing, setRookSquareFlashing] = useState<'from' | 'to' | null>(null)
   const [inCheckFromHere, setInCheckFromHere] = useState<boolean>(false)
   const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
   const [dimPiece, setDimPiece] = useState<boolean>(false)
@@ -47,11 +47,11 @@ const SquareComponent: React.FC<{
         setRookSquareFlashing(feedback.fastTick ? 'from' : 'to') // alternate via tick 
       } 
       else {
-        setRookSquareFlashing(undefined) 
+        setRookSquareFlashing(null) 
       }
     } 
     else {
-      setRookSquareFlashing(undefined) 
+      setRookSquareFlashing(null) 
     }
   }, [feedback.action, square, feedback.fastTick] )
 
@@ -75,47 +75,39 @@ const SquareComponent: React.FC<{
     }
   },[feedback.sideIsInCheckFrom, feedback.kingInCheck])
 
-  let borderStyle = 'none' 
+  let effectClass = ''
+  const slowTick = feedback.slowTick ? 'slow-tick' : 'no-slow-tick'
+  const fastTick = feedback.fastTick ? 'fast-tick' : 'no-fast-tick'
 
   if (isOver) {
     if (feedback.action === 'capture') {
-      borderStyle = `${(feedback.fastTick) ? '3' : '1'}px orange solid`  
+      effectClass = 'capture' 
     }
     else if (feedback.action && feedback.action.includes('promote')) {
-      borderStyle = `${(feedback.fastTick) ? '3' : '1'}px yellow solid`  
+      effectClass = 'promote' 
     }
     else if (feedback.action === 'move' || (feedback.action === 'castle' && !rookSquareFlashing)) {
-      borderStyle = '2px green solid'
+      effectClass = 'move-or-castle'
     }
   }
-    // Rook's to and from squares
-  else if (feedback.action === 'castle' && rookSquareFlashing) {
-
-    const amRookSquareFlashing = (
-      !!piece && rookSquareFlashing === 'from' 
-      || 
-      !piece && rookSquareFlashing === 'to'
-    )
-    borderStyle = `${(amRookSquareFlashing) ? '3' : '1'}px orange solid` 
+  else if (rookSquareFlashing) {
+    effectClass = `castling-rook ${rookSquareFlashing}`
   } 
 
   if (kingInCheckHere) {
-    borderStyle = `${(feedback.slowTick) ? '3' : '1'}px red solid`  
+    effectClass = 'in-check in-check-king'
   }
   else if (inCheckFromHere) {
-    borderStyle = `${(feedback.slowTick) ? '1' : '3' }px red solid`  
+    effectClass = 'in-check in-check-from'
   }
 
   return (
     <div 
       ref={drop}
-      className={`square \
-        rank-${square.rank} \
-        rank-${(square.rank % 2) ? 'odd' : 'even'} \
-        file-${square.file} \
-        file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}`
+      className={`square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} ` +
+        `file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'} ` +
+        `${effectClass} ${slowTick} ${fastTick}`
       }
-      style={{ border: borderStyle }}
     >
       {(!!piece) && (
         <PieceComponent square={square} piece={piece} dimmed={dimPiece}/>  

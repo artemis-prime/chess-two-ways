@@ -228,7 +228,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       this._console.writeln('[<< undo]: ' + actionDescToString(r))
       this._mainBoard.applyAction(r, 'undo')
-      this._handleNotifyCheck(opponent(r.piece.color))
+      this._handleNotifyCheck(r.piece.color)
       this._stateIndex--
       this._toggleTurn()
     }

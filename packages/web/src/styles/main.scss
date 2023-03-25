@@ -1,11 +1,10 @@
-$board-brown: rgb(105, 49, 49);
-$square-size: 100px;
+$board-brown: rgba(105, 49, 49, 0.75);
 
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url(../../../../assets/chess-bg-1920.jpg);
 }
-
 
 .app-header {
   background-color: #274070;
@@ -15,7 +14,6 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  //font-size: calc(10px + 2vmin);
   color: white;
 }
 
@@ -26,27 +24,23 @@ body {
 }
 
 
-main {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  //background-color: #ccc;
-  
-}
-
 .board {
+  background-image: url(../../../../assets/American-Hard-Maple.jpg); /*  chess-bg-1920.jpg); */
+
+  aspect-ratio: 1 / 1;
   display: grid;
-  grid-template-columns: repeat(8, 1fr); // $square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
-  grid-template-rows:  repeat(8, 1fr); //$square-size $square-size $square-size $square-size $square-size $square-size $square-size $square-size;
-  margin: 40px auto;
-  width: 800px; //$square-size * 8;
-  height: 800px; //$square-size * 8;
-  border: 2px $board-brown solid;   
+  grid-template-columns: repeat(8, 1fr); 
+  grid-template-rows:  repeat(8, 1fr); 
+  height: 94%; 
+  border: 2px $board-brown solid; 
+//  background-color: cornsilk;  
+  //box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
 .square {
+
+  box-sizing: content-box;
 
   &.file-odd.rank-odd {
     background-color: $board-brown;
@@ -58,9 +52,66 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .piece {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; 
+  }
+  .white-piece svg {
+    fill: #f7f0be;
+    filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45)); 
+  }
+  .black-piece svg { 
+    fill: #573131;
+    filter: drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3));
+  }
   svg {
     display: block;
   }
+
+  &.move-or-castle {
+    border-radius: 50%;
+    border: 2px green solid;
+  }
+  
+  &.capture {
+    border: 1px orange solid;
+    &.fast-tick {
+      border-width: 3px;
+    }
+    &.in-check {
+      border-color: orange !important;  
+    }
+  }
+
+  &.castling-rook {
+    border: 1px darkgreen solid; 
+    &.from {
+      border-width: 3px; 
+    }
+  }
+
+  &.promote {
+    border: 1px yellow solid;
+    &.fast-tick {
+      border-width: 3px;
+    }
+  }
+
+  &.in-check {
+    border-radius: 20px;
+    &.in-check-from.no-slow-tick {
+      border: 3px rgba(255, 0, 0, 0.6) solid;
+      opacity: 0.7;
+    }
+
+    &.in-check-king.slow-tick {
+      border: 3px rgba(255, 0, 0, 0.6) solid;
+      opacity: 0.7;
+    }
+  }
+
 }
 
 .dash {

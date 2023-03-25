@@ -10,7 +10,6 @@ import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
 import registry from './pieceRegistry'
 
 export interface SpecificPieceProps {
-  color: string
   size?: string 
 }
 
@@ -37,21 +36,18 @@ const PieceComponent: React.FC<{
 
   const SpecificPiece = registry.get(piece.type) as React.ComponentType<SpecificPieceProps>
 
+  const size = piece.type === 'pawn' ? '80%' :'94%'
+
   return (
     <div 
       ref={drag}
       style={{
         opacity: (dimmed) ?  0.3 : (isDragging ? 0.5 : 1), 
         cursor: canDrag ? (isDragging ? 'move' : 'pointer') : 'default',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center', 
       }}
+      className={`piece ${piece!.color}-piece`}
     >
-      <SpecificPiece 
-        color={(piece!.color === 'white') ? '#cbb' : '#322' } 
-        size='85%'
-      />
+      <SpecificPiece size={size} />
     </div>
   )
 })
