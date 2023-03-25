@@ -17,8 +17,7 @@ import type ChessListener from './ChessListener'
 
 import type ActionResolver from './game/ActionResolver'
 import type ActionDescriptor from './game/ActionDescriptor'
-import type Resolution from './game/Resolution'
-import { resolutionsEqual } from './game/Resolution'
+import Resolution from './game/Resolution'
 import type Console from './Console'
 import { actionDescToString } from './game/util'
 
@@ -69,7 +68,7 @@ class GameImpl implements Game {
     // That way, _action[0] is conveniently the first move,
     // and you can move back and forth via undo / redo
   private _stateIndex = -1 
-  private _currentResolution: Resolution | undefined 
+  private _cachedResolution: Resolution | null = null 
 
   private _console: Console = {
     write: (t: string): void => {},
@@ -150,18 +149,10 @@ class GameImpl implements Game {
   ): Action | null {
 
     if (
-      !this._currentResolution 
+      !this._cachedResolution 
       ||
-      !resolutionsEqual(this._currentResolution, {to, from, piece, resolvedAction: null /* ignored */})
+      !this._cachedResolution.samePieceAndSquares({to, from, piece})
     ) {
-      this._currentResolution = {
-        piece,
-        from,
-        to,
-        resolvedAction: null 
-      }
-
-
       const resolver = this._resolvers.get(piece.type)
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
@@ -179,14 +170,21 @@ class GameImpl implements Game {
         if (this._chessListener) {
           this._chessListener.actionResolved(action, from, to)
         }
-        this._currentResolution.resolvedAction = action
+        this._cachedResolution = new Resolution(
+          piece,
+          from,
+          to,
+          action
+        )
       } 
     }
-    return this._currentResolution.resolvedAction
+      // Just for typescript's sake
+      // in practice it will always be set (unless we have a missing resolver!)
+    return this._cachedResolution ? this._cachedResolution!.action : null
   }
 
   endResolution(): void {
-    this._currentResolution = undefined
+    this._cachedResolution = undefined
     //console.log('End resolution called')
   }
 
@@ -197,7 +195,7 @@ class GameImpl implements Game {
     promoteTo?: PrimaryPieceType
   ): void {
 
-    const action = this._currentResolution?.resolvedAction
+    const action = this._cachedResolution?.action
     if (action) {
         this.endResolution()
         const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
