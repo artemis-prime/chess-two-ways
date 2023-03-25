@@ -26,12 +26,15 @@ import registry from './game/resolverRegistry'
 
 interface Game {
 
+    // Determine which valid action is intended. Could be used 
+    // during drag'n'drop canDropOnMe() type functions.
+    // 
     // Resolved Action should cached for same params until:
     //  1) takeAction() is called for the same params
     //  2) endResolution() is called 
     // (This is akin to debouncing but not specific to web)
     // takeAction() can be called directly without resolveAction first,
-    // but this will call it internally anyway.
+    // in which case it will get called internally.
   resolveAction(p: Piece, from: Square, to: Square): Action | null
   takeAction(p: Piece, from: Square, to: Square): void
   endResolution(): void
