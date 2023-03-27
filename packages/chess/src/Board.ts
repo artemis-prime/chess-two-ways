@@ -560,18 +560,16 @@ class BoardImpl implements BoardInternal {
 
     for (let pieceType of typesToCheck) {
       const squaresWithOpponentOfThisType = this.tracking[opponent(asSide)].primaries.get(pieceType)! 
-      if (squaresWithOpponentOfThisType.length) {
-        for (let sqToTryCaptureFrom of squaresWithOpponentOfThisType) {
-          if (this._canCapture(this, pieceType, sqToTryCaptureFrom, sq) ) {
-            if (booleanOrSquares === 'boolean') {
-              return true
-            }
-            else {
-              primaryPieceDangers.push(sqToTryCaptureFrom)
-            }
-          }  
-        }
-      } 
+      for (let sqToTryCaptureFrom of squaresWithOpponentOfThisType) {
+        if (this._canCapture(this, pieceType, sqToTryCaptureFrom, sq) ) {
+          if (booleanOrSquares === 'boolean') {
+            return true
+          }
+          else {
+            primaryPieceDangers.push(sqToTryCaptureFrom)
+          }
+        }  
+      }
     }
 
     const nearDangers = surrounding.getOpposingPawnsOrKing(asSide)
