@@ -4,8 +4,11 @@
   "private": true,
   "packageManager": "yarn@1.22.17",
   "scripts": {
-    "build:domain": "yarn workspace @artemis-prime/chess-domain build && yarn clean:web && yarn install",
+    "build:first-time": "yarn install && yarn prepare:serve",
+    "build:domain": "yarn workspace @artemis-prime/chess-domain build",
     "build:web": "yarn install && yarn workspace @artemis-prime/chess-web build",
+    "prepare:serve": "yarn build:domain && yarn refresh-dep:web",
+    "refresh-dep:web": "yarn clean:web && yarn install",
     "serve:web": "yarn workspace @artemis-prime/chess-web start",
     "clean:domain": "yarn workspace @artemis-prime/chess-domain clean",
     "clean:web": "yarn workspace @artemis-prime/chess-web clean",
