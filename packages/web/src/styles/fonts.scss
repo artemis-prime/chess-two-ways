@@ -67,12 +67,20 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: 'squeakychalk';
+  src: url('assets/fonts/chalk/squeakychalksound-webfont.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 
 * {
   box-sizing: border-box;
   margin: 0;
-  font-family: 'Source Sans Pro', sans-serif;
+//  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'squeakychalk', sans-serif;
+
   font-weight: 500;
 }
 
@@ -81,7 +89,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 button {
-  font-family: 'TWK Everett', sans-serif;
+  //font-family: 'TWK Everett', sans-serif;
 }
 
 code {

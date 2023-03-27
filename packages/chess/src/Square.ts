@@ -1,37 +1,38 @@
-type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
-const RANKS: Rank[] = [1, 2, 3, 4, 5, 6, 7, 8]
-const RANKS_REVERSE: Rank[] = [8, 7, 6, 5, 4, 3, 2, 1]
-type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
-const FILES: File[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] 
+import { makeObservable, observable } from 'mobx'
 
-interface Square {
+import type Position from './Position'
+import { positionToString, type Rank, type File } from './Position'
+import type Piece from './Piece'
+import { pieceToString } from './Piece'
+
+class Square implements Position {
+
   readonly rank: Rank
   readonly file: File
+  piece: Piece | null 
+
+  constructor(rank: Rank, file: File, piece: Piece | null, observePiece?: boolean) {
+    this.rank = rank
+    this.file = file
+    this.piece = piece
+    
+    if (observePiece) {
+      makeObservable(this, { piece: observable})
+    }
+  }
+
+  static copy(s: Square): Square {
+    return new Square(
+      s.rank,
+      s.file,
+      s.piece ? {...s.piece} : null
+    )
+  }
+
+  toString = (specifyColor?: boolean): string => {
+    const formatForPiece = (specifyColor) ? 'cT' : 'T'
+    return (this.piece ? pieceToString(this.piece, formatForPiece) : '') + positionToString(this)
+  }
 }
 
-const squaresEqual = (s1: Square, s2: Square) => (
-  !!s1 && !!s2 && (s1.file === s2.file) && (s1.rank === s2.rank)
-)
-
-  // some are instance of BoardSquare in certain case. 
-  // we don't want strays.
-const copySquare = (toCopy: Square) => ({
-  rank: toCopy.rank,
-  file: toCopy.file
-})
-
-const squareToString = (sq: Square) => (
-  `${sq.file}${sq.rank}`  
-)
-
-export { 
-  type Square as default, 
-  type Rank,
-  type File,
-  RANKS,
-  RANKS_REVERSE,
-  FILES,
-  squaresEqual, 
-  copySquare, 
-  squareToString
-}
+export default Square   

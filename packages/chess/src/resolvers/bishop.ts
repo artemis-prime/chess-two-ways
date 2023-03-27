@@ -1,10 +1,10 @@
-import type { Action, Board, Square, Console } from '..'
+import type { Action, Board, Position } from '..'
 
 const resolve = (
   board: Board,
-  from: Square, 
-  to: Square, 
-  con?: Console
+  from: Position, 
+  to: Position, 
+  messageFn?: (s: String) => void
 ): Action | null => {
   
   if (board.isClearAlongDiagonal(from, to)) {

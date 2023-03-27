@@ -2,7 +2,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import type { BoardSquare } from '@artemis-prime/chess-domain'
+import type { Square } from '@artemis-prime/chess-domain'
 
 import { useBoard } from './GameProvider'
 import { useVisualFeedback } from './VisualFeedback'
@@ -20,8 +20,8 @@ const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
 
   return (
     <Box className={`board ${slowTick} ${fastTick}`} css={css}>
-    {gameBoard.boardAsSquares.map((s: BoardSquare) => (
-      <SquareComponent square={s} piece={s.piece} key={`key-${s.rank}-${s.file}`} />
+    {gameBoard.boardAsSquares.map((sq: Square) => (
+      <SquareComponent position={sq} piece={sq.piece} key={`key-${sq.rank}-${sq.file}`} />
     ))}
     </Box>
   )

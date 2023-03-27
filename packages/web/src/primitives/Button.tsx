@@ -1,49 +1,18 @@
 import { styled } from '~/styles/stitches.config'
 
 const Button = styled('button', {
+
   outline: 'none',
-  fontWeight: 700,
-  fontSize: 16,
-  fontFamily: '$button',
-  gap: '$space$2',
+  p: 2,
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
-  lineHeight: '20px',
+  lineHeight: '1.1',
 
-  /* No special focus behavior TODO: accessibility issue
-  $$focusColor: '$colors$gray12',
-  '&:focus-visible': {
-    boxShadow: '0 0 0 2px $$focusColor',
-  },
-  */
-
-  '&:disabled': {
-    backgroundColor: '$gray8',
-    color: '$gray11',
-  },
-  '&:disabled:hover': {
-    backgroundColor: '$gray8',
-    color: '$gray11',
-  },
   variants: {
     
     variant: {
-      containedBW: {
-        color: '$primary12',
-        backgroundColor: '$primary5',
-        '&:hover': {
-            // reverse this, since its a reverse scale
-          color: '$lowestContrast',
-          backgroundColor: '$primary8',
-        },
-          // pressed
-        '&:active': {
-          color: '$primary4',
-          backgroundColor: '$primary11', 
-        },
-      },
-      containedColor: {
+      contained: {
         color: '$colorOneText',
         backgroundColor: '$colorOne9',
         '&:hover': {
@@ -54,7 +23,7 @@ const Button = styled('button', {
           backgroundColor: '$colorOne7', 
         },
       },
-      outlinedBW: {
+      outlined: {
         backgroundColor: '$secondary2',
         border: '1.5px solid $secondary12',
         color: '$secondary12',
@@ -78,72 +47,44 @@ const Button = styled('button', {
         },
       },
 
-      gray: {
-        backgroundColor: '$gray3',
-        color: '$gray12',
-        '&:hover': {
-          backgroundColor: '$gray5',
-        },
-      },
-
-      grayStronger: {
-        backgroundColor: '$gray4',
-        color: '$gray12',
-        '&:hover': {
-          backgroundColor: '$gray6',
-        },
-      },
-
       ghost: {
+        cursor: 'pointer',
+        border: 'none',
         backgroundColor: 'transparent',
-        color: '$gray11',
-        p: 0,
-      },
-    },
-    corners: {
-      square: {
-        borderRadius: 0,
-      },
-      rounded: {
-        borderRadius: 10,
-      },
-      pill: {
-        borderRadius: 99999,
-      },
-      circle: {
-        borderRadius: '99999px',
-        alignItems: 'center',
-        justifyContent: 'center',
+        color: '$gray1',
+        p: 1,
+        '&:hover': {
+          textDecoration: 'underline',
+        },
+        '&:disabled': {
+          cursor: 'default',
+          color: '$gray11',
+        },
+        '&:disabled:hover': {
+          textDecoration: 'none',
+          //color: '$gray11',
+        },
+      
       },
     },
     size: {
       xs: {
-        p: '$space$3',
-        lineHeight: '16px',
-        minHeight: 40,
+        fontSize: '12px',
       },
       small: {
-        px: '$space$3',
-        py: '$space$4',
-        lineHeight: '12px',
-        minHeight: 44,
+        fontSize: '14px',
       },
       medium: {
-        px: '$space$5',
-        py: '$space$3',
-        minHeight: 44,
+        fontSize: '16px',
       },
       large: {
-        px: '$space$5',
-        py: '$space$4',
-        minHeight: 52,
+        fontSize: '18px',
       },
     },
   },
   compoundVariants: [
     {
       size: 'xs',
-      corners: 'circle',
       css: {
         height: 40,
         width: 40,
@@ -152,7 +93,6 @@ const Button = styled('button', {
     },
     {
       size: 'small',
-      corners: 'circle',
       css: {
         height: 44,
         width: 44,
@@ -161,7 +101,6 @@ const Button = styled('button', {
     },
     {
       size: 'medium',
-      corners: 'circle',
       css: {
         height: 44,
         width: 44,
@@ -170,7 +109,6 @@ const Button = styled('button', {
     },
     {
       size: 'large',
-      corners: 'circle',
       css: {
         height: 52,
         width: 52,
@@ -179,13 +117,12 @@ const Button = styled('button', {
     },
   ],
   defaultVariants: {
-    variant: 'containedBW',
-    corners: 'rounded',
+    variant: 'ghost',
     size: 'medium',
   },
 })
 
 
-export type ButtonVariant = "containedBW" | "containedColor" | "outlinedBW" | "alert" | "gray" | "grayStronger" | "ghost" 
+export type ButtonVariant = " contained" | "outlined" | "alert" | "ghost" 
 
 export default Button

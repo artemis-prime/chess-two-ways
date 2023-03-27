@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
-import type { Square, Piece } from '@artemis-prime/chess-domain'
-import { FILES, squaresEqual } from '@artemis-prime/chess-domain'
+import type { Position, Piece } from '@artemis-prime/chess-domain'
+import { FILES, positionsEqual } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
@@ -11,10 +11,10 @@ import { useVisualFeedback } from './VisualFeedback'
 import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
 
 const SquareComponent: React.FC<{ 
-  square: Square
+  position: Position
   piece?: Piece | null
 }> = observer(({ 
-  square,
+  position : pos,
   piece
 }) => {
 
@@ -23,40 +23,38 @@ const SquareComponent: React.FC<{
   const [rookSquareCastling, setRookSquareCastling] = useState<'from' | 'to' | null>(null)
   const [inCheckFromHere, setInCheckFromHere] = useState<boolean>(false)
   const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
-  const [dimPiece, setDimPiece] = useState<boolean>(false)
 
   const [props, drop] = useDrop(
     () => ({
       accept: DND_ITEM_NAME,
-      drop: (item: DnDPiece, monitor) => { game.takeAction(item.piece, item.from, square)},
+      drop: (item: DnDPiece, monitor) => { game.takeAction({piece: item.piece, from: item.from, to: pos})},
       canDrop: (item: DnDPiece, monitor) => {
-        return !!game.resolveAction(item.piece, item.from, square); 
+        return !!game.resolveAction({piece: item.piece, from: item.from, to: pos}); 
       },
-      //collect: (monitor) => ({isOver: (!!monitor.isOver())})
     }),
-    [square]
+    [pos]
   )
 
   useEffect(() => {
     let imACastlingRookSquare: 'from' | 'to' | null = null
     if (feedback.action === 'castle') {
 
-      if (squaresEqual(square, feedback.note.rooks.from)) {
+      if (positionsEqual(pos, feedback.note.rooks.from)) {
         imACastlingRookSquare = 'from'  
       } 
-      else if (squaresEqual(square, feedback.note.rooks.to)) {
+      else if (positionsEqual(pos, feedback.note.rooks.to)) {
         imACastlingRookSquare = 'to'  
       }
     } 
     setRookSquareCastling(imACastlingRookSquare) 
-  }, [feedback.action, square] )
+  }, [feedback.action, pos] )
 
   useEffect(() => {
-    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === square.file && feedback.kingInCheck.rank === square.rank)
+    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === pos.file && feedback.kingInCheck.rank === pos.rank)
     if (kingInCheckHere_ !== kingInCheckHere) {
       setKingInCheckHere(kingInCheckHere_)
     }
-    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === square.file && e.rank === square.rank)) 
+    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === pos.file && e.rank === pos.rank)) 
     if (inCheckFromHere != inCheckFromMe) {
       setInCheckFromHere(inCheckFromMe) 
     }
@@ -64,14 +62,14 @@ const SquareComponent: React.FC<{
 
   let effectClass = ''
 
-  if (feedback.action && squaresEqual(feedback.note.to, square)) {
+  if (feedback.action && positionsEqual(feedback.note.to, pos)) {
     if (feedback.action === 'capture') {
       effectClass = 'capture' 
     }
     else if (feedback.action && feedback.action.includes('promote')) {
       effectClass = 'promote' 
     }
-      // castle in this case means we're the king's square (not the rooks')
+      // castle in this case means we're the king's pos (not the rooks')
     else if (feedback.action === 'move' || (feedback.action === 'castle' && !rookSquareCastling)) {
       effectClass = 'move-or-castle'
     }
@@ -90,11 +88,9 @@ const SquareComponent: React.FC<{
   return (
     <div 
       ref={drop}
-      style={{
-        position: 'relative'
-      }}
-      className={`square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} ` +
-        `file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}` 
+      style={{ position: 'relative' }}
+      className={`square rank-${pos.rank} rank-${(pos.rank % 2) ? 'odd' : 'even'} ` +
+        `file-${pos.file} file-${(FILES.indexOf(pos.file) % 2) ? 'even' : 'odd'}` 
       }
     >
       <div  
@@ -111,7 +107,7 @@ const SquareComponent: React.FC<{
         className={`effects ${effectClass}`}
       >
       {(!!piece) && (
-        <PieceComponent square={square} piece={piece} />  
+        <PieceComponent position={pos} piece={piece} />  
       )}
       </div>
     </div>  

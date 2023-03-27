@@ -1,8 +1,8 @@
-import type { File, Rank } from '../Square'
-import BoardSquare from '../BoardSquare'
+import type { File, Rank } from '../Position'
+import Square from '../Square'
 
 type RankSquares = {
-  [key in File]: BoardSquare
+  [key in File]: Square
 }
 
 type Squares = {
@@ -12,7 +12,7 @@ type Squares = {
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
     const result = {}
     for (const key in rs) {
-      result[key] = rs[key] ? BoardSquare.copy(rs[key]) : null // just for shits and giggles. 
+      result[key] = rs[key] ? Square.copy(rs[key]) : null // just for shits and giggles. 
     }
     return result as RankSquares
 }

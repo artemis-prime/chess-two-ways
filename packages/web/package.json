@@ -36,7 +36,7 @@
     "start": "vite",
     "clean": "rm -rf ./dist && rm -rf ./node_modules",
     "vite": "vite",
-    "tscheck": "tsc"
+    "typech": "tsc"
   },
   "browserslist": {
     "production": [

@@ -6,7 +6,8 @@
   "scripts": {
     "build:first-time": "yarn install && yarn prepare:serve",
     "build:domain": "yarn workspace @artemis-prime/chess-domain build",
-    "build:web": "yarn install && yarn workspace @artemis-prime/chess-web build",
+    "build:web": "yarn workspace @artemis-prime/chess-web build",
+    "typech:web": "yarn workspace @artemis-prime/chess-web typech",
     "prepare:serve": "yarn build:domain && yarn refresh-dep:web",
     "refresh-dep:web": "yarn clean:web && yarn install",
     "serve:web": "yarn workspace @artemis-prime/chess-web start",

@@ -3,8 +3,8 @@ $color--black-piece: #573131;
 $color--white-piece: #f7f0be;
 
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  //-webkit-font-smoothing: antialiased;
+  //-moz-osx-font-smoothing: grayscale;
   background-image: url(../../../../assets/chess-bg-1920.jpg);
 }
 
@@ -25,6 +25,37 @@ body {
   padding: 0;
 }
 
+
+
+.dash {
+  background-image: url(../../../../assets/slate-bg.jpg); 
+  background-size: cover;
+  width: 80%;
+  height: 94%;
+  margin-right: 6%;
+  border: 4px rgba(167, 107, 55, 0.76) solid;
+  border-radius: 5px;
+  padding: 24px;
+  color: #eee;
+
+
+  .turn-widget {
+    margin-bottom: 8px;
+  }
+
+  .turn-indicator {
+    display: inline-block;
+   // padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 3px;
+    border: 2px #777 solid;
+    background-color: $color--white-piece;
+    &.black {
+      background-color: $color--black-piece;
+    }
+  }
+}
 
 .board {
   background-image: url(../../../../assets/American-Hard-Maple.jpg); /*  chess-bg-1920.jpg); */

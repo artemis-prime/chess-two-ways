@@ -1,33 +1,17 @@
 import type Action from '../Action'
-import type Piece from '../Piece'
-import { piecesExistAndAreEqual } from '../Piece'
-import type Square from '../Square'
-import { squaresEqual } from '../Square'
+import type Move from '../Move'
 
 class Resolution {
-  readonly piece: Piece
-  readonly from: Square
-  readonly to: Square
+  readonly move: Move
   readonly action: Action | null
 
   constructor(
-    piece: Piece,
-    from: Square,
-    to: Square,
+    move: Move,
     action: Action | null
   ) {
-    this.piece = piece
-    this.from = from
-    this.to = to,
+    this.move = move
     this.action = action
   }
-
-  samePieceAndSquares(toTry: Omit<Resolution, 'action' | 'samePieceAndSquares'>): boolean {
-    return squaresEqual(this.to, toTry.to) &&
-    squaresEqual(this.from, toTry.from) &&
-    piecesExistAndAreEqual(this.piece, toTry.piece) 
-  }
-  
 }
 
 export { Resolution as default }

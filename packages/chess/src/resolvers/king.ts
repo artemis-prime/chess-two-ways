@@ -3,20 +3,19 @@ import type {
   Board,
   Color,
   Side,
-  Square,
-  Console,
+  Position,
 } from '..'
 
 import { FILES } from '..'
 
   // from must be populated
-const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, asSide: Side): boolean => {
+const canBeCapturedAlongRank = (board: Board, from: Position, to: Position, asSide: Side): boolean => {
   if (from.rank === to.rank) {
     const delta = FILES.indexOf(to.file) - FILES.indexOf(from.file)
     if (delta < 0) {
         // zero based, but ok since indexed from FILES
       for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-        if (board.squareCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
+        if (board.positionCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
           return true
         }
       }
@@ -24,7 +23,7 @@ const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, asSide: 
     else {
         // zero based, but ok since indexed from FILES
       for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-        if (board.squareCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
+        if (board.positionCanBeCaptured({rank: from.rank, file: FILES[fileIndex]}, asSide)) {
           return true
         }
       }
@@ -34,8 +33,8 @@ const canBeCapturedAlongRank = (board: Board, from: Square, to: Square, asSide: 
 }
 
 const legalMove = (
-  from: Square, 
-  to: Square, 
+  from: Position, 
+  to: Position, 
 ): boolean => {
   
   const deltaRank = to.rank - from.rank
@@ -52,9 +51,9 @@ const legalMove = (
 
 const amCastling = (
   board: Board, 
-  from: Square, 
-  to: Square,
-  con?: Console
+  from: Position, 
+  to: Position,
+  messageFn?: (s: String) => void
 ): boolean => {
 
   // No need to test the position of 'from', since the this._canCastle flag 
@@ -69,8 +68,8 @@ const amCastling = (
   if (correctSquares) {
     const reasonDenied = [] as string[]
     eligable = board.eligableToCastle(color, kingside, reasonDenied)
-    if (!eligable && con) {
-      con.writeln(reasonDenied[0])
+    if (!eligable && messageFn) {
+      messageFn(reasonDenied[0])
     }
   }
 
@@ -86,9 +85,9 @@ const amCastling = (
 
 const resolve = (
   board: Board,
-  from: Square, 
-  to: Square, 
-  con?: Console
+  from: Position, 
+  to: Position, 
+  messageFn?: (s: String) => void
 ): Action | null => {
   
   if (legalMove(from, to)) {
@@ -101,7 +100,7 @@ const resolve = (
       return 'capture'
     }
   }
-  else if (amCastling(board, from, to, con)) {
+  else if (amCastling(board, from, to, messageFn)) {
     return 'castle'
   }
   return null 

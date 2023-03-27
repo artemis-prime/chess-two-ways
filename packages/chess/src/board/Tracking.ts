@@ -1,9 +1,9 @@
 import type { PrimaryPieceType } from '../Piece'
-import type Square from '../Square'
+import type Position from '../Position'
 
 interface TrackingForSide {
-  primaries: Map<PrimaryPieceType, Square[]>
-  king: Square
+  primaries: Map<PrimaryPieceType, Position[]>
+  king: Position
   castling: {
     hasCastled: boolean,
     kingHasMoved: boolean
@@ -18,7 +18,7 @@ interface TrackingForSide {
 class Tracking {
 
   white: TrackingForSide = {
-    primaries: new Map<PrimaryPieceType, Square[]>(),
+    primaries: new Map<PrimaryPieceType, Position[]>(),
     king: {rank: 1, file: 'e'},
     castling: {
       hasCastled: false,
@@ -31,7 +31,7 @@ class Tracking {
   }
 
   black: TrackingForSide = {
-    primaries: new Map<PrimaryPieceType, Square[]>(),
+    primaries: new Map<PrimaryPieceType, Position[]>(),
     king: {rank: 8, file: 'e'},
     castling: {
       hasCastled: false,
@@ -53,7 +53,7 @@ const syncTrackingForSide = (target: TrackingForSide, source: TrackingForSide) =
   const deepArrayCopy = sourceMapAsArray.map(([key, value]) => (
     [key, [...value]]
   ))
-  target.primaries = new Map<PrimaryPieceType, Square[]>(deepArrayCopy as typeof sourceMapAsArray)
+  target.primaries = new Map<PrimaryPieceType, Position[]>(deepArrayCopy as typeof sourceMapAsArray)
 
   target.king = source.king
   target.castling.hasCastled = source.castling.hasCastled 

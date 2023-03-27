@@ -1,9 +1,9 @@
-import type { Action, Board, Square, Console } from '..'
+import type { Action, Board, Position } from '..'
 
 const legalMove = (
   board: Board,
-  from: Square, 
-  to: Square, 
+  from: Position, 
+  to: Position, 
 ): boolean => {
   
   return (
@@ -17,9 +17,9 @@ const legalMove = (
 
 const resolve = (
   board: Board,
-  from: Square, 
-  to: Square, 
-  con?: Console
+  from: Position, 
+  to: Position, 
+  messageFn?: (s: String) => void
 ): Action | null => {
   
   if (legalMove(board, from, to)) {

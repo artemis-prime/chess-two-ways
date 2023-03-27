@@ -12,12 +12,17 @@ import '~/styles/main.scss'
 import '~/styles/actionFeedback.scss'
 
 const Side: React.FC<PropsWithChildren> = ({children}) => (
-  <Box css={{
-    flex: '1 1 0', 
-    //border: '3px solid green',
-  }}>
+  <Flex
+    justify='center'
+    align='center'
+
+    css={{
+      flex: '1 1 0', 
+      //border: '3px solid green',
+    }}
+  >
     {children}
-  </Box>
+  </Flex>
 )
 
 const UI: React.FC<{}> = () => (

@@ -3,7 +3,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { useDrag  } from 'react-dnd'
 
-import type { Square, Piece } from '@artemis-prime/chess-domain'
+import type { Position, Piece } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
@@ -14,23 +14,23 @@ export interface SpecificPieceProps {
 
 const PieceComponent: React.FC<{
   piece: Piece,
-  square: Square
+  position: Position
 }> = observer(({
   piece,
-  square
+  position
 }) => {
+
   const game = useGame()
-  const [{ isDragging, canDrag }, drag, previewConnect] = useDrag(() => ({
+  const [{ isDragging, canDrag }, drag] = useDrag(() => ({
     type: DND_ITEM_NAME,
-    item: {piece, from: square} as DnDPiece,
+    item: {piece, from: position} as DnDPiece,
     canDrag: (monitor) => (game.currentTurn === piece.color),
     end: (item, monitor) => { game.endResolution() },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
       canDrag: !!monitor.canDrag()
     }),
-  }), [square, piece])
-
+  }), [position, piece])
 
   const SpecificPiece = registry.get(piece.type) as React.ComponentType<SpecificPieceProps>
   const pieceSize = piece.type === 'pawn' ? '80%' :'94%'

@@ -6,23 +6,35 @@ import React, {
   useState
 } from 'react'
 
-import type { Action, Square, Piece, Side } from '@artemis-prime/chess-domain'
+import type { 
+  Action,
+  ActionRecord,
+  Move,
+  Position,  
+  Side 
+} from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 
 export interface VisualFeedback {
-  kingInCheck: Square | null
-  inCheckFrom: Square[]
+  kingInCheck: Position | null
+  inCheckFrom: Position[]
   action: Action | null
   note: any | null
   fastTick: boolean
   slowTick: boolean
+  messages: ConsoleMessage[]
 }
 
 const VisualFeedbackContext = React.createContext<VisualFeedback | undefined>(undefined) 
  
 export const useVisualFeedback = (): VisualFeedback =>  {
   return useContext(VisualFeedbackContext) as VisualFeedback
+}
+
+export interface ConsoleMessage {
+  message: string
+  note: any
 }
 
 export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
@@ -34,10 +46,20 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   const [slowTick, setSlowTick] = useState<boolean>(false)
   const [action, _setAction] = useState<Action | null>(null)
   const [note, setNote] = useState<any | null>(null)
-  const [inCheckFrom, setInCheckFrom] = useState<Square[]>([])
-  const [kingInCheck, setKingInCheck] = useState<Square | null>(null)
+  const [inCheckFrom, setInCheckFrom] = useState<Position[]>([])
+  const [kingInCheck, setKingInCheck] = useState<Position | null>(null)
+
+  const [messages, setMessages] = useState<ConsoleMessage[]>([])
 
   const game = useGame()
+
+
+  const message = (m: string, type_?: string): void => {
+    setMessages((prev) => ([...prev, {
+      message: (m) ? m : '',
+      note: (type_) ? type_ : 'none'
+    }]))
+  } 
 
   const clearActionResolutionFeedback = (): void => { 
     _setAction(null)
@@ -49,43 +71,50 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     setNote(_note) 
   }
 
-  const sideIsInCheck = (side: Side, kingInCheck_: Square, inCheckFrom_: Square[]): void => {
+  const inCheck = (side: Side, kingInCheck_: Position, inCheckFrom_: Position[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
   }
 
-  const sideIsNotInCheck = (side: Side): void => {
+  const notInCheck = (side: Side): void => {
     setKingInCheck(null)
     setInCheckFrom([])
   }
 
-  const actionResolved = (piece: Piece, from: Square, to: Square, action: Action | null): void => {
+  const actionResolved = (m: Move, action: Action | null): void => {
     if (!action) {
       clearActionResolutionFeedback()  
     }
     else {
       const rooksToSpread: any = {}
       if (action === 'castle') {
-        rooksToSpread.rooks = (to.file === 'g') 
+        rooksToSpread.rooks = (m.to.file === 'g') 
           ? 
-          {from: {file: 'h', rank: from.rank}, to: {file: 'f', rank: from.rank}} 
+          {from: {file: 'h', rank: m.from.rank}, to: {file: 'f', rank: m.from.rank}} 
           : 
-          {from: {file: 'a', rank: from.rank}, to: {file: 'd', rank: from.rank}}
+          {from: {file: 'a', rank: m.from.rank}, to: {file: 'd', rank: m.from.rank}}
       }
-      setActionResolutionFeedback(action, {piece, from, to, ...rooksToSpread})  
+      setActionResolutionFeedback(action, {...m, ...rooksToSpread})  
     }
   }
 
-  const actionTaken = (piece: Piece, from: Square, to: Square, action: Action): void => {
+  const actionTaken = (r: ActionRecord): void => {
     clearActionResolutionFeedback()
   }
 
+  const actionUndon = (r: ActionRecord): void => {}
+  const actionRedon = (r: ActionRecord): void => {}
+
+
   useEffect(() => {
-    game.setChessListener({
+    game.addChessListener({
       actionResolved,
       actionTaken,
-      sideIsInCheck,
-      sideIsNotInCheck
+      actionUndon,
+      actionRedon,
+      inCheck,
+      notInCheck,
+      message
     })
   })
 
@@ -140,7 +169,8 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       inCheckFrom,
       note,
       fastTick,
-      slowTick
+      slowTick,
+      messages
     }}>
       {children}
     </VisualFeedbackContext.Provider>

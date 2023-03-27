@@ -7,35 +7,33 @@ import {
 
 import type { default as Board, BoardInternal } from './Board'
 import { createBoard } from './Board'
+import type Move from './Move'
+import { movesEqual } from './Move'
 import type Action from './Action'
-import type Piece from './Piece'
 import type { PieceType, PrimaryPieceType, Side } from './Piece'
-import { pieceToString, opponent } from './Piece'
-import type Square from './Square'
-import { copySquare, squareToString } from './Square'
+import { opponent } from './Piece'
+import type Position from './Position'
+import { copyPosition } from './Position'
 import type ChessListener from './ChessListener'
 
-import type ActionResolver from './game/ActionResolver'
-import type ActionDescriptor from './game/ActionDescriptor'
+import type ActionResolverFn from './game/ActionResolverFn'
+import type ActionRecord from './ActionRecord'
 import Resolution from './game/Resolution'
-import type Console from './Console'
-import { actionDescToString } from './game/util'
+import Notifier from './game/Notifier'
 
 import registry from './game/resolverRegistry'
 
 interface Game {
 
-    // Determine which valid action is intended. Could be used 
-    // during drag'n'drop canDropOnMe() type functions.
+    // Determine which valid action is intended by the move. 
+    // Could be used during drag'n'drop canDropOnMe() type functions.
     // 
-    // Resolved Action should cached for same params until:
-    //  1) takeAction() is called for the same params
+    // Resolved Action should cached for same move until:
+    //  1) takeAction() is called for the same move
     //  2) endResolution() is called 
     // (This is akin to debouncing but not specific to web)
-    // takeAction() can be called directly without resolveAction first,
-    // in which case it will get called internally.
-  resolveAction(p: Piece, from: Square, to: Square): Action | null
-  takeAction(p: Piece, from: Square, to: Square): void
+  resolveAction(m: Move): Action | null
+  takeAction(m: Move): void
   endResolution(): void
   
   undo(): void
@@ -47,8 +45,7 @@ interface Game {
   reset(): void
   get currentTurn(): Side
 
-  setConsole(c: Console): void
-  setChessListener(l: ChessListener): void
+  addChessListener(l: ChessListener): void
 
   getBoard(): Board
 }
@@ -61,8 +58,8 @@ class GameImpl implements Game {
   private _checkCheckingBoard: BoardInternal
 
   private _currentTurn: Side = 'white' 
-  private _resolvers: Map<PieceType, ActionResolver>  = registry 
-  private _actions = [] as ActionDescriptor[] 
+  private _resolvers: Map<PieceType, ActionResolverFn>  = registry 
+  private _actions = [] as ActionRecord[] 
     // For managing undo / redo.  The index of the current state
     // within _actions.  -1 is the original state of the board.
     // That way, _action[0] is conveniently the first move,
@@ -70,12 +67,7 @@ class GameImpl implements Game {
   private _stateIndex = -1 
   private _cachedResolution: Resolution | null = null 
 
-  private _console: Console = {
-    write: (t: string): void => {},
-    writeln: (t?: string): void => {console.log(t)}
-  }
-
-  private _chessListener: ChessListener 
+  private _notifier: Notifier = new Notifier() 
 
   constructor() {
 
@@ -114,7 +106,7 @@ class GameImpl implements Game {
     this._currentTurn = 'white'
     this._mainBoard.reset()
     this._checkCheckingBoard.reset()
-    this._actions = [] as ActionDescriptor[]
+    this._actions = [] as ActionRecord[]
     this._stateIndex = -1 
   }
 
@@ -122,17 +114,13 @@ class GameImpl implements Game {
     return this._currentTurn
   }
 
-  setConsole(c: Console): void {
-    this._console = c
-  }
-
-  setChessListener(l: ChessListener): void {
-    this._chessListener = l
+  addChessListener(l: ChessListener): void {
+    this._notifier.addChessListener(l)
   }
 
     // Do not call directly.  Passed to Board instance to 
     // implement checkChecking
-  private _canCapture(board: Board, pieceType: PieceType, from: Square, to: Square): boolean {
+  private _canCapture(board: Board, pieceType: PieceType, from: Position, to: Position): boolean {
     let result: Action | null = null
     const resolver = this._resolvers.get(pieceType)
 
@@ -142,35 +130,25 @@ class GameImpl implements Game {
     return !!result?.includes('capture')
   }
 
-  resolveAction(
-    piece: Piece, 
-    from: Square, 
-    to: Square, 
-  ): Action | null {
+  resolveAction(move: Move): Action | null {
 
-    if (
-      !this._cachedResolution 
-      ||
-      !this._cachedResolution.samePieceAndSquares({to, from, piece})
-    ) {
-      const resolver = this._resolvers.get(piece.type)
+    if (!this._cachedResolution || !movesEqual(this._cachedResolution.move, move)) {
+      const resolver = this._resolvers.get(move.piece.type)
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
-        const toRank = to.rank
-        let action = resolver(this._checkCheckingBoard, from, to, this._console)
+        let action = resolver(this._checkCheckingBoard, move.from, move.to, this._notifier.message.bind(this._notifier))
         if (action) {
-          const desc = this._createActionDescriptor(piece, from, to, action)
-          const wasInCheck = this._mainBoard.sideIsInCheck(desc.piece.color) 
-          this._checkCheckingBoard.applyAction(desc, 'do')
-          if (this._checkCheckingBoard.sideIsInCheck(desc.piece.color)) {
-            this._console.writeln(`Resulting action by ${desc.piece.color} not allowed as it would ${wasInCheck ? 'leave it' : 'put it'}) in check!`)  
+          const r = this._createActionRecord(move, action)
+          const wasInCheck = this._mainBoard.sideIsInCheck(r.piece.color) 
+          this._checkCheckingBoard.applyAction(r, 'do')
+          if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
+            this._notifier.message(`Resulting action by ${r.piece.color} not allowed as it would ` +
+              `${wasInCheck ? 'leave it' : 'put it'}) in check!`, 'warning')  
             action = null
           }
         } 
-        if (this._chessListener) {
-          this._chessListener.actionResolved(piece, from, to, action)
-        }
-        this._cachedResolution = new Resolution(piece, from, to, action)
+        this._notifier.actionResolved(move, action)
+        this._cachedResolution = new Resolution(move, action)
       } 
     }
       // Just for typescript's sake
@@ -184,30 +162,25 @@ class GameImpl implements Game {
   }
 
   takeAction(
-    piece: Piece, 
-    from: Square, 
-    to: Square, 
+    move: Move,
     promoteTo?: PrimaryPieceType
   ): void {
 
     const action = this._cachedResolution?.action
     if (action) {
         this.endResolution()
-        const desc = this._createActionDescriptor(piece, from, to, action, promoteTo)
-        this._console.writeln('[action]: ' + actionDescToString(desc))
-        this._mainBoard.applyAction(desc, 'do')
-        if (this._chessListener) {
-          this._chessListener.actionTaken(piece, from, to, action)
-        }
+        const r = this._createActionRecord(move, action, promoteTo)
+        this._mainBoard.applyAction(r, 'do')
+        this._notifier.actionTaken(r)
         if (this._stateIndex + 1 < this._actions.length) {
             // If we've undone actions since the most recent "actual" move,
             // truncate the stack since we can no longer meaningfully 
             // 'redo' actions more recent than the one we're currently on.
           this._actions.length = this._stateIndex + 1 
         }
-        this._actions.push(desc)
+        this._actions.push(r)
         this._stateIndex = this._actions.length - 1
-        this._handleNotifyCheck(opponent(desc.piece.color))
+        this._handleNotifyCheck(opponent(r.piece.color))
         this._toggleTurn()
     }
   }
@@ -219,8 +192,8 @@ class GameImpl implements Game {
   undo() {
     if (this.canUndo) {
       const r = this._actions[this._stateIndex]
-      this._console.writeln('[<< undo]: ' + actionDescToString(r))
       this._mainBoard.applyAction(r, 'undo')
+      this._notifier.actionUndon(r)
       this._handleNotifyCheck(r.piece.color)
       this._stateIndex--
       this._toggleTurn()
@@ -235,30 +208,28 @@ class GameImpl implements Game {
     if (this.canRedo) {
       this._stateIndex++
       const r = this._actions[this._stateIndex]
-      this._console.writeln('[redo >>]: ' + actionDescToString(r))
       this._mainBoard.applyAction(r, 'redo')
+      this._notifier.actionRedon(r)
       this._handleNotifyCheck(opponent(r.piece.color))
       this._toggleTurn()
     }
   }
 
-  private _createActionDescriptor(
-    piece: Piece,
-    from: Square, 
-    to: Square, 
+  private _createActionRecord(
+    move: Move,
     action: Action,
     promoteTo?: PrimaryPieceType, 
-  ): ActionDescriptor {
+  ): ActionRecord {
       // deep copy all
     return {
-      piece: {...piece},
-      from: copySquare(from), 
-      to: copySquare(to),
+      piece: {...move.piece},
+      from: copyPosition(move.from), 
+      to: copyPosition(move.to),
       action,
       promotedTo: action.includes('promote') ? (promoteTo ? promoteTo : 'queen') : undefined,
       captured: (action === 'capture' || action === 'capture-promote') 
         ? 
-        {...this._mainBoard.pieceAt(to)!} 
+        {...this._mainBoard.pieceAt(move.to)!} 
         : 
         undefined
     }
@@ -266,15 +237,12 @@ class GameImpl implements Game {
 
   private _handleNotifyCheck(side: Side): void {
 
-    const squareInCheckFrom = this._mainBoard.sideIsInCheckFrom(side)
-    if (this._chessListener) {
-      if (squareInCheckFrom.length) {
-        this._chessListener.sideIsInCheck(side, this._mainBoard.kingsSquare(side), squareInCheckFrom)
-
-      }
-      else {
-        this._chessListener.sideIsNotInCheck(side)  
-      }
+    const positionsInCheckFrom = this._mainBoard.sideIsInCheckFrom(side)
+    if (positionsInCheckFrom.length) {
+      this._notifier.inCheck(side, this._mainBoard.kingsPosition(side), positionsInCheckFrom)
+    }
+    else {
+      this._notifier.notInCheck(side)  
     }
   }
 

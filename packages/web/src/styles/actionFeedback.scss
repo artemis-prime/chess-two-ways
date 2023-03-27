@@ -52,3 +52,33 @@ svg {
     }
   }
 }
+
+.message-outer {
+
+  &.message-type-check {
+    color: rgb(255, 136, 0);
+  }
+  &.message-type-warning,
+  &.message-type-capture,
+  &.message-type-capture-promote {
+    color: rgb(255, 136, 0); //rgb(241, 219, 156);
+  }
+  &.message-type-undo,
+  &.message-type-redo {
+    color: #ccc;
+  }
+
+  .postfix .unicode-chess-piece {
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 18px;
+    line-height: 20px;
+    &.w {
+      color: #f7f0be;
+    }
+    &.b {
+      background-color: rgba(200, 200, 200, 0.4);
+      color: #573131;
+    }
+  } 
+}

@@ -1,20 +1,20 @@
-import type { Action, Board, Square, Console } from '..'
+import type { Action, Board, Position } from '..'
 
 import { FILES } from '..'
 
-const pawnOnHomeRow = (board: Board, sq: Square): boolean => {
-  const color = board.colorAt(sq)
+const pawnOnHomeRow = (board: Board, pos: Position): boolean => {
+  const color = board.colorAt(pos)
   return (
-    sq.rank === 2 && color === 'white'
+    pos.rank === 2 && color === 'white'
     ||
-    sq.rank === 7 && color === 'black'
+    pos.rank === 7 && color === 'black'
   )
 }
 
 const isCapturing = (
   board: Board, 
-  from: Square,  
-  to: Square 
+  from: Position,  
+  to: Position 
 ): boolean => {
   const fromPiece = board.pieceAt(from)
   const toPiece = board.pieceAt(to)
@@ -35,9 +35,9 @@ const isCapturing = (
 
 const resolve = (
   board: Board, 
-  from: Square,  
-  to: Square,
-  con?: Console 
+  from: Position,  
+  to: Position,
+  messageFn?: (s: String) => void
 ): Action | null => {
   
   const fromPiece = board.pieceAt(from)

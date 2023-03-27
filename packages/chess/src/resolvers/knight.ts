@@ -1,10 +1,10 @@
-import type { Action, Board, Square, Console } from '..'
+import type { Action, Board, Position } from '..'
 
 import { FILES } from '..'
 
 const legalMove = (
-  from: Square, 
-  to: Square, 
+  from: Position, 
+  to: Position, 
 ): boolean => {
 
   const deltaRank = to.rank - from.rank
@@ -18,9 +18,9 @@ const legalMove = (
 
  const resolve = (
   board: Board,
-  from: Square, 
-  to: Square, 
-  con?: Console
+  from: Position, 
+  to: Position, 
+  messageFn?: (s: String) => void
 ): Action | null => {
   
   const fromColor = board.colorAt(from)
