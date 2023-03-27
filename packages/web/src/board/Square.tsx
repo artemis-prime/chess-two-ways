@@ -38,16 +38,15 @@ const SquareComponent: React.FC<{
   )
 
   useEffect(() => {
-    let imACastlingRookSquare: ('from' | 'to' | null) = null
+    let imACastlingRookSquare: 'from' | 'to' | null = null
     if (feedback.action === 'castle') {
 
-      const homeRank = (feedback.note.from.piece?.color === 'white') ? 1 : 8
-        // Which pair of Files (['from', 'to']), correspond to the rook involved?
-      const rookFilesInvolved = (feedback.note.to.file === 'g') ? ['h', 'f'] : ['a', 'd']  
-      
-      if ((square.rank === homeRank) && rookFilesInvolved.includes(square.file)) {
-        imACastlingRookSquare = (square.file === rookFilesInvolved[0]) ? 'from' : 'to'  
+      if (squaresEqual(square, feedback.note.rooks.from)) {
+        imACastlingRookSquare = 'from'  
       } 
+      else if (squaresEqual(square, feedback.note.rooks.to)) {
+        imACastlingRookSquare = 'to'  
+      }
     } 
     setRookSquareCastling(imACastlingRookSquare) 
   }, [feedback.action, square] )
@@ -98,22 +97,19 @@ const SquareComponent: React.FC<{
         `file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}` 
       }
     >
-      <div  style={{
-        position: 'absolute', 
-        top: 0, 
-        bottom: 0, 
-        left: 0, 
-        right: 0,
-        //backgroundColor: 'grey'
-        //border: '1px orange solid',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-      }} 
-      className={`effects ${effectClass}`}
+      <div  
+        style={{
+          position: 'absolute', 
+          top: 0, 
+          bottom: 0, 
+          left: 0, 
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+        }} 
+        className={`effects ${effectClass}`}
       >
-
       {(!!piece) && (
         <PieceComponent square={square} piece={piece} />  
       )}

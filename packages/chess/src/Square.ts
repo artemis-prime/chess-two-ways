@@ -10,7 +10,7 @@ interface Square {
 }
 
 const squaresEqual = (s1: Square, s2: Square) => (
-  (s1.file === s2.file) && (s1.rank === s2.rank)
+  !!s1 && !!s2 && (s1.file === s2.file) && (s1.rank === s2.rank)
 )
 
   // some are instance of BoardSquare in certain case. 

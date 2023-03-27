@@ -9,6 +9,7 @@ import Dash from './Dash'
 
 import '~/styles/fonts.scss'
 import '~/styles/main.scss'
+import '~/styles/actionFeedback.scss'
 
 const Side: React.FC<PropsWithChildren> = ({children}) => (
   <Box css={{

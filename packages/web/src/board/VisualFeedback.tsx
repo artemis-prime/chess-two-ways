@@ -6,7 +6,7 @@ import React, {
   useState
 } from 'react'
 
-import type { Action, Square, Side } from '@artemis-prime/chess-domain'
+import type { Action, Square, Piece, Side } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
 
@@ -39,6 +39,16 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
 
   const game = useGame()
 
+  const clearActionResolutionFeedback = (): void => { 
+    _setAction(null)
+    setNote(null)
+  }
+
+  const setActionResolutionFeedback = (a: Action, _note?: any): void => {
+    _setAction(a)
+    setNote(_note) 
+  }
+
   const sideIsInCheck = (side: Side, kingInCheck_: Square, inCheckFrom_: Square[]): void => {
     setKingInCheck(kingInCheck_)
     setInCheckFrom(inCheckFrom_)
@@ -49,17 +59,25 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     setInCheckFrom([])
   }
 
-  const actionResolved = (action: Action | null, from: Square, to: Square): void => {
+  const actionResolved = (piece: Piece, from: Square, to: Square, action: Action | null): void => {
     if (!action) {
-      clear()  
+      clearActionResolutionFeedback()  
     }
     else {
-      setAction(action, {from, to})  
+      const rooksToSpread: any = {}
+      if (action === 'castle') {
+        rooksToSpread.rooks = (to.file === 'g') 
+          ? 
+          {from: {file: 'h', rank: from.rank}, to: {file: 'f', rank: from.rank}} 
+          : 
+          {from: {file: 'a', rank: from.rank}, to: {file: 'd', rank: from.rank}}
+      }
+      setActionResolutionFeedback(action, {piece, from, to, ...rooksToSpread})  
     }
   }
 
-  const actionTaken = (action: Action, from: Square, to: Square): void => {
-    clear()
+  const actionTaken = (piece: Piece, from: Square, to: Square, action: Action): void => {
+    clearActionResolutionFeedback()
   }
 
   useEffect(() => {
@@ -70,16 +88,6 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       sideIsNotInCheck
     })
   })
-
-  const clear = (): void => { 
-    _setAction(null)
-    setNote(null)
-  }
-
-  const setAction = (a: Action, _note?: any): void => {
-    _setAction(a)
-    setNote(_note) 
-  }
 
   useEffect(() => {
 
@@ -103,6 +111,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     }
 
     if (action && !fastIntervalRef.current) {
+      setFastTick(true)
       fastIntervalRef.current = setInterval(() => {
         setFastTick((p) => (!p))
       }, 300)
@@ -111,6 +120,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       clearFast()
     }
     if (kingInCheck && !slowIntervalRef.current) {
+      setSlowTick(true)
       slowIntervalRef.current = setInterval(() => {
         setSlowTick((p) => (!p))
       }, 500)

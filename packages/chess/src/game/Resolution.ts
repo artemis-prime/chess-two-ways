@@ -1,6 +1,6 @@
 import type Action from '../Action'
 import type Piece from '../Piece'
-import { piecesEqual } from '../Piece'
+import { piecesExistAndAreEqual } from '../Piece'
 import type Square from '../Square'
 import { squaresEqual } from '../Square'
 
@@ -25,7 +25,7 @@ class Resolution {
   samePieceAndSquares(toTry: Omit<Resolution, 'action' | 'samePieceAndSquares'>): boolean {
     return squaresEqual(this.to, toTry.to) &&
     squaresEqual(this.from, toTry.from) &&
-    piecesEqual(this.piece, toTry.piece) 
+    piecesExistAndAreEqual(this.piece, toTry.piece) 
   }
   
 }

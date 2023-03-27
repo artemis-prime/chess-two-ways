@@ -14,6 +14,7 @@ const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
 
   const gameBoard = useBoard()
   const feedback = useVisualFeedback()
+    // Allows various forms of feedpack to provide pulsing / flashing 
   const slowTick = feedback.slowTick ? 'slow-tick' : 'no-slow-tick'
   const fastTick = feedback.fastTick ? 'fast-tick' : 'no-fast-tick'
 

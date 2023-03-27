@@ -7,15 +7,18 @@ import {
 import type Square from './Square'
 import { 
   squaresEqual,   
+  type File,
   type Rank,
   RANKS_REVERSE,
   FILES,
  } from './Square'
-import type { 
-  default as Piece, 
-  Color, 
-  PrimaryPieceType, 
-  Side 
+import { 
+  type default as Piece, 
+  type Color, 
+  type PrimaryPieceType, 
+  type Side, 
+  opponent,
+  piecesExistAndAreEqual
 } from './Piece'
 import { PRIMARY_PIECES } from './Piece'
 import type BoardSquare from './BoardSquare'
@@ -448,42 +451,88 @@ class BoardImpl implements BoardInternal {
     }
   }
 
-  private _getSurroundingSquares(sq: Square) {
+  private _getSurroundingSquares(sq: Square) /* it returns what it returns ;) */ {
+
+    const hasN = (sq: Square) => (sq.rank <= 7)
+    const hasS = (sq: Square) => (sq.rank >= 2)
+    const hasE = (sq: Square) => (FILES.indexOf(sq.file) <= 6)
+    const hasW = (sq: Square) => (FILES.indexOf(sq.file) >= 1)
+
+    const getNRank = (sq: Square): Rank => (sq.rank + 1 as Rank)
+    const getSRank = (sq: Square): Rank => (sq.rank - 1 as Rank)
+    const getEFile = (sq: Square): File => (FILES[FILES.indexOf(sq.file) + 1])
+    const getWFile = (sq: Square): File => (FILES[FILES.indexOf(sq.file) - 1])
 
     return {
-      N: (sq.rank <= 7) ? { rank: sq.rank + 1, file: sq.file, piece: this.pieceAt({rank: sq.rank + 1 as Rank, file: sq.file})} : undefined,
-      NE: (sq.rank <= 7 && FILES.indexOf(sq.file) <= 6) ? { rank: sq.rank + 1, file: FILES[FILES.indexOf(sq.file) + 1], piece: this.pieceAt({rank: sq.rank + 1 as Rank, file: FILES[FILES.indexOf(sq.file) + 1]})} : undefined,
-      E: (FILES.indexOf(sq.file) <= 6) ? { rank: sq.rank, file: FILES[FILES.indexOf(sq.file) + 1], piece: this.pieceAt({ rank: sq.rank, file: FILES[FILES.indexOf(sq.file) + 1]})} : undefined,
-      SE: (sq.rank > 2 && FILES.indexOf(sq.file) <= 6) ? { rank: sq.rank - 1, file: FILES[FILES.indexOf(sq.file) + 1], piece: this.pieceAt({ rank: sq.rank - 1 as Rank, file: FILES[FILES.indexOf(sq.file) + 1]})} : undefined,
-      S: (sq.rank > 2) ? { rank: sq.rank - 1, file: sq.file, piece: this.pieceAt({ rank: sq.rank - 1 as Rank, file: sq.file})} : undefined,
-      SW: (sq.rank > 2 && FILES.indexOf(sq.file) >= 1) ? { rank: sq.rank - 1, file: FILES[FILES.indexOf(sq.file) - 1]} : undefined,
-      W: (FILES.indexOf(sq.file) >= 1) ? { rank: sq.rank, file: FILES[FILES.indexOf(sq.file) - 1], piece: this.pieceAt({ rank: sq.rank, file: FILES[FILES.indexOf(sq.file) - 1]})} : undefined,
-      NW: (sq.rank <= 7 && FILES.indexOf(sq.file) >= 1) ? { rank: sq.rank + 1, file: FILES[FILES.indexOf(sq.file) - 1], piece: this.pieceAt({ rank: sq.rank + 1 as Rank, file: FILES[FILES.indexOf(sq.file) - 1]})} : undefined,
+      N: hasN(sq) ? 
+        { 
+          rank: getNRank(sq), 
+          file: sq.file, 
+          piece: this.pieceAt({rank: getNRank(sq), file: sq.file})
+        } : undefined,
+      NE: (hasN(sq) && hasE(sq)) ? 
+        { 
+          rank: getNRank(sq), 
+          file: getEFile(sq), 
+          piece: this.pieceAt({rank: getNRank(sq), file: getEFile(sq)})
+        } : undefined,
+      E: (hasE(sq)) ? 
+        { 
+          rank: sq.rank, 
+          file: getEFile(sq), 
+          piece: this.pieceAt({ rank: sq.rank, file: getEFile(sq)})
+        } : undefined,
+      SE: (hasS(sq) && hasE(sq)) ? 
+        { 
+          rank: getSRank(sq), 
+          file: getEFile(sq), 
+          piece: this.pieceAt({rank: getSRank(sq), file: getEFile(sq)})
+        } : undefined,
+      S: (hasS(sq)) ? 
+        { 
+          rank: getSRank(sq), 
+          file: sq.file, 
+          piece: this.pieceAt({ rank: getSRank(sq), file: sq.file})
+        } : undefined,
+      SW: (hasS(sq) && hasW(sq)) ? 
+        { 
+          rank: getSRank(sq), 
+          file: getWFile(sq), 
+          piece: this.pieceAt({rank: getSRank(sq), file: getWFile(sq)})
+        } : undefined,
+      W: (hasW(sq)) ? 
+        { 
+          rank: sq.rank, 
+          file: getWFile(sq), 
+          piece: this.pieceAt({ rank: sq.rank, file: getWFile(sq)})
+        } : undefined,
+      NW: (hasN(sq) && hasW(sq)) ? 
+        { 
+          rank: getNRank(sq), 
+          file: getWFile(sq), 
+          piece: this.pieceAt({rank: getNRank(sq), file: getWFile(sq)})
+        } : undefined,
+        
       hasOpenDiagonal(): boolean {
         return (this.NE && !this.NE.piece) || (this.SE && !this.SE.piece) || (this.SW && !this.SW.piece) || (this.NW && !this.NW.piece)
       },
       hasOpenRankOrFile(): boolean {
-        return (this.N && !this.N.piece) || (this.S && !this.S.piece) || (this.S && !this.SW.piece) || (this.N && !this.NW.piece)
+        return (this.N && !this.N.piece) || (this.S && !this.S.piece) || (this.E && !this.E.piece) || (this.W && !this.W.piece)
       },
+        // All other opposing piece will be explicitly checked from their cached positions.
       getOpposingPawnsOrKing(sideToCapture: Side): BoardSquare[] {
-        const squares: BoardSquare[] = []
-        if (sideToCapture === 'white') {
-          if (this.NE && this.NE.piece && this.NE.piece!.color === 'black' && (this.NE.piece!.type === 'pawn' || this.NE.piece!.type === 'king')) {
-            squares.push(this.NE)
-          } 
-          if (this.NW && this.NW.piece && this.NW.piece!.color === 'black' && (this.NW.piece!.type === 'pawn' || this.NW.piece!.type === 'king')) {
-            squares.push(this.NW)
-          } 
-        }
-        else {
-          if (this.SE && this.SE.piece && this.SE.piece!.color === 'white' && (this.SE.piece!.type === 'pawn' || this.SE.piece!.type === 'king')) {
-            squares.push(this.SE)
-          } 
-          if (this.SW && this.SW.piece && this.SW.piece!.color === 'white' && (this.SW.piece!.type === 'pawn' || this.SW.piece!.type === 'king')) {
-            squares.push(this.SW)
-          } 
-        }
-        return squares
+
+        const possibleSquaresForOppositePawns = (sideToCapture === 'white') ? [this.NE, this.NW] : [this.SE, this.SW] 
+        const actualSquaresWithOppositePawns = possibleSquaresForOppositePawns.filter(
+          (sqToTest) => (piecesExistAndAreEqual(sqToTest?.piece, {color: opponent(sideToCapture), type: 'pawn'}))
+        )
+
+        const possibleSquaresForOppositeKing = [this.N, this.NE, this.NW, this.S, this.SE, this.SW]
+        const actualSquareWithOppositeKing = possibleSquaresForOppositeKing.find(
+          (sqToTest) => (piecesExistAndAreEqual(sqToTest?.piece, {color: opponent(sideToCapture), type: 'king'}))
+        )
+
+        return actualSquareWithOppositeKing ? [...actualSquaresWithOppositePawns, actualSquareWithOppositeKing] : actualSquaresWithOppositePawns
       }
     }
   }
@@ -494,8 +543,7 @@ class BoardImpl implements BoardInternal {
     booleanOrSquares: 'boolean' | 'squares' // boolean is faster
   ): Square[] | boolean {
 
-    const allCapturingSquares: Square[] = []
-
+    const primaryPieceDangers: Square[] = []
     const surrounding = this._getSurroundingSquares(sq)
     
     const typesToCheck: PrimaryPieceType[] = ['knight']
@@ -511,15 +559,15 @@ class BoardImpl implements BoardInternal {
     }
 
     for (let pieceType of typesToCheck) {
-      const squaresWithOpponent = this.tracking[asSide === 'white' ? 'black' : 'white'].primaries.get(pieceType)! 
-      if (squaresWithOpponent.length) {
-        for (let tryCaptureFrom of squaresWithOpponent) {
-          if (this._canCapture(this, pieceType, tryCaptureFrom, sq) ) {
+      const squaresWithOpponentOfThisType = this.tracking[opponent(asSide)].primaries.get(pieceType)! 
+      if (squaresWithOpponentOfThisType.length) {
+        for (let sqToTryCaptureFrom of squaresWithOpponentOfThisType) {
+          if (this._canCapture(this, pieceType, sqToTryCaptureFrom, sq) ) {
             if (booleanOrSquares === 'boolean') {
               return true
             }
             else {
-              allCapturingSquares.push(tryCaptureFrom)
+              primaryPieceDangers.push(sqToTryCaptureFrom)
             }
           }  
         }
@@ -528,9 +576,9 @@ class BoardImpl implements BoardInternal {
 
     const nearDangers = surrounding.getOpposingPawnsOrKing(asSide)
     if (booleanOrSquares === 'boolean') {
-      return !!(nearDangers.length > 0)
+      return (nearDangers.length > 0)
     }
-    return [...allCapturingSquares, ...nearDangers]
+    return [...primaryPieceDangers, ...nearDangers]
   }
 
   _dumpTracking(): void {

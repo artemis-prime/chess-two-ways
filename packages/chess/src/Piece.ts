@@ -68,8 +68,8 @@ interface Piece {
 
 type Side = Color
 
-const piecesEqual = (p1: Piece, p2: Piece) => (
-  (p1.type === p2.type) && (p1.color === p2.color)
+const piecesExistAndAreEqual = (p1: Piece, p2: Piece) => (
+  !!p1 && !!p2 && (p1.type === p2.type) && (p1.color === p2.color)
 )
 
 type PieceFormat = 'T' | 'Type' | 'cT' | 'c-Type' | 'color Type'
@@ -97,7 +97,7 @@ export {
   type Side,
   type PieceFormat,
   PRIMARY_PIECES,
-  piecesEqual,
+  piecesExistAndAreEqual,
   pieceToString,
   PIECE_TYPE_NAMES,
   opponent 

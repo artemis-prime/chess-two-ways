@@ -168,14 +168,9 @@ class GameImpl implements Game {
           }
         } 
         if (this._chessListener) {
-          this._chessListener.actionResolved(action, from, to)
+          this._chessListener.actionResolved(piece, from, to, action)
         }
-        this._cachedResolution = new Resolution(
-          piece,
-          from,
-          to,
-          action
-        )
+        this._cachedResolution = new Resolution(piece, from, to, action)
       } 
     }
       // Just for typescript's sake
@@ -184,7 +179,7 @@ class GameImpl implements Game {
   }
 
   endResolution(): void {
-    this._cachedResolution = undefined
+    this._cachedResolution = null
     //console.log('End resolution called')
   }
 
@@ -202,7 +197,7 @@ class GameImpl implements Game {
         this._console.writeln('[action]: ' + actionDescToString(desc))
         this._mainBoard.applyAction(desc, 'do')
         if (this._chessListener) {
-          this._chessListener.actionTaken(action, from, to)
+          this._chessListener.actionTaken(piece, from, to, action)
         }
         if (this._stateIndex + 1 < this._actions.length) {
             // If we've undone actions since the most recent "actual" move,
