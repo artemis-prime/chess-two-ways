@@ -13,7 +13,7 @@ import type Action from './Action'
 import type { PieceType, PrimaryPieceType, Side } from './Piece'
 import { opponent } from './Piece'
 import type Position from './Position'
-import { copyPosition } from './Position'
+import { copyPosition, positionToString } from './Position'
 import type ChessListener from './ChessListener'
 
 import type ActionResolverFn from './game/ActionResolverFn'
@@ -134,14 +134,17 @@ class GameImpl implements Game {
   resolveAction(move: Move): Action | null {
 
     if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
-      const resolver = this._resolvers.get(move.piece.type)
+      if (!move.piece) {
+        this._notifier.message(`There's no piece at ${positionToString}!`, 'mutable-warning') 
+      }
+      const resolver = this._resolvers.get(move.piece?.type)
       let action: Action | null = null
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
         action = resolver(this._checkCheckingBoard, move.from, move.to, this._notifier.message.bind(this._notifier))
         if (action) {
+          const wasInCheck = this._mainBoard.sideIsInCheck(move.piece.color) 
           const r = this._createActionRecord(move, action)
-          const wasInCheck = this._mainBoard.sideIsInCheck(r.piece.color) 
           this._checkCheckingBoard.applyAction(r, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
             this._notifier.message(`${actionRecordToLAN(r)} not possible as it would ` +

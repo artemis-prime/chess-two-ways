@@ -21,8 +21,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/chess",
-      "packages/web"
+      "packages/chess-core",
+      "packages/web-ui"
     ]
   },
   "dependencies": {
