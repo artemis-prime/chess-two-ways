@@ -145,7 +145,7 @@ class GameImpl implements Game {
           this._checkCheckingBoard.applyAction(r, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
             this._notifier.message(`${actionRecordToLAN(r)} not possible as it would ` +
-              `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'overwritable-ix: warning')  
+              `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'mutable-warning')  
             action = null
           }
         } 
