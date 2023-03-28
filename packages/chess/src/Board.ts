@@ -18,6 +18,7 @@ import {
   type PrimaryPieceType, 
   type Side, 
   opponent,
+  isOpponent,
   piecesExistAndAreEqual
 } from './Piece'
 import { PRIMARY_PIECES } from './Piece'
@@ -464,72 +465,47 @@ class BoardImpl implements BoardInternal {
     const getWFile = (pos: Position): File => (FILES[FILES.indexOf(pos.file) - 1])
 
     return {
-      N: hasN(pos) ? 
-        { 
-          rank: getNRank(pos), 
-          file: pos.file, 
-          piece: this.pieceAt({rank: getNRank(pos), file: pos.file})
-        } : undefined,
-      NE: (hasN(pos) && hasE(pos)) ? 
-        { 
-          rank: getNRank(pos), 
-          file: getEFile(pos), 
-          piece: this.pieceAt({rank: getNRank(pos), file: getEFile(pos)})
-        } : undefined,
-      E: (hasE(pos)) ? 
-        { 
-          rank: pos.rank, 
-          file: getEFile(pos), 
-          piece: this.pieceAt({ rank: pos.rank, file: getEFile(pos)})
-        } : undefined,
-      SE: (hasS(pos) && hasE(pos)) ? 
-        { 
-          rank: getSRank(pos), 
-          file: getEFile(pos), 
-          piece: this.pieceAt({rank: getSRank(pos), file: getEFile(pos)})
-        } : undefined,
-      S: (hasS(pos)) ? 
-        { 
-          rank: getSRank(pos), 
-          file: pos.file, 
-          piece: this.pieceAt({ rank: getSRank(pos), file: pos.file})
-        } : undefined,
-      SW: (hasS(pos) && hasW(pos)) ? 
-        { 
-          rank: getSRank(pos), 
-          file: getWFile(pos), 
-          piece: this.pieceAt({rank: getSRank(pos), file: getWFile(pos)})
-        } : undefined,
-      W: (hasW(pos)) ? 
-        { 
-          rank: pos.rank, 
-          file: getWFile(pos), 
-          piece: this.pieceAt({ rank: pos.rank, file: getWFile(pos)})
-        } : undefined,
-      NW: (hasN(pos) && hasW(pos)) ? 
-        { 
-          rank: getNRank(pos), 
-          file: getWFile(pos), 
-          piece: this.pieceAt({rank: getNRank(pos), file: getWFile(pos)})
-        } : undefined,
-        
-      hasOpenDiagonal(): boolean {
-        return (this.NE && !this.NE.piece) || (this.SE && !this.SE.piece) || (this.SW && !this.SW.piece) || (this.NW && !this.NW.piece)
+      N: hasN(pos) ? this.squares[getNRank(pos)][pos.file] : undefined,
+      NE: (hasN(pos) && hasE(pos)) ? this.squares[getNRank(pos)][getEFile(pos)] : undefined,
+      E: (hasE(pos)) ? this.squares[pos.rank][getEFile(pos)] : undefined,
+      SE: (hasS(pos) && hasE(pos)) ? this.squares[getSRank(pos)][getEFile(pos)] : undefined,
+      S: (hasS(pos)) ? this.squares[getSRank(pos)][pos.file] : undefined,
+      SW: (hasS(pos) && hasW(pos)) ? this.squares[getSRank(pos)][getWFile(pos)] : undefined,
+      W: (hasW(pos)) ? this.squares[pos.rank][getWFile(pos)] : undefined,
+      NW: (hasN(pos) && hasW(pos)) ? this.squares[getNRank(pos)][getWFile(pos)] : undefined,
+        // Neighbor is open (so vulnerable from certain types from afar),
+        // or contains an opponent capable of capturing from this neighboring square
+      vulnerableOnDiagonalFromPrimaries(sideToCapture: Side): boolean {
+        return (this.NE && (!this.NE!.piece || isOpponent(this.NE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        || 
+        (this.SE && (!this.SE!.piece || isOpponent(this.SE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        || 
+        (this.SW && (!this.SW!.piece || isOpponent(this.SW!.piece, sideToCapture, ['bishop', 'queen']))) 
+        || 
+        (this.NW && (!this.NW!.piece || isOpponent(this.NW!.piece, sideToCapture, ['bishop', 'queen']))) 
       },
-      hasOpenRankOrFile(): boolean {
-        return (this.N && !this.N.piece) || (this.S && !this.S.piece) || (this.E && !this.E.piece) || (this.W && !this.W.piece)
+        // Neighbor is open (so vulnerable from certain types from afar),
+        // or contains an opponent capable of capturing from this neighboring square
+      vulnerableOnRankOrFileFromPrimaries(sideToCapture: Side): boolean {
+        return (this.N && (!this.N!.piece || isOpponent(this.N!.piece, sideToCapture, ['rook', 'queen']))) 
+          || 
+          (this.S && (!this.S!.piece || isOpponent(this.S!.piece, sideToCapture, ['rook', 'queen']))) 
+          || 
+          (this.E && (!this.E!.piece || isOpponent(this.E!.piece, sideToCapture, ['rook', 'queen']))) 
+          || 
+          (this.W && (!this.W!.piece || isOpponent(this.W!.piece, sideToCapture, ['rook', 'queen']))) 
       },
         // All other opposing piece will be explicitly checked from their cached positions.
       getOpposingPawnsOrKing(sideToCapture: Side): Square[] {
 
         const possibleSquaresForOppositePawns = (sideToCapture === 'white') ? [this.NE, this.NW] : [this.SE, this.SW] 
         const actualSquaresWithOppositePawns = possibleSquaresForOppositePawns.filter(
-          (sqToTest) => (piecesExistAndAreEqual(sqToTest?.piece, {color: opponent(sideToCapture), type: 'pawn'}))
+          (sqToTest) => (isOpponent(sqToTest?.piece, sideToCapture, 'pawn'))
         )
 
         const possibleSquaresForOppositeKing = [this.N, this.NE, this.NW, this.S, this.SE, this.SW]
         const actualSquareWithOppositeKing = possibleSquaresForOppositeKing.find(
-          (sqToTest) => (piecesExistAndAreEqual(sqToTest?.piece, {color: opponent(sideToCapture), type: 'king'}))
+          (sqToTest) => (isOpponent(sqToTest?.piece, sideToCapture, 'king'))
         )
 
         return actualSquareWithOppositeKing ? [...actualSquaresWithOppositePawns, actualSquareWithOppositeKing] : actualSquaresWithOppositePawns
@@ -547,11 +523,11 @@ class BoardImpl implements BoardInternal {
     const surrounding = this._getSurroundingSquares(pos)
     
     const typesToCheck: PrimaryPieceType[] = ['knight']
-    if (surrounding.hasOpenDiagonal()) {
+    if (surrounding.vulnerableOnDiagonalFromPrimaries(asSide)) {
       typesToCheck.push('queen')
       typesToCheck.push('bishop')
     }
-    if (surrounding.hasOpenRankOrFile()) {
+    if (surrounding.vulnerableOnRankOrFileFromPrimaries(asSide)) {
       typesToCheck.push('rook')
       if (!typesToCheck.includes('queen')) {
         typesToCheck.push('queen')

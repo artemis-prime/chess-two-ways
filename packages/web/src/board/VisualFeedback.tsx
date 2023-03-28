@@ -107,7 +107,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
 
 
   useEffect(() => {
-    game.addChessListener({
+    game.listenTo({
       actionResolved,
       actionTaken,
       actionUndon,
@@ -115,7 +115,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       inCheck,
       notInCheck,
       message
-    })
+    }, 'game-ui')
   })
 
   useEffect(() => {

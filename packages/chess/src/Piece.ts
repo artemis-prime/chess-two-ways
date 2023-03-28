@@ -66,6 +66,19 @@ interface Piece {
   readonly color: Color
 } 
 
+  // opponent of side, and if supplied
+  // equal to type or one of the types
+const isOpponent = (p: Piece, side: Side, type?: PieceType | PieceType[]): boolean => {
+  const oppositeSide = (p && (p!.color !== side))
+  if (!type) {
+    return oppositeSide 
+  }
+  else if (Array.isArray(type)) {
+    return oppositeSide && (type! as PieceType[]).includes(p!.type)
+  }
+  return oppositeSide && (p!.type === type!)  
+}
+
 type Side = Color
 
 const piecesExistAndAreEqual = (p1: Piece, p2: Piece) => (
@@ -100,5 +113,6 @@ export {
   piecesExistAndAreEqual,
   pieceToString,
   PIECE_TYPE_NAMES,
+  isOpponent,
   opponent 
 }

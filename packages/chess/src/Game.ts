@@ -22,6 +22,7 @@ import Resolution from './game/Resolution'
 import Notifier from './game/Notifier'
 
 import registry from './game/resolverRegistry'
+import { actionRecordToLAN } from './util'
 
 interface Game {
 
@@ -45,7 +46,7 @@ interface Game {
   reset(): void
   get currentTurn(): Side
 
-  addChessListener(l: ChessListener): void
+  listenTo(l: ChessListener, uniqueId: string): void
 
   getBoard(): Board
 }
@@ -114,8 +115,8 @@ class GameImpl implements Game {
     return this._currentTurn
   }
 
-  addChessListener(l: ChessListener): void {
-    this._notifier.addChessListener(l)
+  listenTo(l: ChessListener, uniqueId: string): void {
+    this._notifier.listenTo(l, uniqueId)
   }
 
     // Do not call directly.  Passed to Board instance to 
@@ -132,28 +133,27 @@ class GameImpl implements Game {
 
   resolveAction(move: Move): Action | null {
 
-    if (!this._cachedResolution || !movesEqual(this._cachedResolution.move, move)) {
+    if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
       const resolver = this._resolvers.get(move.piece.type)
+      let action: Action | null = null
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
-        let action = resolver(this._checkCheckingBoard, move.from, move.to, this._notifier.message.bind(this._notifier))
+        action = resolver(this._checkCheckingBoard, move.from, move.to, this._notifier.message.bind(this._notifier))
         if (action) {
           const r = this._createActionRecord(move, action)
           const wasInCheck = this._mainBoard.sideIsInCheck(r.piece.color) 
           this._checkCheckingBoard.applyAction(r, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
-            this._notifier.message(`Resulting action by ${r.piece.color} not allowed as it would ` +
-              `${wasInCheck ? 'leave it' : 'put it'}) in check!`, 'warning')  
+            this._notifier.message(`${actionRecordToLAN(r)} not possible as it would ` +
+              `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'overwritable-ix: warning')  
             action = null
           }
         } 
         this._notifier.actionResolved(move, action)
-        this._cachedResolution = new Resolution(move, action)
       } 
+      this._cachedResolution = new Resolution(move, action)
     }
-      // Just for typescript's sake
-      // in practice it will always be set (unless we have a missing resolver!)
-    return this._cachedResolution ? this._cachedResolution!.action : null
+    return this._cachedResolution!.action
   }
 
   endResolution(): void {

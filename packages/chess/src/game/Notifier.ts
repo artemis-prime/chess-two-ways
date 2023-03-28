@@ -7,12 +7,12 @@ import type ActionRecord from '../ActionRecord'
 
 class Notifier implements ChessListener {
 
-  private _listeners: ChessListener[] = []
+  private _listeners = new Map<string, ChessListener>()
 
   constructor() {}
   
-  addChessListener(l: ChessListener) {
-    this._listeners.push(l)
+  listenTo(l: ChessListener, uniqueId: string) {
+    this._listeners.set(uniqueId, l)
   }
 
   actionResolved(move: Move, action: Action | null): void {
