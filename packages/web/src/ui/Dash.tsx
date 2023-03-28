@@ -1,14 +1,11 @@
   // @ts-ignore
-import React, { ReactHTMLElement } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react'
 
 import type { ConsoleMessage } from '~/board/VisualFeedback'
 import { useGame } from '~/board/GameProvider'
 
-import {
-  Button,
-  Flex,
-} from '~/primitives'
+import { Button, Flex } from '~/primitives'
 
 import { useVisualFeedback } from '~/board/VisualFeedback'
 import unicodePieces from './pieceTypeToUnicode'
@@ -22,20 +19,18 @@ const Dash: React.FC<{}> = observer(() => {
   const getMessagePrefix = (m: ConsoleMessage): string => {
     if (m.type === 'undo') return '  (undo:) '
     if (m.type === 'redo') return '  (redo:) '
-    if (m.type === 'warning') return 'w: '
     return ''
   }
 
-  const getMessagePostfixElement = (m: ConsoleMessage): React.ReactNode => {
+  const getMessagePostfixElement = (m: ConsoleMessage): React.ReactNode | null => {
     if (m.type?.includes('capture')) {
-      const colorOfPieceThatTookAction = m.message.slice(0, 1)
-      const colorCaptured = colorOfPieceThatTookAction === 'w' ? 'b' : 'w'
-      const pieceType = m.message.slice(1, 2) // 'K', 'Q', etc
+      const pieceType = m.actionRecord!.captured!.type
+      const colorCaptured = m.actionRecord!.captured!.color
       return (
-        <span className='postfix'>(<span className={`unicode-chess-piece ${colorCaptured}`}>{(unicodePieces as any)[pieceType]}</span>: Ouch!)</span>
-      )
+        <span className='postfix'><span className={`capture-side-indicator ${colorCaptured}`} >&nbsp;</span>&nbsp;(<span className={`unicode-chess-piece ${colorCaptured}`}>{(unicodePieces as any)[pieceType]}</span>- {pieceType !== 'pawn' ? '\u{1F64E}\u200D\u2642\uFE0F ouch!' : '\u{1F937}\u200D\u2642\uFE0F meh'})</span>
+      ) 
     }
-    return <></>
+    return null
   }
 
   return (
@@ -54,18 +49,23 @@ const Dash: React.FC<{}> = observer(() => {
           onClick={game.redo.bind(game)}
         >Redo</Button>
       </Flex>
-      {messages.length > 0 && (
-        <div className='messages-list'>
+      {messages.length > 0 && (<>
           <p>----------------------</p>
-        {messages.map((m, i) => (
-          <p key={i} className={`message-outer message-type-${m.type}`}>
-            <span className='prefix'>{getMessagePrefix(m)}</span>
-            <span className='message'>{m.message}</span>
-            {getMessagePostfixElement(m)}
-          </p> 
-        ))}
+          <div className='messages-list'>
+        {messages.map((m, i) => {
+          const postFix = getMessagePostfixElement(m)
+          return (
+            <div key={i} className={`message-outer ${postFix ? 'has-postfix' : 'no-postfix'} message-type-${m.type}`}>
+              <p className='message-and-prefix'>
+                <span className='prefix'>{getMessagePrefix(m)}</span>
+                <span className='message'>{m.message}</span>
+              </p>
+              {postFix && <p className='message-postfix'>{postFix}</p>}
+            </div>
+          )
+        })}
         </div>
-      )}
+      </>)}
     </div>
   )
 })

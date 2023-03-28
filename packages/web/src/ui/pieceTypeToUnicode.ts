@@ -1,8 +1,8 @@
 export default {
-  K: '\u265A',
-  Q: '\u265B',
-  R: '\u265C',
-  B: '\u265D',
-  N: '\u265E',
-  P: '\u265F',
+  king: '\u265A',
+  queen: '\u265B',
+  rook: '\u265C',
+  bishop: '\u265D',
+  knight: '\u265E',
+  pawn: '\u265F',
 }

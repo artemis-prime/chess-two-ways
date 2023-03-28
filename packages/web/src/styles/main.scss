@@ -38,6 +38,10 @@ body {
   padding: 24px;
   color: #eee;
 
+  display: flex;
+  flex-direction: column;
+
+
 
   .turn-widget {
     margin-bottom: 8px;
@@ -54,6 +58,90 @@ body {
     &.black {
       background-color: $color--black-piece;
     }
+  }
+
+  .messages-list {
+    overflow-y: scroll;
+    margin-right: -15px;
+    padding-right: 15px;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #444;
+      border: 1px solid #777;
+      border-radius: 3px;
+
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: #777;
+      &:hover {
+        background-color: #aaa;
+      }
+    }
+  }
+
+  .message-outer {
+    &.has-postfix {
+      display: flex;
+      flex-direction: row;
+  
+      p.message-and-prefix {
+        flex: 2 0 0
+      }
+      p.message-postfix {
+        flex: 1 1 0
+      }
+    }
+    &.message-type-check {
+      color: rgb(255, 136, 0);
+    }
+    &.message-type-mutable-warning,
+    &.message-type-warning,
+    &.message-type-capture,
+    &.message-type-capture-promote {
+      color: rgb(255, 136, 0); //rgb(241, 219, 156);
+    }
+    &.message-type-undo,
+    &.message-type-redo {
+      color: #ccc;
+    }
+    .postfix {
+      white-space: nowrap;
+      .unicode-chess-piece {
+        /*
+        display: inline-block;
+        border: 1px #777 solid;
+        border-radius: 4px;
+        font-size: 18px;
+        line-height: 22px;
+        &.white {
+          background-color: $color--white-piece;
+        }
+        &.black {
+          background-color: $color--black-piece;
+        }*/
+      } 
+      .capture-side-indicator {
+        display: inline-block;
+        //width: 10px;
+        padding-left: 3px;
+        padding-right: 3px;
+        line-height: 12px;
+    
+        border-radius: 3px;
+        border: 2px #777 solid;
+        &.white {
+          background-color: $color--white-piece;
+        }
+        &.black {
+          background-color: $color--black-piece;
+        }
+      }
+    }
+  
   }
 }
 

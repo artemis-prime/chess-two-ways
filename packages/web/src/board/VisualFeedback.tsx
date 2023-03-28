@@ -6,12 +6,14 @@ import React, {
   useState
 } from 'react'
 
-import type { 
+import { 
   Action,
   ActionRecord,
   Move,
   Position,  
-  Side 
+  Side, 
+  actionRecordToLAN, 
+  positionToString
 } from '@artemis-prime/chess-domain'
 
 import { useGame } from './GameProvider'
@@ -33,8 +35,9 @@ export const useVisualFeedback = (): VisualFeedback =>  {
 }
 
 export interface ConsoleMessage {
-  message: string
-  note: any
+  message: string,
+  type: string, 
+  actionRecord?: ActionRecord 
 }
 
 export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
@@ -53,12 +56,23 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
 
   const game = useGame()
 
+  const _pushMessage = (m: ConsoleMessage): void => {
+    if (m.type === 'mutable-warning') {
+      const replace = messages.length > 0 && messages[messages.length - 1].type === m.type
+      setMessages((prev) => {
+        if (replace) {
+          prev.pop()
+        }
+        return [...prev, m]
+      })
+    }
+    else {
+      setMessages((prev) => ([...prev, m]))
+    }
+  }
 
-  const message = (m: string, type_?: string): void => {
-    setMessages((prev) => ([...prev, {
-      message: (m) ? m : '',
-      note: (type_) ? type_ : 'none'
-    }]))
+  const message = (m: string, type?: string): void => {
+    _pushMessage({message: m, type: (type ? type : '')})
   } 
 
   const clearActionResolutionFeedback = (): void => { 
@@ -71,9 +85,22 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
     setNote(_note) 
   }
 
-  const inCheck = (side: Side, kingInCheck_: Position, inCheckFrom_: Position[]): void => {
-    setKingInCheck(kingInCheck_)
-    setInCheckFrom(inCheckFrom_)
+  const inCheck = (side: Side, kingPosition: Position, positionsInCheckFrom: Position[]): void => {
+    setKingInCheck(kingPosition)
+    setInCheckFrom(positionsInCheckFrom)
+    let squareString = ''
+    let commaFirst = false
+    positionsInCheckFrom.forEach((s) => { 
+      if (commaFirst) {
+        squareString += ', ' 
+      }
+      else {
+        commaFirst = true
+      }
+      squareString += positionToString(s)
+    })
+
+    _pushMessage({message: `Check! ${side} in check from ${squareString}!`, type: 'check'})
   }
 
   const notInCheck = (side: Side): void => {
@@ -100,11 +127,15 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
 
   const actionTaken = (r: ActionRecord): void => {
     clearActionResolutionFeedback()
+    _pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
   }
 
-  const actionUndon = (r: ActionRecord): void => {}
-  const actionRedon = (r: ActionRecord): void => {}
-
+  const actionUndon = (r: ActionRecord): void => {
+    _pushMessage({message: actionRecordToLAN(r), type: 'undo', actionRecord: r}) 
+  }
+  const actionRedon = (r: ActionRecord): void => {
+    _pushMessage({message: actionRecordToLAN(r), type: 'redo', actionRecord: r}) 
+  }
 
   useEffect(() => {
     game.listenTo({
