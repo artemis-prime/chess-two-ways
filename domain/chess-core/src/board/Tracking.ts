@@ -3,7 +3,8 @@ import type Position from '../Position'
 
 interface TrackingForSide {
   primaries: Map<PrimaryPieceType, Position[]>
-  king: Position
+  king: Position,
+  inCheck: boolean,
   castling: {
     hasCastled: boolean,
     kingHasMoved: boolean
@@ -20,6 +21,7 @@ class Tracking {
   white: TrackingForSide = {
     primaries: new Map<PrimaryPieceType, Position[]>(),
     king: {rank: 1, file: 'e'},
+    inCheck: false,
     castling: {
       hasCastled: false,
       kingHasMoved: false,
@@ -33,6 +35,7 @@ class Tracking {
   black: TrackingForSide = {
     primaries: new Map<PrimaryPieceType, Position[]>(),
     king: {rank: 8, file: 'e'},
+    inCheck: false,
     castling: {
       hasCastled: false,
       kingHasMoved: false,
@@ -54,7 +57,7 @@ const syncTrackingForSide = (target: TrackingForSide, source: TrackingForSide) =
     [key, [...value]]
   ))
   target.primaries = new Map<PrimaryPieceType, Position[]>(deepArrayCopy as typeof sourceMapAsArray)
-
+  target.inCheck = source.inCheck
   target.king = source.king
   target.castling.hasCastled = source.castling.hasCastled 
   target.castling.kingHasMoved = source.castling.kingHasMoved 

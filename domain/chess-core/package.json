@@ -2,7 +2,7 @@
   "name": "@artemis-prime/chess-core",
   "version": "1.0.0",
   "scripts": {
-    "build": "npx tsc",
+    "build": "yarn install && npx tsc",
     "clean": "rm -rf ./dist && rm -rf ./node_modules"
   },
   "main": "./dist/index.js",

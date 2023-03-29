@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import GameProvider from '~/board/GameProvider'
-import { VisualFeedbackProvider } from '~/board/VisualFeedback'
+import VisualFeedbackProvider from '~/board/VisualFeedback'
 
 import UI from './UI'
 

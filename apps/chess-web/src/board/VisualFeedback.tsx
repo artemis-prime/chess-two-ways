@@ -6,6 +6,9 @@ import React, {
   useState
 } from 'react'
 
+import { runInAction } from 'mobx'
+import { useLocalObservable, observer } from 'mobx-react'
+
 import { 
   Action,
   ActionRecord,
@@ -37,10 +40,15 @@ export const useVisualFeedback = (): VisualFeedback =>  {
 export interface ConsoleMessage {
   message: string,
   type: string, 
-  actionRecord?: ActionRecord 
+  actionRecord?: ActionRecord,
+  note?: any 
 }
 
-export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
+const isTransient = (m: ConsoleMessage) => (
+  m.type.includes('transient')
+) 
+
+const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }) => {
 
   const fastIntervalRef = useRef<any>(undefined)
   const slowIntervalRef = useRef<any>(undefined)
@@ -52,23 +60,34 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
   const [inCheckFrom, setInCheckFrom] = useState<Position[]>([])
   const [kingInCheck, setKingInCheck] = useState<Position | null>(null)
 
-  const [messages, setMessages] = useState<ConsoleMessage[]>([])
+    // Using regular React state create odd race conditions.
+    // I tried to make it work, but eventually just brought in the big guns!
+  const messages = useLocalObservable<ConsoleMessage[]>(() => ([]))
 
   const game = useGame()
 
   const _pushMessage = (m: ConsoleMessage): void => {
-    if (m.type === 'mutable-warning') {
-      const replace = messages.length > 0 && messages[messages.length - 1].type === m.type
-      setMessages((prev) => {
-        if (replace) {
-          prev.pop()
-        }
-        return [...prev, m]
-      })
-    }
-    else {
-      setMessages((prev) => ([...prev, m]))
-    }
+    const overwriteTransient = messages.length > 0 && isTransient(messages[messages.length - 1])
+    let push = true
+    runInAction(() => {
+      if (overwriteTransient) {
+        messages.pop()
+      }
+      else if (m.type === 'not-in-check') {
+          // just assign the previous message my type,
+          // since that was the move that resulted in taking me out of check.
+        if (messages.length > 0) {
+          messages[messages.length - 1].type += ' not-in-check'
+        } 
+        push = false
+      }
+      if (isTransient(m)) {
+          m.message = `(${m.message})`
+      }
+      if (push) {
+        messages.push(m)
+      }
+    })
   }
 
   const message = (m: string, type?: string): void => {
@@ -99,13 +118,14 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       }
       squareString += positionToString(s)
     })
-
-    _pushMessage({message: `Check! ${side} in check from ${squareString}!`, type: 'check'})
+        // only last paren is intentional!
+    _pushMessage({message: `from ${squareString})`, type: 'check', note: {side}})
   }
 
   const notInCheck = (side: Side): void => {
     setKingInCheck(null)
     setInCheckFrom([])
+    _pushMessage({message: '(phew!)', type: 'not-in-check'})
   }
 
   const actionResolved = (m: Move, action: Action | null): void => {
@@ -206,5 +226,7 @@ export const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = ({ child
       {children}
     </VisualFeedbackContext.Provider>
   )
-}
+})
+
+export default VisualFeedbackProvider
 

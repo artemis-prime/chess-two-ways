@@ -135,7 +135,7 @@ class GameImpl implements Game {
 
     if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
       if (!move.piece) {
-        this._notifier.message(`There's no piece at ${positionToString}!`, 'mutable-warning') 
+        this._notifier.message(`There's no piece at ${positionToString}!`, 'transient-warning') 
       }
       const resolver = this._resolvers.get(move.piece?.type)
       let action: Action | null = null
@@ -148,8 +148,11 @@ class GameImpl implements Game {
           this._checkCheckingBoard.applyAction(r, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
             this._notifier.message(`${actionRecordToLAN(r)} not possible as it would ` +
-              `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'mutable-warning')  
+              `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
+          }
+          else if (wasInCheck) {
+            this._notifier.message(`Yes, ${actionRecordToLAN(r)} would take you out of check.`, 'transient-info')  
           }
         } 
         this._notifier.actionResolved(move, action)
@@ -183,7 +186,7 @@ class GameImpl implements Game {
         }
         this._actions.push(r)
         this._stateIndex = this._actions.length - 1
-        this._handleNotifyCheck(opponent(r.piece.color))
+        this._trackAndNotifyCheck()
         this._toggleTurn()
     }
   }
@@ -197,7 +200,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'undo')
       this._notifier.actionUndon(r)
-      this._handleNotifyCheck(r.piece.color)
+      this._trackAndNotifyCheck()
       this._stateIndex--
       this._toggleTurn()
     }
@@ -213,7 +216,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'redo')
       this._notifier.actionRedon(r)
-      this._handleNotifyCheck(opponent(r.piece.color))
+      this._trackAndNotifyCheck()
       this._toggleTurn()
     }
   }
@@ -238,16 +241,26 @@ class GameImpl implements Game {
     }
   }
 
-  private _handleNotifyCheck(side: Side): void {
+  private _trackAndNotifyCheckForSide(side: Side): void {
 
     const positionsInCheckFrom = this._mainBoard.sideIsInCheckFrom(side)
-    if (positionsInCheckFrom.length) {
+    const wasInCheck = this._mainBoard.tracking[side].inCheck;
+    const isInCheck = positionsInCheckFrom.length > 0
+    this._mainBoard.tracking[side].inCheck = isInCheck
+      // Only notify if in check status changes 
+    if (!wasInCheck && isInCheck) {
       this._notifier.inCheck(side, this._mainBoard.kingsPosition(side), positionsInCheckFrom)
     }
-    else {
+    else if (wasInCheck && !isInCheck){
       this._notifier.notInCheck(side)  
     }
   }
+
+  private _trackAndNotifyCheck(): void {
+    this._trackAndNotifyCheckForSide('white')
+    this._trackAndNotifyCheckForSide('black')
+  }
+
 
   private _toggleTurn(): void {
     this._currentTurn = (this._currentTurn === 'white') ? 'black' : 'white'

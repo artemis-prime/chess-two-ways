@@ -16,18 +16,24 @@ const Dash: React.FC<{}> = observer(() => {
   const game = useGame()
   const { messages } = useVisualFeedback()
 
-  const getMessagePrefix = (m: ConsoleMessage): string => {
-    if (m.type === 'undo') return '  (undo:) '
-    if (m.type === 'redo') return '  (redo:) '
+  const getMessagePrefix = (m: ConsoleMessage): React.ReactNode | null => {
+    if (m.type.includes('undo')) return (<span className='prefix'>&nbsp;&nbsp;(undo:)&nbsp;</span>)
+    if (m.type.includes('redo')) return (<span className='prefix'>&nbsp;&nbsp;(redo:)&nbsp;</span>)
+    if (m.type === 'check') return (<span className='prefix'><span className='loud'>&nbsp;&nbsp;Check!</span> (<span className={`side-indicator ${m.note!.side}`} >&nbsp;</span>&nbsp;</span>)
     return ''
   }
 
   const getMessagePostfixElement = (m: ConsoleMessage): React.ReactNode | null => {
-    if (m.type?.includes('capture')) {
+      // not in check output takes precedence over capture!
+    if (m.type.includes('not-in-check')) {
+      // ninja emoji
+      return m.type.includes('undo') ? null : (<span className='postfix'>(phew! <span className='emoji'>{'\u{1f977}'}</span>)</span>)  
+    }
+    else if (m.type.includes('capture')) {
       const pieceType = m.actionRecord!.captured!.type
       const colorCaptured = m.actionRecord!.captured!.color
       return (
-        <span className='postfix'><span className={`capture-side-indicator ${colorCaptured}`} >&nbsp;</span>&nbsp;(<span className={`unicode-chess-piece ${colorCaptured}`}>{(unicodePieces as any)[pieceType]}</span>- {pieceType !== 'pawn' ? '\u{1F64E}\u200D\u2642\uFE0F ouch!' : '\u{1F937}\u200D\u2642\uFE0F meh'})</span>
+        <span className='postfix'><span className={`side-indicator ${colorCaptured}`} >&nbsp;</span>&nbsp;(<span className={`unicode-chess-piece ${colorCaptured}`}>{(unicodePieces as any)[pieceType]}</span>- {pieceType !== 'pawn' ? '\u{1F64E}\u200D\u2642\uFE0F ouch!' : '\u{1F937}\u200D\u2642\uFE0F meh'})</span>
       ) 
     }
     return null
@@ -55,7 +61,7 @@ const Dash: React.FC<{}> = observer(() => {
         {messages.map((m, i) => {
           const postFix = getMessagePostfixElement(m)
           return (
-            <div key={i} className={`message-outer ${postFix ? 'has-postfix' : 'no-postfix'} message-type-${m.type}`}>
+            <div key={i} className={`message-outer ${postFix ? 'has-postfix' : 'no-postfix'} message ${m.type}`}>
               <p className='message-and-prefix'>
                 <span className='prefix'>{getMessagePrefix(m)}</span>
                 <span className='message'>{m.message}</span>

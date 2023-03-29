@@ -95,53 +95,55 @@ body {
         flex: 1 1 0
       }
     }
-    &.message-type-check {
-      color: rgb(255, 136, 0);
+    &.message.check {
+      color: rgba(253, 170, 75, 0.558); 
+      & .loud {
+        color: rgb(255, 136, 0); //rgb(241, 219, 156);  
+      }
     }
-    &.message-type-mutable-warning,
-    &.message-type-warning,
-    &.message-type-capture,
-    &.message-type-capture-promote {
+    &.message.transient-warning {
+      color: rgba(253, 170, 75, 0.558);
+    }
+    
+    &.message.warning,
+    &.message.capture,
+    &.message.capture-promote {
       color: rgb(255, 136, 0); //rgb(241, 219, 156);
     }
-    &.message-type-undo,
-    &.message-type-redo {
+    &.message.transient-info,
+    &.message.undo,
+    &.message.redo {
       color: #ccc;
+    }
+    &.message.not-in-check {
+      .postfix {
+        color: rgb(255, 136, 0);
+        .emoji {
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.3);
+        } 
+      }
     }
     .postfix {
       white-space: nowrap;
-      .unicode-chess-piece {
-        /*
-        display: inline-block;
-        border: 1px #777 solid;
-        border-radius: 4px;
-        font-size: 18px;
-        line-height: 22px;
-        &.white {
-          background-color: $color--white-piece;
-        }
-        &.black {
-          background-color: $color--black-piece;
-        }*/
-      } 
-      .capture-side-indicator {
-        display: inline-block;
-        //width: 10px;
-        padding-left: 3px;
-        padding-right: 3px;
-        line-height: 12px;
-    
-        border-radius: 3px;
-        border: 2px #777 solid;
-        &.white {
-          background-color: $color--white-piece;
-        }
-        &.black {
-          background-color: $color--black-piece;
-        }
+    }
+    .side-indicator {
+      display: inline-block;
+      //width: 10px;
+      padding-left: 3px;
+      padding-right: 3px;
+      line-height: 12px;
+  
+      border-radius: 3px;
+      border: 2px #777 solid;
+      &.white {
+        background-color: $color--white-piece;
+      }
+      &.black {
+        background-color: $color--black-piece;
       }
     }
-  
+
   }
 }
 
