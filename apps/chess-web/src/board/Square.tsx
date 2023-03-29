@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import { useDrop } from 'react-dnd'
 
-import type { Position, Piece } from '@artemis-prime/chess-domain'
-import { FILES, positionsEqual } from '@artemis-prime/chess-domain'
+import type { Position, Piece } from '@artemis-prime/chess-core'
+import { FILES, positionsEqual } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'

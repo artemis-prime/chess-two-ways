@@ -1,7 +1,7 @@
   // @ts-ignore
 import React from 'react'
 
-import type { PieceType } from '@artemis-prime/chess-domain'
+import type { PieceType } from '@artemis-prime/chess-core'
 
 import Pawn from './pieces/Pawn' 
 import Queen from './pieces/Queen' 

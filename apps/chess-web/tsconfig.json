@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
-    "module": "CommonJS",
+    "module": "es2022",
 
     "sourceMap": true,
 

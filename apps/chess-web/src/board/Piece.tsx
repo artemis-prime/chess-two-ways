@@ -3,7 +3,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { useDrag  } from 'react-dnd'
 
-import type { Position, Piece } from '@artemis-prime/chess-domain'
+import type { Position, Piece } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'

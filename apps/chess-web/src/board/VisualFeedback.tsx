@@ -14,7 +14,7 @@ import {
   Side, 
   actionRecordToLAN, 
   positionToString
-} from '@artemis-prime/chess-domain'
+} from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 

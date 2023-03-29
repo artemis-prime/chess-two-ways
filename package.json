@@ -5,13 +5,13 @@
   "packageManager": "yarn@1.22.17",
   "scripts": {
     "build:first-time": "yarn install && yarn prepare:serve",
-    "build:domain": "yarn workspace @artemis-prime/chess-domain build",
+    "build:domain": "yarn workspace @artemis-prime/chess-core build",
     "build:web": "yarn workspace @artemis-prime/chess-web build",
     "typech:web": "yarn workspace @artemis-prime/chess-web typech",
     "prepare:serve": "yarn build:domain && yarn refresh-dep:web",
     "refresh-dep:web": "yarn clean:web && yarn install",
     "serve:web": "yarn workspace @artemis-prime/chess-web start",
-    "clean:domain": "yarn workspace @artemis-prime/chess-domain clean",
+    "clean:domain": "yarn workspace @artemis-prime/chess-core clean",
     "clean:web": "yarn workspace @artemis-prime/chess-web clean",
     "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web"
   },
@@ -21,8 +21,9 @@
   },
   "workspaces": {
     "packages": [
-      "packages/chess-core",
-      "packages/web-ui"
+      "domain/chess-core",
+      "apps/chess-web",
+      "apps/chess-cli"
     ]
   },
   "dependencies": {

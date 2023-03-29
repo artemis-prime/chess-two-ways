@@ -2,9 +2,9 @@
   "name": "@artemis-prime/chess-web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "@artemis-prime/chess-domain": "1.0.0",
-    "@fortawesome/fontawesome-free": "^6.1.1",
+    "@artemis-prime/chess-core": "1.0.0",
     "@radix-ui/colors": "^0.1.8",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-popover": "^1.0.5",
@@ -29,7 +29,7 @@
     "vite": "^4.2.1"
   },
   "bundledDependencies": [
-    "@artemis-prime/chess-domain"
+    "@artemis-prime/chess-core"
   ],
   "scripts": {
     "build": "vite build",

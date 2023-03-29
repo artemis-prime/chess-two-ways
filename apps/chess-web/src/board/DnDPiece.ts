@@ -1,4 +1,4 @@
-import type { Position, Piece } from '@artemis-prime/chess-domain'
+import type { Position, Piece } from '@artemis-prime/chess-core'
 
 const DND_ITEM_NAME = 'DnDPiece'
 interface DnDPiece {

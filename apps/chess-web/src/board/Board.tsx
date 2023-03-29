@@ -2,7 +2,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import type { Square } from '@artemis-prime/chess-domain'
+import type { Square } from '@artemis-prime/chess-core'
 
 import { useBoard } from './GameProvider'
 import { useVisualFeedback } from './VisualFeedback'
