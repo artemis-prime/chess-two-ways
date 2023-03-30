@@ -5,6 +5,7 @@ import {
   observable, 
 } from 'mobx'
 
+
 import type { default as Board, BoardInternal } from './Board'
 import { createBoard } from './Board'
 import type Move from './Move'
@@ -141,7 +142,9 @@ class GameImpl implements Game {
       let action: Action | null = null
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
-        action = resolver(this._checkCheckingBoard, move.from, move.to, this._notifier.message.bind(this._notifier))
+        action = resolver(this._checkCheckingBoard, move.from, move.to, (m: string): void => {
+          this._notifier.message(m, 'transient-warning')
+        })
         if (action) {
           const wasInCheck = this._mainBoard.sideIsInCheck(move.piece.color) 
           const r = this._createActionRecord(move, action)

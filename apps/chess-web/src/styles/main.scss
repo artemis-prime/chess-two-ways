@@ -1,6 +1,5 @@
-$color--board-brown: rgba(105, 49, 49, 0.75);
-$color--black-piece: #573131;
-$color--white-piece: #f7f0be;
+
+@use 'colors';
 
 body {
   //-webkit-font-smoothing: antialiased;
@@ -24,7 +23,6 @@ body {
   margin: 0;
   padding: 0;
 }
-
 
 
 .dash {
@@ -54,14 +52,14 @@ body {
     padding-right: 5px;
     border-radius: 3px;
     border: 2px #777 solid;
-    background-color: $color--white-piece;
+    background-color: colors.$white-piece;
     &.black {
-      background-color: $color--black-piece;
+      background-color: colors.$black-piece;
     }
   }
 
   .messages-list {
-    overflow-y: scroll;
+    //overflow-y: scroll;
     margin-right: -15px;
     padding-right: 15px;
 
@@ -83,68 +81,6 @@ body {
     }
   }
 
-  .message-outer {
-    &.has-postfix {
-      display: flex;
-      flex-direction: row;
-  
-      p.message-and-prefix {
-        flex: 2 0 0
-      }
-      p.message-postfix {
-        flex: 1 1 0
-      }
-    }
-    &.message.check {
-      color: rgba(253, 170, 75, 0.558); 
-      & .loud {
-        color: rgb(255, 136, 0); //rgb(241, 219, 156);  
-      }
-    }
-    &.message.transient-warning {
-      color: rgba(253, 170, 75, 0.558);
-    }
-    
-    &.message.warning,
-    &.message.capture,
-    &.message.capture-promote {
-      color: rgb(255, 136, 0); //rgb(241, 219, 156);
-    }
-    &.message.transient-info,
-    &.message.undo,
-    &.message.redo {
-      color: #ccc;
-    }
-    &.message.not-in-check {
-      .postfix {
-        color: rgb(255, 136, 0);
-        .emoji {
-          border-radius: 50%;
-          background-color: rgba(255, 255, 255, 0.3);
-        } 
-      }
-    }
-    .postfix {
-      white-space: nowrap;
-    }
-    .side-indicator {
-      display: inline-block;
-      //width: 10px;
-      padding-left: 3px;
-      padding-right: 3px;
-      line-height: 12px;
-  
-      border-radius: 3px;
-      border: 2px #777 solid;
-      &.white {
-        background-color: $color--white-piece;
-      }
-      &.black {
-        background-color: $color--black-piece;
-      }
-    }
-
-  }
 }
 
 .board {
@@ -155,17 +91,17 @@ body {
   grid-template-columns: repeat(8, 1fr); 
   grid-template-rows:  repeat(8, 1fr); 
   height: 94%; 
-  border: 2px $color--board-brown solid; 
+  border: 2px colors.$board-brown solid; 
   box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
 .square {
 
   &.file-odd.rank-odd {
-    background-color: $color--board-brown;
+    background-color: colors.$board-brown;
   }
   &.file-even.rank-even {
-    background-color: $color--board-brown;
+    background-color: colors.$board-brown;
   }
   //border: 0.5px blue solid;
 
@@ -177,11 +113,11 @@ body {
 
 svg {
   .black-piece & {
-    fill: $color--black-piece;
+    fill: colors.$black-piece;
     filter: drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3));
   }
   .white-piece & {
-    fill: $color--white-piece;
+    fill: colors.$white-piece;
     filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45));
   }
   display: block;

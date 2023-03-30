@@ -118,8 +118,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       }
       squareString += positionToString(s)
     })
-        // only last paren is intentional!
-    _pushMessage({message: `from ${squareString})`, type: 'check', note: {side}})
+    _pushMessage({message: `from ${squareString}`, type: 'check', note: {side}})
   }
 
   const notInCheck = (side: Side): void => {
