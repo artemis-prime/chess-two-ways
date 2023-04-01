@@ -19,7 +19,11 @@ const EMOJIS = {
   ouch: '\u{1F64E}\u200D\u2642\uFE0F'
 }
 
-const Messages: React.FC<{}> = observer(() => {
+const Messages: React.FC<{
+  showMoves: boolean
+}> = observer(({
+  showMoves
+}) => {
 
   const { messages } = useVisualFeedback()
 
@@ -61,10 +65,15 @@ const Messages: React.FC<{}> = observer(() => {
     return null
   }
 
+  const isMove = (m: ConsoleMessage) => (
+    !!m.actionRecord
+  )
+
   return messages.length > 0 ? (<>
     <p>----------------------</p>
     <Scrollable className='messages-list'>
     {messages.map((m, i) => {
+      if (!showMoves && isMove(m)) return null
       const postFix = getMessagePostfixElement(m)
       return (
         <div key={i} className={`message-outer ${getIndentation(m)} ${postFix ? 'has-postfix' : 'no-postfix'} ${m.type}`}>

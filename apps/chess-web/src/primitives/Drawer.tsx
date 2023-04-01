@@ -2,7 +2,6 @@
 import React, { PropsWithChildren, useState } from 'react'
 import { styled } from '~/styles/stitches.config'
 
-
 const InnerDrawer = styled('div', {
 
   outline: 'none',
@@ -24,7 +23,6 @@ const InnerDrawer = styled('div', {
         right: 0,
       },
       closed: {
-        //width: 0
       }
     }
   }
