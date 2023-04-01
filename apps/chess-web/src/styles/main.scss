@@ -1,5 +1,8 @@
 
 @use 'colors';
+@use 'mediaQueries' as m;
+
+$height-header: 52px;
 
 body {
   //-webkit-font-smoothing: antialiased;
@@ -11,52 +14,36 @@ body {
   background-color: #274070;
   /* min-height: 100vh; */
   display: flex;
-  padding:  0.5rem 0;
+  //padding:  0.5rem 12px;
+  height: $height-header;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: space-between;
   color: white;
 }
 
 .app-header-text {
-  display: block;
   margin: 0;
   padding: 0;
+  line-height:  $height-header;
 }
 
 
 .dash {
   background-image: url(../../../../assets/slate-bg.jpg); 
   background-size: cover;
-  width: 80%;
-  height: 94%;
-  margin-right: 6%;
-  border: 4px rgba(167, 107, 55, 0.76) solid;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  //margin-right: 6%;
+  border: 4px colors.$dash-border solid;
   border-radius: 5px;
   padding: 24px;
-  color: #eee;
+  color: colors.$dash-text;
 
   display: flex;
   flex-direction: column;
-
-
-
-  .turn-widget {
-    margin-bottom: 8px;
-  }
-
-  .turn-indicator {
-    display: inline-block;
-   // padding-top: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-radius: 3px;
-    border: 2px #777 solid;
-    background-color: colors.$white-piece;
-    &.black {
-      background-color: colors.$black-piece;
-    }
-  }
 
   .messages-list {
     //overflow-y: scroll;
@@ -84,13 +71,14 @@ body {
 }
 
 .board {
+
   background-image: url(../../../../assets/American-Hard-Maple.jpg); /*  chess-bg-1920.jpg); */
 
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(8, 1fr); 
   grid-template-rows:  repeat(8, 1fr); 
-  height: 94%; 
+  height: 100%; 
   border: 2px colors.$board-brown solid; 
   box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
@@ -122,4 +110,130 @@ svg {
   }
   display: block;
   //border: 0.5px darkgreen solid;
+}
+
+main {
+  width: 100%;
+  //border: 1px solid red;
+  height: 92vh;
+  padding: 18px;
+  position: relative;
+
+}
+
+.board-outer {
+  flex: 2 0 0;
+}
+
+.side {
+  flex: 1 1 0; 
+  //border: '3px solid green',
+}
+
+.burger-button {
+  display: none;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  height: $height-header;
+  width: $height-header;
+  padding-left: 6px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+
+  .drawer-state-open & {
+    background-color: rgba(100, 100, 100, 0.4);
+  }
+
+  svg {
+    display: block;
+    fill: white;
+  }
+}
+
+.drawer {
+  display: none;
+}
+
+@media (max-width: 1476px) { 
+
+  main {
+    padding: 12px;
+  }
+  .right .dash {
+    max-width: 350px;
+  }
+
+}
+
+@media (max-width: 1410px) { 
+
+  .right .dash {
+    max-width: 300px;
+  }
+
+}
+
+@media (max-width: 1350px) { 
+
+  .right .dash {
+    max-width: 450px;
+  }
+  .board-outer {
+    flex: 1.5 0 0;
+  }
+  
+  .side.left {
+    display: none;
+  }
+
+}
+
+@media (max-width: 1210px) { 
+
+  .right .dash {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 1140px) { 
+
+  .right .dash {
+    max-width: 350px;
+    min-width: 280px;
+  }
+
+  .side.right {
+    width: 30%;
+    flex: 1 0 0; 
+  }
+}
+
+@media (max-width: 1000px) {
+  .side.right {
+    display: none;
+  }
+  .burger-button {
+    display: flex;
+  }
+
+  .drawer {
+    display: flex;
+    top: $height-header;
+
+    .dash {
+      border-right: none;
+      border-top-width: 2px;
+      border-bottom-width: 2px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      //border: 4px colors.$dash-border solid;
+      //border-radius: 5px;
+    
+      height: 100%;
+    }
+  }
+
 }

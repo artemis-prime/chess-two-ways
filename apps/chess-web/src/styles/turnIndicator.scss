@@ -1,0 +1,21 @@
+@use './colors';
+
+.turn-indicator {
+  margin-bottom: 8px;
+
+  .swatch {
+
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 26px;
+    margin-left: 12px;
+    border-radius: 3px;
+    border: 2px #777 solid;
+    background-color: colors.$white-piece;
+    &.black {
+      background-color: colors.$black-piece;
+    }
+  }
+}
+

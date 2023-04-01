@@ -17,6 +17,8 @@ interface ChessListener {
 
   inCheck(side: Side, kingSquare: Position, sideIsInCheckFrom: Position[]): void
   notInCheck(side: Side): void
+
+  gameFinished(message?: string): void
 }
 
 export { type ChessListener as default }

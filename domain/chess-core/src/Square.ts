@@ -17,7 +17,7 @@ class Square implements Position {
     this.piece = piece
     
     if (observePiece) {
-      makeObservable(this, { piece: observable})
+      makeObservable(this, { piece: observable.shallow})
     }
   }
 

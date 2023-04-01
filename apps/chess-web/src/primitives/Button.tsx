@@ -24,15 +24,28 @@ const Button = styled('button', {
         },
       },
       outlined: {
-        backgroundColor: '$secondary2',
-        border: '1.5px solid $secondary12',
-        color: '$secondary12',
+        cursor: 'pointer',
+        backgroundColor: 'transparent',
+        padding: '5px 12px',
+        border: '1.5px solid $gray1',
+        borderRadius: '8px',
+        color: '$gray1',
+        '&:disabled': {
+          cursor: 'default',
+          color: '$gray11',
+          borderColor: '$gray11',
+          '&:hover': {
+            textDecoration: 'none',
+          },
+        },
         '&:hover': {
-          backgroundColor: '$secondary8',
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          textDecoration: 'underline',
         },
           // pressed
         '&:active': {
-          backgroundColor: '$secondary9',
+          backgroundColor: 'rgba(255, 255, 255, 0.4)',
+          //backgroundColor: '$gray9',
         },
       },
       alert: {
@@ -62,7 +75,6 @@ const Button = styled('button', {
         },
         '&:disabled:hover': {
           textDecoration: 'none',
-          //color: '$gray11',
         },
       
       },
@@ -83,38 +95,6 @@ const Button = styled('button', {
     },
   },
   compoundVariants: [
-    {
-      size: 'xs',
-      css: {
-        height: 40,
-        width: 40,
-        p: 0,
-      },
-    },
-    {
-      size: 'small',
-      css: {
-        height: 44,
-        width: 44,
-        p: 0,
-      },
-    },
-    {
-      size: 'medium',
-      css: {
-        height: 44,
-        width: 44,
-        p: 0,
-      },
-    },
-    {
-      size: 'large',
-      css: {
-        height: 52,
-        width: 52,
-        p: 0,
-      },
-    },
   ],
   defaultVariants: {
     variant: 'ghost',

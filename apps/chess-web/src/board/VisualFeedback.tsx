@@ -28,7 +28,7 @@ export interface VisualFeedback {
   note: any | null
   fastTick: boolean
   slowTick: boolean
-  messages: ConsoleMessage[]
+  messages: ConsoleMessage[],
 }
 
 const VisualFeedbackContext = React.createContext<VisualFeedback | undefined>(undefined) 
@@ -82,12 +82,20 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
         push = false
       }
       if (isTransient(m)) {
-          m.message = `(${m.message})`
+          m.message = m.message ? `(${m.message})` : ''
       }
       if (push) {
         messages.push(m)
       }
     })
+  }
+
+  const gameFinished = (m?: string): void => {
+    _pushMessage({message: '', type: 'transient-warning'}) 
+    messages.length = 0
+    setKingInCheck(null)
+    setInCheckFrom([])
+    clearActionResolutionFeedback()
   }
 
   const message = (m: string, type?: string): void => {
@@ -164,7 +172,8 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       actionRedon,
       inCheck,
       notInCheck,
-      message
+      message,
+      gameFinished
     }, 'game-ui')
   })
 

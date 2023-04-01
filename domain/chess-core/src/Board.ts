@@ -11,6 +11,7 @@ import {
   type Rank,
   RANKS_REVERSE,
   FILES,
+  copyPosition,
  } from './Position'
 import { 
   type default as Piece, 
@@ -30,7 +31,7 @@ import type CanCaptureFn from './game/CanCaptureFn'
 import {type Tracking, newTracking, syncTracking} from './board/Tracking'
 import type Squares from './board/Squares'
 import { syncSquares } from './board/Squares'
-import freshBoard from './board/freshBoard'
+import { freshBoard, resetBoard } from './board/boardInitializers'
 
 interface Board {
 
@@ -50,7 +51,7 @@ interface Board {
   sideIsInCheck(side: Side) : boolean 
 
     // Utility method for easy rendering (mobx 'computed')
-  get boardAsSquares(): Square[]
+  get boardAsArray():  {pos: Position, piece: Piece | null}[]
 
   isClearAlongRank(from: Position, to: Position): boolean
   isClearAlongFile(from: Position, to: Position): boolean
@@ -83,7 +84,7 @@ class BoardImpl implements BoardInternal {
       makeObservable(this, {
         applyAction: action,
         reset: action,
-        boardAsSquares: computed,
+        boardAsArray: computed,
       })
     }
     this.squares = freshBoard(this.tracking, isObservable)
@@ -274,14 +275,14 @@ class BoardImpl implements BoardInternal {
   reset(): void {
 
     this.tracking = newTracking()
-    this.squares = freshBoard(this.tracking)
+    resetBoard(this.squares, this.tracking)
   }
 
-  get boardAsSquares(): Square[] {
-    const result: Square[] = []
+  get boardAsArray(): {pos: Position, piece: Piece | null}[] {
+    const result: {pos: Position, piece: Piece | null}[] = []
     for (const rank of RANKS_REVERSE) {
       for (const file of FILES) {
-        result.push(this.squares![rank][file]) 
+        result.push({ pos: copyPosition(this.squares[rank][file]), piece: this.squares[rank][file].piece}) 
       }
     }
     return result

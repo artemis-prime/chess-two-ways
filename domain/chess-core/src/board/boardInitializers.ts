@@ -116,4 +116,59 @@ const freshBoard = (tr: Tracking, observePieces? : boolean): Squares => {
   return result as Squares
 }
 
-export default freshBoard
+const resetBoard = (sqs: Squares, tr: Tracking): void => {
+
+  for (const rank of RANKS) {
+    const rankArray = sqs[rank]
+      // White pieces
+    if (rank === 1) {
+      for (const file of FILES) {
+        rankArray[file].piece = 
+          {
+            type: PIECES_BY_FILE[file],
+            color: 'white'
+          }
+        track(tr, rankArray[file])
+      }
+    }
+      // White pawns
+    else if (rank === 2) {
+      for (const file of FILES) {
+        rankArray[file].piece = 
+          {
+            type: 'pawn',
+            color: 'white'
+          }
+      }
+    }
+      // Black pawns
+    else if (rank === 7) {
+      for (const file of FILES) {
+        rankArray[file].piece = 
+          {
+            type: 'pawn',
+            color: 'black'
+          }
+      }
+    }
+      // Black pieces
+    else if (rank === 8) {
+      for (const file of FILES) {
+        rankArray[file].piece = 
+          {
+            type: PIECES_BY_FILE[file],
+            color: 'black'
+          }
+        track(tr, rankArray[file])
+      }
+    }
+    else {
+      for (const file of FILES) {
+        rankArray[file].piece = null
+      }
+    }
+  } 
+}
+
+
+export { freshBoard, resetBoard } 

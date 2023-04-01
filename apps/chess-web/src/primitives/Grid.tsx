@@ -1,6 +1,6 @@
 import { styled } from '~/styles/stitches.config'
 
-export const Grid = styled('div', {
+const Grid = styled('div', {
   display: 'grid',
 
   variants: {
@@ -54,3 +54,5 @@ export const Grid = styled('div', {
     },
   },
 })
+
+export default Grid

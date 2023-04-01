@@ -44,6 +44,7 @@ interface Game {
   get canUndo(): boolean
   get canRedo(): boolean
   
+  concede(): void // currentTurn concedes the game
   reset(): void
   get currentTurn(): Side
 
@@ -68,6 +69,8 @@ class GameImpl implements Game {
     // and you can move back and forth via undo / redo
   private _stateIndex = -1 
   private _cachedResolution: Resolution | null = null 
+
+  private _locked = false
 
   private _notifier: Notifier = new Notifier() 
 
@@ -104,12 +107,30 @@ class GameImpl implements Game {
     return this._mainBoard
   }
 
+  concede(): void {
+    this._locked = true;
+    this._notifier.message(`${this._currentTurn} concedes the game!`, 'transient-warning')
+    let count = 5
+    const timer = setInterval(() => {
+      if (count >= 1) {
+        this._notifier.message(`${this._currentTurn} concedes the game! reset in ${count--}s`, 'transient-warning')
+      }
+      else {
+        this._locked = false;
+        this._notifier.gameFinished()
+        this.reset();
+        clearInterval(timer);
+      }
+    }, 1000)
+  }
+
   reset() {
     this._currentTurn = 'white'
     this._mainBoard.reset()
     this._checkCheckingBoard.reset()
-    this._actions = [] as ActionRecord[]
+    this._actions.length = 0
     this._stateIndex = -1 
+    this._locked = false
   }
 
   get currentTurn(): Side {
@@ -133,6 +154,8 @@ class GameImpl implements Game {
   }
 
   resolveAction(move: Move): Action | null {
+
+    if (this._locked) return null
 
     if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
       if (!move.piece) {
@@ -175,6 +198,8 @@ class GameImpl implements Game {
     promoteTo?: PrimaryPieceType
   ): void {
 
+    if (this._locked) return
+
     const action = this._cachedResolution?.action
     if (action) {
         this.endResolution()
@@ -199,7 +224,7 @@ class GameImpl implements Game {
   }
 
   undo() {
-    if (this.canUndo) {
+    if (this.canUndo && !this._locked) {
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'undo')
       this._notifier.actionUndon(r)
@@ -214,7 +239,7 @@ class GameImpl implements Game {
   }
 
   redo() {
-    if (this.canRedo) {
+    if (this.canRedo && !this._locked) {
       this._stateIndex++
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'redo')
@@ -259,11 +284,13 @@ class GameImpl implements Game {
     }
   }
 
+    // We have to check each side after every actions, since 
+    // can put an opponent in check w a move,
+    // or take oneself out of check
   private _trackAndNotifyCheck(): void {
     this._trackAndNotifyCheckForSide('white')
     this._trackAndNotifyCheckForSide('black')
   }
-
 
   private _toggleTurn(): void {
     this._currentTurn = (this._currentTurn === 'white') ? 'black' : 'white'

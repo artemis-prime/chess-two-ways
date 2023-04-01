@@ -56,6 +56,13 @@ class Notifier implements ChessListener {
       l.notInCheck(side)
     })
   }
+
+  gameFinished(message?: string): void {
+    this._listeners.forEach((l) => {
+      l.gameFinished(message)
+    })
+  }
+
 }
 
 export { Notifier as default }
