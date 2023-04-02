@@ -68,8 +68,8 @@ interface Piece {
 
   // opponent of side, and if supplied
   // equal to type or one of the types
-const isOpponent = (p: Piece, side: Side, type?: PieceType | PieceType[]): boolean => {
-  const oppositeSide = (p && (p!.color !== side))
+const isOpponent = (p: Piece | null, side: Side, type?: PieceType | PieceType[]): boolean => {
+  const oppositeSide = (!!p && (p!.color !== side))
   if (!type) {
     return oppositeSide 
   }

@@ -5,14 +5,14 @@ import {
 } from 'mobx'
 
 import type Position from './Position'
+
 import { 
   positionsEqual,   
-  type File,
-  type Rank,
   RANKS_REVERSE,
   FILES,
   copyPosition,
  } from './Position'
+
 import { 
   type default as Piece, 
   type Color, 
@@ -20,18 +20,29 @@ import {
   type Side, 
   opponent,
   isOpponent,
-  piecesExistAndAreEqual
 } from './Piece'
+
 import { PRIMARY_PIECES } from './Piece'
 import type Square from './Square'
 
 import type ActionRecord from './ActionRecord'
-import type CanCaptureFn from './game/CanCaptureFn'
+import type IsCaptureFn from './game/IsCaptureFn'
 
 import {type Tracking, newTracking, syncTracking} from './board/Tracking'
 import type Squares from './board/Squares'
 import { syncSquares } from './board/Squares'
 import { freshBoard, resetBoard } from './board/boardInitializers'
+
+import {
+  hasN,
+  hasS,
+  hasE,
+  hasW,
+  getNRank,
+  getSRank,
+  getEFile,
+  getWFile,
+} from './util'
 
 interface Board {
 
@@ -42,8 +53,7 @@ interface Board {
     // If false, and reasonDenied is supplied, 
     // it will be populated with a human readable reason 
     // why side is not eliable
-    // 'kingside' vs 'queenside'
-  eligableToCastle(side: Side, kingside: boolean, reasonDenied?: string[]): boolean 
+  eligableToCastle(color: Side, side: 'kingside' | 'queenside', reasonDenied?: string[]): boolean 
 
   
     // 'side' is in check from Position[] (or empty array)
@@ -71,14 +81,14 @@ interface BoardInternal extends Board {
 
 class BoardImpl implements BoardInternal {
 
-  private _canCapture: CanCaptureFn
+  private _isCapture: IsCaptureFn
 
   tracking: Tracking = newTracking()
   squares: Squares 
 
-  constructor(f: CanCaptureFn, isObservable?: boolean) {
+  constructor(f: IsCaptureFn, isObservable?: boolean) {
 
-    this._canCapture = f
+    this._isCapture = f
     if (isObservable) {
 
       makeObservable(this, {
@@ -223,19 +233,23 @@ class BoardImpl implements BoardInternal {
     return true
   }
 
-  eligableToCastle(side: Side, kingside: boolean, reasonDenied?: string[]): boolean  {
+  eligableToCastle(color: Side, side: 'kingside' | 'queenside', reasonDenied?: string[]): boolean {
 
-    const castleSide = kingside ? 'kingside' : 'queenside'
-    const { hasCastled, kingHasMoved } = this.tracking[side].castling
-    const rookHasMoved = this.tracking[side].castling.rookHasMoved[castleSide]
-    const eligable = !hasCastled && !kingHasMoved && !rookHasMoved
+    const { inCheck, castling: {hasCastled, kingHasMoved} } = this.tracking[color]
+    const rookHasMoved = this.tracking[color].castling.rookHasMoved[side]
+    const eligable = !inCheck && !hasCastled && !kingHasMoved && !rookHasMoved
 
     if (!eligable && reasonDenied && Array.isArray(reasonDenied)) {
-      reasonDenied.push(
-        `${side} is no longer eligable to castle` + 
-        `${(kingHasMoved || hasCastled) ?  '' : ` ${castleSide}`} because ` + 
-        `${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
-      )  
+      if (inCheck) {
+        reasonDenied.push(`${color} cannot castle out of check!`)  
+      }
+      else {
+        reasonDenied.push(
+          `${color} is no longer eligable to castle` + 
+          `${(kingHasMoved || hasCastled) ?  '' : ` ${side}`} because ` + 
+          `${(hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')}`
+        )  
+      }
     }  
     return eligable
   }
@@ -455,16 +469,6 @@ class BoardImpl implements BoardInternal {
 
   private _getSurroundingSquares(pos: Position) /* it returns what it returns ;) */ {
 
-    const hasN = (pos: Position) => (pos.rank <= 7)
-    const hasS = (pos: Position) => (pos.rank >= 2)
-    const hasE = (pos: Position) => (FILES.indexOf(pos.file) <= 6)
-    const hasW = (pos: Position) => (FILES.indexOf(pos.file) >= 1)
-
-    const getNRank = (pos: Position): Rank => (pos.rank + 1 as Rank)
-    const getSRank = (pos: Position): Rank => (pos.rank - 1 as Rank)
-    const getEFile = (pos: Position): File => (FILES[FILES.indexOf(pos.file) + 1])
-    const getWFile = (pos: Position): File => (FILES[FILES.indexOf(pos.file) - 1])
-
     return {
       N: hasN(pos) ? this.squares[getNRank(pos)][pos.file] : undefined,
       NE: (hasN(pos) && hasE(pos)) ? this.squares[getNRank(pos)][getEFile(pos)] : undefined,
@@ -538,7 +542,11 @@ class BoardImpl implements BoardInternal {
     for (let pieceType of typesToCheck) {
       const positionsWithOpponentOfThisType = this.tracking[opponent(asSide)].primaries.get(pieceType)! 
       for (let posToCaptureFrom of positionsWithOpponentOfThisType) {
-        if (this._canCapture(this, pieceType, posToCaptureFrom, pos) ) {
+        if (this._isCapture(
+            this, 
+            {piece: {type: pieceType, color: asSide}, from: posToCaptureFrom, to: pos}
+          )
+        ) {
           if (returnType === 'boolean') {
             return true
           }
@@ -569,7 +577,7 @@ class BoardImpl implements BoardInternal {
   }
 }
 
-const createBoard = (f: CanCaptureFn, isObservable?: boolean): BoardInternal => (
+const createBoard = (f: IsCaptureFn, isObservable?: boolean): BoardInternal => (
   new BoardImpl(f, isObservable)
 )
 

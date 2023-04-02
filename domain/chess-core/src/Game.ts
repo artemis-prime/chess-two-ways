@@ -17,7 +17,7 @@ import type Position from './Position'
 import { copyPosition, positionToString } from './Position'
 import type ChessListener from './ChessListener'
 
-import type ActionResolverFn from './game/ActionResolverFn'
+import type ActionResolver from './game/ActionResolver'
 import type ActionRecord from './ActionRecord'
 import Resolution from './game/Resolution'
 import Notifier from './game/Notifier'
@@ -61,7 +61,7 @@ class GameImpl implements Game {
   private _checkCheckingBoard: BoardInternal
 
   private _currentTurn: Side = 'white' 
-  private _resolvers: Map<PieceType, ActionResolverFn>  = registry 
+  private _resolvers: Map<PieceType, ActionResolver>  = registry 
   private _actions = [] as ActionRecord[] 
     // For managing undo / redo.  The index of the current state
     // within _actions.  -1 is the original state of the board.
@@ -76,8 +76,8 @@ class GameImpl implements Game {
 
   constructor() {
 
-    this._mainBoard = createBoard(this._canCapture.bind(this), true)
-    this._checkCheckingBoard = createBoard(this._canCapture.bind(this))
+    this._mainBoard = createBoard(this._isCapture.bind(this), true)
+    this._checkCheckingBoard = createBoard(this._isCapture.bind(this))
   
     makeObservable(this, {
       takeAction: action,
@@ -143,12 +143,12 @@ class GameImpl implements Game {
 
     // Do not call directly.  Passed to Board instance to 
     // implement checkChecking
-  private _canCapture(board: Board, pieceType: PieceType, from: Position, to: Position): boolean {
+  private _isCapture(board: Board, m: Move): boolean {
     let result: Action | null = null
-    const resolver = this._resolvers.get(pieceType)
+    const resolver = this._resolvers.get(m.piece.type)
 
     if (resolver) {
-      result = resolver(board, from, to)
+      result = resolver.resolve(board, m)
     } 
     return !!result?.includes('capture')
   }
@@ -165,7 +165,7 @@ class GameImpl implements Game {
       let action: Action | null = null
       if (resolver) {
         this._checkCheckingBoard.sync(this._mainBoard)
-        action = resolver(this._checkCheckingBoard, move.from, move.to, (m: string): void => {
+        action = resolver.resolve(this._checkCheckingBoard, move, (m: string): void => {
           this._notifier.message(m, 'transient-warning')
         })
         if (action) {
@@ -173,12 +173,12 @@ class GameImpl implements Game {
           const r = this._createActionRecord(move, action)
           this._checkCheckingBoard.applyAction(r, 'do')
           if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
-            this._notifier.message(`${actionRecordToLAN(r)} not possible as it would ` +
+            this._notifier.message(`${actionRecordToLAN(r)} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
           }
           else if (wasInCheck) {
-            this._notifier.message(`Yes, ${actionRecordToLAN(r)} would take you out of check.`, 'transient-info')  
+            this._notifier.message(`${actionRecordToLAN(r)} is ok!`, 'transient-info')  
           }
         } 
         this._notifier.actionResolved(move, action)
@@ -190,7 +190,6 @@ class GameImpl implements Game {
 
   endResolution(): void {
     this._cachedResolution = null
-    //console.log('End resolution called')
   }
 
   takeAction(

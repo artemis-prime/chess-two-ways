@@ -1,15 +1,29 @@
-import type { Action, Board, Position } from '..'
+import type { 
+  Action, 
+  Board,
+  Move, 
+  Piece,
+  Position
+} from '..'
+import { type ResolvableMove } from '../game/ActionResolver'
+
+import {
+  nextN,
+  nextS,
+  nextE,
+  nextW,
+  resolvableMovesAndCapture
+} from '../util'
 
 const resolve = (
   board: Board,
-  from: Position, 
-  to: Position, 
+  move: Move,
   messageFn?: (s: String) => void
 ): Action | null => {
   
-  if (board.isClearAlongRank(from, to) || board.isClearAlongFile(from, to) ) {
-    const fromColor = board.colorAt(from)
-    const toColor = board.colorAt(to)
+  if (board.isClearAlongRank(move.from, move.to) || board.isClearAlongFile(move.from, move.to) ) {
+    const fromColor = board.colorAt(move.from)
+    const toColor = board.colorAt(move.to)
     if (!toColor) {
       return 'move'
     }
@@ -20,4 +34,41 @@ const resolve = (
   return null
 }
 
-export default resolve
+const resolvableMoves = (
+  board: Board,
+  piece: Piece,
+  from: Position,
+): ResolvableMove[] => {
+
+  const resolvableN = resolvableMovesAndCapture(
+    board,
+    piece,
+    from,
+    nextN
+  )
+
+  const resolvableS = resolvableMovesAndCapture(
+    board,
+    piece,
+    from,
+    nextS
+  )
+
+  const resolvableE = resolvableMovesAndCapture(
+    board,
+    piece,
+    from,
+    nextE
+  )
+
+  const resolvableW = resolvableMovesAndCapture(
+    board,
+    piece,
+    from,
+    nextW
+  )
+
+  return [...resolvableN, ...resolvableS, ...resolvableE, ...resolvableW]
+}
+
+export default {resolve, resolvableMoves}

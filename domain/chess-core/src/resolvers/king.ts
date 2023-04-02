@@ -4,9 +4,25 @@ import type {
   Color,
   Side,
   Position,
+  Piece,
+  Move
 } from '..'
 
-import { FILES } from '..'
+import { FILES, positionsEqual } from '../Position'
+import { type ResolvableMove } from '../game/ActionResolver'
+import { isOpponent } from '../Piece'
+
+
+import {
+  hasN,
+  hasS,
+  hasE,
+  hasW,
+  getNRank,
+  getSRank,
+  getEFile,
+  getWFile,
+} from '../util'
 
   // from must be populated
 const canBeCapturedAlongRank = (board: Board, from: Position, to: Position, asSide: Side): boolean => {
@@ -32,13 +48,10 @@ const canBeCapturedAlongRank = (board: Board, from: Position, to: Position, asSi
   return false
 }
 
-const legalMove = (
-  from: Position, 
-  to: Position, 
-): boolean => {
+const legalMove = (move: Move): boolean => {
   
-  const deltaRank = to.rank - from.rank
-  const deltaFile = FILES.indexOf(to.file) - FILES.indexOf(from.file)
+  const deltaRank = move.to.rank - move.from.rank
+  const deltaFile = FILES.indexOf(move.to.file) - FILES.indexOf(move.from.file)
 
   return (
     Math.abs(deltaRank) === 1 && Math.abs(deltaFile) === 1
@@ -51,23 +64,27 @@ const legalMove = (
 
 const amCastling = (
   board: Board, 
-  from: Position, 
-  to: Position,
+  move: Move,
   messageFn?: (s: String) => void
 ): boolean => {
 
-  // No need to test the position of 'from', since the this._canCastle flag 
-  // indicates a move has taken place, same w position of participating rook
-  const color = board.colorAt(from) as Color
-  const homeRank = (color === 'white') ? 1 : 8
-  const kingside = (to.file === 'g')
-  const queenside = (to.file === 'c')
+  const homeRank = (move.piece.color === 'white') ? 1 : 8
 
-  const correctSquares = (from.rank === to.rank) && (from.rank === homeRank) && (kingside || queenside)
+  const correctSquares = 
+    (move.from.rank === move.to.rank) 
+    && 
+    (move.from.rank === homeRank) 
+    && 
+    ((move.to.file === 'g') ||(move.to.file === 'c'))
+
   let eligable = false
   if (correctSquares) {
     const reasonDenied = [] as string[]
-    eligable = board.eligableToCastle(color, kingside, reasonDenied)
+    eligable = board.eligableToCastle(
+      move.piece.color, 
+      (move.to.file === 'g') ? 'kingside' : 'queenside', 
+      reasonDenied
+    )
     if (!eligable && messageFn) {
       messageFn(reasonDenied[0])
     }
@@ -76,23 +93,63 @@ const amCastling = (
   return (
     eligable
     && 
-    board.isClearAlongRank(from, {rank: homeRank, file: (kingside ? 'h' : 'b')})
+    board.isClearAlongRank(move.from, {rank: homeRank, file: ((move.to.file === 'g') ? 'h' : 'b')})
     &&  
       // Cannot castle THROUGH check either!
-    !canBeCapturedAlongRank(board, from, {rank: homeRank, file: (kingside ? 'h' : 'b')}, color)
+    !canBeCapturedAlongRank(
+        board, 
+        move.from, 
+        {rank: homeRank, file: ((move.to.file === 'g') ? 'h' : 'b')}, 
+        move.piece.color
+      )
   ) 
 }
 
+const castlablePositions = (
+  board: Board, 
+  piece: Piece,
+  from: Position 
+): Position[] => {
+
+  const positions = [] as Position[]
+
+  const rank = (piece.color === 'white') ? 1 : 8
+
+  const correctSquare = positionsEqual(from, {rank, file: 'e'})
+  const eligableKingside = correctSquare && board.eligableToCastle(piece.color, 'kingside')
+  const eligableQueenside = correctSquare && board.eligableToCastle(piece.color, 'queenside')
+
+  if (eligableKingside
+    && 
+    board.isClearAlongRank(from, {rank, file: 'h'}) 
+    &&
+    !canBeCapturedAlongRank(board, from, {rank, file: 'h'}, piece.color)
+  ) {
+    positions.push({file: 'g', rank})
+  }
+
+  if (eligableQueenside
+    && 
+    board.isClearAlongRank(from, {rank, file: 'b'}) 
+    &&
+    !canBeCapturedAlongRank(board, from, {rank, file: 'b'}, piece.color)
+  ) {
+    positions.push({file: 'c', rank})
+  }
+
+  return positions
+}
+
+
 const resolve = (
   board: Board,
-  from: Position, 
-  to: Position, 
+  move: Move,
   messageFn?: (s: String) => void
 ): Action | null => {
   
-  if (legalMove(from, to)) {
-    const fromColor = board.colorAt(from)
-    const toColor = board.colorAt(to)
+  if (legalMove(move)) {
+    const fromColor = board.colorAt(move.from)
+    const toColor = board.colorAt(move.to)
     if (!toColor) {
       return 'move'
     }
@@ -100,10 +157,109 @@ const resolve = (
       return 'capture'
     }
   }
-  else if (amCastling(board, from, to, messageFn)) {
+  else if (amCastling(board, move, messageFn)) {
     return 'castle'
   }
   return null 
 }
 
-export default resolve
+const resolvableMoves = (
+  board: Board,
+  piece: Piece,
+  from: Position,
+): ResolvableMove[] => {
+
+  const positions = [] as Position[]
+
+  if (hasN(from)) {
+    const NRank = getNRank(from)
+    positions.push({
+      rank: NRank,
+      file: from.file
+    })
+    if (hasE(from)) {
+      positions.push({
+        rank: NRank,
+        file: getEFile(from)
+      })
+    }
+    if (hasW(from)) {
+      positions.push({
+        rank: NRank,
+        file: getWFile(from)
+      })
+    }
+  }
+  if (hasS(from)) {
+    const SRank = getSRank(from)
+    positions.push({
+      rank: SRank,
+      file: from.file
+    })
+    if (hasE(from)) {
+      positions.push({
+        rank: SRank,
+        file: getEFile(from)
+      })
+    }
+    if (hasW(from)) {
+      positions.push({
+        rank: SRank,
+        file: getWFile(from)
+      })
+    }
+  }
+  if (hasE(from)) {
+    positions.push({
+      rank: from.rank,
+      file: getEFile(from)
+    })
+  }
+  if (hasW(from)) {
+    positions.push({
+      rank: from.rank,
+      file: getWFile(from)
+    })
+  }
+
+  const resolvable = [] as ResolvableMove[]
+  positions.forEach((pos) => {
+    const toPiece = board.pieceAt(pos)
+    if (!toPiece) {
+      resolvable.push({
+        move: {
+          piece,
+          from,
+          to: pos
+        },
+        action: 'move'
+      })
+    }
+    else if (isOpponent(toPiece, piece.color)) {
+      resolvable.push({
+        move: {
+          piece,
+          from,
+          to: pos
+        },
+        action: 'capture'
+      })
+    }
+  })
+
+  const castleable = castlablePositions(board, piece, from)
+  castleable.forEach((pos) => {
+    resolvable.push({
+      move: {
+        piece,
+        from,
+        to: pos
+      },
+      action: 'castle'
+    })
+  })
+
+  return resolvable
+}
+
+export default {resolve, resolvableMoves}
