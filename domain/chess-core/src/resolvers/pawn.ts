@@ -32,7 +32,7 @@ const correctDistanceAndDirection = (
   move: Move,
   distanceToCheck: 1 | 2 = 1
 ) => {
-  const distance = (move.piece.color === 'black') ? distanceToCheck : -distanceToCheck
+  const distance = (move.piece.color === 'white') ? distanceToCheck : -distanceToCheck
   return (move.to.rank - move.from.rank) === distance
 }
 
