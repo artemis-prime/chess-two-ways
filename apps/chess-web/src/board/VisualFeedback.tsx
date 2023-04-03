@@ -74,7 +74,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
         messages.pop()
       }
       else if (m.type === 'check-message') {
-        if (messages.length > 0) {
+        if (messages.length > 0 && messages[messages.length - 1].actionRecord) {
           messages[messages.length - 1].type += ' check-move'
         }
       }
@@ -82,7 +82,9 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
           // just assign the previous message my type,
           // since that was the move that resulted in taking me out of check.
         if (messages.length > 0) {
-          messages[messages.length - 1].type += ' out-of-check-move'
+          if (messages[messages.length - 1].actionRecord) {
+            messages[messages.length - 1].type += ' out-of-check-move'
+          }
           
           for (let i = messages.length - 1; i >= 0 && i >= messages.length - 6; i--) {
             if (messages[i].type === 'check-message') {
@@ -90,8 +92,6 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
               break; 
             }
           }
-          
-          
         } 
         push = false
       }
