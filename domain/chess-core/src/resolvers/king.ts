@@ -167,6 +167,7 @@ const resolvableMoves = (
   board: Board,
   piece: Piece,
   from: Position,
+  ignoreCastling?: boolean // only relevant for king
 ): ResolvableMove[] => {
 
   const positions = [] as Position[]
@@ -247,17 +248,19 @@ const resolvableMoves = (
     }
   })
 
-  const castleable = castlablePositions(board, piece, from)
-  castleable.forEach((pos) => {
-    resolvable.push({
-      move: {
-        piece,
-        from,
-        to: pos
-      },
-      action: 'castle'
+  if (!ignoreCastling) {
+    const castleable = castlablePositions(board, piece, from)
+    castleable.forEach((pos) => {
+      resolvable.push({
+        move: {
+          piece,
+          from,
+          to: pos
+        },
+        action: 'castle'
+      })
     })
-  })
+  }
 
   return resolvable
 }

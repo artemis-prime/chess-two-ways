@@ -38,6 +38,7 @@ const resolvableMoves = (
   board: Board,
   piece: Piece,
   from: Position,
+  ignoreCastling?: boolean // only relevant for king
 ): ResolvableMove[] => {
 
   const resolvableN = resolvableMovesAndCapture(

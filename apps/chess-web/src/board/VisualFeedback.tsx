@@ -73,11 +73,25 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       if (overwriteTransient) {
         messages.pop()
       }
+      else if (m.type === 'check-message') {
+        if (messages.length > 0) {
+          messages[messages.length - 1].type += ' check-move'
+        }
+      }
       else if (m.type === 'not-in-check') {
           // just assign the previous message my type,
           // since that was the move that resulted in taking me out of check.
         if (messages.length > 0) {
-          messages[messages.length - 1].type += ' not-in-check'
+          messages[messages.length - 1].type += ' out-of-check-move'
+          
+          for (let i = messages.length - 1; i >= 0 && i >= messages.length - 6; i--) {
+            if (messages[i].type === 'check-message') {
+              messages[i].type += ' do-not-show'
+              break; 
+            }
+          }
+          
+          
         } 
         push = false
       }
@@ -116,23 +130,17 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
     setKingInCheck(kingPosition)
     setInCheckFrom(positionsInCheckFrom)
     let squareString = ''
-    let commaFirst = false
-    positionsInCheckFrom.forEach((s) => { 
-      if (commaFirst) {
-        squareString += ', ' 
-      }
-      else {
-        commaFirst = true
-      }
+    positionsInCheckFrom.forEach((s, i) => { 
+      if (i > 0) { squareString += ', ' }
       squareString += positionToString(s)
     })
-    _pushMessage({message: `from ${squareString}`, type: 'check', note: {side}})
+    _pushMessage({message: `from ${squareString}`, type: 'check-message', note: {side}})
   }
 
   const notInCheck = (side: Side): void => {
     setKingInCheck(null)
     setInCheckFrom([])
-    _pushMessage({message: '(phew!)', type: 'not-in-check'})
+    _pushMessage({message: '', type: 'not-in-check'})
   }
 
   const actionResolved = (m: Move, action: Action | null): void => {

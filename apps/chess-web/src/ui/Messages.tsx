@@ -38,18 +38,21 @@ const Messages: React.FC<{
   const getMessagePrefix = (m: ConsoleMessage): React.ReactNode | null => {
     if (m.type.includes('undo')) return (<span className='prefix'>(undo:)</span>)
     if (m.type.includes('redo')) return (<span className='prefix'>(redo:)</span>)
-    if (m.type === 'check') return (
+    if (m.type.includes('check-message')) return (
       <span className='prefix'>
-        <span className='loud'>Check!</span><span className={`side-indicator ${m.note!.side}`} />
+        <span className={`side-indicator ${m.note!.side}`} /><span className='loud'>in check</span>
       </span>)
     return null
   }
 
   const getMessagePostfixElement = (m: ConsoleMessage): React.ReactNode | null => {
       // not in check output takes precedence over capture!
-    if (m.type.includes('not-in-check')) {
+    if (m.type.includes('out-of-check-move')) {
       // ninja emoji
       return m.type.includes('undo') ? null : (<span className='postfix'>(phew! <span className='emoji'>{EMOJIS.ninja}</span>)</span>)  
+    }
+    else if (m.type.includes('check-move')) {
+      return <span className='postfix strong'>check!</span>   
     }
     else if (m.type.includes('capture')) {
       const pieceType = m.actionRecord!.captured!.type
@@ -62,18 +65,17 @@ const Messages: React.FC<{
         </span>
       ) 
     }
+
     return null
   }
 
-  const isMove = (m: ConsoleMessage) => (
-    !!m.actionRecord
-  )
+  const isMove = (m: ConsoleMessage) => (!!m.actionRecord)
 
   return messages.length > 0 ? (<>
     <p>----------------------</p>
     <Scrollable className='messages-list'>
     {messages.map((m, i) => {
-      if (!showMoves && isMove(m)) return null
+      if (m.type.includes('do-not-show') || (!showMoves && isMove(m))) return null
       const postFix = getMessagePostfixElement(m)
       return (
         <div key={i} className={`message-outer ${getIndentation(m)} ${postFix ? 'has-postfix' : 'no-postfix'} ${m.type}`}>

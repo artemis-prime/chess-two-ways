@@ -4,23 +4,26 @@ $strong-orange:rgb(255, 136, 0);
 $medium-orange: rgba(253, 170, 75, 0.8); 
 
 .message-outer {
-  &.indent {
-    padding-left: 18px;
+  .prefix {
+    margin-right: 8px;
   }
+
   &.has-postfix {
     display: flex;
     flex-direction: row;
 
     p.message-and-prefix {
-      flex: 2 0 0
+      flex: 2 0 0;
     }
     p.message-postfix {
-      flex: 1 1 0
+      flex: 1 1 0;
+      text-align: right;
     }
   }
-  &.check {
-    color: $medium-orange; 
-    & .loud {
+  &.check-move,
+  &.check-message {
+      color: $medium-orange; 
+    & .strong {
       margin-right: 12px;
       color: $strong-orange; 
       
@@ -28,7 +31,10 @@ $medium-orange: rgba(253, 170, 75, 0.8);
     .side-indicator {
       margin-right: 8px;
     }
-}
+  }
+  &.check-message {
+    padding-left: 18px;
+  }
   &.transient-warning {
     color: $medium-orange;
   }
@@ -42,9 +48,6 @@ $medium-orange: rgba(253, 170, 75, 0.8);
   &.undo,
   &.redo {
     color: #ccc;
-    .prefix {
-      margin-right: 8px;
-    }
   }
 
   &.not-in-check {

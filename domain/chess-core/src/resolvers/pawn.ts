@@ -103,7 +103,8 @@ const resolve = (
 const resolvableMoves = (
   board: Board,
   piece: Piece,
-  from: Position
+  from: Position,
+  ignoreCastling?: boolean // only relevant for king
 ): ResolvableMove[] => {
   
   const resolvable = [] as ResolvableMove[]
