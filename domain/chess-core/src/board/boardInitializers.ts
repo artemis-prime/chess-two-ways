@@ -1,9 +1,9 @@
 import type { PieceType, PrimaryPieceType } from '../Piece'
-import { PRIMARY_PIECES } from '../Piece'
+import { PRIMARY_PIECES, pieceToString, pieceFromString } from '../Piece'
 import Square from '../Square'
 import type Tracking from './Tracking'
 import type Squares from './Squares'
-import { type File, copyPosition, RANKS, FILES } from '../Position'
+import { type File, positionToString, copyPosition, RANKS, FILES } from '../Position'
 
 const PIECES_BY_FILE = {
   'a': 'rook',
@@ -169,6 +169,33 @@ const resetBoard = (sqs: Squares, tr: Tracking): void => {
     }
   } 
 }
+  // Intentionally forgiving.  If meaningful keys are found, 
+  // their values are parsed.  If they can be parsed, pieces are created.
+const syncBoardToGameObject = (
+  sqs: Squares, 
+  g: any, 
+  tr: Tracking
+): void => {
 
+  const populateSquare = (sq: Square, g: any): void => {
+    const keyToTry = positionToString(sq)
+    if (g[keyToTry]) {
+      sq.piece = pieceFromString(g[keyToTry]) ?? null // in case undefined
+    }
+    else {
+      sq.piece = null
+    }
+  }
 
-export { freshBoard, resetBoard } 
+  for (const rank of RANKS) {
+    const rankArray = sqs[rank]
+    for (const file of FILES) {
+      populateSquare(rankArray[file], g)
+      if (rankArray[file].piece) {
+        track(tr, rankArray[file])
+      }
+    }
+  }
+}
+
+export { freshBoard, resetBoard, syncBoardToGameObject} 

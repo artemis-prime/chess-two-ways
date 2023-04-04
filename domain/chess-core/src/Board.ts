@@ -31,7 +31,7 @@ import type IsCaptureFn from './game/IsCaptureFn'
 import Tracking from './board/Tracking'
 import type Squares from './board/Squares'
 import { syncSquares } from './board/Squares'
-import { freshBoard, resetBoard } from './board/boardInitializers'
+import { freshBoard, resetBoard, syncBoardToGameObject } from './board/boardInitializers'
 
 import {
   hasN,
@@ -72,6 +72,7 @@ interface BoardInternal extends Board {
   applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
   kingsPosition(side: Side): Position
   reset(isObservable? : boolean): void
+  resetFromGameObject(gameObject: any): void
 }
 
 class BoardImpl implements BoardInternal {
@@ -288,6 +289,11 @@ class BoardImpl implements BoardInternal {
 
     this._tracking.reset()
     resetBoard(this._squares, this._tracking)
+  }
+
+  resetFromGameObject(g: any): void {
+    this._tracking.reset()
+    syncBoardToGameObject(this._squares, g, this._tracking)
   }
 
   get boardAsArray(): {pos: Position, piece: Piece | null}[] {
@@ -561,6 +567,8 @@ class BoardImpl implements BoardInternal {
     }
     return [...primaryPieceDangers, ...nearDangers]
   }
+
+
 
   _dumpTracking(): void {
     console.log(this._tracking)

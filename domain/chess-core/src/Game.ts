@@ -51,6 +51,8 @@ interface Game {
   listenTo(l: ChessListener, uniqueId: string): void
 
   getBoard(): Board
+
+  resetFromGameObject(g: any) : void
 }
 
 class GameImpl implements Game {
@@ -84,6 +86,7 @@ class GameImpl implements Game {
       reset: action,
       undo: action,
       redo: action,
+      resetFromGameObject: action,
       canUndo: computed,
       canRedo: computed,
       currentTurn: computed
@@ -125,13 +128,24 @@ class GameImpl implements Game {
   }
 
   reset() {
-    this._currentTurn = 'white'
     this._mainBoard.reset()
     this._checkCheckingBoard.reset()
+    this._currentTurn = 'white'
     this._actions.length = 0
     this._stateIndex = -1 
     this._locked = false
   }
+
+  resetFromGameObject(g: any) : void {
+
+    this._mainBoard.resetFromGameObject(g)
+    this._checkCheckingBoard.syncTo(this._mainBoard)
+    this._currentTurn = 'white'
+    this._actions.length = 0
+    this._stateIndex = -1 
+    this._locked = false
+  }
+
 
   get currentTurn(): Side {
     return this._currentTurn

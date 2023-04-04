@@ -1,5 +1,5 @@
   // @ts-ignore
-import React, { PropsWithChildren, useState } from 'react'
+import React, { PropsWithChildren } from 'react'
 import { styled } from '~/styles/stitches.config'
 
 const InnerDrawer = styled('div', {

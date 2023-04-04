@@ -61,6 +61,15 @@ const PIECE_TYPE_NAMES = {
   },
 }
 
+const PIECETYPE_FROM_LETTER = {
+  P: 'pawn',
+  Q: 'queen',
+  B: 'bishop',
+  R: 'rook',
+  N: 'knight',
+  K: 'king'
+}
+
 interface Piece {
   readonly type: PieceType
   readonly color: Color
@@ -98,6 +107,23 @@ const pieceToString = (p: Piece, format?: PieceFormat): string => {
   }
 }
 
+const pieceFromString = (s: string): Piece | undefined => {
+  if (s.length === 2) {
+    const c = s.slice(0, 1)
+    const t = s.slice(1, 2)
+
+    if (!(c === 'w' || c === 'b') || !Object.keys(PIECETYPE_FROM_LETTER).includes(t)) {
+      return undefined
+    }
+    return {
+      color: (c === 'w') ? 'white' : 'black',
+      type: PIECETYPE_FROM_LETTER[t]
+    }
+  }
+  return undefined
+}
+
+
 const opponent = (side: Side): Side => (
   (side === 'white') ? 'black' : 'white'
 )
@@ -114,5 +140,6 @@ export {
   pieceToString,
   PIECE_TYPE_NAMES,
   isOpponent,
-  opponent 
+  opponent,
+  pieceFromString 
 }

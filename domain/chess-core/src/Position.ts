@@ -18,9 +18,25 @@ const copyPosition = (toCopy: Position) => ({
   file: toCopy.file
 })
 
-const positionToString = (pos: Position) => (
+const positionToString = (pos: Position): string => (
   `${pos.file}${pos.rank}`  
 )
+
+const positionFromString = (s: string): Position | undefined => {
+  if (s.length === 2) {
+    const f = s.slice(0, 1)
+    const r = +s.slice(1, 2)
+
+    if (!(RANKS as number[]).includes(r) || !(FILES as string[]).includes(f)) {
+      return undefined
+    }
+    return {
+      file: f as File,
+      rank: r as Rank,
+    }
+  }
+  return undefined
+}
 
 export { 
   type Position as default, 
@@ -31,5 +47,6 @@ export {
   FILES,
   positionsEqual, 
   copyPosition, 
-  positionToString
+  positionToString,
+  positionFromString
 }

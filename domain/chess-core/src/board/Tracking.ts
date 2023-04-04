@@ -5,7 +5,12 @@ import type Position from '../Position'
 class Tracking_Side {
 
   king: Position
-  primaries = new Map<PrimaryPieceType, Position[]>()
+  primaries = new Map<PrimaryPieceType, Position[]>([
+    ['queen', []],
+    ['rook', []],
+    ['bishop', []],
+    ['knight', []],
+  ])
   inCheckFrom: Position[] = []
   castling = {
     hasCastled: false,
@@ -31,7 +36,12 @@ class Tracking_Side {
 
   reset(side: Side): void {
     this.king = { rank: (side === 'white') ? 1 : 8, file: 'e' }
-    this.primaries.clear()
+    this.primaries = new Map<PrimaryPieceType, Position[]>([
+      ['queen', []],
+      ['rook', []],
+      ['bishop', []],
+      ['knight', []],
+    ])
     this.inCheckFrom.length = 0
     this.castling.hasCastled = false
     this.castling.kingHasMoved = false
