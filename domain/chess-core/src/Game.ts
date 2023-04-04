@@ -164,15 +164,15 @@ class GameImpl implements Game {
       const resolver = this._resolvers.get(move.piece?.type)
       let action: Action | null = null
       if (resolver) {
-        this._checkCheckingBoard.sync(this._mainBoard)
+        this._checkCheckingBoard.syncTo(this._mainBoard)
         action = resolver.resolve(this._checkCheckingBoard, move, (m: string): void => {
           this._notifier.message(m, 'transient-warning')
         })
         if (action) {
-          const wasInCheck = this._mainBoard.sideIsInCheck(move.piece.color) 
           const r = this._createActionRecord(move, action)
           this._checkCheckingBoard.applyAction(r, 'do')
-          if (this._checkCheckingBoard.sideIsInCheck(r.piece.color)) {
+          const { wasInCheck, inCheckFrom } = this._checkCheckingBoard.trackInCheck(r.piece.color)
+          if (inCheckFrom.length > 0) {
             this._notifier.message(`${actionRecordToLAN(r)} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
@@ -270,15 +270,14 @@ class GameImpl implements Game {
 
   private _trackAndNotifyCheckForSide(side: Side): void {
 
-    const positionsInCheckFrom = this._mainBoard.sideIsInCheckFrom(side)
-    const wasInCheck = this._mainBoard.tracking[side].inCheck;
-    const isInCheck = positionsInCheckFrom.length > 0
-    this._mainBoard.tracking[side].inCheck = isInCheck
+    const { wasInCheck, inCheckFrom } = this._mainBoard.trackInCheck(side)
+    const inCheck = inCheckFrom.length > 0
+
       // Only notify if in check status changes 
-    if (!wasInCheck && isInCheck) {
-      this._notifier.inCheck(side, this._mainBoard.kingsPosition(side), positionsInCheckFrom)
+    if (!wasInCheck && inCheck) {
+      this._notifier.inCheck(side, this._mainBoard.kingsPosition(side), inCheckFrom)
     }
-    else if (wasInCheck && !isInCheck){
+    else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  
     }
   }

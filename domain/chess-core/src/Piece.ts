@@ -81,7 +81,7 @@ const isOpponent = (p: Piece | null, side: Side, type?: PieceType | PieceType[])
 
 type Side = Color
 
-const piecesExistAndAreEqual = (p1: Piece, p2: Piece) => (
+const piecesEqual = (p1: Piece, p2: Piece) => (
   !!p1 && !!p2 && (p1.type === p2.type) && (p1.color === p2.color)
 )
 
@@ -110,7 +110,7 @@ export {
   type Side,
   type PieceFormat,
   PRIMARY_PIECES,
-  piecesExistAndAreEqual,
+  piecesEqual,
   pieceToString,
   PIECE_TYPE_NAMES,
   isOpponent,

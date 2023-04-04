@@ -1,7 +1,7 @@
 import type { PieceType, PrimaryPieceType } from '../Piece'
 import { PRIMARY_PIECES } from '../Piece'
 import Square from '../Square'
-import type { Tracking } from './Tracking'
+import type Tracking from './Tracking'
 import type Squares from './Squares'
 import { type File, copyPosition, RANKS, FILES } from '../Position'
 
