@@ -76,6 +76,7 @@ interface BoardInternal extends Board {
   resetFromGameObject(gameObject: any): void
   primaryPositions(side: Side, type: PrimaryPieceType): Position[]
   pawnPositions(side: Side): Position[] 
+  inCheck(side: Side): boolean
 }
 
 class BoardImpl implements BoardInternal {
@@ -148,6 +149,11 @@ class BoardImpl implements BoardInternal {
       wasInCheck
     }
   }
+
+  inCheck(side: Side): boolean {
+    return (this._tracking[side].inCheckFrom.length > 0)  
+  }
+
 
   kingsPosition(side: Side): Position {
     return this._tracking[side].king

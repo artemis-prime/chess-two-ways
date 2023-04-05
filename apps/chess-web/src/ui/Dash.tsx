@@ -72,7 +72,7 @@ const Dash: React.FC<{}> = observer(() => {
       <Flex direction='row' justify='between' align='center'>
         <TurnIndicator />
         <Flex direction='row' justify='end'>
-          <Button onClick={game.concede.bind(game)}>concede</Button>&nbsp;I&nbsp;
+          <Button onClick={game.checkStalemate.bind(game)}>stalemate?</Button>&nbsp;I&nbsp;
           <FileInputButton />
         </Flex>
       </Flex>

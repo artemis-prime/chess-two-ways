@@ -13,7 +13,6 @@ import { movesEqual } from './Move'
 import type Action from './Action'
 import type { PieceType, PrimaryPieceType, Side } from './Piece'
 import { PRIMARY_PIECES } from './Piece'
-//import type Position from './Position'
 import { copyPosition, positionToString } from './Position'
 import type ChessListener from './ChessListener'
 
@@ -45,6 +44,7 @@ interface Game {
   get canUndo(): boolean
   get canRedo(): boolean
   
+  checkStalemate(): void
   concede(): void // currentTurn concedes the game
   reset(): void
   get currentTurn(): Side
@@ -147,6 +147,18 @@ class GameImpl implements Game {
     this._locked = false
   }
 
+  checkStalemate(): void {
+    if (!this._mainBoard.inCheck(this._currentTurn)
+      &&
+      !this._primariesCanMove(this._currentTurn)
+      &&
+      !this._kingCanMove(this._currentTurn)
+      &&
+      !this._pawnsCanMove(this._currentTurn)
+    ) {
+      console.log("STALEMATE!")
+    }
+  }
 
   get currentTurn(): Side {
     return this._currentTurn
