@@ -1,7 +1,8 @@
 {
   "artemisPrimeChessFile": true,
-  "a8": "bK",
-  "h7": "wR",
-  "b6": "wQ",
-  "h1": "wK"
+  "a7": "bP",
+  "b7": "bK",
+  "h6": "wR",
+  "h8": "wR",
+  "a5": "wQ"
 }

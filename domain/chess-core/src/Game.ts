@@ -12,12 +12,13 @@ import type Move from './Move'
 import { movesEqual } from './Move'
 import type Action from './Action'
 import type { PieceType, PrimaryPieceType, Side } from './Piece'
-import { opponent } from './Piece'
-import type Position from './Position'
+import { PRIMARY_PIECES } from './Piece'
+//import type Position from './Position'
 import { copyPosition, positionToString } from './Position'
 import type ChessListener from './ChessListener'
 
 import type ActionResolver from './game/ActionResolver'
+import type { ResolvableMove } from './game/ActionResolver'
 import type ActionRecord from './ActionRecord'
 import Resolution from './game/Resolution'
 import Notifier from './game/Notifier'
@@ -109,7 +110,7 @@ class GameImpl implements Game {
   getBoard(): Board {
     return this._mainBoard
   }
-
+    // TODO: this is bad.  UI should handle anything like this!
   concede(): void {
     this._locked = true;
     this._notifier.message(`${this._currentTurn} concedes the game!`, 'transient-warning')
@@ -282,6 +283,44 @@ class GameImpl implements Game {
     }
   }
 
+  private _resolvableMovesDontAllResultInCheck(moves: ResolvableMove[], side: Side): boolean {
+    this._checkCheckingBoard.syncTo(this._mainBoard)
+    return moves.some((rm: ResolvableMove) => {
+      const r = this._createActionRecord(rm.move, rm.action)
+      this._checkCheckingBoard.applyAction(r, 'do')
+      const { inCheckFrom } = this._checkCheckingBoard.trackInCheck(side)
+      this._checkCheckingBoard.applyAction(r, 'undo')
+      return inCheckFrom.length === 0
+    })
+  }
+
+  private _kingCanMove(side: Side): boolean {
+    const pos = this._mainBoard.kingsPosition(side)
+    const resolver = this._resolvers.get('king')!
+    const moves = resolver.resolvableMoves(this._mainBoard, {type: 'king', color: side}, pos, true)
+    return this._resolvableMovesDontAllResultInCheck(moves, side)
+  }
+
+  private _primariesCanMove(side: Side): boolean {
+    return PRIMARY_PIECES.some((type: PrimaryPieceType) => {
+      const positions = this._mainBoard.primaryPositions(side, type)
+      const resolver = this._resolvers.get(type)
+      return resolver && positions.some((pos) => {
+        const moves = resolver.resolvableMoves(this._mainBoard, {type, color: side}, pos)
+        return this._resolvableMovesDontAllResultInCheck(moves, side)
+      })
+    })
+  }
+
+  private _pawnsCanMove(side: Side): boolean {
+    const pawnPositions = this._mainBoard.pawnPositions(side)
+    const resolver = this._resolvers.get('pawn')!
+    return pawnPositions.some((pos) => {
+      const moves = resolver.resolvableMoves(this._mainBoard, {type: 'pawn', color: side}, pos)
+      return this._resolvableMovesDontAllResultInCheck(moves, side)
+    })
+  }
+
   private _trackAndNotifyCheckForSide(side: Side): void {
 
     const { wasInCheck, inCheckFrom } = this._mainBoard.trackInCheck(side)
@@ -293,6 +332,16 @@ class GameImpl implements Game {
     }
     else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  
+    }
+    if (inCheck 
+        && 
+        !this._kingCanMove(side)
+        &&
+        !this._primariesCanMove(side)
+        &&
+        !this._pawnsCanMove(side)
+    ) {
+      console.log("CHECK MATE!")
     }
   }
 

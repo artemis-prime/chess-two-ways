@@ -8,6 +8,7 @@ import type Position from './Position'
 
 import { 
   positionsEqual,   
+  RANKS,
   RANKS_REVERSE,
   FILES,
   copyPosition,
@@ -73,6 +74,8 @@ interface BoardInternal extends Board {
   kingsPosition(side: Side): Position
   reset(isObservable? : boolean): void
   resetFromGameObject(gameObject: any): void
+  primaryPositions(side: Side, type: PrimaryPieceType): Position[]
+  pawnPositions(side: Side): Position[] 
 }
 
 class BoardImpl implements BoardInternal {
@@ -114,13 +117,26 @@ class BoardImpl implements BoardInternal {
     return null
   }
 
-  
-  _sideIsInCheckFrom(side: Side): Position[] {
-    return this._positionCanBeCapturedFrom(
-      this._tracking[side].king,
-      side,
-      'positions'
-    ) as Position[]
+  primaryPositions(side: Side, type: PrimaryPieceType): Position[] {
+    return [...this._tracking[side].primaries.get(type) as Position[]]
+  }
+
+  pawnPositions(side: Side): Position[] {
+    const result = [] as Position[]
+    for (const rank of RANKS) {
+      const rankArray = this._squares[rank]
+      for (const file of FILES) {
+        if (rankArray[file].piece 
+          && 
+          rankArray[file].piece!.type === 'pawn' 
+          && 
+          rankArray[file].piece!.color === side
+        ) {
+          result.push(rankArray[file])
+        }
+      }
+    }
+    return result
   }
 
   trackInCheck(side: Side): {inCheckFrom: Position[], wasInCheck: boolean} {
@@ -308,6 +324,14 @@ class BoardImpl implements BoardInternal {
  
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
+  _sideIsInCheckFrom(side: Side): Position[] {
+    return this._positionCanBeCapturedFrom(
+      this._tracking[side].king,
+      side,
+      'positions'
+    ) as Position[]
+  }
+
   private _trackCastlingEligability(moved: Position): void {
 
     const fromPieace = this._squares[moved.rank][moved.file].piece
