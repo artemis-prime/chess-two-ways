@@ -39,16 +39,19 @@ body {
   //margin-right: 6%;
   border: 4px colors.$dash-border solid;
   border-radius: 5px;
-  padding: 24px;
+  padding: 16px 24px;
   color: colors.$dash-text;
 
   display: flex;
   flex-direction: column;
 
   .messages-list {
+
+
     //overflow-y: scroll;
     margin-right: -15px;
     padding-right: 15px;
+    margin-top: 10px;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -236,4 +239,8 @@ main {
     }
   }
 
+}
+
+.in-check-indicator {
+  color: colors.$strong-orange;
 }

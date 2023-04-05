@@ -16,7 +16,8 @@ import {
   Position,  
   Side, 
   actionRecordToLAN, 
-  positionToString
+  positionToString,
+  GameStatus
 } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
@@ -77,6 +78,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
         if (messages.length > 0 && messages[messages.length - 1].actionRecord) {
           messages[messages.length - 1].type += ' check-move'
         }
+        push = false
       }
       else if (m.type === 'not-in-check') {
           // just assign the previous message my type,
@@ -85,13 +87,15 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
           if (messages[messages.length - 1].actionRecord) {
             messages[messages.length - 1].type += ' out-of-check-move'
           }
-          
+            // should need this
+            /*
           for (let i = messages.length - 1; i >= 0 && i >= messages.length - 6; i--) {
             if (messages[i].type === 'check-message') {
               messages[i].type += ' do-not-show'
               break; 
             }
           }
+          */
         } 
         push = false
       }
@@ -104,12 +108,20 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
     })
   }
 
-  const gameFinished = (m?: string): void => {
-    _pushMessage({message: '', type: 'transient-warning'}) 
-    messages.length = 0
-    setKingInCheck(null)
-    setInCheckFrom([])
-    clearActionResolutionFeedback()
+  const gameStatusChanged = (s: GameStatus): void => {
+
+    if (s.status === 'new') {
+      messages.length = 0
+      setKingInCheck(null)
+      setInCheckFrom([])
+      clearActionResolutionFeedback()
+    }
+    else if (s.status === 'checkmate' || s.status === 'stalemate' ) {
+      _pushMessage({message: '', type: 'transient-warning'}) 
+      setKingInCheck(null)
+      setInCheckFrom([])
+      clearActionResolutionFeedback()
+    }
   }
 
   const message = (m: string, type?: string): void => {
@@ -181,7 +193,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       inCheck,
       notInCheck,
       message,
-      gameFinished
+      gameStatusChanged
     }, 'game-ui')
   })
 

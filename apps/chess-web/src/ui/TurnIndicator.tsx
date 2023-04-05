@@ -12,8 +12,8 @@ const TurnIndicator: React.FC<{}> = observer(() => {
 
   return (
     <p className='turn-indicator'>
-      <span className='label'>Who's turn:</span> 
       <span className={`swatch ${game.currentTurn}`}/>
+      <span className='label'>'s turn</span> 
     </p>
   )
 })

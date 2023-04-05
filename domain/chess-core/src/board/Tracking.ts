@@ -1,6 +1,14 @@
 import { makeObservable, observable } from 'mobx'
 import type { PrimaryPieceType, Side } from '../Piece'
 import type Position from '../Position'
+import type GameStatus from '../GameStatus'
+
+
+
+const DEFAULT_GAME_STATUS: GameStatus = {
+  status: 'new',
+  victor: undefined
+}
 
 class Tracking_Side {
 
@@ -27,11 +35,8 @@ class Tracking_Side {
       makeObservable(this, {
         inCheckFrom: observable,
       })
-      this.inCheckFrom = []
     }
-    else {
-      this.inCheckFrom = []
-    }
+    this.inCheckFrom = []
   }
 
   reset(side: Side): void {
@@ -58,7 +63,8 @@ class Tracking_Side {
     ))
     this.primaries = new Map<PrimaryPieceType, Position[]>(deepArrayCopy as typeof sourceMapAsArray)
       // https://mobx.js.org/observable-state.html#converting-observables-back-to-vanilla-javascript-collections
-    this.inCheckFrom = source.inCheckFrom.slice() // always copying to non-observable
+      // always syncing from observable to non-observable
+    this.inCheckFrom = source.inCheckFrom.slice() 
     this.king = source.king
     this.castling.hasCastled = source.castling.hasCastled 
     this.castling.kingHasMoved = source.castling.kingHasMoved 
@@ -71,19 +77,31 @@ class Tracking {
   white: Tracking_Side
   black: Tracking_Side
 
-  constructor(inCheckObservable?: boolean) {
-    this.white = new Tracking_Side('white', inCheckObservable)
-    this.black = new Tracking_Side('black', inCheckObservable)
+  gameStatus: GameStatus 
+
+  constructor(observeMe?: boolean) {
+    this.white = new Tracking_Side('white', observeMe)
+    this.black = new Tracking_Side('black', observeMe)
+    if (observeMe) {
+      makeObservable(this, {
+        gameStatus: observable.shallow,
+      })
+    }
+    this.gameStatus = DEFAULT_GAME_STATUS
   }
 
   reset() {
     this.white.reset('white')
     this.black.reset('black')
+    this.gameStatus = DEFAULT_GAME_STATUS
   }
 
   syncTo (source: Tracking) {
     this.white.syncTo(source.white)
     this.black.syncTo(source.black)
+      // https://mobx.js.org/observable-state.html#converting-observables-back-to-vanilla-javascript-collections
+      // always syncing from observable to non-observable
+    this.gameStatus = {...source.gameStatus}
   }
 }
 

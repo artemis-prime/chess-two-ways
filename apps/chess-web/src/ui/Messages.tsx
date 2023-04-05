@@ -71,8 +71,18 @@ const Messages: React.FC<{
 
   const isMove = (m: ConsoleMessage) => (!!m.actionRecord)
 
-  return messages.length > 0 ? (<>
-    <p>----------------------</p>
+  const getMessageElement = (m: ConsoleMessage): React.ReactNode | null => {
+    if (isMove(m) && (m.message.startsWith('w') || m.message.startsWith('b'))) {
+      const colorCode = m.message.slice(0, 1)  
+      const rest = m.message.substring(1)
+      return (<span className='message'><span className={`side-indicator ${colorCode === 'w' ? 'white' : 'black'}`} />{rest}</span>)
+    }
+  
+    return <span className='message'>{m.message}</span>
+  }
+
+
+  return messages.length > 0 ? (
     <Scrollable className='messages-list'>
     {messages.map((m, i) => {
       if (m.type.includes('do-not-show') || (!showMoves && isMove(m))) return null
@@ -81,14 +91,14 @@ const Messages: React.FC<{
         <div key={i} className={`message-outer ${getIndentation(m)} ${postFix ? 'has-postfix' : 'no-postfix'} ${m.type}`}>
           <p className='message-and-prefix'>
             {getMessagePrefix(m)}
-            <span className='message'>{m.message}</span>
+            {getMessageElement(m)}
           </p>
           {postFix && <p className='message-postfix'>{postFix}</p>}
         </div>
       )
     })}
     </Scrollable>
-  </>) : <></>
+  ) : null
 })
 
 export default Messages

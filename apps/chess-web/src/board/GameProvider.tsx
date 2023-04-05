@@ -12,10 +12,6 @@ export const useGame = (): Game =>  {
   return useContext(GameContext) as Game
 }
 
-export const useBoard = (): Board =>  {
-  return (useContext(GameContext) as Game).getBoard()
-}
-
 const GameProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
   
   return (

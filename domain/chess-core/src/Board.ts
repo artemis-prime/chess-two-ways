@@ -27,6 +27,7 @@ import { PRIMARY_PIECES } from './Piece'
 import type Square from './Square'
 
 import type ActionRecord from './ActionRecord'
+import type GameStatus from './GameStatus'
 import type IsCaptureFn from './game/IsCaptureFn'
 
 import Tracking from './board/Tracking'
@@ -68,7 +69,6 @@ interface Board {
 interface BoardInternal extends Board {
 
   trackInCheck(side: Side): {inCheckFrom: Position[], wasInCheck: boolean}
-
   syncTo(other: BoardInternal): void 
   applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
   kingsPosition(side: Side): Position
@@ -76,7 +76,9 @@ interface BoardInternal extends Board {
   resetFromGameObject(gameObject: any): void
   primaryPositions(side: Side, type: PrimaryPieceType): Position[]
   pawnPositions(side: Side): Position[] 
-  inCheck(side: Side): boolean
+  get inCheck(): null | {side: Side, from: Position[]} // mobx computed
+  get gameStatus(): GameStatus // mobx computed
+  setGameStatus(s: GameStatus): void
 }
 
 class BoardImpl implements BoardInternal {
@@ -94,11 +96,24 @@ class BoardImpl implements BoardInternal {
       makeObservable(this, {
         applyAction: action,
         reset: action,
+        setGameStatus: action,
+        gameStatus: computed,
+        inCheck: computed,
         boardAsArray: computed,
       })
     }
     this._tracking = new Tracking(isObservable)
     this._squares = freshBoard(this._tracking, isObservable)
+  }
+
+  get gameStatus(): GameStatus {
+    return this._tracking.gameStatus
+  }
+
+  setGameStatus(s: GameStatus): void {
+    if (this._tracking.gameStatus.status != s.status) {
+      this._tracking.gameStatus = s
+    }
   }
 
   syncTo(other: BoardInternal): void {
@@ -133,7 +148,7 @@ class BoardImpl implements BoardInternal {
           && 
           rankArray[file].piece!.color === side
         ) {
-          result.push(rankArray[file])
+          result.push(copyPosition(rankArray[file]))
         }
       }
     }
@@ -150,10 +165,21 @@ class BoardImpl implements BoardInternal {
     }
   }
 
-  inCheck(side: Side): boolean {
-    return (this._tracking[side].inCheckFrom.length > 0)  
+  get inCheck(): null | {side: Side, from: Position[]}  {
+    if (this._tracking.white.inCheckFrom.length > 0) {
+      return {
+        side: 'white',
+        from: [...this._tracking.white.inCheckFrom]
+      }
+    } 
+    else if (this._tracking.black.inCheckFrom.length > 0) {
+      return {
+        side: 'black',
+        from: [...this._tracking.black.inCheckFrom]
+      }
+    }
+    return null  
   }
-
 
   kingsPosition(side: Side): Position {
     return this._tracking[side].king
@@ -308,7 +334,6 @@ class BoardImpl implements BoardInternal {
   }
 
   reset(): void {
-
     this._tracking.reset()
     resetBoard(this._squares, this._tracking)
   }

@@ -3,6 +3,7 @@ import type Action from './Action'
 import type { Side }  from './Piece' 
 import type Move from './Move' 
 import type ActionRecord from './ActionRecord'
+import type GameStatus from './GameStatus'
 
 interface ChessListener {
 
@@ -18,7 +19,7 @@ interface ChessListener {
   inCheck(side: Side, kingSquare: Position, sideIsInCheckFrom: Position[]): void
   notInCheck(side: Side): void
 
-  gameFinished(message?: string): void
+  gameStatusChanged(s: GameStatus): void
 }
 
 export { type ChessListener as default }

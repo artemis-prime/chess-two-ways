@@ -1,7 +1,5 @@
 @use 'colors';
 
-$strong-orange:rgb(255, 136, 0); 
-$medium-orange: rgba(253, 170, 75, 0.8); 
 
 .message-outer {
   .prefix {
@@ -22,27 +20,24 @@ $medium-orange: rgba(253, 170, 75, 0.8);
   }
   &.check-move,
   &.check-message {
-      color: $medium-orange; 
+      color: colors.$medium-orange; 
     & .strong {
       margin-right: 12px;
-      color: $strong-orange; 
+      color: colors.$strong-orange; 
       
-    }
-    .side-indicator {
-      margin-right: 8px;
     }
   }
   &.check-message {
     padding-left: 18px;
   }
   &.transient-warning {
-    color: $medium-orange;
+    color: colors.$medium-orange;
   }
   
   &.warning,
   &.capture,
   &.capture-promote {
-    color: $strong-orange; 
+    color: colors.$strong-orange; 
   }
   &.transient-info,
   &.undo,
@@ -60,7 +55,7 @@ $medium-orange: rgba(253, 170, 75, 0.8);
   }
   .postfix {
     white-space: nowrap;
-    color: $medium-orange;
+    color: colors.$medium-orange;
 
   }
   .side-indicator {

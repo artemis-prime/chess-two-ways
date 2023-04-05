@@ -1,17 +1,18 @@
   // @ts-ignore
   import React from 'react'
   import { observer } from 'mobx-react'
-  
+  import type { CSS } from '@stitches/react'
+
   import { useGame } from '~/board/GameProvider'
   
   import { Button, Flex } from '~/primitives'
     
-  const UndoRedo: React.FC<{}> = observer(() => {
+  const UndoRedo: React.FC<{ css?: CSS }> = observer(({css}) => {
   
     const game = useGame()
   
     return (
-      <Flex direction='row' justify='start' align='center'>
+      <Flex direction='row' justify='start' align='center' css={css}>
         <Button 
           size='medium'  
           disabled={!game.canUndo}

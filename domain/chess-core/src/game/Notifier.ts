@@ -4,6 +4,7 @@ import type Action from '../Action'
 import type { Side }  from '../Piece' 
 import type Move from '../Move' 
 import type ActionRecord from '../ActionRecord'
+import type GameStatus from '../GameStatus'
 
 class Notifier implements ChessListener {
 
@@ -57,9 +58,9 @@ class Notifier implements ChessListener {
     })
   }
 
-  gameFinished(message?: string): void {
+  gameStatusChanged(s: GameStatus): void {
     this._listeners.forEach((l) => {
-      l.gameFinished(message)
+      l.gameStatusChanged(s)
     })
   }
 

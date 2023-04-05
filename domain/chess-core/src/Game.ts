@@ -3,24 +3,31 @@ import {
   computed,
   makeObservable, 
   observable, 
+  autorun
 } from 'mobx'
-
 
 import type { default as Board, BoardInternal } from './Board'
 import { createBoard } from './Board'
 import type Move from './Move'
 import { movesEqual } from './Move'
 import type Action from './Action'
-import type { PieceType, PrimaryPieceType, Side } from './Piece'
-import { PRIMARY_PIECES } from './Piece'
+import type Position from './Position'
 import { copyPosition, positionToString } from './Position'
 import type ChessListener from './ChessListener'
+import type Piece from './Piece'
+import { 
+  type PieceType, 
+  type PrimaryPieceType, 
+  type Side, 
+  PRIMARY_PIECES, 
+  opponent
+} from './Piece'
 
-import type ActionResolver from './game/ActionResolver'
-import type { ResolvableMove } from './game/ActionResolver'
+import type { default as ActionResolver, ResolvableMove } from './game/ActionResolver'
 import type ActionRecord from './ActionRecord'
 import Resolution from './game/Resolution'
 import Notifier from './game/Notifier'
+import type GameStatus from './GameStatus'
 
 import registry from './game/resolverRegistry'
 import { actionRecordToLAN } from './util'
@@ -43,15 +50,23 @@ interface Game {
 
   get canUndo(): boolean
   get canRedo(): boolean
-  
+    // check if current turn has any valid moves,
+    // if not, set the status accordingly
   checkStalemate(): void
-  concede(): void // currentTurn concedes the game
+
+  setDraw(): void
+    // currentTurn concedes the game
+  setConcession(): void 
+
+  get gameStatus(): GameStatus // observable
   reset(): void
   get currentTurn(): Side
+  get inCheck(): null | {side: Side, from: Position[]} // observable
 
   listenTo(l: ChessListener, uniqueId: string): void
 
-  getBoard(): Board
+    // Utility method for easy rendering (mobx 'computed')
+  get boardAsArray():  {pos: Position, piece: Piece | null}[]
 
   resetFromGameObject(g: any) : void
 }
@@ -73,8 +88,6 @@ class GameImpl implements Game {
   private _stateIndex = -1 
   private _cachedResolution: Resolution | null = null 
 
-  private _locked = false
-
   private _notifier: Notifier = new Notifier() 
 
   constructor() {
@@ -90,7 +103,10 @@ class GameImpl implements Game {
       resetFromGameObject: action,
       canUndo: computed,
       canRedo: computed,
-      currentTurn: computed
+      gameStatus: computed,
+      currentTurn: computed,
+      inCheck: computed,
+      boardAsArray: computed
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -98,34 +114,57 @@ class GameImpl implements Game {
       '_currentTurn'| 
       '_toggleTurn' | 
       '_stateIndex' |
-      '_actions'
+      '_actions' |
+      'playing'
     >(this, {
       _currentTurn: observable,
       _toggleTurn: action,
       _stateIndex: observable,
-      _actions: observable
+      _actions: observable,
+      playing: computed
+    })
+
+    autorun(() => {
+      this._notifier.gameStatusChanged(this.gameStatus)  
     })
   }
 
-  getBoard(): Board {
-    return this._mainBoard
+  get gameStatus(): GameStatus {
+    return this._mainBoard.gameStatus
   }
-    // TODO: this is bad.  UI should handle anything like this!
-  concede(): void {
-    this._locked = true;
-    this._notifier.message(`${this._currentTurn} concedes the game!`, 'transient-warning')
-    let count = 5
-    const timer = setInterval(() => {
-      if (count >= 1) {
-        this._notifier.message(`${this._currentTurn} concedes the game! reset in ${count--}s`, 'transient-warning')
-      }
-      else {
-        this._locked = false;
-        this._notifier.gameFinished()
-        this.reset();
-        clearInterval(timer);
-      }
-    }, 1000)
+
+  private get playing(): boolean {
+    return this._mainBoard.gameStatus.status === 'playing' || this._mainBoard.gameStatus.status === 'new'
+  }
+
+  private get statusAllowsUndoRedo(): boolean {
+    return (
+      this._mainBoard.gameStatus.status === 'new'
+      || 
+      this._mainBoard.gameStatus.status === 'playing'
+      ||
+      this._mainBoard.gameStatus.status === 'stalemate'
+      ||
+      this._mainBoard.gameStatus.status === 'checkmate'
+    )
+  }
+
+  get boardAsArray(): {pos: Position, piece: Piece | null}[] {
+    return this._mainBoard.boardAsArray
+  }
+
+  setDraw(): void {
+    this._mainBoard.setGameStatus({
+      status: 'draw',
+      victor: 'none'
+    })
+  }
+
+  setConcession(): void {
+    this._mainBoard.setGameStatus({
+      status: 'concession',
+      victor: opponent(this._currentTurn)
+    })
   }
 
   reset() {
@@ -134,7 +173,6 @@ class GameImpl implements Game {
     this._currentTurn = 'white'
     this._actions.length = 0
     this._stateIndex = -1 
-    this._locked = false
   }
 
   resetFromGameObject(g: any) : void {
@@ -144,11 +182,11 @@ class GameImpl implements Game {
     this._currentTurn = 'white'
     this._actions.length = 0
     this._stateIndex = -1 
-    this._locked = false
   }
 
   checkStalemate(): void {
-    if (!this._mainBoard.inCheck(this._currentTurn)
+    if (
+      !(this._mainBoard.inCheck && this._mainBoard.inCheck.side === this._currentTurn)
       &&
       !this._primariesCanMove(this._currentTurn)
       &&
@@ -156,8 +194,18 @@ class GameImpl implements Game {
       &&
       !this._pawnsCanMove(this._currentTurn)
     ) {
-      console.log("STALEMATE!")
+      this._mainBoard.setGameStatus({
+        status: 'stalemate',
+        victor: 'none'
+      }) 
     }
+    else {
+      this._notifier.message('Not in stalemate', 'info-transient')
+    }
+  }
+
+  get inCheck(): null | {side: Side, from: Position[]} {
+    return this._mainBoard.inCheck
   }
 
   get currentTurn(): Side {
@@ -182,7 +230,7 @@ class GameImpl implements Game {
 
   resolveAction(move: Move): Action | null {
 
-    if (this._locked) return null
+    if (!this.playing) return null
 
     if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
       if (!move.piece) {
@@ -224,7 +272,7 @@ class GameImpl implements Game {
     promoteTo?: PrimaryPieceType
   ): void {
 
-    if (this._locked) return
+    if (!this.playing) return
 
     const action = this._cachedResolution?.action
     if (action) {
@@ -246,11 +294,11 @@ class GameImpl implements Game {
   }
 
   get canUndo() {
-    return this._stateIndex >= 0
+    return this.statusAllowsUndoRedo && this._stateIndex >= 0 
   }
 
   undo() {
-    if (this.canUndo && !this._locked) {
+    if (this.canUndo) {
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'undo')
       this._notifier.actionUndon(r)
@@ -261,11 +309,11 @@ class GameImpl implements Game {
   }
 
   get canRedo() {
-    return this._stateIndex + 1 < this._actions.length
+    return this.statusAllowsUndoRedo && (this._stateIndex + 1 < this._actions.length)
   }
 
   redo() {
-    if (this.canRedo && !this._locked) {
+    if (this.canRedo) {
       this._stateIndex++
       const r = this._actions[this._stateIndex]
       this._mainBoard.applyAction(r, 'redo')
@@ -353,7 +401,10 @@ class GameImpl implements Game {
         &&
         !this._pawnsCanMove(side)
     ) {
-      console.log("CHECK MATE!")
+      this._mainBoard.setGameStatus({
+        status: 'checkmate',
+        victor: opponent(side)
+      }) 
     }
   }
 
@@ -368,7 +419,6 @@ class GameImpl implements Game {
   private _toggleTurn(): void {
     this._currentTurn = (this._currentTurn === 'white') ? 'black' : 'white'
   }
-  
 }
 
 const getGameSingleton = () => {
