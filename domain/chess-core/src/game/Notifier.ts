@@ -12,7 +12,7 @@ class Notifier implements ChessListener {
 
   constructor() {}
   
-  listenTo(l: ChessListener, uniqueId: string) {
+  registerListener(l: ChessListener, uniqueId: string) {
     this._listeners.set(uniqueId, l)
   }
 

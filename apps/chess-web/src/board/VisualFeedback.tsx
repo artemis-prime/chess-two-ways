@@ -87,15 +87,6 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
           if (messages[messages.length - 1].actionRecord) {
             messages[messages.length - 1].type += ' out-of-check-move'
           }
-            // should need this
-            /*
-          for (let i = messages.length - 1; i >= 0 && i >= messages.length - 6; i--) {
-            if (messages[i].type === 'check-message') {
-              messages[i].type += ' do-not-show'
-              break; 
-            }
-          }
-          */
         } 
         push = false
       }
@@ -108,19 +99,27 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
     })
   }
 
+    // NOT messages
+  const _clearLocalState = () => {
+    setKingInCheck(null)
+    setInCheckFrom([])
+    clearActionResolutionFeedback()
+  }
+
   const gameStatusChanged = (s: GameStatus): void => {
 
-    if (s.status === 'new') {
+    if (s.state === 'new') {
       messages.length = 0
-      setKingInCheck(null)
-      setInCheckFrom([])
-      clearActionResolutionFeedback()
+      _clearLocalState
     }
-    else if (s.status === 'checkmate' || s.status === 'stalemate' ) {
+    else if (s.state === 'restored') {
+      messages.length = 0
+      _clearLocalState()
+      // TODO sync messages to actions.
+    }
+    else if (s.state === 'checkmate' || s.state === 'stalemate' ) {
       _pushMessage({message: '', type: 'transient-warning'}) 
-      setKingInCheck(null)
-      setInCheckFrom([])
-      clearActionResolutionFeedback()
+      _clearLocalState()
     }
   }
 
@@ -185,7 +184,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
   }
 
   useEffect(() => {
-    game.listenTo({
+    game.registerListener({
       actionResolved,
       actionTaken,
       actionUndon,
@@ -194,7 +193,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       notInCheck,
       message,
       gameStatusChanged
-    }, 'game-ui')
+    }, 'artemis-prime-chess-web-ui')
   })
 
   useEffect(() => {

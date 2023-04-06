@@ -30,7 +30,7 @@ const ResetFromFileButton: React.FC<React.PropsWithChildren> = ({
       if (text && typeof text === 'string') {
         const g: any = JSON.parse(text as string)
         if (g.artemisPrimeChessFile) {
-          game.resetFromGameObject(g)
+          game.restoreFromGameData(g)
         }
       }
       else {

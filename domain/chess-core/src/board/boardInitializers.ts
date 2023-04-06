@@ -1,9 +1,10 @@
 import type { PieceType, PrimaryPieceType } from '../Piece'
-import { PRIMARY_PIECES, pieceToString, pieceFromString } from '../Piece'
+import { PRIMARY_PIECES, pieceFromString } from '../Piece'
 import Square from '../Square'
 import type Tracking from './Tracking'
 import type Squares from './Squares'
 import { type File, positionToString, copyPosition, RANKS, FILES } from '../Position'
+import { type BoardData } from '../game/GameData'
 
 const PIECES_BY_FILE = {
   'a': 'rook',
@@ -169,18 +170,19 @@ const resetBoard = (sqs: Squares, tr: Tracking): void => {
     }
   } 
 }
-  // Intentionally forgiving.  If meaningful keys are found, 
-  // their values are parsed.  If they can be parsed, pieces are created.
-const syncBoardToGameObject = (
+  // Intentionally forgiving. If meaningful keys are found, 
+  // their values are parsed. If they can be parsed, pieces are created.
+  // if not, square is empty (no Error's are thrown)
+const syncBoardToEncoded = (
   sqs: Squares, 
-  g: any, 
+  encoded: BoardData, 
   tr: Tracking
 ): void => {
 
-  const populateSquare = (sq: Square, g: any): void => {
+  const pieceForSquare = (sq: Square): void => {
     const keyToTry = positionToString(sq)
-    if (g[keyToTry]) {
-      sq.piece = pieceFromString(g[keyToTry]) ?? null // in case undefined
+    if (encoded[keyToTry]) {
+      sq.piece = pieceFromString(encoded[keyToTry]) ?? null // in case undefined
     }
     else {
       sq.piece = null
@@ -190,7 +192,7 @@ const syncBoardToGameObject = (
   for (const rank of RANKS) {
     const rankArray = sqs[rank]
     for (const file of FILES) {
-      populateSquare(rankArray[file], g)
+      pieceForSquare(rankArray[file])
       if (rankArray[file].piece) {
         track(tr, rankArray[file])
       }
@@ -198,4 +200,4 @@ const syncBoardToGameObject = (
   }
 }
 
-export { freshBoard, resetBoard, syncBoardToGameObject} 
+export { freshBoard, resetBoard, syncBoardToEncoded} 

@@ -8,10 +8,10 @@ import type Position from './Position'
 
 import { 
   positionsEqual,   
+  copyPosition,
   RANKS,
   RANKS_REVERSE,
   FILES,
-  copyPosition,
  } from './Position'
 
 import { 
@@ -21,6 +21,7 @@ import {
   type Side, 
   opponent,
   isOpponent,
+  pieceToString,
 } from './Piece'
 
 import { PRIMARY_PIECES } from './Piece'
@@ -29,11 +30,12 @@ import type Square from './Square'
 import type ActionRecord from './ActionRecord'
 import type GameStatus from './GameStatus'
 import type IsCaptureFn from './game/IsCaptureFn'
+import { type BoardData, type PieceCode } from './game/GameData'
 
 import Tracking from './board/Tracking'
 import type Squares from './board/Squares'
 import { syncSquares } from './board/Squares'
-import { freshBoard, resetBoard, syncBoardToGameObject } from './board/boardInitializers'
+import { freshBoard, resetBoard, syncBoardToEncoded } from './board/boardInitializers'
 
 import {
   hasN,
@@ -56,10 +58,6 @@ interface Board {
     // It a human readable reason why side is not eliable 
     // will be appended to the array 
   eligableToCastle(color: Side, side: 'kingside' | 'queenside', reasonDenied?: string[]): boolean 
-  
-    // Utility method for easy rendering (mobx 'computed')
-  get boardAsArray():  {pos: Position, piece: Piece | null}[]
-
   isClearAlongRank(from: Position, to: Position): boolean
   isClearAlongFile(from: Position, to: Position): boolean
   isClearAlongDiagonal(from: Position, to: Position): boolean
@@ -73,12 +71,15 @@ interface BoardInternal extends Board {
   applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
   kingsPosition(side: Side): Position
   reset(isObservable? : boolean): void
-  resetFromGameObject(gameObject: any): void
+  restoreFromBoardData(board: BoardData): void
+  persistAsBoardData(): BoardData,
   primaryPositions(side: Side, type: PrimaryPieceType): Position[]
   pawnPositions(side: Side): Position[] 
   get inCheck(): null | {side: Side, from: Position[]} // mobx computed
   get gameStatus(): GameStatus // mobx computed
   setGameStatus(s: GameStatus): void
+    // Utility method for easy rendering (mobx 'computed')
+  get boardAsArray():  {pos: Position, piece: Piece | null}[]
 }
 
 class BoardImpl implements BoardInternal {
@@ -111,7 +112,7 @@ class BoardImpl implements BoardInternal {
   }
 
   setGameStatus(s: GameStatus): void {
-    if (this._tracking.gameStatus.status != s.status) {
+    if (this._tracking.gameStatus.state != s.state) {
       this._tracking.gameStatus = s
     }
   }
@@ -338,9 +339,21 @@ class BoardImpl implements BoardInternal {
     resetBoard(this._squares, this._tracking)
   }
 
-  resetFromGameObject(g: any): void {
+  restoreFromBoardData(data: BoardData): void {
     this._tracking.reset()
-    syncBoardToGameObject(this._squares, g, this._tracking)
+    syncBoardToEncoded(this._squares, data, this._tracking)
+  }
+
+  persistAsBoardData(): BoardData {
+    const result: BoardData = {}
+    for (const rank of RANKS) {
+      for (const file of FILES) {
+        if (this._squares[rank][file].piece) {
+          result[`${file}${rank}`] = pieceToString(this._squares[rank][file].piece!) as PieceCode
+        }
+      }
+    }
+    return result
   }
 
   get boardAsArray(): {pos: Position, piece: Piece | null}[] {

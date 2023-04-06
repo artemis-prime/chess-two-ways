@@ -34,7 +34,7 @@ const Dash: React.FC<{}> = observer(() => {
 
       <Flex direction='row' justify='between' align='start'>
         <Flex direction='column' justify='start' align='start'>
-        {(game.gameStatus.status === 'playing' || game.gameStatus.status === 'new') ? (<>
+        {(game.gameStatus.state === 'playing' || game.gameStatus.state === 'new') ? (<>
             <TurnIndicator />
             <InCheckIndicator />
           </>) : (
@@ -44,9 +44,9 @@ const Dash: React.FC<{}> = observer(() => {
         <Flex direction='column' justify='start' align='end' >
           <UndoRedo css={{marginBottom: '12px'}}/>
           <Flex direction='column' justify='start' align='end' css={{fontSize: '0.9rem', marginBottom: '24px'}}>
-          {(game.gameStatus.status === 'playing' || game.gameStatus.status === 'new' ) ? (<>
-            <Button css={buttonCSS} onClick={game.setDraw.bind(game)}>call a draw</Button>
-            <Button css={buttonCSS} onClick={game.setConcession.bind(game)}>concede</Button>
+          {(game.gameStatus.state === 'playing' || game.gameStatus.state === 'new' ) ? (<>
+            <Button css={buttonCSS} onClick={game.callADraw.bind(game)}>call a draw</Button>
+            <Button css={buttonCSS} onClick={game.concede.bind(game)}>concede</Button>
             <Button css={buttonCSS} onClick={game.checkStalemate.bind(game)}>check stalemate</Button>
           </>) : (<>
             <Button css={buttonCSS} onClick={game.reset.bind(game)}>reset</Button>

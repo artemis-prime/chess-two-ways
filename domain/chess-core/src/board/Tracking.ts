@@ -6,7 +6,7 @@ import type GameStatus from '../GameStatus'
 
 
 const DEFAULT_GAME_STATUS: GameStatus = {
-  status: 'new',
+  state: 'new',
   victor: undefined
 }
 

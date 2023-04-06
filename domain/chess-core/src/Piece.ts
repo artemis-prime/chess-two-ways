@@ -2,6 +2,15 @@ type Color =
   'black' | 
   'white'
 
+type ColorCode = 'w' | 'b'
+
+const COLOR_FROM_CODE = {
+  w: 'white',
+  b: 'black'
+} as {
+  [key in ColorCode] : Color
+}
+
 type PieceType =
   'pawn' |
   'queen' |
@@ -70,6 +79,8 @@ const PIECETYPE_FROM_LETTER = {
   K: 'king'
 }
 
+type PieceTypeCode = keyof typeof PIECETYPE_FROM_LETTER 
+
 interface Piece {
   readonly type: PieceType
   readonly color: Color
@@ -101,8 +112,8 @@ const pieceToString = (p: Piece, format?: PieceFormat): string => {
   switch (form) {
     case 'T': return PIECE_TYPE_NAMES[p.type].short
     case 'Type': return PIECE_TYPE_NAMES[p.type].long
-    case 'cT': return (p.color === 'white' ? 'w' : 'b') + PIECE_TYPE_NAMES[p.type].short
-    case 'c-Type': return (p.color === 'white' ? 'w-' : 'b-') + PIECE_TYPE_NAMES[p.type].long
+    case 'cT': return p.color.charAt(0) + PIECE_TYPE_NAMES[p.type].short
+    case 'c-Type': return `${p.color.charAt(0)}-${PIECE_TYPE_NAMES[p.type].long}`
     case 'color Type': return `${p.color} ${PIECE_TYPE_NAMES[p.type].long}`
   }
 }
@@ -135,10 +146,14 @@ export {
   type PrimaryPieceType,
   type Side,
   type PieceFormat,
+  type PieceTypeCode,
   PRIMARY_PIECES,
+  COLOR_FROM_CODE,
+  type ColorCode,
   piecesEqual,
   pieceToString,
   PIECE_TYPE_NAMES,
+  PIECETYPE_FROM_LETTER,
   isOpponent,
   opponent,
   pieceFromString 
