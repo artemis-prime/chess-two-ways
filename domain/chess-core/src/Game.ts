@@ -34,21 +34,22 @@ import Resolution from './game/Resolution'
 import Notifier from './game/Notifier'
 import type GameData from './game/GameData'
 import type GameStatus from './GameStatus'
-import { STATUS_IN_PLAY, STATUS_CAN_UNDO} from './GameStatus'
+import { STATUS_IN_PLAY, STATUS_CAN_UNDO } from './GameStatus'
 
 import registry from './game/resolverRegistry'
 
 interface Game {
 
-    // Determine which valid action is intended by the move. 
-    // Could be used during drag'n'drop canDropOnMe() type functions.
+    // Determine which valid action is intended by / possible with
+    // the move attempted. (This could be used during drag'n'drop 
+    // canDropOnMe() type functions.)
     // 
-    // Resolved Action should cached for same move until:
-    //  1) takeAction() is called for the same move
+    // Resolved Action will cached for same move until:
+    //  1) takeResolvedAction() is called 
     //  2) endResolution() is called 
-    // (This is akin to debouncing but not specific to web)
+    // (Note that this is from of debouncing)
   resolveAction(m: Move): Action | null
-  takeAction(m: Move): void
+  takeResolvedAction(): void
   endResolution(): void
   
   get canUndo(): boolean
@@ -105,7 +106,7 @@ class GameImpl implements Game {
     this._scratchBoard = createBoard(this._isCapture.bind(this))
   
     makeObservable(this, {
-      takeAction: action,
+      takeResolvedAction: action,
       reset: action,
       undo: action,
       redo: action,
@@ -179,11 +180,6 @@ class GameImpl implements Game {
     })
   }
 
-  //this._completeRestore()
-  //this._notifier.actionsRestored([...this._actions])
-  //this._trackAndNotifyCheck()
-
-
   async restoreFromGameData(g: GameData): Promise<void> {
 
     if (!g.artemisPrimeChessGame) throw new Error('restoreFromGameData() invalid Game Object!')
@@ -196,8 +192,9 @@ class GameImpl implements Game {
       state: 'restored',
       victor: undefined
     })
-      // await the state change, which also means the autorun that listens will be done,
-      // since we are registered after it.
+      // await the state change. We effectively create a new listerner, 
+      // which be definition is after the autorun() in GameImpl's constructor.
+      // The actionsRestored() notification should be after the game state change.
     await when(() => this._board.gameStatus.state === 'restored');
     this._notifier.actionsRestored([...this._actions])
     this._trackAndNotifyCheck()
@@ -296,17 +293,21 @@ class GameImpl implements Game {
     this._cachedResolution = null
   }
 
-  takeAction(
-    move: Move,
-    promoteTo?: PrimaryPieceType
-  ): void {
+  takeResolvedAction(): void {
 
     if (!this.playing) return
-      // if not previously resolved.  We could throw an error, but it may not be helpful.
     if (!this._cachedResolution?.action) return
 
-    const r = this._createActionRecord(move, this._cachedResolution!.action!, promoteTo)
-    this.endResolution()
+      // TODO: create an async function that returns the promoteTo type.
+      // eg, a dialog could popup
+    const promoteTo = 'queen'
+
+    const r = this._createActionRecord(
+      this._cachedResolution!.move, 
+      this._cachedResolution!.action!, 
+      promoteTo
+    )
+    this._cachedResolution = null
     this._board.applyAction(r, 'do')
     this._notifier.actionTaken(r)
     if (this._stateIndex + 1 < this._actions.length) {

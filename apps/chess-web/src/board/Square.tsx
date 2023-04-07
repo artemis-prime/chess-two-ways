@@ -8,7 +8,7 @@ import { FILES, positionsEqual } from '@artemis-prime/chess-core'
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
 import { useVisualFeedback } from './VisualFeedback'
-import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
+import { type DraggingPiece, DRAGGING_PIECE } from './DraggingPiece'
 
 const SquareComponent: React.FC<{ 
   position: Position
@@ -26,9 +26,9 @@ const SquareComponent: React.FC<{
 
   const [props, drop] = useDrop(
     () => ({
-      accept: DND_ITEM_NAME,
-      drop: (item: DnDPiece, monitor) => { game.takeAction({piece: item.piece, from: item.from, to: pos})},
-      canDrop: (item: DnDPiece, monitor) => {
+      accept: DRAGGING_PIECE,
+      drop: (item: DraggingPiece, monitor) => { game.takeResolvedAction()},
+      canDrop: (item: DraggingPiece, monitor) => {
         return !!game.resolveAction({piece: item.piece, from: item.from, to: pos}); 
       },
     }),

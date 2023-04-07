@@ -6,7 +6,7 @@ import { useDrag  } from 'react-dnd'
 import type { Position, Piece } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
-import { type DnDPiece, DND_ITEM_NAME } from './DnDPiece'
+import { type DraggingPiece, DRAGGING_PIECE } from './DraggingPiece'
 import registry from './pieceRegistry'
 export interface SpecificPieceProps {
   size?: string 
@@ -22,8 +22,8 @@ const PieceComponent: React.FC<{
 
   const game = useGame()
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
-    type: DND_ITEM_NAME,
-    item: {piece, from: position} as DnDPiece,
+    type: DRAGGING_PIECE,
+    item: {piece, from: position} as DraggingPiece,
     canDrag: (monitor) => (game.currentTurn === piece.color),
     end: (item, monitor) => { game.endResolution() },
     collect: (monitor) => ({
