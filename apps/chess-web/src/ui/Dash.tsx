@@ -44,14 +44,13 @@ const Dash: React.FC<{}> = observer(() => {
           <UndoRedo />
           <BoardDirectionWidget css={{marginBottom: '18px'}}/>
           <Flex direction='column' justify='start' align='end' css={{fontSize: '0.9rem', marginBottom: '24px'}}>
-          {(game.playing  ) ? (<>
+          {(game.playing) && (<>
             <Button css={buttonCSS} onClick={game.callADraw.bind(game)}>call a draw</Button>
             <Button css={buttonCSS} onClick={game.concede.bind(game)}>concede</Button>
             <Button css={buttonCSS} onClick={game.checkStalemate.bind(game)}>check stalemate</Button>
-            <PersistToFileButton >save game...</PersistToFileButton>
-          </>) : (<>
-            <Button css={buttonCSS} onClick={game.reset.bind(game)}>reset</Button>
           </>)}
+            <Button css={buttonCSS} onClick={game.reset.bind(game)}>reset</Button>
+            <PersistToFileButton >save game...</PersistToFileButton>
             <RestoreFromFileButton >restore game...</RestoreFromFileButton>
           </Flex>
         </Flex>

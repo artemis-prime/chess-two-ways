@@ -24,7 +24,7 @@ const PieceComponent: React.FC<{
   const [{ isDragging, canDrag }, drag] = useDrag(() => ({
     type: DRAGGING_PIECE,
     item: {piece, from: position} as DraggingPiece,
-    canDrag: (monitor) => (game.currentTurn === piece.color),
+    canDrag: (monitor) => (game.currentTurn === piece.color && game.playing),
     end: (item, monitor) => { game.endResolution() },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
