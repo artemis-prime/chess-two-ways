@@ -40,6 +40,12 @@ class Notifier implements ChessListener {
     })
   }
 
+  actionsRestored(recs: readonly ActionRecord[]): void {
+    this._listeners.forEach((l) => {
+      l.actionsRestored(recs)
+    })
+  }
+
   message(s: string, type?: string): void {
     this._listeners.forEach((l) => {
       l.message(s, type)

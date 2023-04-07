@@ -16,9 +16,7 @@ const MyLabel = styled('label', {
   }
 })
 
-const ResetFromFileButton: React.FC<React.PropsWithChildren> = ({
-  children
-}) => {
+const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) => {
 
   const game = useGame()
 
@@ -29,8 +27,11 @@ const ResetFromFileButton: React.FC<React.PropsWithChildren> = ({
       const text = (e.target?.result)
       if (text && typeof text === 'string') {
         const g: any = JSON.parse(text as string)
-        if (g.artemisPrimeChessFile) {
+        if (g.artemisPrimeChessGame) {
           game.restoreFromGameData(g)
+        }
+        else {
+          console.log('Chess: unrecognized file format')
         }
       }
       else {
@@ -40,7 +41,6 @@ const ResetFromFileButton: React.FC<React.PropsWithChildren> = ({
     reader.readAsText((e.target as any).files[0])
   }
 
-
   return (
     <MyLabel className="custom-file-upload">
       <input type="file" onChange={readFile}/>
@@ -49,4 +49,4 @@ const ResetFromFileButton: React.FC<React.PropsWithChildren> = ({
   )
 }
 
-export default ResetFromFileButton
+export default RestoreFromFileButton

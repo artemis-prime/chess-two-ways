@@ -12,6 +12,8 @@ interface ChessListener {
   actionUndon(r: ActionRecord): void
   actionRedon(r: ActionRecord): void
 
+  actionsRestored(recs: readonly ActionRecord[]): void
+
     // if user tries to take and action, there might be a message issued,
     // eg, "You can't castle because your king has move"
   message(s: string, type?: string): void 

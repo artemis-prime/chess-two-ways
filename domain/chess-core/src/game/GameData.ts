@@ -15,7 +15,7 @@ interface GameData {
   artemisPrimeChessGame: any
   board: BoardData
   actions: string[]
-  stateIndex: number
+  //stateIndex: number
   currentTurn: ColorCode
 }
 

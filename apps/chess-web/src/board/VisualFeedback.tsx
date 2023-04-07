@@ -109,13 +109,12 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
   const gameStatusChanged = (s: GameStatus): void => {
 
     if (s.state === 'new') {
+      _clearLocalState()
       messages.length = 0
-      _clearLocalState
     }
     else if (s.state === 'restored') {
       messages.length = 0
       _clearLocalState()
-      // TODO sync messages to actions.
     }
     else if (s.state === 'checkmate' || s.state === 'stalemate' ) {
       _pushMessage({message: '', type: 'transient-warning'}) 
@@ -176,6 +175,13 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
     _pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
   }
 
+  const actionsRestored = (recs: readonly ActionRecord[]): void => {
+    clearActionResolutionFeedback()
+    recs.forEach((r) => {
+      _pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
+    })
+  }
+
   const actionUndon = (r: ActionRecord): void => {
     _pushMessage({message: actionRecordToLAN(r), type: 'undo', actionRecord: r}) 
   }
@@ -189,6 +195,7 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
       actionTaken,
       actionUndon,
       actionRedon,
+      actionsRestored,
       inCheck,
       notInCheck,
       message,

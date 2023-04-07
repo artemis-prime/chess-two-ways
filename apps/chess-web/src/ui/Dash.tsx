@@ -11,7 +11,8 @@ import TurnIndicator from './TurnIndicator'
 import GameStatusIndicator from './GameStatusIndicator'
 import UndoRedo from './UndoRedo'
 import ShowMovesSwitch from './ShowMovesSwitch'
-import ResetFromFileButton from './ResetFromFileButton'
+import PersistToFileButton from './PersistToFileButton'
+import RestoreFromFileButton from './RestoreFromFileButton'
 import InCheckIndicator from './InCheckIndicator'
 
 const Dash: React.FC<{}> = observer(() => {
@@ -30,11 +31,9 @@ const Dash: React.FC<{}> = observer(() => {
 
   return (
     <div className='dash'>
-
-
       <Flex direction='row' justify='between' align='start'>
         <Flex direction='column' justify='start' align='start'>
-        {(game.gameStatus.state === 'playing' || game.gameStatus.state === 'new') ? (<>
+        {(game.playing) ? (<>
             <TurnIndicator />
             <InCheckIndicator />
           </>) : (
@@ -44,20 +43,18 @@ const Dash: React.FC<{}> = observer(() => {
         <Flex direction='column' justify='start' align='end' >
           <UndoRedo css={{marginBottom: '12px'}}/>
           <Flex direction='column' justify='start' align='end' css={{fontSize: '0.9rem', marginBottom: '24px'}}>
-          {(game.gameStatus.state === 'playing' || game.gameStatus.state === 'new' ) ? (<>
+          {(game.playing  ) ? (<>
             <Button css={buttonCSS} onClick={game.callADraw.bind(game)}>call a draw</Button>
             <Button css={buttonCSS} onClick={game.concede.bind(game)}>concede</Button>
             <Button css={buttonCSS} onClick={game.checkStalemate.bind(game)}>check stalemate</Button>
+            <PersistToFileButton >to file...</PersistToFileButton>
           </>) : (<>
             <Button css={buttonCSS} onClick={game.reset.bind(game)}>reset</Button>
-            <ResetFromFileButton >from file...</ResetFromFileButton>
+            <RestoreFromFileButton >from file...</RestoreFromFileButton>
           </>)}
           </Flex>
         </Flex>
       </Flex>
-
-
-
       <Flex direction='row' justify='end' align='center'>
         <ShowMovesSwitch checked={showMoves} onChange={handleSetShowMoves} />
       </Flex>

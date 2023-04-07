@@ -3,7 +3,8 @@ import {
   computed,
   makeObservable, 
   observable, 
-  autorun
+  autorun,
+  when
 } from 'mobx'
 
 import type { default as Board, BoardInternal } from './Board'
@@ -67,6 +68,7 @@ interface Game {
   restoreFromGameData(g: GameData) : void
 
   get gameStatus(): GameStatus // observable
+  get playing(): boolean // observable
   get currentTurn(): Side
   get inCheck(): null | {side: Side, from: Position[]} // observable
 
@@ -113,7 +115,8 @@ class GameImpl implements Game {
       gameStatus: computed,
       currentTurn: computed,
       inCheck: computed,
-      boardAsArray: computed
+      boardAsArray: computed,
+      playing: computed
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -121,14 +124,12 @@ class GameImpl implements Game {
       '_currentTurn'| 
       '_toggleTurn' | 
       '_stateIndex' |
-      '_actions' |
-      'playing'
+      '_actions' 
     >(this, {
       _currentTurn: observable,
       _toggleTurn: action,
       _stateIndex: observable,
       _actions: observable,
-      playing: computed
     })
 
     autorun(() => {
@@ -140,7 +141,7 @@ class GameImpl implements Game {
     return this._board.gameStatus
   }
 
-  private get statusAllowsAction(): boolean {
+  get playing(): boolean {
     return STATUS_IN_PLAY.includes(this._board.gameStatus.state) 
   }
 
@@ -178,18 +179,27 @@ class GameImpl implements Game {
     })
   }
 
-  restoreFromGameData(g: GameData): void {
+  //this._completeRestore()
+  //this._notifier.actionsRestored([...this._actions])
+  //this._trackAndNotifyCheck()
+
+
+  async restoreFromGameData(g: GameData): Promise<void> {
 
     if (!g.artemisPrimeChessGame) throw new Error('restoreFromGameData() invalid Game Object!')
 
     this._board.restoreFromBoardData(g.board)
     this._currentTurn = COLOR_FROM_CODE[g.currentTurn]
     this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
-    this._stateIndex = g.stateIndex
+    //this._stateIndex = g.stateIndex
     this._board.setGameStatus({
       state: 'restored',
       victor: undefined
     })
+      // await the state change, which also means the autorun that listens will be done,
+      // since we are registered after it.
+    await when(() => this._board.gameStatus.state === 'restored');
+    this._notifier.actionsRestored([...this._actions])
     this._trackAndNotifyCheck()
   }
 
@@ -198,7 +208,7 @@ class GameImpl implements Game {
       artemisPrimeChessGame: true,
       board: this._board.persistAsBoardData(),
       actions: this._actions.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
-      stateIndex: this._stateIndex,
+      //stateIndex: this._stateIndex,
       currentTurn: this._currentTurn.charAt(0) as ColorCode
     }
   }  
@@ -249,7 +259,7 @@ class GameImpl implements Game {
 
   resolveAction(move: Move): Action | null {
 
-    if (!this.statusAllowsAction) return null
+    if (!this.playing) return null
 
     if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
       if (!move.piece) {
@@ -291,14 +301,16 @@ class GameImpl implements Game {
     promoteTo?: PrimaryPieceType
   ): void {
 
-    if (!this.statusAllowsAction) return
-    if (!this._cachedResolution?.action) return // if not previously resolved.  We could throw an error, but it may not be helpful.
-    this.endResolution()
+    if (!this.playing) return
+      // if not previously resolved.  We could throw an error, but it may not be helpful.
+    if (!this._cachedResolution?.action) return
+
     const r = this._createActionRecord(move, this._cachedResolution!.action!, promoteTo)
+    this.endResolution()
     this._board.applyAction(r, 'do')
     this._notifier.actionTaken(r)
     if (this._stateIndex + 1 < this._actions.length) {
-        // If we've undone actions since the most recent "actual" move,
+        // If we've undone actions since the most recent 'real' move,
         // truncate the stack since we can no longer meaningfully 
         // 'redo' actions more recent than the one we're currently on.
       this._actions.length = this._stateIndex + 1 
