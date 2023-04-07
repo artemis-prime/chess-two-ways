@@ -1,8 +1,8 @@
 import {type Side} from './Piece'
 
-    // https://www.britannica.com/topic/chess
-    // For our purposes, 'draw' covers anything but 'stalemate', 
-    // and is set by user action (not calculated) 
+  // https://www.britannica.com/topic/chess
+  // For our purposes, 'draw' covers anything but 'stalemate', 
+  // and is set by user action (not calculated) 
 type GameState = 'new' | 'restored' |'resumed' | 'conceded' | 'checkmate' | 'stalemate' | 'draw'
 
 const STATUS_IN_PLAY = ['new', 'restored', 'resumed'] as GameState[]

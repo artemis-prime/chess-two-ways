@@ -2,6 +2,14 @@ import { styled } from '~/styles/stitches.config'
 
 import c from '~/styles/colors'
 
+const buttonCommon = {
+  cursor: 'pointer',
+  padding: '5px 12px',
+  border: `1.5px solid ${c.gray[1]}`,
+  borderRadius: '8px',
+}
+
+
 const Button = styled('button', {
 
   outline: 'none',
@@ -15,22 +23,20 @@ const Button = styled('button', {
     
     variant: {
       contained: {
-        color: 'black',
+        ...buttonCommon,
+        color: c.gray[1],
         backgroundColor: c.gray[11],
         '&:hover': {
           backgroundColor: c.gray[10],
         },
           // pressed
         '&:active': {
-          backgroundColor: c.gray[7], 
+          backgroundColor: c.gray[8], 
         },
       },
       outlined: {
-        cursor: 'pointer',
+        ...buttonCommon,
         backgroundColor: 'transparent',
-        padding: '5px 12px',
-        border: `1.5px solid ${c.gray[1]}`,
-        borderRadius: '8px',
         color: c.gray[1],
         '&:disabled': {
           cursor: 'default',
@@ -51,7 +57,8 @@ const Button = styled('button', {
       },
       // outlined, but with alert colors
       alert: {
-        color: 'white',
+        ...buttonCommon,
+        color: c.gray[1],
         backgroundColor: c.alert[9],
         '&:hover': {
           backgroundColor: c.alert[8],
