@@ -1,6 +1,7 @@
 export { default as Box } from './Box'
 export { default as Button } from './Button'
 export { default as BurgerButton } from './BurgerButton'
+export { default as Checkbox } from './Checkbox'
 export { default as Drawer } from './Drawer'
 export { default as Flex, FlexMain, AnimatedFlex } from './Flex'
 export { default as Grid } from './Grid'

@@ -2,7 +2,7 @@
 import React from 'react'
 
 import type { CSS } from '@stitches/react'
-import { Button, Flex, Switch } from '~/primitives'
+import { Button, Flex, Checkbox } from '~/primitives'
 import { useUIState } from '../board/UIState'
 
 const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
@@ -20,7 +20,7 @@ const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
   
   return (
     <Flex direction='column' align='end' css={css}>
-      <Switch checked={alternateBoard} onChange={setAlternateBoard}>auto-sync view</Switch>
+      <Checkbox checked={alternateBoard} setChecked={setAlternateBoard}>auto-sync view</Checkbox>
       <Button disabled={alternateBoard} onClick={swapDirection}>swap view</Button>
     </Flex>
   )
