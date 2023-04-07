@@ -6,7 +6,7 @@ import React, {
   useState
 } from 'react'
 
-import { runInAction } from 'mobx'
+import { runInAction, autorun } from 'mobx'
 import { useLocalObservable, observer } from 'mobx-react'
 
 import { 
@@ -22,7 +22,7 @@ import {
 
 import { useGame } from './GameProvider'
 
-export interface VisualFeedback {
+export interface UIState {
   kingInCheck: Position | null
   inCheckFrom: Position[]
   action: Action | null
@@ -30,12 +30,16 @@ export interface VisualFeedback {
   fastTick: boolean
   slowTick: boolean
   messages: ConsoleMessage[],
+  whiteOnBottom: boolean,
+  setWhiteOnBottom: (b: boolean) => void
+  alternateBoard: boolean 
+  setAlternateBoard: (b: boolean) => void
 }
 
-const VisualFeedbackContext = React.createContext<VisualFeedback | undefined>(undefined) 
+const UIStateContext = React.createContext<UIState | undefined>(undefined) 
  
-export const useVisualFeedback = (): VisualFeedback =>  {
-  return useContext(VisualFeedbackContext) as VisualFeedback
+export const useUIState = (): UIState =>  {
+  return useContext(UIStateContext) as UIState
 }
 
 export interface ConsoleMessage {
@@ -49,7 +53,7 @@ const isTransient = (m: ConsoleMessage) => (
   m.type.includes('transient')
 ) 
 
-const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }) => {
+const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }) => {
 
   const fastIntervalRef = useRef<any>(undefined)
   const slowIntervalRef = useRef<any>(undefined)
@@ -64,6 +68,34 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
     // Using regular React state create odd race conditions.
     // I tried to make it work, but eventually just brought in the big guns!
   const messages = useLocalObservable<ConsoleMessage[]>(() => ([]))
+
+  const [whiteOnBottom, setWhiteOnBottom] = useState<boolean>(true)
+
+    // This allows us to keep all the listening in the single autorun below,
+    // rather than combining react state and mobx state within an autorun / useEffect
+    // combination where the useEffect fires dependant on other variables. This
+    // needlessly creates / destroys many autorun instances. Better to just create it once
+    // and listen for everything together :)
+  const alternater = useLocalObservable(() => ({
+    alternateBoard: false,
+    setAlternateBoard(b: boolean) {
+      this.alternateBoard = b
+    }, 
+  })) 
+
+    // Note that autorun returns a cleanup function that deletes the created listener
+    // This is advised by mobx docs: https://mobx.js.org/reactions.html
+  useEffect(() => (autorun(() => {
+    if (alternater.alternateBoard) {
+      if (game.currentTurn === 'white') {
+        setWhiteOnBottom(true)
+      }
+      else {
+        setWhiteOnBottom(false)
+      }
+    }
+  }, {scheduler: (run) => (setTimeout(run, 300))})))
+
 
   const game = useGame()
 
@@ -248,19 +280,23 @@ const VisualFeedbackProvider: React.FC< PropsWithChildren<{}>> = observer(({ chi
 
   
   return (
-    <VisualFeedbackContext.Provider value={{
+    <UIStateContext.Provider value={{
       action,
       kingInCheck,
       inCheckFrom,
       note,
       fastTick,
       slowTick,
-      messages
+      messages,
+      whiteOnBottom,
+      setWhiteOnBottom,
+      alternateBoard: alternater.alternateBoard, 
+      setAlternateBoard: alternater.setAlternateBoard.bind(alternater)
     }}>
       {children}
-    </VisualFeedbackContext.Provider>
+    </UIStateContext.Provider>
   )
 })
 
-export default VisualFeedbackProvider
+export default UIStateProvider
 

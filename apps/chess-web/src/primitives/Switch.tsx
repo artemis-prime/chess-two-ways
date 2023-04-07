@@ -1,8 +1,8 @@
   // @ts-ignore
-  import React, { useState } from 'react'
+import React, { PropsWithChildren } from 'react'
 import { styled } from '~/styles/stitches.config'
 
-import Switch from 'react-switch'
+import SwitchFromLib from 'react-switch'
 
 const SwitchLabel = styled('label', {
   display: 'flex',
@@ -25,17 +25,20 @@ const SwitchLabel = styled('label', {
   }
 })
 
-const ShowMovesSwitch: React.FC<{
+const Switch: React.FC<{
   checked: boolean
-  onChange: (checked: boolean) => void
-}> = ({
+  onChange: (checked: boolean) => void,
+  disabled?: boolean
+} & PropsWithChildren> = ({
   checked,
-  onChange
+  onChange,
+  children,
+  disabled = false
 }) => (
 
   <SwitchLabel >
-    <span>show moves</span>
-    <Switch 
+    <span>{children}</span>
+    <SwitchFromLib 
       className='my-switch' 
       checked={checked} 
       onChange={onChange}
@@ -45,8 +48,9 @@ const ShowMovesSwitch: React.FC<{
       onColor='#005800'
       onHandleColor='#a76b37'
       activeBoxShadow='0 0 2px 3px rgba(100, 100, 100, 0.5)'
+      disabled={disabled}
     />
   </SwitchLabel>
 )
 
-export default ShowMovesSwitch
+export default Switch

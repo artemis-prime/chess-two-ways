@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import GameProvider from '~/board/GameProvider'
-import VisualFeedbackProvider from '~/board/VisualFeedback'
+import UIStateProvider from '~/board/UIState'
 
 import UI from './UI'
 
@@ -14,11 +14,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <GameProvider >
-      <VisualFeedbackProvider >
+      <UIStateProvider >
         <DndProvider backend={HTML5Backend}>
           <UI />
         </DndProvider>
-      </VisualFeedbackProvider>
+      </UIStateProvider>
     </GameProvider>
   </React.StrictMode>
 )

@@ -35,12 +35,13 @@ const Button = styled('button', {
           color: '$gray11',
           borderColor: '$gray11',
           '&:hover': {
+            backgroundColor: 'transparent',
             textDecoration: 'none',
           },
         },
         '&:hover': {
           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          textDecoration: 'underline',
+          //textDecoration: 'underline',
         },
           // pressed
         '&:active': {

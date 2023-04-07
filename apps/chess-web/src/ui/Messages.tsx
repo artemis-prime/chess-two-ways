@@ -4,9 +4,9 @@ import { observer } from 'mobx-react'
 
 import ScrollableFeed from 'react-scrollable-feed' 
 
-import type { ConsoleMessage } from '~/board/VisualFeedback'
+import type { ConsoleMessage } from '~/board/UIState'
 
-import { useVisualFeedback } from '~/board/VisualFeedback'
+import { useUIState } from '~/board/UIState'
 import unicodePieces from './pieceTypeToUnicode'
 
 import '../styles/messages.scss'
@@ -25,7 +25,7 @@ const Messages: React.FC<{
   showMoves
 }) => {
 
-  const { messages } = useVisualFeedback()
+  const { messages } = useUIState()
 
   const getIndentation = (m: ConsoleMessage): string => (
     m.type.includes('undo') || 

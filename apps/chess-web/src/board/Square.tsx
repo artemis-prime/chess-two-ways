@@ -7,7 +7,7 @@ import { FILES, positionsEqual } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
-import { useVisualFeedback } from './VisualFeedback'
+import { useUIState } from './UIState'
 import { type DraggingPiece, DRAGGING_PIECE } from './DraggingPiece'
 
 const SquareComponent: React.FC<{ 
@@ -19,7 +19,7 @@ const SquareComponent: React.FC<{
 }) => {
 
   const game = useGame()
-  const feedback = useVisualFeedback()
+  const uiState = useUIState()
   const [rookSquareCastling, setRookSquareCastling] = useState<'from' | 'to' | null>(null)
   const [inCheckFromHere, setInCheckFromHere] = useState<boolean>(false)
   const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
@@ -37,40 +37,40 @@ const SquareComponent: React.FC<{
 
   useEffect(() => {
     let imACastlingRookSquare: 'from' | 'to' | null = null
-    if (feedback.action === 'castle') {
+    if (uiState.action === 'castle') {
 
-      if (positionsEqual(pos, feedback.note.rooks.from)) {
+      if (positionsEqual(pos, uiState.note.rooks.from)) {
         imACastlingRookSquare = 'from'  
       } 
-      else if (positionsEqual(pos, feedback.note.rooks.to)) {
+      else if (positionsEqual(pos, uiState.note.rooks.to)) {
         imACastlingRookSquare = 'to'  
       }
     } 
     setRookSquareCastling(imACastlingRookSquare) 
-  }, [feedback.action, pos] )
+  }, [uiState.action, pos] )
 
   useEffect(() => {
-    const kingInCheckHere_ = !!feedback.kingInCheck && (feedback.kingInCheck.file === pos.file && feedback.kingInCheck.rank === pos.rank)
+    const kingInCheckHere_ = !!uiState.kingInCheck && (uiState.kingInCheck.file === pos.file && uiState.kingInCheck.rank === pos.rank)
     if (kingInCheckHere_ !== kingInCheckHere) {
       setKingInCheckHere(kingInCheckHere_)
     }
-    const inCheckFromMe = !!feedback.inCheckFrom.find((e) => (e.file === pos.file && e.rank === pos.rank)) 
+    const inCheckFromMe = !!uiState.inCheckFrom.find((e) => (e.file === pos.file && e.rank === pos.rank)) 
     if (inCheckFromHere != inCheckFromMe) {
       setInCheckFromHere(inCheckFromMe) 
     }
-  },[feedback.inCheckFrom, feedback.kingInCheck])
+  },[uiState.inCheckFrom, uiState.kingInCheck])
 
   let effectClass = ''
 
-  if (feedback.action && positionsEqual(feedback.note.to, pos)) {
-    if (feedback.action === 'capture') {
+  if (uiState.action && positionsEqual(uiState.note.to, pos)) {
+    if (uiState.action === 'capture') {
       effectClass = 'capture' 
     }
-    else if (feedback.action && feedback.action.includes('promote')) {
+    else if (uiState.action && uiState.action.includes('promote')) {
       effectClass = 'promote' 
     }
       // castle in this case means we're the king's pos (not the rooks')
-    else if (feedback.action === 'move' || (feedback.action === 'castle' && !rookSquareCastling)) {
+    else if (uiState.action === 'move' || (uiState.action === 'castle' && !rookSquareCastling)) {
       effectClass = 'move-or-castle'
     }
   }

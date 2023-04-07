@@ -11,6 +11,8 @@ const InCheckIndicator: React.FC = () => {
   const game = useGame()
   const [squaresString, setSquaresString] = useState<string>('')
 
+    // Note that autorun returns a cleanup function that deletes the created listener
+    // This is advised by mobx docs: https://mobx.js.org/reactions.html
   useEffect(() => (autorun(() => {
     let str = ''
     if (game.inCheck) {

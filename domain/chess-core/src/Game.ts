@@ -6,6 +6,7 @@ import {
   autorun,
   when
 } from 'mobx'
+import { computedFn } from 'mobx-utils'
 
 import type { default as Board, BoardInternal } from './Board'
 import { createBoard } from './Board'
@@ -77,8 +78,8 @@ interface Game {
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
 
-    // Utility method for easy rendering (mobx 'computed')
-  get boardAsArray():  {pos: Position, piece: Piece | null}[]
+    // Utility method for easy rendering (mobx 'computedFn')
+  getBoardAsArray(reverse?: boolean):  {pos: Position, piece: Piece | null}[]
 }
 
 class GameImpl implements Game {
@@ -116,7 +117,7 @@ class GameImpl implements Game {
       gameStatus: computed,
       currentTurn: computed,
       inCheck: computed,
-      boardAsArray: computed,
+      //boardAsArray: computed,
       playing: computed
     })
 
@@ -150,9 +151,11 @@ class GameImpl implements Game {
     return STATUS_CAN_UNDO.includes(this._board.gameStatus.state) 
   }
 
-  get boardAsArray(): {pos: Position, piece: Piece | null}[] {
-    return this._board.boardAsArray
-  }
+  getBoardAsArray = computedFn((
+    whiteOnBottom: boolean = true
+  ): {pos: Position, piece: Piece | null}[] => (
+    (whiteOnBottom) ? this._board.boardAsArray  :[...this._board.boardAsArray].reverse()
+  ))
 
   callADraw(): void {
     this._board.setGameStatus({
