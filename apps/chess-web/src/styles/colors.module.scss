@@ -1,0 +1,87 @@
+// This module has to be named this way and imported as it is::after
+// https://github.com/vitejs/vite/discussions/9601
+
+// https://www.radix-ui.com/docs/colors/palette-composition/the-scales#gray
+$gray1: hsl(0, 0%, 99.0%);
+$gray2: hsl(0, 0%, 97.3%);
+$gray3: hsl(0, 0%, 95.1%);
+$gray4: hsl(0, 0%, 93.0%);
+$gray5: hsl(0, 0%, 90.9%);
+$gray6: hsl(0, 0%, 88.7%);
+$gray7: hsl(0, 0%, 85.8%);
+$gray8: hsl(0, 0%, 78.0%);
+$gray9: hsl(0, 0%, 56.1%);
+$gray10: hsl(0, 0%, 52.3%);
+$gray11: hsl(0, 0%, 43.5%);
+$gray12: hsl(0, 0%, 9.0%);
+
+$orange1: hsl(24, 70.0%, 99.0%);
+$orange2: hsl(24, 83.3%, 97.6%);
+$orange3: hsl(24, 100%, 95.3%);
+$orange4: hsl(25, 100%, 92.2%);
+$orange5: hsl(25, 100%, 88.2%);
+$orange6: hsl(25, 100%, 82.8%);
+$orange7: hsl(24, 100%, 75.3%);
+$orange8: hsl(24, 94.5%, 64.3%);
+$orange9: hsl(24, 94.0%, 50.0%);
+$orange10: hsl(24, 100%, 46.5%);
+$orange11: hsl(24, 100%, 37.0%);
+$orange12: hsl(15, 60.0%, 17.0%);
+
+$alert1: $orange1; 
+$alert2: $orange2; 
+$alert3: $orange3; 
+$alert4: $orange4; 
+$alert5: $orange5; 
+$alert6: $orange6; 
+$alert7: $orange7; 
+$alert8: $orange8; 
+$alert9: $orange9; 
+$alert10: $orange10; 
+$alert11: $orange11; 
+$alert12: $orange12; 
+
+$brown-darker: rgba(105, 49, 49, 0.75);
+$brown-light: rgba(167, 107, 55, 0.761);
+$color-piece-black: #573131;
+$color-piece-white: #f7f0be;
+$dash-border: $brown-light;
+$dash-text: $gray4;
+$color-header-bg: #274070;
+
+:export {
+  brownDarker: $brown-darker;
+  brownLight: $brown-light;
+  
+  gray1: $gray1;
+  gray2: $gray2;
+  gray3: $gray3;
+  gray4: $gray4;
+  gray5: $gray5;
+  gray6: $gray6;
+  gray7: $gray7;
+  gray8: $gray8;
+  gray9: $gray9;
+  gray10: $gray10;
+  gray11: $gray11;
+  gray12: $gray12;
+  
+  alert1: $alert1;
+  alert2: $alert2;
+  alert3: $alert3;
+  alert4: $alert4;
+  alert5: $alert5;
+  alert6: $alert6;
+  alert7: $alert7;
+  alert8: $alert8;
+  alert9: $alert9;
+  alert10: $alert10;
+  alert11: $alert11;
+  alert12: $alert12;
+  
+  colorPieceBlack: $color-piece-black;
+  colorPieceWhite: $color-piece-white;
+  dashBorder: $dash-border;
+  dashText: $dash-text;
+  colorHeaderBg: $color-header-bg;
+}

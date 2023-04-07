@@ -1,4 +1,4 @@
-@use 'colors';
+@use 'colors.module' as c;
 
 
 .message-outer {
@@ -20,10 +20,10 @@
   }
   &.check-move,
   &.check-message {
-      color: colors.$medium-orange; 
+      color: c.$alert8; 
     & .strong {
       margin-right: 12px;
-      color: colors.$strong-orange; 
+      color: c.$alert9; 
       
     }
   }
@@ -31,13 +31,13 @@
     padding-left: 18px;
   }
   &.transient-warning {
-    color: colors.$medium-orange;
+    color: c.$alert8;
   }
   
   &.warning,
   &.capture,
   &.capture-promote {
-    color: colors.$strong-orange; 
+    color: c.$alert9; 
   }
   &.transient-info,
   &.undo,
@@ -55,8 +55,7 @@
   }
   .postfix {
     white-space: nowrap;
-    color: colors.$medium-orange;
-
+    color: c.$alert8;
   }
   .side-indicator {
 
@@ -68,10 +67,10 @@
     border-radius: 3px;
     border: 2px #777 solid;
     &.white {
-      background-color: colors.$white-piece;
+      background-color: c.$color-piece-white;
     }
     &.black {
-      background-color: colors.$black-piece;
+      background-color: c.$color-piece-black;
     }
   }
 

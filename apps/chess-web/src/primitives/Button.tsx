@@ -1,5 +1,7 @@
 import { styled } from '~/styles/stitches.config'
 
+import c from '~/styles/colors'
+
 const Button = styled('button', {
 
   outline: 'none',
@@ -13,27 +15,27 @@ const Button = styled('button', {
     
     variant: {
       contained: {
-        color: '$colorOneText',
-        backgroundColor: '$colorOne9',
+        color: 'black',
+        backgroundColor: c.gray[11],
         '&:hover': {
-          backgroundColor: '$colorOne8',
+          backgroundColor: c.gray[10],
         },
           // pressed
         '&:active': {
-          backgroundColor: '$colorOne7', 
+          backgroundColor: c.gray[7], 
         },
       },
       outlined: {
         cursor: 'pointer',
         backgroundColor: 'transparent',
         padding: '5px 12px',
-        border: '1.5px solid $gray1',
+        border: `1.5px solid ${c.gray[1]}`,
         borderRadius: '8px',
-        color: '$gray1',
+        color: c.gray[1],
         '&:disabled': {
           cursor: 'default',
-          color: '$gray11',
-          borderColor: '$gray11',
+          color: c.gray[12],
+          borderColor: c.gray[11],
           '&:hover': {
             backgroundColor: 'transparent',
             textDecoration: 'none',
@@ -41,23 +43,22 @@ const Button = styled('button', {
         },
         '&:hover': {
           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          //textDecoration: 'underline',
         },
           // pressed
         '&:active': {
           backgroundColor: 'rgba(255, 255, 255, 0.4)',
-          //backgroundColor: '$gray9',
         },
       },
+      // outlined, but with alert colors
       alert: {
-        color: '$alertText',
-        backgroundColor: '$alert9',
+        color: 'white',
+        backgroundColor: c.alert[9],
         '&:hover': {
-          backgroundColor: '$alert8',
+          backgroundColor: c.alert[8],
         },
           // pressed
         '&:active': {
-          backgroundColor: '$alert7', 
+          backgroundColor: c.alert[7], 
         },
       },
 
@@ -65,14 +66,14 @@ const Button = styled('button', {
         cursor: 'pointer',
         border: 'none',
         backgroundColor: 'transparent',
-        color: '$gray1',
+        color: c.gray[1],
         p: 1,
         '&:hover': {
           textDecoration: 'underline',
         },
         '&:disabled': {
           cursor: 'default',
-          color: '$gray11',
+          color: c.gray[11],
         },
         '&:disabled:hover': {
           textDecoration: 'none',
@@ -104,6 +105,6 @@ const Button = styled('button', {
 })
 
 
-export type ButtonVariant = " contained" | "outlined" | "alert" | "ghost" 
+export type ButtonVariant = "contained" | "outlined" | "alert" | "ghost" 
 
 export default Button

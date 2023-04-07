@@ -2,18 +2,8 @@
 import React, { PropsWithChildren } from 'react'
 
 import type { CSS } from '@stitches/react'
-import { styled } from '~/styles/stitches.config'
 
 import { Box } from '~/primitives'
-
-
-const CheckSpan  = styled('span', {
-  marginRight: '4px'
-  //display: 'inline-block',
-  //border: '1px currentColor dotted',
-  //width: '18px',
-  //height: '18px',
-})
 
 const Checkbox: React.FC<{
   checked: boolean,

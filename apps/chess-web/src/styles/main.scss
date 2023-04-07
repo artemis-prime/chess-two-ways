@@ -1,6 +1,5 @@
 
-@use 'colors';
-@use 'mediaQueries' as m;
+@use 'colors.module' as c;
 
 $height-header: 52px;
 
@@ -11,7 +10,7 @@ body {
 }
 
 .app-header {
-  background-color: #274070;
+  background-color: c.$color-header-bg;
   /* min-height: 100vh; */
   display: flex;
   //padding:  0.5rem 12px;
@@ -37,10 +36,10 @@ body {
   max-width: 500px;
   height: 100%;
   //margin-right: 6%;
-  border: 4px colors.$dash-border solid;
+  border: 4px c.$dash-border solid;
   border-radius: 5px;
   padding: 16px 24px;
-  color: colors.$dash-text;
+  color: c.$dash-text;
 
   display: flex;
   flex-direction: column;
@@ -82,17 +81,17 @@ body {
   grid-template-columns: repeat(8, 1fr); 
   grid-template-rows:  repeat(8, 1fr); 
   height: 100%; 
-  border: 2px colors.$board-brown solid; 
+  border: 2px c.$brown-darker solid; 
   box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
 .square {
 
   &.file-odd.rank-odd {
-    background-color: colors.$board-brown;
+    background-color: c.$brown-darker;
   }
   &.file-even.rank-even {
-    background-color: colors.$board-brown;
+    background-color: c.$brown-darker;
   }
   //border: 0.5px blue solid;
 
@@ -104,11 +103,11 @@ body {
 
 svg {
   .black-piece & {
-    fill: colors.$black-piece;
+    fill: c.$color-piece-black;
     filter: drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3));
   }
   .white-piece & {
-    fill: colors.$white-piece;
+    fill: c.$color-piece-white;
     filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45));
   }
   display: block;
@@ -232,9 +231,6 @@ main {
       border-bottom-width: 2px;
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
-      //border: 4px colors.$dash-border solid;
-      //border-radius: 5px;
-    
       height: 100%;
     }
   }
@@ -242,5 +238,5 @@ main {
 }
 
 .in-check-indicator {
-  color: colors.$strong-orange;
+  color: c.$alert9;
 }

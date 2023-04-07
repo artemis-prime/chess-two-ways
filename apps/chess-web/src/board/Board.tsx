@@ -1,6 +1,5 @@
   // @ts-ignore
-import React, { useState, useEffect } from 'react'
-import { autorun } from 'mobx'
+import React from 'react'
 import { observer } from 'mobx-react'
 
 import type { Position, Piece } from '@artemis-prime/chess-core'

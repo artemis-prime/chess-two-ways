@@ -1,4 +1,4 @@
-@use './colors';
+@use 'colors.module' as c;
 
 .turn-indicator {
   margin-bottom: 8px;
@@ -12,9 +12,9 @@
     margin-right: 2px;
     border-radius: 3px;
     border: 2px #777 solid;
-    background-color: colors.$white-piece;
+    background-color: c.$color-piece-white;
     &.black {
-      background-color: colors.$black-piece;
+      background-color: c.$color-piece-black;
     }
   }
 }

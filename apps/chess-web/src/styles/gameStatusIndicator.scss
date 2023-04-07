@@ -1,4 +1,4 @@
-@use './colors';
+@use 'colors.module' as c;
 
 .game-status-indicator {
   
@@ -6,7 +6,6 @@
 
   .won {
     display: block;
-    //margin-left: 4px;
   }
 
   .draw {
@@ -25,9 +24,9 @@
     margin-right: 8px;
     border-radius: 3px;
     border: 2px #777 solid;
-    background-color: colors.$white-piece;
+    background-color: c.$color-piece-white;
     &.black {
-      background-color: colors.$black-piece;
+      background-color: c.$color-piece-black;
     }
   }
 }

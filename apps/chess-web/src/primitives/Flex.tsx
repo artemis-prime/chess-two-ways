@@ -71,10 +71,8 @@ const flexCss = {
 
 const Flex = styled('div', flexCss)
 const FlexMain = styled('main', flexCss)
-const AnimatedFlex = styled(motion.div, flexCss)
 
 export {
   Flex as default,
   FlexMain,
-  AnimatedFlex 
 }
