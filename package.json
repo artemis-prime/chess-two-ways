@@ -13,20 +13,37 @@
     "serve:web": "yarn workspace @artemis-prime/chess-web start",
     "clean:domain": "yarn workspace @artemis-prime/chess-core clean",
     "clean:web": "yarn workspace @artemis-prime/chess-web clean",
-    "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web"
+    "clean:rn": "yarn workspace @artemis-prime/chess-react-native clean",
+    "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web && yarn clean:rn"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
+    "@types/react": "^18.0.24",
     "ts-node": "^10.9.1"
   },
   "workspaces": {
     "packages": [
       "domain/chess-core",
       "apps/chess-web",
-      "apps/chess-cli"
+      "apps/chess-cli",
+      "apps/chess-rn"
+    ],
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "@react-native-community/**",
+      "**/hermes-engine",
+      "**/hermes-engine/**",
+      "**/jsc-android",
+      "**/jsc-android/**",
+      "**/react-native-codegen",
+      "**/react-native-codegen/**",
+      "**/react-native-gradle-plugin"
     ]
   },
   "dependencies": {
-    "typescript": "^5.0.2"
+    "react": "18.2.0",
+    "typescript": "^5.0.2",
+    "mobx": "^6.5.0"
   }
 }

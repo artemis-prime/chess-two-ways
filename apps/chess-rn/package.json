@@ -1,0 +1,24 @@
+{
+  "name": "@artemis-prime/chess-react-native",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./node_modules",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "react-native": "0.71.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@tsconfig/react-native": "^2.0.2",
+    "@types/react-test-renderer": "^18.0.0",
+    "metro-react-native-babel-preset": "0.73.9",
+    "react-native-monorepo-tools": "^1.2.1",
+    "react-test-renderer": "18.2.0"
+  }
+}
