@@ -59,7 +59,7 @@ module.exports = {
       "jsc-android":
         path.resolve(__dirname, "node_modules/jsc-android"),
         //"/Users/me/my-app/packages/mobile/node_modules/react-native",
-      "react-native":
+        "react-native":
         path.resolve(__dirname, "node_modules/react-native"),
         //"/Users/me/my-app/packages/mobile/node_modules/react-native-codegen",
       "react-native-codegen":

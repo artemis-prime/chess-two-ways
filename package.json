@@ -32,14 +32,15 @@
     "nohoist": [
       "**/react-native",
       "**/react-native/**",
-      "@react-native-community/**",
+      "**/@react-native-community/**",
       "**/hermes-engine",
       "**/hermes-engine/**",
       "**/jsc-android",
       "**/jsc-android/**",
       "**/react-native-codegen",
       "**/react-native-codegen/**",
-      "**/react-native-gradle-plugin"
+      "**/react-native-gradle-plugin",
+      "**/@bam.tech/react-native-make"
     ]
   },
   "dependencies": {
