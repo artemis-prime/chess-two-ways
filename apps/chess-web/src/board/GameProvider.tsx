@@ -3,7 +3,7 @@ import React, {
   PropsWithChildren
 } from 'react'
 
-import type { Game, Board } from '@artemis-prime/chess-core'
+import type { Game } from '@artemis-prime/chess-core'
 import { getGameSingleton } from '@artemis-prime/chess-core'
 
 const GameContext = React.createContext<Game | undefined>(undefined) 
