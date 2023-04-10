@@ -28,7 +28,7 @@
     "@artemis-prime/chess-core"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "yarn tcheck && vite build",
     "start": "vite",
     "clean": "rm -rf ./dist && rm -rf ./node_modules",
     "tcheck": "tsc"

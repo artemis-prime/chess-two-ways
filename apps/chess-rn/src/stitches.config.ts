@@ -39,6 +39,9 @@ export const {
         dashBorder: 'rgba(167, 107, 55, 0.761)',
         dashText: '$gray4',
         headerBG: '#274070', 
+        //brownDarker: 'rgba(105, 49, 49, 0.75)',
+        //brownDarker: '#7c5934',
+        boardSquareBrown: 'rgba(124, 79, 52, 0.60)',
       },
       fontWeights: {
         bold: '700',

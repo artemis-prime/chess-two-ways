@@ -6,9 +6,10 @@
     "clean": "rm -rf ./node_modules",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start --verbose"
   },
   "dependencies": {
+    "@artemis-prime/chess-core": "1.0.0",
     "@radix-ui/colors": "^0.1.8",
     "react-native": "0.71.6",
     "react-native-device-info": "^10.6.0",
@@ -26,5 +27,8 @@
     "react-devtools": "^4.27.4",
     "react-native-monorepo-tools": "^1.2.1",
     "react-test-renderer": "18.2.0"
-  }
+  },
+  "bundledDependencies": [
+    "@artemis-prime/chess-core"
+  ]
 }

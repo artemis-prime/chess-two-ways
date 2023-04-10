@@ -13,7 +13,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "useDefineForClassFields": true
   },
   "exclude": [
     "node_modules",

@@ -77,7 +77,8 @@ class Tracking {
   white: Tracking_Side
   black: Tracking_Side
 
-  gameStatus: GameStatus 
+    // Need to initialize for babel : https://github.com/mobxjs/mobx/issues/2486
+  gameStatus: GameStatus = DEFAULT_GAME_STATUS
 
   constructor(observeMe?: boolean) {
     this.white = new Tracking_Side('white', observeMe)
@@ -87,7 +88,6 @@ class Tracking {
         gameStatus: observable.shallow,
       })
     }
-    this.gameStatus = DEFAULT_GAME_STATUS
   }
 
   reset() {

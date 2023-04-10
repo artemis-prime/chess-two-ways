@@ -4,10 +4,10 @@ import { observer } from 'mobx-react'
 
 import ScrollableFeed from 'react-scrollable-feed' 
 
-import type { ConsoleMessage } from '~/board/UIState'
+import { PIECETYPE_TO_UNICODE }  from '@artemis-prime/chess-core'
 
+import type { ConsoleMessage } from '~/board/UIState'
 import { useUIState } from '~/board/UIState'
-import unicodePieces from './pieceTypeToUnicode'
 
 import '../styles/messages.scss'
   // TS workaround for put in module
@@ -60,7 +60,7 @@ const Messages: React.FC<{
       return (
         <span className='postfix'>
           <span className={`side-indicator ${colorCaptured}`} />
-          <span>(<span className={`unicode-chess-piece ${colorCaptured}`}>{(unicodePieces as any)[pieceType]}</span>
+          <span>(<span className={`unicode-chess-piece ${colorCaptured}`}>{PIECETYPE_TO_UNICODE[pieceType]}</span>
             - {pieceType !== 'pawn' ? `${EMOJIS.ouch} ouch!` : `${EMOJIS.shrug} meh`})</span>
         </span>
       ) 

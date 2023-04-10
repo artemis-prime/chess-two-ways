@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "useDefineForClassFields": true, // mobx
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],

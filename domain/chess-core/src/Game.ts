@@ -79,7 +79,7 @@ interface Game {
   registerListener(l: ChessListener, uniqueId: string): void
 
     // Utility method for easy rendering (mobx 'computedFn')
-  getBoardAsArray(reverse?: boolean):  {pos: Position, piece: Piece | null}[]
+  getBoardAsArray(reverse: boolean):  {pos: Position, piece: Piece | null}[]
 }
 
 class GameImpl implements Game {
@@ -152,10 +152,10 @@ class GameImpl implements Game {
   }
 
   getBoardAsArray = computedFn((
-    whiteOnBottom: boolean = true
+    whiteOnBottom: boolean
   ): {pos: Position, piece: Piece | null}[] => (
     (whiteOnBottom) ? this._board.boardAsArray  :[...this._board.boardAsArray].reverse()
-  ))
+  ), true)
 
   callADraw(): void {
     this._board.setGameStatus({

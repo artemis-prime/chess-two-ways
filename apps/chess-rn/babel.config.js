@@ -11,6 +11,8 @@ module.exports = {
           "~assets": "../../assets"
         }
       }
-    ]
+    ],
+      // https://mobx.js.org/migrating-from-4-or-5.html#getting-started
+    ["@babel/plugin-proposal-class-properties", { "loose": false }],
   ]
 };

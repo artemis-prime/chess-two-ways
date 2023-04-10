@@ -4,6 +4,7 @@ import { isOpponent  } from './Piece'
 import type Board from './Board'
 import type Piece from './Piece'
 import { type ResolvableMove } from './game/ActionResolver'
+import PIECETYPE_TO_UNICODE from './pieceTypeToUnicode'
 
 const hasN = (pos: Position, distance: 1 | 2 = 1) => (pos.rank <= ((distance === 1) ? 7 : 6))
 const hasS = (pos: Position, distance: 1 | 2 = 1) => (pos.rank >= ((distance === 1) ? 2 : 3))
@@ -139,5 +140,6 @@ export {
   nextNW,
   nextSE,
   nextSW,
-  resolvableMovesAndCapture
+  resolvableMovesAndCapture,
+  PIECETYPE_TO_UNICODE
 }

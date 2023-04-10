@@ -1,18 +1,9 @@
-/**
- * Metro configuration for React Native
- * https://github.com/facebook/react-native
- *
- * @format
- */
 const exclusionList = require("metro-config/src/defaults/exclusionList");
- const { getMetroTools } = require("react-native-monorepo-tools");
-
+const { getMetroTools } = require("react-native-monorepo-tools");
 const monorepoMetroTools = getMetroTools();
-
 const path = require('path')
 
 // https://mmazzarolo.com/blog/2021-09-18-running-react-native-everywhere-mobile/
-
 module.exports = {
   watchFolders: [
     ...monorepoMetroTools.watchFolders,
@@ -73,7 +64,7 @@ module.exports = {
       }
       // Optionally, chain to the standard Metro resolver.
       return context.resolveRequest(context, moduleName, platform);
-    }
+    },
   },
   server: {
     rewriteRequestUrl: (url) => {
@@ -88,4 +79,4 @@ module.exports = {
       return url
     }
   }
-};
+}
