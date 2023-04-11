@@ -11,7 +11,8 @@ import { styled } from '~/stitches.config'
 import { type Position, type Piece, FILES } from '@artemis-prime/chess-core'
 import { PIECETYPE_TO_UNICODE }  from '@artemis-prime/chess-core'
 
-
+import { useGame } from './GameProvider'
+import { type DraggingPiece, DRAGGING_PIECE } from './DraggingPiece'
 
 const SquareInner = styled(View, {
   aspectRatio: 1,
@@ -27,16 +28,16 @@ const SquareInner = styled(View, {
   }
 })
 
+const shadowStyles = {
+  position: 'absolute',
+  top: 2,
+  left: 2,
+}
+
 const PieceText = styled(Text, {
 
-  //backgroundColor: 'white',
-  //backgroundColor: 'rgba(255, 255, 255,0)',
   fontSize: 35,
-  //textShadowColor: 'rgba(255, 255, 255, 1)', // 'black', // '#000',
-  //textShadowOffset: {width: 0, height: 0},
-  //textShadowRadius: 4, 
   fontWeight: '600', 
-  //elevation: 10,
   textAlign: 'center',
   textAlignVertical: 'center',
   width: 40,
@@ -45,23 +46,26 @@ const PieceText = styled(Text, {
   variants: {
     color: {
       white: {
-          // @ts-ignore
         color: '$pieceWhite'
       },
       black: {
-          // @ts-ignore
         color: '$pieceBlack'
       },
-      shadow: {
+      whiteShadow: {
         position: 'absolute',
         top: 2,
         left: 2,
         color: 'rgba(0, 0, 0, 0.3)',
+      },
+      blackShadow: {
+        position: 'absolute',
+        top: 2.5,
+        left: 2.5,
+        color: 'rgba(0, 0, 0, 0.5)',
       }
     }
   }
 })
-
 
 const Square: React.FC<{  
   position: Position
@@ -72,14 +76,18 @@ const Square: React.FC<{
   piece,
   style 
 }) => {
+
+  const game = useGame()
+
   const rankOdd = (pos.rank % 2)
   const fileOdd = (FILES.indexOf(pos.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd)
 
+    // https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native
   return (
     <SquareInner brown={brown ? 'true': undefined} >
       {piece && (<>
-        <PieceText color='shadow'>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        <PieceText color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
         <PieceText color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
       </>)}  
     </SquareInner>
