@@ -9,5 +9,8 @@
   "types": "./dist/index.d.ts",
   "author": "artemis-prime",
   "license": "UNLICENSED",
-  "dependencies": {}
+  "dependencies": {
+    "mobx": "6.5.0",
+    "mobx-utils": "6.0.6"
+  }
 }

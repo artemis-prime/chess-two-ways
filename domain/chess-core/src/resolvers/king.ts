@@ -1,7 +1,6 @@
 import type { 
   Action,
   Board,
-  Color,
   Side,
   Position,
   Piece,

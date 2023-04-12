@@ -11,24 +11,24 @@
   "dependencies": {
     "@artemis-prime/chess-core": "1.0.0",
     "@radix-ui/colors": "^0.1.8",
+    "mobx": "6.5.0",
+    "mobx-react": "7.4.0",
+    "mobx-utils": "6.0.6",
+    "react": "18.2.0",
     "react-native": "0.71.6",
-    "react-native-device-info": "^10.6.0",
-    "stitches-native": "^0.4.0"
+    "react-native-device-info": "^10.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@bam.tech/react-native-make": "^3.0.3",
     "@tsconfig/react-native": "^2.0.2",
+    "@types/react": "^18.0.9",
     "@types/react-test-renderer": "^18.0.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "metro-react-native-babel-preset": "0.73.9",
-    "react-devtools": "^4.27.4",
     "react-native-monorepo-tools": "^1.2.1",
-    "react-test-renderer": "18.2.0"
-  },
-  "bundledDependencies": [
-    "@artemis-prime/chess-core"
-  ]
+    "react-test-renderer": "18.2.0",
+    "stitches-native": "^0.4.0"
+  }
 }

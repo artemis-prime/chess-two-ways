@@ -20,8 +20,6 @@
     "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web && yarn clean:rn"
   },
   "devDependencies": {
-    "@types/node": "^18.15.3",
-    "@types/react": "^18.0.24",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
   },
@@ -32,22 +30,9 @@
       "apps/chess-cli",
       "apps/chess-rn"
     ],
-    "nohoist": [
-      "**/react-native",
-      "**/react-native/**",
-      "**/@react-native-community/**",
-      "**/hermes-engine",
-      "**/hermes-engine/**",
-      "**/jsc-android",
-      "**/jsc-android/**",
-      "**/react-native-codegen",
-      "**/react-native-codegen/**",
-      "**/react-native-gradle-plugin",
-      "**/@bam.tech/react-native-make"
-    ]
+    "nohoist": []
   },
   "dependencies": {
-    "react": "18.2.0",
-    "mobx": "^6.5.0"
+    "@types/node": "^18.15.11"
   }
 }

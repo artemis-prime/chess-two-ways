@@ -1,5 +1,4 @@
 import type { Action, Board, Position, Move, Piece } from '..'
-import type ActionResolver from '../game/ActionResolver'
 import { type ResolvableMove } from '../game/ActionResolver'
 
 import {

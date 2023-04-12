@@ -1,9 +1,8 @@
 import { makeObservable, observable } from 'mobx'
+
 import type { PrimaryPieceType, Side } from '../Piece'
 import type Position from '../Position'
 import type GameStatus from '../GameStatus'
-
-
 
 const DEFAULT_GAME_STATUS: GameStatus = {
   state: 'new',
