@@ -6,7 +6,7 @@
     "clean": "rm -rf ./node_modules",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start --verbose"
+    "start": "npx tsc && react-native start --verbose"
   },
   "dependencies": {
     "@artemis-prime/chess-core": "1.0.0",
@@ -16,7 +16,8 @@
     "mobx-utils": "6.0.6",
     "react": "18.2.0",
     "react-native": "0.71.6",
-    "react-native-device-info": "^10.6.0"
+    "react-native-device-info": "^10.6.0",
+    "react-native-gesture-handler": "^2.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

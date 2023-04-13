@@ -5,4 +5,6 @@ type Action =
   'castle' | 
   'capture-promote' // if a pawn captures and gets promoted in one move
 
-export { type Action as default }
+const ACTIONS = ['move', 'capture', 'promote', 'castle', 'capture-promote'] as readonly Action[] 
+
+export { type Action as default, ACTIONS }

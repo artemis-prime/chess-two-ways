@@ -11,6 +11,7 @@ import { ThemeProvider, lightTheme } from './stitches.config'
 import BGImage from '~/primatives/BGImage'
 import Board from './board/Board'
 import GameProvider from './board/GameProvider'
+import { ChessDnD } from './board/ChessDragAndDrop'
 
 const imagePath = require('~assets/chess-bg-1920.jpg')
 
@@ -18,19 +19,24 @@ const App: React.FC = () => (
   <ThemeProvider theme={lightTheme}>
   <GameProvider >
   <BGImage imagePath={imagePath}>
-    <SafeAreaView >
+    <SafeAreaView style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: '100%',
+      padding: 15,
+      paddingTop: 60,
+      backgroundColor: 'rgba(0, 0, 0, 0.25)'
+    }}>
       <StatusBar
         translucent={true}
         barStyle='dark-content'
         backgroundColor='transparent'
       />
-      <View style={{
-        padding: 12, 
-        paddingTop: 56, 
-        backgroundColor: 'transparent'
-      }}>
+      <ChessDnD>
         <Board />
-      </View>
+      </ChessDnD>
     </SafeAreaView>
   </BGImage>
   </GameProvider>
@@ -38,3 +44,11 @@ const App: React.FC = () => (
 )
 
 export default App
+/*
+      <View style={{
+        padding: 12, 
+        paddingTop: 56, 
+        backgroundColor: 'transparent'
+      }}>
+      </View>
+*/

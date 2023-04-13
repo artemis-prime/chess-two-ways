@@ -69,6 +69,8 @@ interface Game {
   persistAsGameData() : GameData
   restoreFromGameData(g: GameData) : void
 
+  pieceAt(p: Position): Piece | null
+
   get gameStatus(): GameStatus // observable
   get playing(): boolean // observable
   get currentTurn(): Side
@@ -149,6 +151,10 @@ class GameImpl implements Game {
 
   private get statusAllowsUndoRedo(): boolean {
     return STATUS_CAN_UNDO.includes(this._board.gameStatus.state) 
+  }
+
+  pieceAt(p: Position): Piece | null {
+    return this._board.pieceAt(p)
   }
 
   getBoardAsArray = computedFn((
