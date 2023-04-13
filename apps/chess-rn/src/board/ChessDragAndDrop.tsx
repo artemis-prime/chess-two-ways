@@ -42,7 +42,8 @@ interface DnDConfig {
 type SquaresDndStatus = Action | 'origin' | 'invalid' | 'none'
 
 interface ChessDragAndDrop {
-  onLayout:(e: LayoutChangeEvent) => void
+    // pass this to the onLayout of the immediate parent (ish) of the squares.
+  listenForResize:(e: LayoutChangeEvent) => void
   getSquaresDnDStatus: (p: Position) => SquaresDndStatus
   payload: DnDPayload | null
   touchOffest: Point | null
@@ -101,7 +102,7 @@ const ChessDnD: React.FC<React.PropsWithChildren> = ({ children }) => {
     return rowAndColumnToPosition(row, column)
   }
 
-  const onLayout = ({nativeEvent: { layout: {width, height}}}: LayoutChangeEvent): void  => {
+  const listenForResize = ({nativeEvent: { layout: {width, height}}}: LayoutChangeEvent): void  => {
     setBoardDimensions({ x: width, y: height })
   }
 
@@ -176,7 +177,7 @@ const ChessDnD: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <GestureHandlerRootView >
     <DragAndDropContext.Provider value={{
-      onLayout,
+      listenForResize,
       getSquaresDnDStatus,
       payload,
       touchOffest,

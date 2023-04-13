@@ -56,7 +56,7 @@ const Board: React.FC<{
   const whiteOnBottom = true // TODO.  
 
   const {
-    onLayout: dndOnLayout,
+    listenForResize: listenForResizeDnd,
     getSquaresDnDStatus,
     payload,
     touchOffest,
@@ -69,17 +69,17 @@ const Board: React.FC<{
     }
   )
 
-  const onLayout = (e: LayoutChangeEvent): void  => {
+  const listenForResize = (e: LayoutChangeEvent): void  => {
 
     const {nativeEvent: { layout: {width}}} = e;
     setBoardSize(width)
-    dndOnLayout(e)
+    listenForResizeDnd(e)
   }
 
   return (
     <BoardInner style={style}  collapsable={false}>
       <BGImage imagePath={imagePath}  >
-        <SquaresOuter onLayout={onLayout} >
+        <SquaresOuter onLayout={listenForResize} >
         {game.getBoardAsArray(whiteOnBottom).map((sq: {pos: Position, piece: Piece | null}) => (
           <SquareComponent 
             position={sq.pos} 
