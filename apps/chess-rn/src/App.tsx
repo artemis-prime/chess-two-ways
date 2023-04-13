@@ -40,11 +40,3 @@ const App: React.FC = () => (
 )
 
 export default App
-/*
-      <View style={{
-        padding: 12, 
-        paddingTop: 56, 
-        backgroundColor: 'transparent'
-      }}>
-      </View>
-*/
