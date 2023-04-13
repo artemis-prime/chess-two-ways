@@ -2,16 +2,14 @@ import React from 'react'
 import {
   SafeAreaView,
   StatusBar,
-  Text,
   View,
 } from 'react-native'
 
 import { ThemeProvider, lightTheme } from './stitches.config'
 
 import BGImage from '~/primatives/BGImage'
-import Board from './board/Board'
+import Board from './board/ChessBoard'
 import GameProvider from './board/GameProvider'
-import { ChessDnD } from './board/ChessDragAndDrop'
 
 const imagePath = require('~assets/chess-bg-1920.jpg')
 
@@ -34,9 +32,7 @@ const App: React.FC = () => (
         barStyle='dark-content'
         backgroundColor='transparent'
       />
-      <ChessDnD>
-        <Board />
-      </ChessDnD>
+      <Board />
     </SafeAreaView>
   </BGImage>
   </GameProvider>

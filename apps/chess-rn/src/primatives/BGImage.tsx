@@ -22,7 +22,7 @@ const BGImage: React.FC<{
     setImageUri(Image.resolveAssetSource(imagePath).uri)
   })
 
-  const handleError = (e:any) => { console.log(e.nativeEvent.error) }
+  const handleError = (e:any) => { console.warn(e.nativeEvent.error) }
 
   return imageUri ? (
     <ImageBackground 

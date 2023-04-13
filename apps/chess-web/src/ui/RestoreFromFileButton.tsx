@@ -31,11 +31,11 @@ const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) =>
           game.restoreFromGameData(g)
         }
         else {
-          console.log('Chess: unrecognized file format')
+          console.warn('Chess: unrecognized file format')
         }
       }
       else {
-        console.log('Chess: File parse error')
+        console.warn('Chess: File parse error')
       }
     };
     reader.readAsText((e.target as any).files[0])

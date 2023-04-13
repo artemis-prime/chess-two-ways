@@ -171,8 +171,6 @@ const ChessDnD: React.FC<React.PropsWithChildren> = ({ children }) => {
     return 'none'
   }
 
-  console.log("DIM: ", boardDimensions)
-
   return (
     <GestureHandlerRootView >
     <DragAndDropContext.Provider value={{
