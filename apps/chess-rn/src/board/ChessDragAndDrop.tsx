@@ -112,11 +112,13 @@ const ChessDnD: React.FC<React.PropsWithChildren> = ({ children }) => {
     if (!p) return 
 
     const piece = game.pieceAt(p)
-    if (piece && game.currentTurn === piece.color) {
-      setPayload({
-        piece,
-        from: p
-      })
+    if (piece) {
+      if (game.currentTurn === piece.color) {
+        setPayload({
+          piece,
+          from: p
+        })
+      }
     }
     else {
       console.warn('onStartDragging: no piece in ' + positionToString(p))
@@ -125,7 +127,7 @@ const ChessDnD: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const onDragging = (e: PanGestureHandlerEventPayload) => {
     if (payload) {
-      const { x, y } = e
+      const { x, y } = e 
       const p = squareFromTouchOffset({x, y})
       if (p) {
         if (!positionsEqual(p, squareOver!)) {

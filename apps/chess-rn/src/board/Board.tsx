@@ -92,7 +92,7 @@ const Board: React.FC<{
         </SquaresOuter>
       </BGImage>
       {payload && touchOffest && (
-        <DraggingPieceComponent piece={payload.piece} size={35} x={touchOffest.x} y={touchOffest.y} />
+        <DraggingPieceComponent piece={payload.piece} size={boardSize === null ? 35 : boardSize! * .85 / 8} x={touchOffest.x} y={touchOffest.y} />
       )} 
     </BoardInner>
   )

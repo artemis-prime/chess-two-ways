@@ -1,16 +1,11 @@
 import React from 'react'
-import { Text, StyleSheet } from 'react-native'
+import { Text } from 'react-native'
 
 import { styled } from '~/stitches.config'
 
-import { 
-  type Piece, 
-  PIECETYPE_TO_UNICODE 
-} from '@artemis-prime/chess-core'
+import { type Piece, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 
-
-
-const DraggingPieceText = styled(Text, {
+const StyledText = styled(Text, {
 
   fontWeight: '600', 
   textAlign: 'center',
@@ -29,7 +24,6 @@ const DraggingPieceText = styled(Text, {
   }
 })
 
-
 const DraggingPiece: React.FC<{  
   piece: Piece,
   size: number, 
@@ -41,13 +35,13 @@ const DraggingPiece: React.FC<{
   x,
   y
 }) =>  (
-  <DraggingPieceText color={piece.color} style={{
+  <StyledText color={piece.color} style={{
     left: x - size / 2, 
     top: y - size / 2,
     fontSize: size * .8,
     width: size,
     height: size
-  }}>{PIECETYPE_TO_UNICODE[piece.type]}</DraggingPieceText>
+  }}>{PIECETYPE_TO_UNICODE[piece.type]}</StyledText>
 )
 
 export default DraggingPiece

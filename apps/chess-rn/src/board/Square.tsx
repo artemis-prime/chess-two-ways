@@ -71,12 +71,11 @@ const StyledFeedbackView = styled(View, {
 
 const PieceText = styled(Text, {
 
-  fontSize: 35,
   fontWeight: '600', 
   textAlign: 'center',
   textAlignVertical: 'center',
-  width: 40,
-  height: 40,
+  width: '90%',
+  height: '90%',
   position: 'relative',
   variants: {
     color: {
@@ -142,17 +141,22 @@ const Square: React.FC<{
   const fileOdd = (FILES.indexOf(pos.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd) ? {brown: true} : {}
 
+  const fontSize = (typeof size === 'number') ? size *.80 : 35
+
     // https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native
   return (
     <SquareInner {...brown} style={style}>
       <FeedbackView size={size} status={status} >
       {piece && (<>
-        <PieceText color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
-        <PieceText color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        <PieceText style={{fontSize}} color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        <PieceText style={{fontSize}} color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
       </>)}  
       </FeedbackView>
     </SquareInner>
   )
 }
+
+
+//         <PieceText color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
 
 export default Square
