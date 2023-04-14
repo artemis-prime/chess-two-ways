@@ -1,24 +1,36 @@
 type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 const RANKS: Rank[] = [1, 2, 3, 4, 5, 6, 7, 8]
-const RANKS_REVERSE: Rank[] = [8, 7, 6, 5, 4, 3, 2, 1]
+const RANKS_REVERSED: Rank[] = [8, 7, 6, 5, 4, 3, 2, 1]
+
 type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
 const FILES: File[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] 
-const FILES_REVERSE: File[] = ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'] 
+const FILES_REVERSED: File[] = ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'] 
 
 interface Position {
   readonly rank: Rank
   readonly file: File
 }
 
+// Assumptions: 
+// 1) row and column or based on the standard 2D layout where origin is top-left,
+//    and offsets are positive.
+// 2) The board is also being laid out from top-left, as is usually the case,
+//    (with something like { display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }).
+// 
+// The definition of Ranks and Files if always based on the perspective of white, therefore
+// Ranks, which start from the *bottom* of the board, must be reversed. 
+//
+// From the point of view of black --'reverse' mode, *Files* must be reversed, 
+// since 'h' is first on the left, then 'g', etc.
 const layoutPositionToBoardPosition = (row: number, column: number, reverse = false): Position => {
   return reverse ? 
   {
     rank: RANKS[row],
-    file: FILES_REVERSE[column]
+    file: FILES_REVERSED[column]
   }
   :
   {
-    rank: RANKS_REVERSE[row],
+    rank: RANKS_REVERSED[row],
     file: FILES[column]
   }
 }
@@ -57,7 +69,7 @@ export {
   type Rank,
   type File,
   RANKS,
-  RANKS_REVERSE,
+  RANKS_REVERSED,
   FILES,
   positionsEqual, 
   copyPosition, 

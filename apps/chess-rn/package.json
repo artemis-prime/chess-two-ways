@@ -5,7 +5,8 @@
   "scripts": {
     "clean": "rm -rf ./node_modules",
     "android": "react-native run-android --mode release",
-    "start": "npx tsc && react-native start --verbose"
+    "start": "npx tsc && react-native start --verbose",
+    "tsc": "npx tsc"
   },
   "dependencies": {
     "@artemis-prime/chess-core": "1.0.0",

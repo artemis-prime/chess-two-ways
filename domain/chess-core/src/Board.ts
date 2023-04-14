@@ -10,7 +10,7 @@ import {
   positionsEqual,   
   copyPosition,
   RANKS,
-  RANKS_REVERSE,
+  RANKS_REVERSED,
   FILES,
  } from './Position'
 
@@ -358,7 +358,7 @@ class BoardImpl implements BoardInternal {
 
   get boardAsArray(): {pos: Position, piece: Piece | null}[] {
     const result: {pos: Position, piece: Piece | null}[] = []
-    for (const rank of RANKS_REVERSE) {
+    for (const rank of RANKS_REVERSED) {
       for (const file of FILES) {
         result.push({ pos: copyPosition(this._squares[rank][file]), piece: this._squares[rank][file].piece}) 
       }
