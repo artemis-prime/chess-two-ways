@@ -22,8 +22,6 @@ import { useChessDnD } from './ChessDragAndDrop'
 import DraggingPieceComponent from './DraggingPiece'
 import SquareComponent from './Square'
 
-const imagePath = require('~assets/American-Hard-Maple.jpg')
-
 const BoardInner = styled(View, {
   aspectRatio: 1,
   width: '100%',
@@ -78,7 +76,7 @@ const Board: React.FC<{
 
   return (
     <BoardInner style={style}  collapsable={false}>
-      <BGImage imagePath={imagePath}  >
+      <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={listenForResize} >
         {game.getBoardAsArray(whiteOnBottom).map((sq: {pos: Position, piece: Piece | null}) => (
           <SquareComponent 

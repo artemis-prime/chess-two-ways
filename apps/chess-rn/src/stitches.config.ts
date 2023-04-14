@@ -43,6 +43,9 @@ export const {
         //brownDarker: '#7c5934',
         boardSquareBrown: 'rgba(124, 79, 52, 0.60)',
       },
+      fonts: {
+        
+      },
       fontWeights: {
         bold: '700',
         semibold: '500',

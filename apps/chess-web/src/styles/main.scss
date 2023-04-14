@@ -6,7 +6,7 @@ $height-header: 52px;
 body {
   //-webkit-font-smoothing: antialiased;
   //-moz-osx-font-smoothing: grayscale;
-  background-image: url(../../../../assets/chess-bg-1920.jpg);
+  background-image: url('assets/img/chess_bg_1920.jpg');
 }
 
 .app-header {
@@ -29,7 +29,7 @@ body {
 
 
 .dash {
-  background-image: url(../../../../assets/slate-bg.jpg); 
+  background-image: url('assets/img/slate_bg.jpg'); 
   background-size: cover;
   box-sizing: border-box;
   width: 100%;
@@ -74,7 +74,7 @@ body {
 
 .board {
 
-  background-image: url(../../../../assets/American-Hard-Maple.jpg); /*  chess-bg-1920.jpg); */
+  background-image: url('assets/img/wood_grain_bg.jpg'); 
 
   aspect-ratio: 1 / 1;
   display: grid;

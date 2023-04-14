@@ -7,33 +7,36 @@ import {
   ViewStyle 
 } from 'react-native'
 
+
+import { styled } from '~/stitches.config'
+
+const StyledImageBackground = styled(ImageBackground, {
+  width: '100%',
+  overflow: 'hidden'
+})
+
+
 const BGImage: React.FC<{
-  imagePath: ImageSourcePropType,
+  imageURI: string,
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren> = ({
   children,
-  imagePath,
+  imageURI,
   style
 }) => {
   
-  const [imageUri, setImageUri] = useState<string>('')
-
-  useEffect(() => {
-    setImageUri(Image.resolveAssetSource(imagePath).uri)
-  })
-
   const handleError = (e:any) => { console.warn(e.nativeEvent.error) }
 
-  return imageUri ? (
-    <ImageBackground 
-      source={{uri: imageUri}} 
+  return (
+    <StyledImageBackground 
+      source={{uri: imageURI}} 
       onError={handleError} 
       resizeMode="cover" 
-      style={{ height: '100%', ...(style as object) }}
+      style={style}
     >
       {children}
-    </ImageBackground>
-  ) : (<>{children}</>)
+    </StyledImageBackground>
+  )
 }
 
 export default BGImage

@@ -10,21 +10,23 @@ import { ThemeProvider, lightTheme } from './stitches.config'
 import BGImage from '~/primatives/BGImage'
 import Board from './board/ChessBoard'
 import GameProvider from './board/GameProvider'
-
-const imagePath = require('~assets/chess-bg-1920.jpg')
+import Dash from './ui/Dash'
 
 const App: React.FC = () => (
   <ThemeProvider theme={lightTheme}>
   <GameProvider >
-  <BGImage imagePath={imagePath}>
+  <BGImage imageURI={'chess_bg_1920'}>
     <SafeAreaView style={{
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       alignItems: 'center',
+      gap: 10,
       height: '100%',
-      padding: 15,
+      paddingLeft: 10,
+      paddingRight: 10,
       paddingTop: 60,
+      paddingBottom: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.25)'
     }}>
       <StatusBar
@@ -33,6 +35,7 @@ const App: React.FC = () => (
         backgroundColor='transparent'
       />
       <Board />
+      <Dash />
     </SafeAreaView>
   </BGImage>
   </GameProvider>

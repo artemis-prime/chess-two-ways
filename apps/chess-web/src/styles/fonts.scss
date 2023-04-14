@@ -1,31 +1,31 @@
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-Extrabold-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-Extrabold-web.woff2') format('woff2');
   font-weight: 800;
 }
 
   // No semi-bold in this family, grr
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-Bold-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-Bold-web.woff2') format('woff2');
   font-weight: 600 700;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-Medium-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-Medium-web.woff2') format('woff2');
   font-weight: 500;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-Regular-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-Regular-web.woff2') format('woff2');
   font-weight: 400;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-Light-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-Light-web.woff2') format('woff2');
   font-weight: 300;
 }
 
@@ -33,7 +33,7 @@
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-ExtraboldItalic-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-ExtraboldItalic-web.woff2') format('woff2');
   font-weight: 800;
   font-style: italic;
 }
@@ -41,35 +41,35 @@
   // No semi-bold in this family, grr
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-BoldItalic-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-BoldItalic-web.woff2') format('woff2');
   font-weight: 600 700;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-MediumItalic-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-MediumItalic-web.woff2') format('woff2');
   font-weight: 500;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-RegularItalic-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-RegularItalic-web.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'TWK Everett';
-  src: url('assets/fonts/TWKEverett/TWKEverett-LightItalic-web.woff2') format('woff2');
+  src: url('assets/font/TWKEverett/TWKEverett-LightItalic-web.woff2') format('woff2');
   font-weight: 300;
   font-style: italic;
 }
 
 @font-face {
-  font-family: 'squeakychalk';
-  src: url('assets/fonts/chalk/squeakychalksound-webfont.woff2') format('woff2');
+  font-family: 'chalk';
+  src: url('assets/font/SqueakyChalkSound/squeakychalksound-webfont.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -78,7 +78,7 @@
 * {
   box-sizing: border-box;
   margin: 0;
-  font-family: 'squeakychalk', sans-serif;
+  font-family: 'chalk', sans-serif;
 
   font-weight: 500;
 }

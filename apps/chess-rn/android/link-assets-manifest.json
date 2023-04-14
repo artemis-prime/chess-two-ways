@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "../../assets/rn/font/SqueakyChalkSound.ttf",
+      "sha1": "686866c20b031203aff2ad2fd90ea4e5b9077c95"
+    },
+    {
+      "path": "../../assets/rn/img/chess_bg_1920.jpg",
+      "sha1": "c2c97fa0a2f3bd0f4865abd24334b2f44a092035"
+    },
+    {
+      "path": "../../assets/rn/img/slate_bg.jpg",
+      "sha1": "cb5aa7967f4cc8c8ad7211f06cf0400b5786a68a"
+    },
+    {
+      "path": "../../assets/rn/img/wood_grain_bg.jpg",
+      "sha1": "a1c8ef9a84d942eb5f2fb00f11d85b6a84b36928"
+    }
+  ]
+}

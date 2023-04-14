@@ -156,7 +156,4 @@ const Square: React.FC<{
   )
 }
 
-
-//         <PieceText color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
-
 export default Square
