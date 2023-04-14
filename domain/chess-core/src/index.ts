@@ -11,7 +11,7 @@ export { actionRecordToLAN } from './ActionRecord'
 export { 
   positionsEqual, 
   positionToString,
-  layoutPositionToPosition, 
+  layoutPositionToBoardPosition, 
   FILES, 
   RANKS, 
   type Rank, 

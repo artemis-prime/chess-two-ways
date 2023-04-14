@@ -10,7 +10,7 @@ interface Position {
   readonly file: File
 }
 
-const layoutPositionToPosition = (row: number, column: number, reverse = false): Position => {
+const layoutPositionToBoardPosition = (row: number, column: number, reverse = false): Position => {
   return reverse ? 
   {
     rank: RANKS[row],
@@ -63,5 +63,5 @@ export {
   copyPosition, 
   positionToString,
   positionFromString,
-  layoutPositionToPosition
+  layoutPositionToBoardPosition
 }

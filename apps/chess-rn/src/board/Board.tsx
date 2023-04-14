@@ -13,7 +13,7 @@ import {
   type Position,
   RANKS,
   FILES,
-  layoutPositionToPosition
+  layoutPositionToBoardPosition
 } from '@artemis-prime/chess-core'
 
 import BGImage from '~/primatives/BGImage'
@@ -63,7 +63,7 @@ const Board: React.FC<{
       numColumns: RANKS.length,
       numRows: FILES.length,
       rowAndColumnToPosition: (row: number, column: number): Position => 
-        (layoutPositionToPosition(row, column, !whiteOnBottom))
+        (layoutPositionToBoardPosition(row, column, !whiteOnBottom))
     }
   )
 
