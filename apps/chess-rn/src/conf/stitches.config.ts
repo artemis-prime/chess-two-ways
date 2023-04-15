@@ -37,6 +37,7 @@ export const {
         pieceBlack: '#573131',
         pieceWhite: '#f7f0be',
         dashBorder: 'rgba(167, 107, 55, 0.761)',
+        dashAlert: '$alert8',
         dashText: '$gray7',
         headerBG: '#274070', 
         //brownDarker: 'rgba(105, 49, 49, 0.75)',

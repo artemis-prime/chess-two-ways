@@ -29,7 +29,7 @@ const InCheckIndicator: React.FC = () => {
   })), [])
 
   return !!squaresString ? (
-    <Text style={{...ui.typography.common, color: theme.colors.alert9}}>
+    <Text style={{...ui.typography.smaller, color: theme.colors.dashAlert}}>
       {`In check from ${squaresString}!`}
     </Text> 
   ) : null
