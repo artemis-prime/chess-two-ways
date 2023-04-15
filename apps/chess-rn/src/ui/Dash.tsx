@@ -39,7 +39,12 @@ const Dash: React.FC<{
       justifyContent: 'flex-start', 
       alignItems: 'flex-start'
     }}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch'}}>
+      <View style={{
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        alignSelf: 'stretch'
+      }}>
         <TurnIndicator />
         <UndoRedoWidget />
       </View>
