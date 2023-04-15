@@ -11,6 +11,7 @@ import ui from '~/conf/conf'
 import BGImage from '~/primatives/BGImage'
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
+import InCheckIndicator from './InCheckIndicator'
 
 const StyledBGImage = styled(BGImage, {
 
@@ -31,11 +32,12 @@ const Dash: React.FC<{
 }) => (
 
   <StyledBGImage imageURI={'slate_bg'}  style={style}>
-    <View style={{ padding: ui.layout.padding }}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+    <View style={{ padding: ui.layout.padding, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'} }>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch'}}>
         <TurnIndicator />
         <UndoRedoWidget />
       </View>
+      <InCheckIndicator />
     </View>
   </StyledBGImage>
 )
