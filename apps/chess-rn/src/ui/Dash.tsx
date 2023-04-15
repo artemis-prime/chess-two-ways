@@ -1,16 +1,18 @@
-import React, { PropsWithChildren, useState } from 'react'
+import React from 'react'
 import { 
   View,
   StyleProp,
   ViewStyle
 } from 'react-native'
 
-import { styled } from '~/stitches.config'
+import { styled } from '~/conf/stitches.config'
+import ui from '~/conf/conf'
 
 import BGImage from '~/primatives/BGImage'
+import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 
-const StyledView = styled(BGImage, {
+const StyledBGImage = styled(BGImage, {
 
   flexGrow: 1,
   flexShrink: 1,
@@ -22,20 +24,20 @@ const StyledView = styled(BGImage, {
   borderColor: '$dashBorder',
 })
 
-
 const Dash: React.FC<{
   style?: StyleProp<ViewStyle>
 }> = ({
   style
-}) => {
+}) => (
 
-
-  return (
-    <StyledView imageURI={'slate_bg'}  style={style}>
-
-      <TurnIndicator style={{ height: 20}}/>
-    </StyledView>
-  )
-}
+  <StyledBGImage imageURI={'slate_bg'}  style={style}>
+    <View style={{ padding: ui.layout.padding }}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        <TurnIndicator />
+        <UndoRedoWidget />
+      </View>
+    </View>
+  </StyledBGImage>
+)
 
 export default Dash

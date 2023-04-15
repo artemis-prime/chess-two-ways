@@ -6,7 +6,7 @@ import {
   ViewStyle 
 } from 'react-native'
 
-import { styled } from '~/stitches.config'
+import { styled } from '~/conf/stitches.config'
 
 import { 
   type Position, 

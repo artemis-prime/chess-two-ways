@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 
 
-import { styled } from '~/stitches.config'
+import { styled } from '~/conf/stitches.config'
 
 const StyledImageBackground = styled(ImageBackground, {
   width: '100%',

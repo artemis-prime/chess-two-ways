@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text } from 'react-native'
 
-import { styled } from '~/stitches.config'
+import { styled } from '~/conf/stitches.config'
 
 import { type Piece, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 

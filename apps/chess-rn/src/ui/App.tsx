@@ -2,15 +2,16 @@ import React from 'react'
 import {
   SafeAreaView,
   StatusBar,
-  View,
 } from 'react-native'
 
-import { ThemeProvider, lightTheme } from './stitches.config'
+import { ThemeProvider, lightTheme } from '~/conf/stitches.config'
 
 import BGImage from '~/primatives/BGImage'
-import Board from './board/ChessBoard'
-import GameProvider from './board/GameProvider'
-import Dash from './ui/Dash'
+import Board from '~/board/ChessBoard'
+import GameProvider from '~/board/GameProvider'
+import Dash from './Dash'
+
+import ui from '~/conf/conf'
 
 const App: React.FC = () => (
   <ThemeProvider theme={lightTheme}>
@@ -21,10 +22,10 @@ const App: React.FC = () => (
       flexDirection: 'column',
       justifyContent: 'space-between',
       alignItems: 'center',
-      gap: 10,
+      gap: ui.layout.appGutter,
       height: '100%',
-      paddingLeft: 10,
-      paddingRight: 10,
+      paddingLeft: ui.layout.appGutter,
+      paddingRight: ui.layout.appGutter,
       paddingTop: 60,
       paddingBottom: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.25)'

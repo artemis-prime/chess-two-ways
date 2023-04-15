@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { observer } from 'mobx-react'
 import { 
   View,
   StyleProp, 
@@ -6,7 +7,7 @@ import {
   LayoutChangeEvent 
 } from 'react-native'
 
-import { styled } from '~/stitches.config'
+import { styled } from '~/conf/stitches.config'
 
 import { 
   type Piece, 
@@ -44,7 +45,7 @@ const SquaresOuter = styled(View, {
 
 const Board: React.FC<{  
   style?: StyleProp<ViewStyle>
-}> = ({
+}> = observer(({
   style 
 }) => {
 
@@ -94,6 +95,6 @@ const Board: React.FC<{
       )} 
     </BoardInner>
   )
-}
+})
 
 export default Board
