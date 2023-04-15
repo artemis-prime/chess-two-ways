@@ -50,8 +50,11 @@ const Board: React.FC<{
 }) => {
 
   const game = useGame()
-  const [boardSize, setBoardSize] = useState<number | null>(null)
-
+    // Squares need pt size to do internal layout.
+    // Instead of letting each square listen for it's own size changes,
+    // we optimize by do it at this level and informing them when the number changes.
+    // We are an 8x8 grid after all! :)
+  const [boardSize, setBoardSize] = useState<number | undefined>(undefined)
   const whiteOnBottom = true // TODO.  
 
   const {
@@ -84,14 +87,15 @@ const Board: React.FC<{
             position={sq.pos} 
             piece={sq.piece} 
             status={getSquaresDnDStatus(sq.pos)}
-            size={boardSize === null ? '12.5%' : boardSize! / 8 }
+              // See comments above
+            sizeInLayout={boardSize && boardSize / 8 }
             key={`key-${sq.pos.rank}-${sq.pos.file}`} 
           />
         ))}
         </SquaresOuter>
       </BGImage>
-      {payload && touchOffest && (
-        <DraggingPieceComponent piece={payload.piece} size={boardSize === null ? 35 : boardSize! * .85 / 8} x={touchOffest.x} y={touchOffest.y} />
+      {payload && touchOffest && boardSize && ( 
+        <DraggingPieceComponent piece={payload.piece} size={boardSize * .85 / 8} x={touchOffest.x} y={touchOffest.y} />
       )} 
     </BoardInner>
   )

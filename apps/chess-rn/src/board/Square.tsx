@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { 
   StyleProp,
   Text, 
@@ -123,17 +123,19 @@ const FeedbackView: React.FC<{
   )
 }
 
+/* See comments in Board.tsx re sizing changes */
+
 const Square: React.FC<{  
   position: Position
   piece: Piece | null
   status: SquaresDndStatus
-  size: number | string
+  sizeInLayout: number | undefined
   style?: StyleProp<ViewStyle>
 }> = ({
   position : pos,
   piece,
   status,
-  size,
+  sizeInLayout,
   style 
 }) => {
 
@@ -141,17 +143,19 @@ const Square: React.FC<{
   const fileOdd = (FILES.indexOf(pos.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd) ? {brown: true} : {}
 
-  const fontSize = (typeof size === 'number') ? size *.80 : 35
-
-    // https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native
+    // Only do inner layout stuff if we have an accurate size available.
+    // This avoids potentional jump after initial layout.
   return (
     <SquareInner {...brown} style={style}>
-      <FeedbackView size={size} status={status} >
+      {sizeInLayout && (
+      <FeedbackView size={sizeInLayout} status={status} >
       {piece && (<>
-        <PieceText style={{fontSize}} color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
-        <PieceText style={{fontSize}} color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        {/* https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native */ }
+        <PieceText style={{fontSize: sizeInLayout *.80}} color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        <PieceText style={{fontSize: sizeInLayout *.80}} color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
       </>)}  
       </FeedbackView>
+      )}
     </SquareInner>
   )
 }
