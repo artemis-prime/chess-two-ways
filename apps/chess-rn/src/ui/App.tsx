@@ -20,8 +20,8 @@ const App: React.FC = () => (
     <SafeAreaView style={{
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      justifyContent: 'flex-start',
+      alignItems: 'stretch',
       gap: ui.layout.appGutter,
       height: '100%',
       paddingLeft: ui.layout.appGutter,
@@ -35,8 +35,8 @@ const App: React.FC = () => (
         barStyle='dark-content'
         backgroundColor='transparent'
       />
-      <Board />
       <Dash />
+      <Board />
     </SafeAreaView>
   </BGImage>
   </GameProvider>

@@ -15,13 +15,13 @@ import InCheckIndicator from './InCheckIndicator'
 
 const StyledBGImage = styled(BGImage, {
 
-  flexGrow: 1,
+  flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  minHeight: 200,
+  minHeight: 95,
   borderWidth: 4,
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
+  borderTopLeftRadius: 17,
+  borderTopRightRadius: 17,
   borderColor: '$dashBorder',
 })
 
@@ -32,7 +32,13 @@ const Dash: React.FC<{
 }) => (
 
   <StyledBGImage imageURI={'slate_bg'}  style={style}>
-    <View style={{ padding: ui.layout.padding, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'} }>
+    <View style={{ 
+      padding: ui.layout.padding, 
+      paddingTop: ui.layout.padding - 5,
+      flexDirection: 'column', 
+      justifyContent: 'flex-start', 
+      alignItems: 'flex-start'
+    }}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch'}}>
         <TurnIndicator />
         <UndoRedoWidget />

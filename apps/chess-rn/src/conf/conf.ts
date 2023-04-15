@@ -12,7 +12,7 @@ export default {
     }
   },
   layout: {
-    padding: 18,
+    padding: 14,
     appGutter: 9
   }
 }
