@@ -98,6 +98,7 @@ class BoardImpl implements BoardInternal {
         applyAction: action,
         reset: action,
         setGameStatus: action,
+        trackInCheck: action,
         gameStatus: computed,
         inCheck: computed,
         boardAsArray: computed,

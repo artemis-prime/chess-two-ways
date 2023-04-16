@@ -9,9 +9,13 @@ import { styled } from '~/conf/stitches.config'
 import ui from '~/conf/conf'
 
 import BGImage from '~/primatives/BGImage'
+import GhostButton from '~/primatives/GhostButton'
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 import InCheckIndicator from './InCheckIndicator'
+import { useGame } from '~/board/GameProvider'
+
+import toRestore from './gameDataForCastle'
 
 const StyledBGImage = styled(BGImage, {
 
@@ -29,28 +33,40 @@ const Dash: React.FC<{
   style?: StyleProp<ViewStyle>
 }> = ({
   style
-}) => (
+}) => {
+  
+  const game = useGame()
 
-  <StyledBGImage imageURI={'slate_bg'}  style={style}>
-    <View style={{ 
-      padding: ui.layout.padding, 
-      paddingTop: ui.layout.padding - 5,
-      flexDirection: 'column', 
-      justifyContent: 'flex-start', 
-      alignItems: 'flex-start'
-    }}>
-      <View style={{
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        alignSelf: 'stretch'
+  const restoreGame = () => {
+    game.restoreFromGameData(toRestore)
+  }
+
+  return (
+    <StyledBGImage imageURI={'slate_bg'}  style={style}>
+      <View style={{ 
+        padding: ui.layout.padding, 
+        paddingTop: ui.layout.padding - 5,
+        flexDirection: 'column', 
+        justifyContent: 'flex-start', 
+        alignItems: 'flex-start'
       }}>
-        <TurnIndicator />
-        <UndoRedoWidget />
+        <View style={{
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          alignSelf: 'stretch'
+        }}>
+          <TurnIndicator />
+          <UndoRedoWidget />
+        </View>
+        <InCheckIndicator />
+        <GhostButton 
+          onClick={restoreGame}
+          style={{ alignSelf: 'flex-end' }}
+        >Restore</GhostButton>
       </View>
-      <InCheckIndicator />
-    </View>
-  </StyledBGImage>
-)
+    </StyledBGImage>
+  )
+}
 
 export default Dash

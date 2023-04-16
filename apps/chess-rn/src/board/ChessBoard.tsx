@@ -1,12 +1,12 @@
 import React from 'react'
 
 import Board from './Board'
-import { ChessDnD } from './ChessDragAndDrop'
+import { ChessDnDShell } from './ChessDnD'
 
 const ChessBoard: React.FC = () => (
-  <ChessDnD>
+  <ChessDnDShell>
     <Board />
-  </ChessDnD>
+  </ChessDnDShell>
 )
 
 export default ChessBoard
