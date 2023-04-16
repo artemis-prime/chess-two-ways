@@ -12,10 +12,12 @@ import GameProvider from '~/board/GameProvider'
 import Dash from './Dash'
 
 import ui from '~/conf/conf'
+import PulsesProvider from '~/board/PulseProvider'
 
 const App: React.FC = () => (
   <ThemeProvider theme={lightTheme}>
   <GameProvider >
+  <PulsesProvider>
   <BGImage imageURI={'chess_bg_1920'}>
     <SafeAreaView style={{
       display: 'flex',
@@ -36,9 +38,11 @@ const App: React.FC = () => (
         backgroundColor='transparent'
       />
       <Dash />
+
       <Board />
     </SafeAreaView>
   </BGImage>
+  </PulsesProvider>
   </GameProvider>
   </ThemeProvider>
 )

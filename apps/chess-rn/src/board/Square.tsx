@@ -32,6 +32,7 @@ type DnDRole =
 
 import { useChessDnD } from './ChessDnD'
 import { useGame } from './GameProvider'
+import { usePulses } from './PulseProvider'
 
 const SquareInner = styled(View, {
   aspectRatio: 1,
@@ -149,11 +150,13 @@ const StyledFeedbackView = styled(View, {
 const FeedbackView: React.FC<{
   status: DnDRole,
   size: number 
-} & PropsWithChildren> = ({
+} & PropsWithChildren> = observer(({
   status,
   size,
   children
 }) => {
+
+  const pulses = usePulses()
 
   const toStatusSpread: any = {}
   const styleToSpread: any = {}
@@ -165,24 +168,38 @@ const FeedbackView: React.FC<{
     styleToSpread.borderRadius = size / 2
   }
   else if (status.includes('promote')) {
-    toStatusSpread.promote = true
+    if (pulses.fast) {
+      toStatusSpread.promote = true
+    }
   }
   else if (status === 'capture') {
-    toStatusSpread.captue = true
+    if (pulses.fast) {
+      toStatusSpread.capture = true
+    }
   }
   else if (status === 'castle-rook-from') {
-    toStatusSpread.rookFrom = true
+    if (pulses.fast) {
+      toStatusSpread.rookFrom = true
+    }
   }
   else if (status === 'castle-rook-to') {
-    toStatusSpread.rookTo = true
+      // alternate with from
+    if (!pulses.fast) {
+      toStatusSpread.rookTo = true
+    }
   }
   else if (status === 'king-in-check') {
-    toStatusSpread.kingInCheck = true
-    styleToSpread.borderRadius = size / 2
+    if (pulses.slow) {
+      toStatusSpread.kingInCheck = true
+      styleToSpread.borderRadius = size / 2
+    }
   }
+    // alternate with king
   else if (status === 'in-check-from') {
-    toStatusSpread.inCheckFrom = true
-    styleToSpread.borderRadius = size / 2
+    if (!pulses.slow) {
+      toStatusSpread.inCheckFrom = true
+      styleToSpread.borderRadius = size / 2
+    }
   }
   return (
     <StyledFeedbackView {...toStatusSpread} style={styleToSpread} >
@@ -191,7 +208,7 @@ const FeedbackView: React.FC<{
       </View>
     </StyledFeedbackView>
   )
-}
+})
 
 /* See comments in Board.tsx re sizing changes */
 const Square: React.FC<{  
