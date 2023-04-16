@@ -83,8 +83,7 @@ const BORDER_COMMON = {
   borderWidth: 1,
   borderRadius: 0,
 }
-
-
+ 
 const StyledFeedbackView = styled(View, {
 
   position: 'absolute', 
