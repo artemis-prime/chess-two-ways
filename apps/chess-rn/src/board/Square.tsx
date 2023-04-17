@@ -76,8 +76,7 @@ const StyledFeedbackView = styled(View, {
     },
     capture: {
       true: {
-        //borderColor: 'orange',
-        //...BORDER_COMMON
+        // see shadows in Piece.tsx
       }
     },
     promote: {
@@ -88,22 +87,24 @@ const StyledFeedbackView = styled(View, {
     },
     rookTo: {
       true: {
-        borderColor: 'green',
+        borderColor: 'darkgreen',
         ...BORDER_COMMON
       }
     },
     rookFrom: {
       true: {
-        borderColor: 'green',
+        borderColor: 'darkgreen',
         ...BORDER_COMMON
       }
     },
     kingInCheck: {
       true: {
+        // see shadows in Piece.tsx
       }
     },
     inCheckFrom: {
       true: {
+        // see shadows in Piece.tsx
       }
     },
   }
@@ -135,37 +136,26 @@ const FeedbackView: React.FC<{
       toStatusSpread.promote = true
     }
   }
-  /*
+  /* see shadows in Piece.tsx
   else if (status === 'capture') {
-    if (pulses.fast) {
-      toStatusSpread.capture = true
-    }
   }
   */
   else if (status === 'castle-rook-from') {
-    if (pulses.fast) {
+    if (pulses.slow) {
       toStatusSpread.rookFrom = true
     }
   }
   else if (status === 'castle-rook-to') {
       // alternate with from
-    if (!pulses.fast) {
+    if (!pulses.slow) {
       toStatusSpread.rookTo = true
     }
   }
-  /*
+  /* see shadows in Piece.tsx
   else if (status === 'king-in-check') {
-    if (pulses.slow) {
-      toStatusSpread.kingInCheck = true
-      styleToSpread.borderRadius = size / 2
-    }
   }
-    // alternate with king
+  /* see shadows in Piece.tsx
   else if (status === 'in-check-from') {
-    if (!pulses.slow) {
-      toStatusSpread.inCheckFrom = true
-      styleToSpread.borderRadius = size / 2
-    }
   }
   */
   return (
