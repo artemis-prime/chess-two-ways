@@ -1,13 +1,10 @@
 import React, { PropsWithChildren } from 'react'
 import { 
   StyleProp,
-  Text, 
   View,
   ViewStyle 
 } from 'react-native'
 import { observer } from 'mobx-react'
-
-import { styled } from '~/conf/stitches.config'
 
 import { 
   type Position, 
@@ -15,12 +12,14 @@ import {
   type Action,
   positionsEqual,
   FILES, 
-  PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
+
+import { styled } from '~/conf/stitches.config'
+import PieceComponent from './Piece'
 
   // Should be enough for the UI to give feedback based on these values.
   // (TODO: Consider making this an array of possibly coincident statuses)
-type DnDRole = 
+export type DnDRole = 
   Action |                // current square resolves to the Action
   'origin' |              // origin of the drag
   'invalid' |             // over this square, but no valid move
@@ -45,38 +44,6 @@ const SquareInner = styled(View, {
         backgroundColor: '$boardSquareBrown'
       },
     },
-  }
-})
-
-const PieceText = styled(Text, {
-
-  fontWeight: '600', 
-  textAlign: 'center',
-  textAlignVertical: 'center',
-  width: '90%',
-  height: '90%',
-  position: 'relative',
-  variants: {
-    color: {
-      white: {
-        color: '$pieceWhite'
-      },
-      black: {
-        color: '$pieceBlack'
-      },
-      whiteShadow: {
-        position: 'absolute',
-        top: 2,
-        left: 2,
-        color: 'rgba(0, 0, 0, 0.3)',
-      },
-      blackShadow: {
-        position: 'absolute',
-        top: 2.5,
-        left: 2.5,
-        color: 'rgba(0, 0, 0, 0.5)',
-      }
-    }
   }
 })
 
@@ -109,8 +76,8 @@ const StyledFeedbackView = styled(View, {
     },
     capture: {
       true: {
-        borderColor: 'orange',
-        ...BORDER_COMMON
+        //borderColor: 'orange',
+        //...BORDER_COMMON
       }
     },
     promote: {
@@ -133,14 +100,10 @@ const StyledFeedbackView = styled(View, {
     },
     kingInCheck: {
       true: {
-        borderColor: 'red',
-        ...BORDER_COMMON
       }
     },
     inCheckFrom: {
       true: {
-        borderColor: 'red',
-        ...BORDER_COMMON
       }
     },
   }
@@ -172,11 +135,13 @@ const FeedbackView: React.FC<{
       toStatusSpread.promote = true
     }
   }
+  /*
   else if (status === 'capture') {
     if (pulses.fast) {
       toStatusSpread.capture = true
     }
   }
+  */
   else if (status === 'castle-rook-from') {
     if (pulses.fast) {
       toStatusSpread.rookFrom = true
@@ -188,6 +153,7 @@ const FeedbackView: React.FC<{
       toStatusSpread.rookTo = true
     }
   }
+  /*
   else if (status === 'king-in-check') {
     if (pulses.slow) {
       toStatusSpread.kingInCheck = true
@@ -201,11 +167,10 @@ const FeedbackView: React.FC<{
       styleToSpread.borderRadius = size / 2
     }
   }
+  */
   return (
     <StyledFeedbackView {...toStatusSpread} style={styleToSpread} >
-      <View style={{position: 'relative', width: '100%', height: '100%'}} >
-        {children}
-      </View>
+      {children}
     </StyledFeedbackView>
   )
 })
@@ -277,17 +242,15 @@ const Square: React.FC<{
     return 'none'
   }
 
+  const status = getSquaresDnDStatus(pos)
+
     // Only do inner layout stuff if we have an accurate size available.
     // This avoids potentional jump after initial layout.
   return (
     <SquareInner {...brown} style={style}>
       {sizeInLayout && (
-      <FeedbackView size={sizeInLayout} status={getSquaresDnDStatus(pos)} >
-      {piece && (<>
-        {/* https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native */ }
-        <PieceText style={{fontSize: sizeInLayout *.80}} color={`${piece.color}Shadow`}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
-        <PieceText style={{fontSize: sizeInLayout *.80}} color={piece.color}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
-      </>)}  
+      <FeedbackView size={sizeInLayout} status={status} >
+        <PieceComponent piece={piece} size={sizeInLayout} status={status} /> 
       </FeedbackView>
       )}
     </SquareInner>

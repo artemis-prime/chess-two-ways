@@ -27,7 +27,7 @@ const PulsesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const fast = setInterval(() => {
       pulsesRef.current.fast = !pulsesRef.current.fast   
-    }, 300)  
+    }, 200)  
     const slow = setInterval(() => {
       pulsesRef.current.slow = !pulsesRef.current.slow   
     }, 500)  

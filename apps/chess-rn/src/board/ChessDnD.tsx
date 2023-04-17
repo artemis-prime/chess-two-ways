@@ -1,6 +1,10 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { 
+  useContext, 
+//  useEffect, 
+  useRef 
+} from 'react'
 import { LayoutChangeEvent } from 'react-native'
-import { autorun } from 'mobx'
+//import { autorun } from 'mobx'
 
 import {
   Gesture,
@@ -16,7 +20,7 @@ import {
   positionsEqual, 
   positionToString,
   layoutPositionToBoardPosition, 
-  pieceToString
+//  pieceToString
 } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
@@ -86,20 +90,20 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   }
 
   const onStartDragging = (e: PanGestureHandlerEventPayload) => {
-    console.warn("START DRAG")
+    //console.warn("START DRAG")
 
     const { x, y } = e
     const p = squareFromTouchOffset({x, y})
     if (!p) {
-      console.warn("CANNOT DETERMINE SQUARE")
+      //console.warn("CANNOT DETERMINE SQUARE")
       return 
     }
 
     const piece = game.pieceAt(p)
     if (piece) {
-      console.warn("FOUND PIECE: " + pieceToString(piece))
+      //console.warn("FOUND PIECE: " + pieceToString(piece))
       if (game.currentTurn === piece.color) {
-        console.warn("SETTING PAYLOAD")
+        //console.warn("SETTING PAYLOAD")
         stateRef.current.setPayload(piece, p)
       }
     }
