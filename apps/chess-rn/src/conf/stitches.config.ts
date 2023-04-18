@@ -16,7 +16,7 @@ export const {
   ThemeProvider,  
 } = createStitches({
     theme: {
-        // Cf: web-ui/src/styles/colors.module.scss
+        // Cf: web-ui/src/style/colors.module.scss
       colors: {
         ...gray,
         ...orange,

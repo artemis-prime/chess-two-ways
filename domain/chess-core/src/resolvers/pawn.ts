@@ -95,7 +95,7 @@ const resolve = (
     return 'move'
   }
   else if (isCapturing(move, toPiece)) {
-    return isGettingPromoted(move.to, move.piece.color) ? 'capture-promote' : 'capture'
+    return isGettingPromoted(move.to, move.piece.color) ? 'capturePromote' : 'capture'
   }
   return null
 }
@@ -166,7 +166,7 @@ const resolvableMoves = (
           from,
           to: pos
         },
-        action:  isGettingPromoted(squareInFront, piece.color) ? 'capture-promote' : 'capture'
+        action:  isGettingPromoted(squareInFront, piece.color) ? 'capturePromote' : 'capture'
       })
     }
   })

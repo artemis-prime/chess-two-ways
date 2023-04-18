@@ -1,115 +1,174 @@
-import React, { useEffect, useState } from 'react'
+  // @ts-ignore
+import React from 'react'
 import { observer } from 'mobx-react'
-import { useDrop } from 'react-dnd'
+import { useDroppable } from '@dnd-kit/core'
+import type * as Stitches from '@stitches/react'
 
-import type { Position, Piece } from '@artemis-prime/chess-core'
-import { FILES, positionsEqual } from '@artemis-prime/chess-core'
+import { 
+  FILES,
+  type Piece,
+  type Position, 
+  type PositionStatus,
+  positionsEqual, 
+  positionToString 
+} from '@artemis-prime/chess-core'
+
+import { styled } from '~/style/stitches.config'
 
 import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
-import { useUIState } from './UIState'
-import { type DraggingPiece, DRAGGING_PIECE } from './DraggingPiece'
+import { useChessDnD } from './ChessDnD'
+import { usePulses } from './PulseProvider'
+
+
+const EffectsView = styled('div', {
+  position: 'absolute', 
+  top: 0, 
+  bottom: 0, 
+  left: 0, 
+  right: 0,
+  display: 'flex',
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  variants: {
+    effect: {
+      move: {
+        borderRadius: '50%',
+        border: '2px green solid'
+      },
+      promote: {
+        border: '1px yellow solid'
+      },
+      castle: {
+        borderRadius: '50%',
+        border: '2px green solid'
+      },
+      promoteCapture: {
+        border: '1px yellow solid'
+      },
+      castleRookFrom: {
+        border: '1px darkgreen solid' 
+      },
+      castleRookTo: {
+        border: '1px darkgreen solid' 
+      },
+      castleRookFromPulse: {
+        border: '3px darkgreen solid' 
+      },
+      castleRookToPulse: {
+        border: '3px darkgreen solid' 
+      },
+    }
+  }
+})
+
+type EffectsViewVariants = Stitches.VariantProps<typeof EffectsView>
+  // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
+type EffectVariant = EffectsViewVariants['effect'] // includes undefined
+
 
 const SquareComponent: React.FC<{ 
   position: Position
-  piece?: Piece | null
+  piece: Piece | null
 }> = observer(({ 
-  position : pos,
+  position,
   piece
 }) => {
 
   const game = useGame()
-  const uiState = useUIState()
-  const [rookSquareCastling, setRookSquareCastling] = useState<'from' | 'to' | null>(null)
-  const [inCheckFromHere, setInCheckFromHere] = useState<boolean>(false)
-  const [kingInCheckHere, setKingInCheckHere] = useState<boolean>(false)
+  const dnd = useChessDnD()
+  const pulses = usePulses()
 
-  const [props, drop] = useDrop(
-    () => ({
-      accept: DRAGGING_PIECE,
-      drop: (item: DraggingPiece, monitor) => { game.takeResolvedAction()},
-      canDrop: (item: DraggingPiece, monitor) => {
-        return !!game.resolveAction({piece: item.piece, from: item.from, to: pos}); 
-      },
-    }),
-    [pos]
-  )
+  const posString = positionToString(position)
+  const {setNodeRef: droppableRef} = useDroppable({id: posString, data: {position}})
 
-  useEffect(() => {
-    let imACastlingRookSquare: 'from' | 'to' | null = null
-    if (uiState.action === 'castle') {
+  const getPositionStatus = (p: Position): PositionStatus => {
 
-      if (positionsEqual(pos, uiState.note.rooks.from)) {
-        imACastlingRookSquare = 'from'  
-      } 
-      else if (positionsEqual(pos, uiState.note.rooks.to)) {
-        imACastlingRookSquare = 'to'  
+    if (dnd.payload && positionsEqual(dnd.payload.from, p)) {
+      return 'origin'
+    }
+    if (dnd.payload) {
+      if (dnd.squareOver && positionsEqual(dnd.squareOver, p)) {
+        if (dnd.resolvedAction) {
+          return dnd.resolvedAction
+        }
+        else {
+          return 'invalid'
+        }
       }
-    } 
-    setRookSquareCastling(imACastlingRookSquare) 
-  }, [uiState.action, pos] )
-
-  useEffect(() => {
-    const kingInCheckHere_ = !!uiState.kingInCheck && (uiState.kingInCheck.file === pos.file && uiState.kingInCheck.rank === pos.rank)
-    if (kingInCheckHere_ !== kingInCheckHere) {
-      setKingInCheckHere(kingInCheckHere_)
+      else if (dnd.squareOver && dnd.resolvedAction && dnd.resolvedAction === 'castle') {
+        if (dnd.squareOver.file === 'g') {
+          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'h'})) {
+            return 'castleRookFrom'
+          }
+          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'f'})) {
+            return 'castleRookTo'
+          }
+        }
+        else if (dnd.squareOver.file === 'c') {
+          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'a'})) {
+            return 'castleRookFrom'
+          }
+          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'd'})) {
+            return 'castleRookTo'
+          }
+        }
+      }
     }
-    const inCheckFromMe = !!uiState.inCheckFrom.find((e) => (e.file === pos.file && e.rank === pos.rank)) 
-    if (inCheckFromHere != inCheckFromMe) {
-      setInCheckFromHere(inCheckFromMe) 
+    else {
+      const inCheckResult = game.inCheck
+      if (inCheckResult) {
+        if (piece && piece.type === 'king' && piece.color === inCheckResult.side) {
+          return 'kingInCheck'
+        }
+        else if (inCheckResult.from.find((from) => (positionsEqual(position, from)))) {
+          return 'inCheckFrom'
+        }
+      }
     }
-  },[uiState.inCheckFrom, uiState.kingInCheck])
-
-  let effectClass = ''
-
-  if (uiState.action && positionsEqual(uiState.note.to, pos)) {
-    if (uiState.action === 'capture') {
-      effectClass = 'capture' 
-    }
-    else if (uiState.action && uiState.action.includes('promote')) {
-      effectClass = 'promote' 
-    }
-      // castle in this case means we're the king's pos (not the rooks')
-    else if (uiState.action === 'move' || (uiState.action === 'castle' && !rookSquareCastling)) {
-      effectClass = 'move-or-castle'
-    }
+    return 'none'
   }
-  else if (rookSquareCastling) {
-    effectClass = `castling-rook ${rookSquareCastling}`
-  } 
 
-  if (kingInCheckHere) {
-    effectClass = 'in-check in-check-king'
+  const getEffectFromStatus = (s: PositionStatus): EffectVariant  => {
+    if (s === 'castleRookFrom') {
+      return pulses.slow ? s : 'castleRookFromPulse' 
+    }
+    else if (s === 'castleRookTo') {
+      return !pulses.slow ? s : 'castleRookToPulse' 
+    }
+    else if (s.includes('romote')) {
+      if (pulses.fast) {
+        return undefined
+      }
+    }
+    else if ([
+      'origin',
+      'invalid',
+      'none',
+      'kingInCheck',
+      'inCheckFrom',
+      'capture'
+    ].includes(s as string)) {
+      return undefined
+    }
+    return s as EffectVariant 
   }
-  else if (inCheckFromHere) {
-    effectClass = 'in-check in-check-from'
-  }
+
+  const status = getPositionStatus(position)
 
   return (
     <div 
-      ref={drop}
+      ref={droppableRef}
       style={{ position: 'relative' }}
-      className={`square rank-${pos.rank} rank-${(pos.rank % 2) ? 'odd' : 'even'} ` +
-        `file-${pos.file} file-${(FILES.indexOf(pos.file) % 2) ? 'even' : 'odd'}` 
+      className={`square rank-${position.rank} rank-${(position.rank % 2) ? 'odd' : 'even'} ` +
+        `file-${position.file} file-${(FILES.indexOf(position.file) % 2) ? 'even' : 'odd'}` 
       }
     >
-      <div  
-        style={{
-          position: 'absolute', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
-          right: 0,
-          display: 'flex',
-          justifyContent: 'center', 
-          alignItems: 'center', 
-        }} 
-        className={`effects ${effectClass}`}
-      >
+      <EffectsView effect={getEffectFromStatus(status)}>
       {(!!piece) && (
-        <PieceComponent position={pos} piece={piece} />  
+        <PieceComponent position={position} piece={piece} status={status} />  
       )}
-      </div>
+      </EffectsView>
     </div>  
   )
 })

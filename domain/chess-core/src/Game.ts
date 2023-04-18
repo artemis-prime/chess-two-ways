@@ -379,8 +379,8 @@ class GameImpl implements Game {
       from: copyPosition(move.from), 
       to: copyPosition(move.to),
       action,
-      promotedTo: action.includes('promote') ? (promoteTo ? promoteTo : 'queen') : undefined,
-      captured: (action === 'capture' || action === 'capture-promote') 
+      promotedTo: action.includes('romote') ? (promoteTo ? promoteTo : 'queen') : undefined,
+      captured: (action === 'capture' || action === 'capturePromote') 
         ? 
         {...this._board.pieceAt(move.to)!} 
         : 

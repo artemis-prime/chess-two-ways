@@ -1,6 +1,6 @@
   // @ts-ignore
 import React from 'react'
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style/stitches.config'
 
 import { useGame } from '~/board/GameProvider'
   

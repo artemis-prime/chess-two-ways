@@ -60,10 +60,11 @@ const Dash: React.FC<{
           <UndoRedoWidget />
         </View>
         <InCheckIndicator />
+        {/*}
         <GhostButton 
           onClick={restoreGame}
           style={{ alignSelf: 'flex-end' }}
-        >Restore</GhostButton>
+      >Restore</GhostButton> */}
       </View>
     </StyledBGImage>
   )

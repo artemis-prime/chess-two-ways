@@ -23,12 +23,6 @@ import {
 import { useGame } from './GameProvider'
 
 export interface UIState {
-  kingInCheck: Position | null
-  inCheckFrom: Position[]
-  action: Action | null
-  note: any | null
-  fastTick: boolean
-  slowTick: boolean
   messages: ConsoleMessage[],
   whiteOnBottom: boolean,
   setWhiteOnBottom: (b: boolean) => void
@@ -54,16 +48,6 @@ const isTransient = (m: ConsoleMessage) => (
 ) 
 
 const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }) => {
-
-  const fastIntervalRef = useRef<any>(undefined)
-  const slowIntervalRef = useRef<any>(undefined)
-
-  const [fastTick, setFastTick] = useState<boolean>(false)
-  const [slowTick, setSlowTick] = useState<boolean>(false)
-  const [action, _setAction] = useState<Action | null>(null)
-  const [note, setNote] = useState<any | null>(null)
-  const [inCheckFrom, setInCheckFrom] = useState<Position[]>([])
-  const [kingInCheck, setKingInCheck] = useState<Position | null>(null)
 
     // Using regular React state create odd race conditions.
     // I tried to make it work, but eventually just brought in the big guns!
@@ -131,26 +115,14 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
     })
   }
 
-    // NOT messages
-  const _clearLocalState = () => {
-    setKingInCheck(null)
-    setInCheckFrom([])
-    clearActionResolutionFeedback()
-  }
 
   const gameStatusChanged = (s: GameStatus): void => {
 
-    if (s.state === 'new') {
-      _clearLocalState()
+    if (s.state === 'new' || s.state === 'restored') {
       messages.length = 0
-    }
-    else if (s.state === 'restored') {
-      messages.length = 0
-      _clearLocalState()
     }
     else if (s.state === 'checkmate' || s.state === 'stalemate' ) {
       _pushMessage({message: '', type: 'transient-warning'}) 
-      _clearLocalState()
     }
   }
 
@@ -158,19 +130,7 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
     _pushMessage({message: m, type: (type ? type : '')})
   } 
 
-  const clearActionResolutionFeedback = (): void => { 
-    _setAction(null)
-    setNote(null)
-  }
-
-  const setActionResolutionFeedback = (a: Action, _note?: any): void => {
-    _setAction(a)
-    setNote(_note) 
-  }
-
   const inCheck = (side: Side, kingPosition: Position, positionsInCheckFrom: Position[]): void => {
-    setKingInCheck(kingPosition)
-    setInCheckFrom(positionsInCheckFrom)
     let squareString = ''
     positionsInCheckFrom.forEach((s, i) => { 
       if (i > 0) { squareString += ', ' }
@@ -180,35 +140,16 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
   }
 
   const notInCheck = (side: Side): void => {
-    setKingInCheck(null)
-    setInCheckFrom([])
     _pushMessage({message: '', type: 'not-in-check'})
   }
 
-  const actionResolved = (m: Move, action: Action | null): void => {
-    if (!action) {
-      clearActionResolutionFeedback()  
-    }
-    else {
-      const rooksToSpread: any = {}
-      if (action === 'castle') {
-        rooksToSpread.rooks = (m.to.file === 'g') 
-          ? 
-          {from: {file: 'h', rank: m.from.rank}, to: {file: 'f', rank: m.from.rank}} 
-          : 
-          {from: {file: 'a', rank: m.from.rank}, to: {file: 'd', rank: m.from.rank}}
-      }
-      setActionResolutionFeedback(action, {...m, ...rooksToSpread})  
-    }
-  }
+  const actionResolved = (m: Move, action: Action | null): void => { }
 
   const actionTaken = (r: ActionRecord): void => {
-    clearActionResolutionFeedback()
     _pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
   }
 
   const actionsRestored = (recs: readonly ActionRecord[]): void => {
-    clearActionResolutionFeedback()
     recs.forEach((r) => {
       _pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
     })
@@ -234,59 +175,9 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
       gameStatusChanged
     }, 'artemis-prime-chess-web-ui')
   })
-
-  useEffect(() => {
-
-    const clearFast = () => {
-      if (fastIntervalRef.current) {
-        clearInterval(fastIntervalRef.current)
-        fastIntervalRef.current = null 
-        setFastTick(false)
-      }
-    }
-    const clearSlow = () => {
-      if (slowIntervalRef.current) {
-        clearInterval(slowIntervalRef.current)
-        slowIntervalRef.current = null 
-        setSlowTick(false)
-      }
-    }
-    const clearBoth = () => {
-      clearFast()
-      clearSlow()
-    }
-
-    if (action && !fastIntervalRef.current) {
-      setFastTick(true)
-      fastIntervalRef.current = setInterval(() => {
-        setFastTick((p) => (!p))
-      }, 300)
-    }
-    else if (!action && fastIntervalRef.current) {
-      clearFast()
-    }
-    if (kingInCheck && !slowIntervalRef.current) {
-      setSlowTick(true)
-      slowIntervalRef.current = setInterval(() => {
-        setSlowTick((p) => (!p))
-      }, 500)
-    }
-    else if (!kingInCheck && slowIntervalRef.current) {
-      clearSlow()
-    }
-    
-    return clearBoth
-  }, [action, kingInCheck])
-
   
   return (
     <UIStateContext.Provider value={{
-      action,
-      kingInCheck,
-      inCheckFrom,
-      note,
-      fastTick,
-      slowTick,
       messages,
       whiteOnBottom,
       setWhiteOnBottom,

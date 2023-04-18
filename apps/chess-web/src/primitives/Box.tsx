@@ -1,3 +1,3 @@
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style/stitches.config'
 
 export default styled('div', {})

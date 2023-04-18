@@ -12,12 +12,11 @@ import { styled } from '~/conf/stitches.config'
 import { 
   type Piece as DomainPiece,
   type Color,
+  type PositionStatus,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
-import { DnDRole } from './Square' 
 import { usePulses } from './PulseProvider'
-
 
 interface ShadowDesc {
   variant: 
@@ -163,7 +162,7 @@ const PieceShadow: React.FC<{
 
 const Piece: React.FC<{  
   piece: DomainPiece | null
-  status: DnDRole,
+  status: PositionStatus,
   size: number // safe
   style?: StyleProp<ViewStyle>
 }> = observer(({
@@ -193,14 +192,14 @@ const Piece: React.FC<{
 
   if (piece) {
     const getTextPieceProps = (): TextPieceDesc => {
-      if (status === 'king-in-check' && pulses.slow || status === 'in-check-from' && !pulses.slow) {
+      if (status === 'kingInCheck' && pulses.slow || status === 'inCheckFrom' && !pulses.slow) {
         return { ...bigger(), shadows: IN_CHECK_SHADOWS }
       } 
-        // in 'capture-promote' case, the square will pulse w a yellow border as well.
+        // in 'capturePromote' case, the square will pulse w a yellow border as well.
       else if (status.includes('capture') && pulses.fast) {
         return { ...bigger(), shadows: CAPTURE_SHADOWS }
       } 
-      else if (status === 'castle-rook-from' && pulses.slow) {
+      else if (status === 'castleRookFrom' && pulses.slow) {
           // pulse larger
         return {
           ...bigger(),

@@ -317,7 +317,7 @@ class BoardImpl implements BoardInternal {
       if (r.action.includes('capture')) {
         this._squares[r.to.rank][r.to.file].piece = r.captured!
       }
-      if (r.action.includes('promote')) {
+      if (r.action.includes('romote')) {
           // the _move above just returned the piece to 'from'
         const self = this._squares[r.from.rank][r.from.file].piece!
         this._squares[r.from.rank][r.from.file].piece = {color: self.color, type: 'pawn'}
@@ -326,7 +326,7 @@ class BoardImpl implements BoardInternal {
     else {
         // Note that _move also takes care of capture ;)
       this._move(r.from, r.to, (mode !== 'do'))
-      if (r.action.includes('promote')) {
+      if (r.action.includes('romote')) {
         const self = this._squares[r.to.rank][r.to.file].piece!
         this._squares[r.to.rank][r.to.file].piece = {color: self.color, type: r.promotedTo!}
       }

@@ -12,22 +12,13 @@ import {
   type Action,
   positionsEqual,
   FILES, 
+  type PositionStatus
 } from '@artemis-prime/chess-core'
 
 import { styled } from '~/conf/stitches.config'
-import PieceComponent from './Piece'
+import type * as Stitches from 'stitches-native'
 
-  // Should be enough for the UI to give feedback based on these values.
-  // (TODO: Consider making this an array of possibly coincident statuses)
-export type DnDRole = 
-  Action |                // current square resolves to the Action
-  'origin' |              // origin of the drag
-  'invalid' |             // over this square, but no valid move
-  'castle-rook-from' |    // action is 'castle' and this square is the rook's origin in the castle
-  'castle-rook-to' |      // action is 'castle' and this square is the rook's destination in the castle
-  'none' |                // not under in the current drag or involved
-  'king-in-check' | 
-  'in-check-from'
+import PieceComponent from './Piece'
 
 import { useChessDnD } from './ChessDnD'
 import { useGame } from './GameProvider'
@@ -63,56 +54,36 @@ const StyledFeedbackView = styled(View, {
   alignItems: 'center', 
 
   variants: {
-    origin: {
-      true: {
+    effect: {
+      origin: {
         opacity: 0.75
       },
-    },
-    move: {
-      true: {
+      move: {
         borderColor: 'green',
         ...BORDER_COMMON
-      }
-    },
-    capture: {
-      true: {
-        // see shadows in Piece.tsx
-      }
-    },
-    promote: {
-      true: {
+      },
+      promote: {
         borderColor: 'yellow',
         ...BORDER_COMMON
-      }
-    },
-    rookTo: {
-      true: {
+      },
+      castleRookTo: {
         borderColor: 'darkgreen',
         ...BORDER_COMMON
-      }
-    },
-    rookFrom: {
-      true: {
+      },
+      castleRookFrom: {
         borderColor: 'darkgreen',
         ...BORDER_COMMON
-      }
-    },
-    kingInCheck: {
-      true: {
-        // see shadows in Piece.tsx
-      }
-    },
-    inCheckFrom: {
-      true: {
-        // see shadows in Piece.tsx
-      }
-    },
+      },
+    }
   }
 })
+type EffectsViewVariants = Stitches.VariantProps<typeof StyledFeedbackView>
+  // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
+type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
 const FeedbackView: React.FC<{
-  status: DnDRole,
+  status: PositionStatus,
   size: number 
 } & PropsWithChildren> = observer(({
   status,
@@ -122,44 +93,54 @@ const FeedbackView: React.FC<{
 
   const pulses = usePulses()
 
-  const toStatusSpread: any = {}
-  const styleToSpread: any = {}
-  if (status === 'origin') {
-    toStatusSpread.origin = true
-  }
-  else if (status === 'move' || status === 'castle') {
-    toStatusSpread.move = true
-    styleToSpread.borderRadius = size / 2
-  }
-  else if (status.includes('promote')) {
-    if (pulses.fast) {
-      toStatusSpread.promote = true
+  const getEffectFromStatus = (s: PositionStatus): { effect: EffectVariant, style: any}  => {
+
+    const style: any = {}
+    let effect: EffectVariant = undefined
+
+    if (status === 'move' || status === 'castle') {
+      effect = 'move'
+      style.borderRadius = size / 2
+    }
+    
+    if (status.includes('romote')) {
+      if (pulses.fast) {
+        effect = 'promote'
+      }
+    }
+    else if (status === 'castleRookFrom') {
+      if (pulses.slow) {
+        effect = 'castleRookFrom'
+      }
+    }
+    else if (status === 'castleRookTo') {
+        // alternate with from
+      if (!pulses.slow) {
+        effect = 'castleRookTo'
+      }
+    }
+    else if ([
+      'invalid',
+      'none',
+      'kingInCheck',
+      'inCheckFrom',
+      'capture'
+    ].includes(s as string)) {
+      return {
+        effect: undefined,
+        style: {}
+      }
+    }
+    return {
+      effect,
+      style
     }
   }
-  /* see shadows in Piece.tsx
-  else if (status === 'capture') {
-  }
-  */
-  else if (status === 'castle-rook-from') {
-    if (pulses.slow) {
-      toStatusSpread.rookFrom = true
-    }
-  }
-  else if (status === 'castle-rook-to') {
-      // alternate with from
-    if (!pulses.slow) {
-      toStatusSpread.rookTo = true
-    }
-  }
-  /* see shadows in Piece.tsx
-  else if (status === 'king-in-check') {
-  }
-  /* see shadows in Piece.tsx
-  else if (status === 'in-check-from') {
-  }
-  */
+
+  const { effect, style } = getEffectFromStatus(status)
+
   return (
-    <StyledFeedbackView {...toStatusSpread} style={styleToSpread} >
+    <StyledFeedbackView effect={effect} css={style} >
       {children}
     </StyledFeedbackView>
   )
@@ -185,7 +166,7 @@ const Square: React.FC<{
   const dnd = useChessDnD()
   const game = useGame()
 
-  const getSquaresDnDStatus = (p: Position): DnDRole => {
+  const getPositionStatus = (p: Position): PositionStatus => {
 
     if (dnd.payload && positionsEqual(dnd.payload.from, p)) {
       return 'origin'
@@ -202,18 +183,18 @@ const Square: React.FC<{
       else if (dnd.squareOver && dnd.resolvedAction && dnd.resolvedAction === 'castle') {
         if (dnd.squareOver.file === 'g') {
           if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'h'})) {
-            return 'castle-rook-from'
+            return 'castleRookFrom'
           }
           else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'f'})) {
-            return 'castle-rook-to'
+            return 'castleRookTo'
           }
         }
         else if (dnd.squareOver.file === 'c') {
           if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'a'})) {
-            return 'castle-rook-from'
+            return 'castleRookFrom'
           }
           else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'd'})) {
-            return 'castle-rook-to'
+            return 'castleRookTo'
           }
         }
       }
@@ -222,17 +203,17 @@ const Square: React.FC<{
       const inCheckResult = game.inCheck
       if (inCheckResult) {
         if (piece && piece.type === 'king' && piece.color === inCheckResult.side) {
-          return 'king-in-check'
+          return 'kingInCheck'
         }
         else if (inCheckResult.from.find((from) => (positionsEqual(pos, from)))) {
-          return 'in-check-from'
+          return 'inCheckFrom'
         }
       }
     }
     return 'none'
   }
 
-  const status = getSquaresDnDStatus(pos)
+  const status = getPositionStatus(pos)
 
     // Only do inner layout stuff if we have an accurate size available.
     // This avoids potentional jump after initial layout.

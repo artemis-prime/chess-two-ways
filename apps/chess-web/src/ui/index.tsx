@@ -1,10 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import GameProvider from '~/board/GameProvider'
 import UIStateProvider from '~/board/UIState'
+import PulsesProvider from '~/board/PulseProvider'
 
 import UI from './UI'
 
@@ -14,11 +13,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <GameProvider >
+    <PulsesProvider>
+
       <UIStateProvider >
-        <DndProvider backend={HTML5Backend}>
-          <UI />
-        </DndProvider>
+        <UI />
       </UIStateProvider>
+      </PulsesProvider>
     </GameProvider>
   </React.StrictMode>
 )

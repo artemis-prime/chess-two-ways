@@ -14,7 +14,7 @@ import { positionToString, positionFromString } from './Position'
   // Must contain enough info to undo and redo the state change
 interface ActionRecord extends Move {
   action: Action
-    // Both are needed to 'undo' or 'redo' a 'capture-promote' Action.
+    // Both are needed to 'undo' or 'redo' a 'capturePromote' Action.
     // Required if action is 'capture'. Needed for 'undo' 
   captured?: Piece
     // Required if action is 'promote'. Needed for 'redo' 
@@ -56,7 +56,7 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
         :
         `${positionToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo!].short}`
     break
-    case 'capture-promote':
+    case 'capturePromote':
       str += verbose ?
         `captures ${r.captured!.type} and is promoted to a ${r.promotedTo} at (${positionToString(r.to)})`
         :
@@ -100,7 +100,7 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
 
   let action
   if (isCapture) {
-    action = isPromote ? 'capture-promote' : 'capture' 
+    action = isPromote ? 'capturePromote' : 'capture' 
   }
   else {
     action = isPromote ? 'promote' : 'move'

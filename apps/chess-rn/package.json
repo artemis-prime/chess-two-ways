@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./node_modules",
-    "android": "react-native run-android --mode release",
+    "deploy": "react-native run-android --mode release",
     "start": "npx tsc && react-native start --verbose",
     "tsc": "npx tsc"
   },

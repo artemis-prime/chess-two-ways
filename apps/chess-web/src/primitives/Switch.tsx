@@ -1,6 +1,6 @@
   // @ts-ignore
 import React, { PropsWithChildren } from 'react'
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style/stitches.config'
 
 import SwitchFromLib from 'react-switch'
 

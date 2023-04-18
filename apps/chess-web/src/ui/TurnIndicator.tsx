@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 
 import { useGame } from '~/board/GameProvider'
 
-import '../styles/turnIndicator.scss'
+import '~/style/turnIndicator.scss'
 
 const TurnIndicator: React.FC<{}> = observer(() => {
 

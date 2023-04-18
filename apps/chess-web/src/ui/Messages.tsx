@@ -9,7 +9,7 @@ import { PIECETYPE_TO_UNICODE }  from '@artemis-prime/chess-core'
 import type { ConsoleMessage } from '~/board/UIState'
 import { useUIState } from '~/board/UIState'
 
-import '../styles/messages.scss'
+import '~/style/messages.scss'
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
 

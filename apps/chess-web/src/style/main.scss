@@ -101,19 +101,6 @@ body {
 
 }
 
-svg {
-  .black-piece & {
-    fill: c.$color-piece-black;
-    filter: drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3));
-  }
-  .white-piece & {
-    fill: c.$color-piece-white;
-    filter: drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45));
-  }
-  display: block;
-  //border: 0.5px darkgreen solid;
-}
-
 main {
   width: 100%;
   //border: 1px solid red;

@@ -12,9 +12,8 @@ import {
 
 import Dash from './Dash'
 
-import '~/styles/fonts.scss'
-import '~/styles/main.scss'
-import '~/styles/actionFeedback.scss'
+import '~/style/fonts.scss'
+import '~/style/main.scss'
 
 const Side: React.FC<PropsWithChildren & { className?: string }> = ({children, className}) => (
   <Flex justify='center' align='center' className={className} >

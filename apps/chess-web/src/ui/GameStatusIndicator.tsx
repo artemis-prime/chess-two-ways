@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 
 import { useGame } from '~/board/GameProvider'
 
-import '../styles/gameStatusIndicator.scss'
+import '~/style/gameStatusIndicator.scss'
 
 const GameStatusIndicator: React.FC<{}> = observer(() => {
 
