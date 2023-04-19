@@ -2,10 +2,11 @@ import React from 'react'
 import { 
   View,
   StyleProp,
-  ViewStyle
+  ViewStyle,
+  Text
 } from 'react-native'
 
-import { styled } from '~/conf/stitches.config'
+import { styled, useTheme } from '~/conf/stitches.config'
 import ui from '~/conf/conf'
 
 import BGImage from '~/primatives/BGImage'
@@ -22,7 +23,7 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  minHeight: 120,
+  minHeight: 150,
   borderWidth: 2,
   borderRadius: 8,
   //borderTopRightRadius: 17,
@@ -36,16 +37,38 @@ const Dash: React.FC<{
 }) => {
   
   const game = useGame()
+  const theme = useTheme()
 
   const restoreGame = () => {
-    game.restoreFromGameData(toRestore)
+    //game.restoreFromGameData(toRestore)
   }
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
+
+      <View style={{
+        flexDirection: 'row', 
+        justifyContent: 'flex-start', 
+        alignItems: 'center',
+
+        height: 40, 
+        width: '100%', 
+        backgroundColor: theme.colors.headerBG,
+        paddingLeft: 12,
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'gray',
+    }} >
+        <Text style={{
+          color: 'white',
+          fontSize: 22,
+          textAlignVertical: 'center',
+          fontWeight: "900",
+        }}>{'\u2630'}</Text>
+
+      </View>
       <View style={{ 
         padding: ui.layout.padding, 
-        paddingTop: ui.layout.padding - 5,
+        //paddingTop: ui.layout.padding - 5,
         flexDirection: 'column', 
         justifyContent: 'flex-start', 
         alignItems: 'flex-start'

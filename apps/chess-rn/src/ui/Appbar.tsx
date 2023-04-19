@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { 
+  Animated,
   View,
   Text,
+  StyleProp,
+  ViewStyle,
+  ColorValue
 } from 'react-native'
 
 import { styled } from '~/conf/stitches.config'
@@ -9,25 +13,35 @@ import ui from '~/conf/conf'
 
 const AppbarView = styled(View, {
 
+  display: 'flex',
   backgroundColor: '$headerBG',
-  height: 56,
-  width: '100%',
-  borderWidth: 0.5,
-  borderRadius: 4,
   paddingLeft: ui.layout.padding,
-  borderColor: '$gray11',
   flexDirection: 'row',
   justifyContent: 'flex-start',
   alignItems: 'center',
+  position: 'absolute',
+  transition: 'left ease 200ms',
+  left: 0,
+  top: 0,
+  right: 0,
+  zIndex: 99
 })
 
-const Appbar: React.FC = () => {
+const Appbar: React.FC<{
+  backgroundColor: ColorValue
+  style?: StyleProp<ViewStyle>
+}> = ({
+  backgroundColor,
+  style
+}) => {
+
+  const slideAnimRef = useRef(new Animated.Value(-300))
 
   return (
-    <AppbarView >
+    <AppbarView style={[style, {backgroundColor}]}>
       <Text style={{
         color: 'white',
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: "900"
       }}>{'\u2630'}</Text>
     </AppbarView>

@@ -13,6 +13,7 @@ export default {
   },
   layout: {
     padding: 14,
-    appGutter: 7
+    appGutter: 7,
+    appBarHeight: 48
   }
 }

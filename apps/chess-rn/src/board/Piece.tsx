@@ -64,15 +64,15 @@ interface Offset {
 const IMAGE_OFFSET = {
   left: -1,
   top: -2
-}
+} as Offset
 
   // This offset makes the image look centered based on applied styles
 const IMAGE_OFFSET_LARGER = {
   left: -1,
   top: -6
-}
+} as Offset
 
-const sumOffsets = (o1: Offset, o2: Offset) => ({
+const sumOffsets = (o1: Offset, o2: Offset): Offset => ({
   left: o1.left + o2.left,
   top: o1.top + o2.top
 })
@@ -158,10 +158,12 @@ const PieceShadow: React.FC<{
   ))}
 </>)
 
+    // Size is safe, since if the layout-based size is unavailable,
+    // this component won't be rendered.
 const Piece: React.FC<{  
   piece: DomainPiece | null
   status: PositionStatus,
-  size: number // safe
+  size: number 
   style?: StyleProp<ViewStyle>
 }> = observer(({
   piece,
