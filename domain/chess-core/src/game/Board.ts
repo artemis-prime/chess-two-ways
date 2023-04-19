@@ -27,7 +27,6 @@ import {
   FILES,
 } from '../Position'
 import { type BoardSnapshot, type PieceCode } from '../Snapshot'
-import type Square from './board/Square'
 import {
   hasN,
   hasS,
@@ -42,8 +41,8 @@ import {
 import type IsCaptureFn from './IsCaptureFn'
 
 import Tracking from './board/Tracking'
-import type Squares from './board/Squares'
-import { syncSquares } from './board/Squares'
+import type BoardSquares from './board/BoardSquares'
+import { syncSquares } from './board/BoardSquares'
 import { freshBoard, resetBoard, syncBoardToSnapshot } from './board/boardInitializers'
 
 interface Board {
@@ -91,7 +90,7 @@ class BoardImpl implements BoardInternal {
   private _isCapture: IsCaptureFn
 
   private _tracking: Tracking 
-  private _squares: Squares 
+  private _squares: BoardSquares 
 
   constructor(f: IsCaptureFn, isObservable?: boolean) {
 
@@ -580,7 +579,7 @@ class BoardImpl implements BoardInternal {
           (this.W && (!this.W!.piece || isOpponent(this.W!.piece, sideToCapture, ['rook', 'queen']))) 
       },
         // All other opposing piece will be explicitly checked from their cached positions.
-      getOpposingPawnsOrKing(sideToCapture: Side): Square[] {
+      getOpposingPawnsOrKing(sideToCapture: Side): Position[] {
 
         const possibleSquaresForOppositePawns = (sideToCapture === 'white') ? [this.NE, this.NW] : [this.SE, this.SW] 
         const actualSquaresWithOppositePawns = possibleSquaresForOppositePawns.filter(

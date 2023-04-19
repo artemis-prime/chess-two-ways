@@ -5,7 +5,7 @@ type RankSquares = {
   [key in File]: Square
 }
 
-type Squares = {
+type BoardSquares = {
   [key in Rank]: RankSquares
 } 
 
@@ -17,10 +17,11 @@ const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
     return result as RankSquares
 }
 
-const syncSquares = (target: Squares, source: Squares): void => {
+const syncSquares = (target: BoardSquares, source: BoardSquares): void => {
   for (const key in source) {
     target[key] = deepCopyRankSquares(source[key])
   }
 }
 
-export { type Squares as default, syncSquares}
+
+export { type BoardSquares as default, syncSquares}

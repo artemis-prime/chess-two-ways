@@ -2,10 +2,10 @@ import type { PieceType, PrimaryPieceType } from '../../Piece'
 import { PRIMARY_PIECES, pieceFromString } from '../../Piece'
 import { type File, positionToString, copyPosition, RANKS, FILES } from '../../Position'
 import { type BoardSnapshot } from '../../Snapshot'
-import Square from './Square'
 
+import Square from './Square'
 import type Tracking from './Tracking'
-import type Squares from './Squares'
+import type BoardSquares from './BoardSquares'
 
 
 const PIECES_BY_FILE = {
@@ -41,7 +41,7 @@ const track = (tr: Tracking, pos: Square): void => {
   }
 }
 
-const freshBoard = (tr: Tracking, observePieces? : boolean): Squares => {
+const freshBoard = (tr: Tracking, observePieces? : boolean): BoardSquares => {
 
   const result: any = {}
   for (const rank of RANKS) {
@@ -116,10 +116,10 @@ const freshBoard = (tr: Tracking, observePieces? : boolean): Squares => {
     }
     result[rank] = rankArray
   } 
-  return result as Squares
+  return result as BoardSquares
 }
 
-const resetBoard = (sqs: Squares, tr: Tracking): void => {
+const resetBoard = (sqs: BoardSquares, tr: Tracking): void => {
 
   for (const rank of RANKS) {
     const rankArray = sqs[rank]
@@ -176,7 +176,7 @@ const resetBoard = (sqs: Squares, tr: Tracking): void => {
   // their values are parsed. If they can be parsed, pieces are created.
   // if not, square is empty (no Error's are thrown)
 const syncBoardToSnapshot = (
-  sqs: Squares, 
+  sqs: BoardSquares, 
   encoded: BoardSnapshot, 
   tr: Tracking
 ): void => {
