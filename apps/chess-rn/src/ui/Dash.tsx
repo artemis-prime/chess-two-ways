@@ -22,10 +22,10 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  minHeight: 95,
-  borderWidth: 4,
-  borderTopLeftRadius: 17,
-  borderTopRightRadius: 17,
+  minHeight: 120,
+  borderWidth: 2,
+  borderRadius: 8,
+  //borderTopRightRadius: 17,
   borderColor: '$dashBorder',
 })
 

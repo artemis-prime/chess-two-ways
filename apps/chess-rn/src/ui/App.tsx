@@ -10,6 +10,7 @@ import BGImage from '~/primatives/BGImage'
 import Board from '~/board/ChessBoard'
 import GameProvider from '~/board/GameProvider'
 import Dash from './Dash'
+import Appbar from './Appbar'
 
 import ui from '~/conf/conf'
 import PulsesProvider from '~/board/PulseProvider'
@@ -28,7 +29,7 @@ const App: React.FC = () => (
       height: '100%',
       paddingLeft: ui.layout.appGutter,
       paddingRight: ui.layout.appGutter,
-      paddingTop: 60,
+      paddingTop: StatusBar.currentHeight,
       paddingBottom: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.25)'
     }}>
@@ -37,9 +38,9 @@ const App: React.FC = () => (
         barStyle='dark-content'
         backgroundColor='transparent'
       />
+      <Appbar />
       <Dash />
-
-      <Board />
+      <Board style={{ marginTop: ui.layout.appGutter }}/>
     </SafeAreaView>
   </BGImage>
   </PulsesProvider>

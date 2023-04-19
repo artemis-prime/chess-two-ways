@@ -83,7 +83,6 @@ const PieceText = styled(Text, {
   textAlign: 'center',
   textAlignVertical: 'center',
   width: '100%',
-  height: '100%',
   position: 'relative',
   variants: {
     variant: {
@@ -111,9 +110,8 @@ const ShadowText = styled(Text, {
 
   fontWeight: '600', 
   textAlign: 'center',
-  textAlignVertical: 'center',
+  textAlignVertical: 'top',
   width: '100%',
-  height: '100%',
   position: 'absolute',
   variants: {
     variant: {
@@ -155,8 +153,8 @@ const PieceShadow: React.FC<{
   fontSize,
   shadows
 }) => (<>
-  {shadows.map((d) => (
-    <ShadowText style={{fontSize, color: d.color}} variant={d.variant}>{PIECETYPE_TO_UNICODE[piece.type]}</ShadowText> 
+  {shadows.map((d, i) => (
+    <ShadowText style={{fontSize, color: d.color}} variant={d.variant} key={i}>{PIECETYPE_TO_UNICODE[piece.type]}</ShadowText> 
   ))}
 </>)
 
@@ -182,18 +180,21 @@ const Piece: React.FC<{
     pieceVariant: piece!.color
   })
 
-  const bigger = (): {
+  const bigger = (fs?: number): {
     fontSize: number
     pieceVariant: Color | 'whiteLarger' | 'blackLarger'
   } => ({
-    fontSize: size *.9,
+    fontSize: size * (fs ? fs : .9),
     pieceVariant: `${piece!.color}Larger` as Color | 'whiteLarger' | 'blackLarger'
   })
 
   if (piece) {
     const getTextPieceProps = (): TextPieceDesc => {
-      if (status === 'kingInCheck' && pulses.slow || status === 'inCheckFrom' && !pulses.slow) {
+      if (status === 'kingInCheck' && pulses.slow ) {
         return { ...bigger(), shadows: IN_CHECK_SHADOWS }
+      } 
+      if (status === 'inCheckFrom' && !pulses.slow) {
+        return { ...bigger(.95), shadows: IN_CHECK_SHADOWS }
       } 
         // in 'capturePromote' case, the square will pulse w a yellow border as well.
       else if (status.includes('capture') && pulses.fast) {
@@ -218,10 +219,12 @@ const Piece: React.FC<{
       shadows
     } = getTextPieceProps()
 
+    const height = fontSize * 1.1 // ensure no clipping
+
     return (
-      <View style={[style, {position: 'relative', width: '100%', height: '100%'}]} >
-        <PieceShadow {...{piece, fontSize, shadows}} />
-        <PieceText style={{fontSize}} variant={pieceVariant}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+      <View style={[style, { position: 'relative', width: '100%', height: '100%' }]} >
+        <PieceShadow {...{piece, fontSize, shadows, height}} /> 
+        <PieceText style={{ fontSize, height }} variant={pieceVariant}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
       </View>
     ) 
   }

@@ -20,6 +20,11 @@ const BoardInner = styled(View, {
   aspectRatio: 1,
   width: '100%',
   backgroundColor: 'transparent', // needed for gestures to work on android
+  borderWidth: 2,
+  borderRadius: 3,
+  //borderColor: 'darkbrown',
+  overflow: 'hidden', 
+  borderColor: '$pieceBlack',
 })
 
 const SquaresOuter = styled(View, {
@@ -29,9 +34,7 @@ const SquaresOuter = styled(View, {
   flexDirection: 'row',
   justifyContent: 'flex-start',
   flexWrap: 'wrap',
-  borderWidth: 1,
   position: 'relative',
-  borderColor: '$boardSquareBrown', 
   backgroundColor: 'transparent', // needed for gestures to work on android
 })
 
@@ -60,7 +63,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = observer(({
   }
 
   return (
-    <BoardInner style={style}  collapsable={false}>
+    <BoardInner style={style} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(whiteOnBottom).map((sq: {pos: Position, piece: Piece | null}) => (
