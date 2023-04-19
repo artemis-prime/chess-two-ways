@@ -1,9 +1,9 @@
-import type Position from './Position'
 import type Action from './Action'
-import type { Side }  from './Piece' 
-import type Move from './Move' 
 import type ActionRecord from './ActionRecord'
+import type Check from './Check'
 import type GameStatus from './GameStatus'
+import type Move from './Move' 
+import type { Side }  from './Piece' 
 
 interface ChessListener {
 
@@ -18,7 +18,7 @@ interface ChessListener {
     // eg, "You can't castle because your king has move"
   message(s: string, type?: string): void 
 
-  inCheck(side: Side, kingSquare: Position, sideIsInCheckFrom: Position[]): void
+  inCheck(c: Check): void
   notInCheck(side: Side): void
 
   gameStatusChanged(s: GameStatus): void

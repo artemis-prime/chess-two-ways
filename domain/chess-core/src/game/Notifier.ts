@@ -5,6 +5,7 @@ import type { Side }  from '../Piece'
 import type Move from '../Move' 
 import type ActionRecord from '../ActionRecord'
 import type GameStatus from '../GameStatus'
+import type Check from '../Check'
 
 class Notifier implements ChessListener {
 
@@ -52,9 +53,9 @@ class Notifier implements ChessListener {
     })
   }
 
-  inCheck(side: Side, kingSquare: Position, sideIsInCheckFrom: Position[]): void {
+  inCheck(c: Check): void {
     this._listeners.forEach((l) => {
-      l.inCheck(side, kingSquare, sideIsInCheckFrom)
+      l.inCheck(c)
     })
   }
  

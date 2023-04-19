@@ -1,16 +1,16 @@
-import type { 
-  Action, 
-  Board, 
-  Piece, 
-  Position, 
-  Side, 
-  Rank,
-  Move, 
+import { 
+  type Action, 
+  type Board, 
+  type Piece, 
+  type Position, 
+  type Side, 
+  type Rank,
+  type Move, 
+  type Resolution,
 } from '..'
 
-import { type ResolvableMove } from '../game/ActionResolver' 
-import { FILES  } from '../Position'
 import { isOpponent } from '../Piece'
+import { FILES } from '../Position'
 
 const pawnOnHomeRow = (pos: Position, color: Side): boolean => (
   pos.rank === 2 && color === 'white'
@@ -105,9 +105,9 @@ const resolvableMoves = (
   piece: Piece,
   from: Position,
   ignoreCastling?: boolean // only relevant for king
-): ResolvableMove[] => {
+): Resolution[] => {
   
-  const resolvable = [] as ResolvableMove[]
+  const resolvable = [] as Resolution[]
 
   const onFileAtEdge = (direction: 'E' | 'W'): boolean => (
     from.file === (direction === 'E' ? 'a' : 'h')

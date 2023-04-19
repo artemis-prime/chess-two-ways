@@ -1,4 +1,4 @@
-import type { GameData } from '@artemis-prime/chess-core'
+import type { GameSnapshot } from '@artemis-prime/chess-core'
 
 export default {
   artemisPrimeChessGame: true,
@@ -45,4 +45,4 @@ export default {
     "bPa7a6"
   ],
   currentTurn: "w"
-} as GameData
+} as GameSnapshot

@@ -40,7 +40,7 @@ const Dash: React.FC<{
   const theme = useTheme()
 
   const restoreGame = () => {
-    //game.restoreFromGameData(toRestore)
+    //game.restoreFromSnapshot(toRestore)
   }
 
   return (

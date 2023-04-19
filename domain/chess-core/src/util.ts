@@ -1,10 +1,13 @@
+import type Action from './Action'
 import type Position from './Position'
-import { type Rank, type File, FILES } from './Position'
-import { isOpponent  } from './Piece'
+import { type Rank, type File, FILES, positionsEqual } from './Position'
+import { isOpponent, type Side  } from './Piece'
 import type Board from './Board'
 import type Piece from './Piece'
-import { type ResolvableMove } from './game/ActionResolver'
 import PIECETYPE_TO_UNICODE from './pieceTypeToUnicode'
+import type PositionStatus from './PositionStatus'
+import type Resolution from './Resolution'
+import type Check from './Check'
 
 const hasN = (pos: Position, distance: 1 | 2 = 1) => (pos.rank <= ((distance === 1) ? 7 : 6))
 const hasS = (pos: Position, distance: 1 | 2 = 1) => (pos.rank >= ((distance === 1) ? 2 : 3))
@@ -88,9 +91,9 @@ const resolvableMovesAndCapture = (
   piece: Piece,
   from: Position,
   getNext: (pos: Position) => Position | null
-): ResolvableMove[] => {
+): Resolution[] => {
 
-  const resolvable = [] as ResolvableMove[]
+  const resolvable = [] as Resolution[]
   let pos = getNext(from)
   while (pos) {
     const pieceEncountered = board.pieceAt(pos)
@@ -122,6 +125,54 @@ const resolvableMovesAndCapture = (
   return resolvable
 } 
 
+const getPositionStatus = (
+  p: Position,
+  res: Resolution | null,
+  check: Check | null
+): PositionStatus => {
+
+  if (res && positionsEqual(res.move.from, p)) {
+    return 'origin'
+  }
+  if (res) {
+    if (positionsEqual(res.move.to, p)) {
+      if (res.action) {
+        return res.action
+      }
+      else {
+        return 'invalid'
+      }
+    }
+    else if (res.action === 'castle') {
+      const { move: { from, to }} = res
+      if (to.file === 'g') {
+        if (positionsEqual(p, {rank: from.rank, file: 'h'})) {
+          return 'castleRookFrom'
+        }
+        else if (positionsEqual(p, {rank: from.rank, file: 'f'})) {
+          return 'castleRookTo'
+        }
+      }
+      else if (to.file === 'c') {
+        if (positionsEqual(p, {rank: from.rank, file: 'a'})) {
+          return 'castleRookFrom'
+        }
+        else if (positionsEqual(p, {rank: from.rank, file: 'd'})) {
+          return 'castleRookTo'
+        }
+      }
+    }
+  }
+  else if (check) {
+    if (positionsEqual(check.kingPosition, p)) {
+      return 'kingInCheck'
+    }
+    else if (check.from.find((from) => (positionsEqual(p, from)))) {
+      return 'inCheckFrom'
+    }
+  }
+  return 'none'
+}
 
 export {
   hasN,
@@ -141,5 +192,6 @@ export {
   nextSE,
   nextSW,
   resolvableMovesAndCapture,
+  getPositionStatus,
   PIECETYPE_TO_UNICODE
 }

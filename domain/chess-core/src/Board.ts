@@ -30,12 +30,12 @@ import type Square from './Square'
 import type ActionRecord from './ActionRecord'
 import type GameStatus from './GameStatus'
 import type IsCaptureFn from './game/IsCaptureFn'
-import { type BoardData, type PieceCode } from './game/GameData'
+import { type BoardSnapshot, type PieceCode } from './game/Snapshot'
 
 import Tracking from './board/Tracking'
 import type Squares from './board/Squares'
 import { syncSquares } from './board/Squares'
-import { freshBoard, resetBoard, syncBoardToEncoded } from './board/boardInitializers'
+import { freshBoard, resetBoard, syncBoardToSnapshot } from './board/boardInitializers'
 
 import {
   hasN,
@@ -47,6 +47,7 @@ import {
   getEFile,
   getWFile,
 } from './util'
+import type Check from './Check'
 
 interface Board {
 
@@ -67,18 +68,24 @@ interface Board {
 interface BoardInternal extends Board {
 
   trackInCheck(side: Side): {inCheckFrom: Position[], wasInCheck: boolean}
-  syncTo(other: BoardInternal): void 
   applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
-  kingsPosition(side: Side): Position
-  reset(isObservable? : boolean): void
-  restoreFromBoardData(board: BoardData): void
-  persistAsBoardData(): BoardData,
+
+  takeSnapshot(): BoardSnapshot,
+  restoreFromSnapshot(board: BoardSnapshot): void
+
+  syncTo(other: BoardInternal): void 
+
   primaryPositions(side: Side, type: PrimaryPieceType): Position[]
   pawnPositions(side: Side): Position[] 
-  get inCheck(): null | {side: Side, from: Position[]} // mobx computed
+
+  get check(): Check | null // observable
   get gameStatus(): GameStatus // mobx computed
   setGameStatus(s: GameStatus): void
-    // Utility method for easy rendering (mobx 'computed')
+
+  kingPosition(side: Side): Position
+  reset(isObservable? : boolean): void
+
+  // Utility method for easy rendering (mobx 'computed')
   get boardAsArray():  {pos: Position, piece: Piece | null}[]
 }
 
@@ -100,7 +107,7 @@ class BoardImpl implements BoardInternal {
         setGameStatus: action,
         trackInCheck: action,
         gameStatus: computed,
-        inCheck: computed,
+        check: computed,
         boardAsArray: computed,
       })
     }
@@ -167,23 +174,25 @@ class BoardImpl implements BoardInternal {
     }
   }
 
-  get inCheck(): null | {side: Side, from: Position[]}  {
+  get check(): Check | null  {
     if (this._tracking.white.inCheckFrom.length > 0) {
       return {
         side: 'white',
-        from: [...this._tracking.white.inCheckFrom]
+        from: [...this._tracking.white.inCheckFrom],
+        kingPosition: this._tracking.white.king
       }
     } 
     else if (this._tracking.black.inCheckFrom.length > 0) {
       return {
         side: 'black',
-        from: [...this._tracking.black.inCheckFrom]
+        from: [...this._tracking.black.inCheckFrom],
+        kingPosition: this._tracking.black.king
       }
     }
     return null  
   }
 
-  kingsPosition(side: Side): Position {
+  kingPosition(side: Side): Position {
     return this._tracking[side].king
   }
 
@@ -340,13 +349,13 @@ class BoardImpl implements BoardInternal {
     resetBoard(this._squares, this._tracking)
   }
 
-  restoreFromBoardData(data: BoardData): void {
+  restoreFromSnapshot(data: BoardSnapshot): void {
     this._tracking.reset()
-    syncBoardToEncoded(this._squares, data, this._tracking)
+    syncBoardToSnapshot(this._squares, data, this._tracking)
   }
 
-  persistAsBoardData(): BoardData {
-    const result: BoardData = {}
+  takeSnapshot(): BoardSnapshot {
+    const result: BoardSnapshot = {}
     for (const rank of RANKS) {
       for (const file of FILES) {
         if (this._squares[rank][file].piece) {

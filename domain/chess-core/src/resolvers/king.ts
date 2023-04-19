@@ -4,13 +4,12 @@ import type {
   Side,
   Position,
   Piece,
-  Move
+  Move,
+  Resolution
 } from '..'
 
 import { FILES, positionsEqual } from '../Position'
-import { type ResolvableMove } from '../game/ActionResolver'
 import { isOpponent } from '../Piece'
-
 
 import {
   hasN,
@@ -167,7 +166,7 @@ const resolvableMoves = (
   piece: Piece,
   from: Position,
   ignoreCastling?: boolean // only relevant for king
-): ResolvableMove[] => {
+): Resolution[] => {
 
   const positions = [] as Position[]
 
@@ -222,7 +221,7 @@ const resolvableMoves = (
     })
   }
 
-  const resolvable = [] as ResolvableMove[]
+  const resolvable = [] as Resolution[]
   positions.forEach((pos) => {
     const toPiece = board.pieceAt(pos)
     if (!toPiece) {

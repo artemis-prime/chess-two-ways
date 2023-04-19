@@ -11,7 +11,7 @@ const PersistToFileButton: React.FC<React.PropsWithChildren> = ({children}) => {
     
   const writeFile = () => {
 
-    const gd = game.persistAsGameData()
+    const gd = game.takeSnapshot()
     const gdjson = JSON.stringify(gd)
     const bytes = new TextEncoder().encode(gdjson)
     const blob = new Blob([bytes], {type: "application/json;charset=utf-8"})

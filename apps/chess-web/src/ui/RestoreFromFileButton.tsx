@@ -28,7 +28,7 @@ const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) =>
       if (text && typeof text === 'string') {
         const g: any = JSON.parse(text as string)
         if (g.artemisPrimeChessGame) {
-          game.restoreFromGameData(g)
+          game.restoreFromSnapshot(g)
         }
         else {
           console.warn('Chess: unrecognized file format')

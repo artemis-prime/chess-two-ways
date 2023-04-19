@@ -6,22 +6,22 @@ type PieceCode = `${ColorCode}${PieceTypeCode}`
 
   // Only squares with pieces get a key.
   // (if absent, the corresponding square is empty)
-type BoardData = {
+type BoardSnapshot = {
   [key in PositionCode]?: PieceCode  
 }
 
-interface GameData {
+interface GameSnapshot {
 
   artemisPrimeChessGame: any
-  board: BoardData
+  board: BoardSnapshot
   actions: string[]
   //stateIndex: number
   currentTurn: ColorCode
 }
 
 export {
-  type GameData as default,
-  type BoardData,
+  type GameSnapshot,
+  type BoardSnapshot,
   type PositionCode,
   type PieceCode
 } 

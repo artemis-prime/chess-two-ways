@@ -4,7 +4,7 @@ import Square from '../Square'
 import type Tracking from './Tracking'
 import type Squares from './Squares'
 import { type File, positionToString, copyPosition, RANKS, FILES } from '../Position'
-import { type BoardData } from '../game/GameData'
+import { type BoardSnapshot } from '../game/Snapshot'
 
 const PIECES_BY_FILE = {
   'a': 'rook',
@@ -173,9 +173,9 @@ const resetBoard = (sqs: Squares, tr: Tracking): void => {
   // Intentionally forgiving. If meaningful keys are found, 
   // their values are parsed. If they can be parsed, pieces are created.
   // if not, square is empty (no Error's are thrown)
-const syncBoardToEncoded = (
+const syncBoardToSnapshot = (
   sqs: Squares, 
-  encoded: BoardData, 
+  encoded: BoardSnapshot, 
   tr: Tracking
 ): void => {
 
@@ -200,4 +200,4 @@ const syncBoardToEncoded = (
   }
 }
 
-export { freshBoard, resetBoard, syncBoardToEncoded} 
+export { freshBoard, resetBoard, syncBoardToSnapshot} 

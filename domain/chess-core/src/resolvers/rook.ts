@@ -1,11 +1,11 @@
-import type { 
-  Action, 
-  Board,
-  Move, 
-  Piece,
-  Position
+import { 
+  type Action, 
+  type Board, 
+  type Piece, 
+  type Position, 
+  type Move, 
+  type Resolution,
 } from '..'
-import { type ResolvableMove } from '../game/ActionResolver'
 
 import {
   nextN,
@@ -39,7 +39,7 @@ const resolvableMoves = (
   piece: Piece,
   from: Position,
   ignoreCastling?: boolean // only relevant for king
-): ResolvableMove[] => {
+): Resolution[] => {
 
   const resolvableN = resolvableMovesAndCapture(
     board,

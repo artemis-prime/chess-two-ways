@@ -45,15 +45,15 @@ const DraggingPiece: React.FC<{
 
   const dnd = useChessDnD()
 
-  if (dnd.payload) {
-    const SpecificPiece = registry.get(dnd.payload.piece.type) as React.ComponentType<SpecificPieceProps>
-    const pieceSize = dnd.payload.piece.type === 'pawn' ? size * .85 : size
+  if (dnd.resolvedDrag) {
+    const SpecificPiece = registry.get(dnd.resolvedDrag.move.piece.type) as React.ComponentType<SpecificPieceProps>
+    const pieceSize = dnd.resolvedDrag.move.piece.type === 'pawn' ? size * .85 : size
     return (
       <PieceEffectsView 
         justify='center'
         direction='row'
         align='center'
-        color={dnd.payload.piece.color}
+        color={dnd.resolvedDrag.move.piece.color}
         css={{
           //cursor: 'move' ,
         }}

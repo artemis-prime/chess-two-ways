@@ -15,8 +15,8 @@ const InCheckIndicator: React.FC = () => {
     // This is advised by mobx docs: https://mobx.js.org/reactions.html
   useEffect(() => (autorun(() => {
     let str = ''
-    if (game.inCheck) {
-      str = game.inCheck!.from.reduce((acc, current, i) => (
+    if (game.check) {
+      str = game.check.from.reduce((acc, current, i) => (
         ((i > 0) ? ', ' : '') + acc + positionToString(current)
       ), '')
     }

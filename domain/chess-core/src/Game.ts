@@ -8,14 +8,17 @@ import {
 } from 'mobx'
 import { computedFn } from 'mobx-utils'
 
+import type Action from './Action'
+import type ActionRecord from './ActionRecord'
+import { actionRecordToLAN, lanToActionRecord } from './ActionRecord'
 import type { default as Board, BoardInternal } from './Board'
 import { createBoard } from './Board'
+import type Check from './Check'
+import type ChessListener from './ChessListener'
+import type GameStatus from './GameStatus'
+import { STATUS_IN_PLAY, STATUS_CAN_UNDO } from './GameStatus'
 import type Move from './Move'
 import { movesEqual } from './Move'
-import type Action from './Action'
-import type Position from './Position'
-import { copyPosition, positionToString } from './Position'
-import type ChessListener from './ChessListener'
 import type Piece from './Piece'
 import { 
   type PieceType, 
@@ -27,16 +30,13 @@ import {
   type ColorCode
 } from './Piece'
 
-import type { default as ActionResolver, ResolvableMove } from './game/ActionResolver'
-import type ActionRecord from './ActionRecord'
-import { actionRecordToLAN, lanToActionRecord } from './ActionRecord'
+import type Position from './Position'
+import { copyPosition, positionToString } from './Position'
+import type Resolution from './Resolution'
 
-import Resolution from './game/Resolution'
+import type { default as ActionResolver } from './game/ActionResolver'
+import type { GameSnapshot } from './game/Snapshot'
 import Notifier from './game/Notifier'
-import type GameData from './game/GameData'
-import type GameStatus from './GameStatus'
-import { STATUS_IN_PLAY, STATUS_CAN_UNDO } from './GameStatus'
-
 import registry from './game/resolverRegistry'
 
 interface Game {
@@ -66,15 +66,15 @@ interface Game {
   callADraw(): void
   concede(): void 
 
-  persistAsGameData() : GameData
-  restoreFromGameData(g: GameData) : void
+  takeSnapshot() : GameSnapshot
+  restoreFromSnapshot(g: GameSnapshot) : void
 
   pieceAt(p: Position): Piece | null
 
   get gameStatus(): GameStatus // observable
   get playing(): boolean // observable
   get currentTurn(): Side
-  get inCheck(): null | {side: Side, from: Position[]} // observable
+  get check(): Check | null // observable
 
     // id should be the same across multiple registrations for the 
     // same listener.
@@ -94,10 +94,11 @@ class GameImpl implements Game {
   private _currentTurn: Side = 'white' 
   private _resolvers: Map<PieceType, ActionResolver>  = registry 
   private _actions = [] as ActionRecord[] 
-    // For managing undo / redo.  The index of the current state
-    // within _actions.  -1 is the original state of the board.
-    // That way, _action[0] is conveniently the first move,
-    // and you can move back and forth via undo / redo
+    // For managing undo / redo.  
+    // The index within _actions of the Action that reflects
+    // the current state. -1 is *in fact* 
+    // the original state of the board, so _action[0] is conveniently 
+    // the first move.  So its easy to go back and forth via undo / redo
   private _stateIndex = -1 
   private _cachedResolution: Resolution | null = null 
 
@@ -113,12 +114,12 @@ class GameImpl implements Game {
       reset: action,
       undo: action,
       redo: action,
-      restoreFromGameData: action,
+      restoreFromSnapshot: action,
       canUndo: computed,
       canRedo: computed,
       gameStatus: computed,
       currentTurn: computed,
-      inCheck: computed,
+      check: computed,
       //boardAsArray: computed,
       playing: computed
     })
@@ -189,11 +190,11 @@ class GameImpl implements Game {
     })
   }
 
-  async restoreFromGameData(g: GameData): Promise<void> {
+  async restoreFromSnapshot(g: GameSnapshot): Promise<void> {
 
-    if (!g.artemisPrimeChessGame) throw new Error('restoreFromGameData() invalid Game Object!')
+    if (!g.artemisPrimeChessGame) throw new Error('restoreFromSnapshot() invalid Game Object!')
 
-    this._board.restoreFromBoardData(g.board)
+    this._board.restoreFromSnapshot(g.board)
     this._currentTurn = COLOR_FROM_CODE[g.currentTurn]
     this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
     //this._stateIndex = g.stateIndex
@@ -209,10 +210,10 @@ class GameImpl implements Game {
     this._trackAndNotifyCheck()
   }
 
-  persistAsGameData(): GameData {
+  takeSnapshot(): GameSnapshot {
     return {
       artemisPrimeChessGame: true,
-      board: this._board.persistAsBoardData(),
+      board: this._board.takeSnapshot(),
       actions: this._actions.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
       //stateIndex: this._stateIndex,
       currentTurn: this._currentTurn.charAt(0) as ColorCode
@@ -221,7 +222,7 @@ class GameImpl implements Game {
 
   checkStalemate(): void {
     if (
-      !(this._board.inCheck && this._board.inCheck.side === this._currentTurn)
+      !(this._board.check && this._board.check.side === this._currentTurn)
       &&
       !this._primariesCanMove(this._currentTurn)
       &&
@@ -239,8 +240,8 @@ class GameImpl implements Game {
     }
   }
 
-  get inCheck(): null | {side: Side, from: Position[]} {
-    return this._board.inCheck
+  get check(): Check | null {
+    return this._board.check
   }
 
   get currentTurn(): Side {
@@ -293,7 +294,7 @@ class GameImpl implements Game {
         } 
         this._notifier.actionResolved(move, action)
       } 
-      this._cachedResolution = new Resolution(move, action)
+      this._cachedResolution = { move, action }
     }
     return this._cachedResolution!.action
   }
@@ -388,10 +389,10 @@ class GameImpl implements Game {
     }
   }
 
-  private _resolvableMovesDontAllResultInCheck(moves: ResolvableMove[], side: Side): boolean {
+  private _resolvableMovesDontAllResultInCheck(moves: Resolution[], side: Side): boolean {
     this._scratchBoard.syncTo(this._board)
-    return moves.some((rm: ResolvableMove) => {
-      const r = this._createActionRecord(rm.move, rm.action)
+    return moves.some((rm: Resolution) => {
+      const r = this._createActionRecord(rm.move, rm.action!)
       this._scratchBoard.applyAction(r, 'do')
       const { inCheckFrom } = this._scratchBoard.trackInCheck(side)
       this._scratchBoard.applyAction(r, 'undo')
@@ -400,7 +401,7 @@ class GameImpl implements Game {
   }
 
   private _kingCanMove(side: Side): boolean {
-    const pos = this._board.kingsPosition(side)
+    const pos = this._board.kingPosition(side)
     const resolver = this._resolvers.get('king')!
     const moves = resolver.resolvableMoves(this._board, {type: 'king', color: side}, pos, true)
     return this._resolvableMovesDontAllResultInCheck(moves, side)
@@ -433,7 +434,11 @@ class GameImpl implements Game {
 
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {
-      this._notifier.inCheck(side, this._board.kingsPosition(side), inCheckFrom)
+      this._notifier.inCheck({
+        side, 
+        from: inCheckFrom,
+        kingPosition: this._board.kingPosition(side), 
+      })
     }
     else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  

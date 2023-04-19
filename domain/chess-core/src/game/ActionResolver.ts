@@ -1,16 +1,11 @@
-import type Board from '../Board'
-import type Position from '../Position'
-import type Move from '../Move'
-import type Piece from '../Piece'
-import type Action from '../Action'
-
-  // If this move was made,
-  // it would be resolved to action.
-interface ResolvableMove {
-  move: Move,
-  action: Action
-}
-
+import { 
+  type Action, 
+  type Board, 
+  type Piece, 
+  type Position, 
+  type Move, 
+  type Resolution,
+} from '..'
 interface ActionResolver {
 
   resolve: ( 
@@ -24,7 +19,7 @@ interface ActionResolver {
     piece: Piece, 
     from: Position,
     ignoreCastling?: boolean // only relevant for king
-  ) => ResolvableMove[]
+  ) => Resolution[]
 }
 
-export { type ActionResolver as default, type ResolvableMove }  
+export { type ActionResolver as default }  

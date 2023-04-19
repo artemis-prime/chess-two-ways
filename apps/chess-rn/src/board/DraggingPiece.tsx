@@ -32,14 +32,14 @@ const DraggingPiece: React.FC<{ sizeInLayout: number | undefined }> = observer((
   
   const dnd = useChessDnD()
 
-  return (sizeInLayout && dnd.payload && dnd.offset) ? (
-    <StyledText color={dnd.payload.piece.color} style={{
+  return (sizeInLayout && dnd.resolvedDrag && dnd.offset) ? (
+    <StyledText color={dnd.resolvedDrag.move.piece.color} style={{
       left: dnd.offset.x - sizeInLayout / 2, 
       top: dnd.offset.y - sizeInLayout / 2,
       fontSize: sizeInLayout * .8,
       width: sizeInLayout,
       height: sizeInLayout
-    }}>{PIECETYPE_TO_UNICODE[dnd.payload.piece.type]}</StyledText>
+    }}>{PIECETYPE_TO_UNICODE[dnd.resolvedDrag.move.piece.type]}</StyledText>
   ) : null
 })
 

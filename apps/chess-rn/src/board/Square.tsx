@@ -9,10 +9,9 @@ import { observer } from 'mobx-react'
 import { 
   type Position, 
   type Piece,
-  type Action,
-  positionsEqual,
+  type PositionStatus,
   FILES, 
-  type PositionStatus
+  getPositionStatus
 } from '@artemis-prime/chess-core'
 
 import { styled } from '~/conf/stitches.config'
@@ -153,67 +152,24 @@ const Square: React.FC<{
   sizeInLayout: number | undefined
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  position : pos,
+  position,
   piece,
   sizeInLayout,
   style 
 }) => {
 
-  const rankOdd = (pos.rank % 2)
-  const fileOdd = (FILES.indexOf(pos.file) % 2)
+  const rankOdd = (position.rank % 2)
+  const fileOdd = (FILES.indexOf(position.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd) ? {brown: true} : {}
 
   const dnd = useChessDnD()
   const game = useGame()
 
-  const getPositionStatus = (p: Position): PositionStatus => {
-
-    if (dnd.payload && positionsEqual(dnd.payload.from, p)) {
-      return 'origin'
-    }
-    if (dnd.payload) {
-      if (dnd.squareOver && positionsEqual(dnd.squareOver, p)) {
-        if (dnd.resolvedAction) {
-          return dnd.resolvedAction
-        }
-        else {
-          return 'invalid'
-        }
-      }
-      else if (dnd.squareOver && dnd.resolvedAction && dnd.resolvedAction === 'castle') {
-        if (dnd.squareOver.file === 'g') {
-          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'h'})) {
-            return 'castleRookFrom'
-          }
-          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'f'})) {
-            return 'castleRookTo'
-          }
-        }
-        else if (dnd.squareOver.file === 'c') {
-          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'a'})) {
-            return 'castleRookFrom'
-          }
-          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'd'})) {
-            return 'castleRookTo'
-          }
-        }
-      }
-    }
-    else {
-      const inCheckResult = game.inCheck
-      if (inCheckResult) {
-        if (piece && piece.type === 'king' && piece.color === inCheckResult.side) {
-          return 'kingInCheck'
-        }
-        else if (inCheckResult.from.find((from) => (positionsEqual(pos, from)))) {
-          return 'inCheckFrom'
-        }
-      }
-    }
-    return 'none'
-  }
-
-  const status = getPositionStatus(pos)
+  const status = getPositionStatus(
+    position,
+    dnd.resolvedDrag,
+    game.check
+  )
 
     // Only do inner layout stuff if we have an accurate size available.
     // This avoids potentional jump after initial layout.

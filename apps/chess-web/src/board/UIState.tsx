@@ -2,7 +2,6 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
-  useRef,
   useState
 } from 'react'
 
@@ -13,7 +12,7 @@ import {
   Action,
   ActionRecord,
   Move,
-  Position,  
+  Check,  
   Side, 
   actionRecordToLAN, 
   positionToString,
@@ -130,11 +129,11 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
     _pushMessage({message: m, type: (type ? type : '')})
   } 
 
-  const inCheck = (side: Side, kingPosition: Position, positionsInCheckFrom: Position[]): void => {
+  const inCheck = ({side, from}: Check): void => {
     let squareString = ''
-    positionsInCheckFrom.forEach((s, i) => { 
+    from.forEach((square, i) => { 
       if (i > 0) { squareString += ', ' }
-      squareString += positionToString(s)
+      squareString += positionToString(square)
     })
     _pushMessage({message: `from ${squareString}`, type: 'check-message', note: {side}})
   }

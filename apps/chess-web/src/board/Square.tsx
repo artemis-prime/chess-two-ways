@@ -9,8 +9,8 @@ import {
   type Piece,
   type Position, 
   type PositionStatus,
-  positionsEqual, 
-  positionToString 
+  positionToString, 
+  getPositionStatus
 } from '@artemis-prime/chess-core'
 
 import { styled } from '~/style/stitches.config'
@@ -82,53 +82,6 @@ const SquareComponent: React.FC<{
   const posString = positionToString(position)
   const {setNodeRef: droppableRef} = useDroppable({id: posString, data: {position}})
 
-  const getPositionStatus = (p: Position): PositionStatus => {
-
-    if (dnd.payload && positionsEqual(dnd.payload.from, p)) {
-      return 'origin'
-    }
-    if (dnd.payload) {
-      if (dnd.squareOver && positionsEqual(dnd.squareOver, p)) {
-        if (dnd.resolvedAction) {
-          return dnd.resolvedAction
-        }
-        else {
-          return 'invalid'
-        }
-      }
-      else if (dnd.squareOver && dnd.resolvedAction && dnd.resolvedAction === 'castle') {
-        if (dnd.squareOver.file === 'g') {
-          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'h'})) {
-            return 'castleRookFrom'
-          }
-          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'f'})) {
-            return 'castleRookTo'
-          }
-        }
-        else if (dnd.squareOver.file === 'c') {
-          if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'a'})) {
-            return 'castleRookFrom'
-          }
-          else if (positionsEqual(p, {rank: dnd.payload.from.rank, file: 'd'})) {
-            return 'castleRookTo'
-          }
-        }
-      }
-    }
-    else {
-      const inCheckResult = game.inCheck
-      if (inCheckResult) {
-        if (piece && piece.type === 'king' && piece.color === inCheckResult.side) {
-          return 'kingInCheck'
-        }
-        else if (inCheckResult.from.find((from) => (positionsEqual(position, from)))) {
-          return 'inCheckFrom'
-        }
-      }
-    }
-    return 'none'
-  }
-
   const getEffectFromStatus = (s: PositionStatus): EffectVariant  => {
     if (s === 'castleRookFrom') {
       return pulses.slow ? s : 'castleRookFromPulse' 
@@ -154,7 +107,11 @@ const SquareComponent: React.FC<{
     return s as EffectVariant 
   }
 
-  const status = getPositionStatus(position)
+  const status = getPositionStatus(
+    position,
+    dnd.resolvedDrag,
+    game.check
+  )
 
   return (
     <div 
