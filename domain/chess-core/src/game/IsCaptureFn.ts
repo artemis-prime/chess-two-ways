@@ -1,5 +1,5 @@
 import type Move from '../Move'
-import type Board from '../Board'
+import type Board from './Board' 
 
 interface IsCaptureFn {
   (board: Board, move: Move): boolean

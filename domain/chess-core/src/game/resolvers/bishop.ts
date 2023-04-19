@@ -1,4 +1,12 @@
-import type { Action, Board, Position, Move, Piece, Resolution } from '..'
+import type { 
+  Action, 
+  Piece, 
+  Position, 
+  Move, 
+  Resolution,
+} from '../..'
+
+import type Board from '../Board'
 
 import {
   nextNE,

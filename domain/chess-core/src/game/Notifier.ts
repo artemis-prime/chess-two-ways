@@ -1,5 +1,4 @@
 import type ChessListener from '../ChessListener'
-import type Position from '../Position'
 import type Action from '../Action'
 import type { Side }  from '../Piece' 
 import type Move from '../Move' 

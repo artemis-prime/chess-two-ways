@@ -1,14 +1,15 @@
-import  { 
-  type Action, 
-  type Board, 
-  type Position, 
-  type Piece, 
-  type Move, 
-  type Resolution,
-} from '..'
+import type { 
+  Action, 
+  Piece, 
+  Position, 
+  Move, 
+  Resolution,
+} from '../..'
 
-import { isOpponent } from '../Piece'
-import { FILES } from '../Position'
+import type Board from '../Board'
+
+import { isOpponent } from '../../Piece'
+import { FILES } from '../../Position'
 
 import {
   hasN,

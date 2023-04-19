@@ -1,15 +1,18 @@
 import type { 
   Action,
-  Board,
   Side,
   Position,
   Piece,
   Move,
   Resolution
-} from '..'
+} from '../..'
 
-import { FILES, positionsEqual } from '../Position'
-import { isOpponent } from '../Piece'
+import { FILES, positionsEqual } from '../../Position'
+import { isOpponent } from '../../Piece'
+
+
+import type Board from '../Board'
+
 
 import {
   hasN,

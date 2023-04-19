@@ -4,39 +4,30 @@ import {
   makeObservable, 
 } from 'mobx'
 
-import type Position from './Position'
+import type ActionRecord from '../ActionRecord'
+import type Check from '../Check'
+import type GameStatus from '../GameStatus'
+import { 
+  type default as Piece, 
+  type Color, 
+  type PrimaryPieceType, 
+  type Side, 
+  PRIMARY_PIECES,
+  opponent,
+  isOpponent,
+  pieceToString,
+} from '../Piece'
 
+import type Position from '../Position'
 import { 
   positionsEqual,   
   copyPosition,
   RANKS,
   RANKS_REVERSED,
   FILES,
- } from './Position'
-
-import { 
-  type default as Piece, 
-  type Color, 
-  type PrimaryPieceType, 
-  type Side, 
-  opponent,
-  isOpponent,
-  pieceToString,
-} from './Piece'
-
-import { PRIMARY_PIECES } from './Piece'
-import type Square from './Square'
-
-import type ActionRecord from './ActionRecord'
-import type GameStatus from './GameStatus'
-import type IsCaptureFn from './game/IsCaptureFn'
-import { type BoardSnapshot, type PieceCode } from './game/Snapshot'
-
-import Tracking from './board/Tracking'
-import type Squares from './board/Squares'
-import { syncSquares } from './board/Squares'
-import { freshBoard, resetBoard, syncBoardToSnapshot } from './board/boardInitializers'
-
+} from '../Position'
+import { type BoardSnapshot, type PieceCode } from '../Snapshot'
+import type Square from '../Square'
 import {
   hasN,
   hasS,
@@ -47,7 +38,13 @@ import {
   getEFile,
   getWFile,
 } from './util'
-import type Check from './Check'
+
+import type IsCaptureFn from './IsCaptureFn'
+
+import Tracking from './board/Tracking'
+import type Squares from './board/Squares'
+import { syncSquares } from './board/Squares'
+import { freshBoard, resetBoard, syncBoardToSnapshot } from './board/boardInitializers'
 
 interface Board {
 

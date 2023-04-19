@@ -1,11 +1,13 @@
 import { 
   type Action, 
-  type Board, 
   type Piece, 
   type Position, 
   type Move, 
   type Resolution,
 } from '..'
+
+import type Board from './Board' 
+
 interface ActionResolver {
 
   resolve: ( 

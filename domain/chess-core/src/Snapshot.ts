@@ -1,5 +1,5 @@
-import type { File, Rank } from '../Position'
-import type { PieceTypeCode, ColorCode } from '../Piece'
+import type { File, Rank } from './Position'
+import type { PieceTypeCode, ColorCode } from './Piece'
 
 type PositionCode = `${File}${Rank}`
 type PieceCode = `${ColorCode}${PieceTypeCode}`

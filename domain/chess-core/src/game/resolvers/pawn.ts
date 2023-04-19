@@ -1,16 +1,17 @@
-import { 
-  type Action, 
-  type Board, 
-  type Piece, 
-  type Position, 
-  type Side, 
-  type Rank,
-  type Move, 
-  type Resolution,
-} from '..'
+import type { 
+  Action, 
+  Piece, 
+  Position, 
+  Side, 
+  Rank,
+  Move, 
+  Resolution,
+} from '../..'
 
-import { isOpponent } from '../Piece'
-import { FILES } from '../Position'
+import type Board from '../Board'
+
+import { isOpponent } from '../../Piece'
+import { FILES } from '../../Position'
 
 const pawnOnHomeRow = (pos: Position, color: Side): boolean => (
   pos.rank === 2 && color === 'white'

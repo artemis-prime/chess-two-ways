@@ -1,10 +1,12 @@
-import type { PieceType, PrimaryPieceType } from '../Piece'
-import { PRIMARY_PIECES, pieceFromString } from '../Piece'
-import Square from '../Square'
+import type { PieceType, PrimaryPieceType } from '../../Piece'
+import { PRIMARY_PIECES, pieceFromString } from '../../Piece'
+import { type File, positionToString, copyPosition, RANKS, FILES } from '../../Position'
+import { type BoardSnapshot } from '../../Snapshot'
+import Square from '../../Square'
+
 import type Tracking from './Tracking'
 import type Squares from './Squares'
-import { type File, positionToString, copyPosition, RANKS, FILES } from '../Position'
-import { type BoardSnapshot } from '../game/Snapshot'
+
 
 const PIECES_BY_FILE = {
   'a': 'rook',
