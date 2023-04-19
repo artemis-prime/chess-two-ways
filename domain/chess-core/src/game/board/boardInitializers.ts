@@ -2,7 +2,7 @@ import type { PieceType, PrimaryPieceType } from '../../Piece'
 import { PRIMARY_PIECES, pieceFromString } from '../../Piece'
 import { type File, positionToString, copyPosition, RANKS, FILES } from '../../Position'
 import { type BoardSnapshot } from '../../Snapshot'
-import Square from '../../Square'
+import Square from './Square'
 
 import type Tracking from './Tracking'
 import type Squares from './Squares'

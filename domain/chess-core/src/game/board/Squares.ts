@@ -1,5 +1,5 @@
 import type { File, Rank } from '../../Position'
-import Square from '../../Square'
+import Square from './Square'
 
 type RankSquares = {
   [key in File]: Square

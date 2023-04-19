@@ -27,7 +27,7 @@ import {
   FILES,
 } from '../Position'
 import { type BoardSnapshot, type PieceCode } from '../Snapshot'
-import type Square from '../Square'
+import type Square from './board/Square'
 import {
   hasN,
   hasS,

@@ -1,9 +1,9 @@
 import { makeObservable, observable } from 'mobx'
 
-import type Position from './Position'
-import { positionToString, type Rank, type File } from './Position'
-import type Piece from './Piece'
-import { pieceToString } from './Piece'
+import type Position from '../../Position'
+import { positionToString, type Rank, type File } from '../../Position'
+import type Piece from '../../Piece'
+import { pieceToString } from '../../Piece'
 
 class Square implements Position {
 

@@ -23,7 +23,6 @@ export type {
   File 
 } from './Position'
 
-export { default as Square } from './Square'
 export type { default as Piece, Color, Side, PieceType } from './Piece'
 export { pieceToString, piecesEqual, isOpponent } from './Piece'
 export type { default as ChessListener } from './ChessListener'
