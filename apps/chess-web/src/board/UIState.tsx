@@ -21,18 +21,25 @@ import {
 
 import { useGame } from './GameProvider'
 
-export interface UIState {
-  messages: ConsoleMessage[],
+export interface BoardOrientation {
   whiteOnBottom: boolean,
   setWhiteOnBottom: (b: boolean) => void
   alternateBoard: boolean 
   setAlternateBoard: (b: boolean) => void
 }
 
+export interface UIState extends BoardOrientation{
+  messages: ConsoleMessage[],
+}
+
 const UIStateContext = React.createContext<UIState | undefined>(undefined) 
  
-export const useUIState = (): UIState =>  {
-  return useContext(UIStateContext) as UIState
+export const useBoardOrientation = (): BoardOrientation =>  {
+  return useContext(UIStateContext) as BoardOrientation
+}
+
+export const useMessages = (): ConsoleMessage[] =>  {
+  return (useContext(UIStateContext) as UIState).messages
 }
 
 export interface ConsoleMessage {

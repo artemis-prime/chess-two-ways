@@ -3,7 +3,7 @@ import React from 'react'
 
 import type { CSS } from '@stitches/react'
 import { Button, Flex, Checkbox } from '~/primitives'
-import { useUIState } from '../board/UIState'
+import { useBoardOrientation } from '../board/UIState'
 
 const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
 
@@ -12,7 +12,7 @@ const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
     setAlternateBoard, 
     whiteOnBottom,
     setWhiteOnBottom
-  } = useUIState()
+  } = useBoardOrientation()
 
   const swapDirection = () => {
     setWhiteOnBottom(!whiteOnBottom)  
@@ -24,7 +24,6 @@ const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
       <Button disabled={alternateBoard} onClick={swapDirection}>swap view</Button>
     </Flex>
   )
-
 }
 
 export default BoardDirectionWidget

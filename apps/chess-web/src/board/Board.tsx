@@ -8,7 +8,7 @@ import type { Position, Piece } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 import DraggingPiece from './DraggingPiece'
-import { useUIState } from './UIState'
+import { useBoardOrientation } from './UIState'
 import SquareComponent from './Square'
 import { ChessDnDShell } from './ChessDnD'
 import type { CSS } from '@stitches/react'
@@ -17,7 +17,7 @@ import { Box } from '~/primitives'
 const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
 
   const game = useGame()
-  const { whiteOnBottom } = useUIState()
+  const { whiteOnBottom } = useBoardOrientation()
 
   return (
     <ChessDnDShell>

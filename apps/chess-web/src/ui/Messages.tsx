@@ -7,7 +7,7 @@ import ScrollableFeed from 'react-scrollable-feed'
 import { PIECETYPE_TO_UNICODE }  from '@artemis-prime/chess-core'
 
 import type { ConsoleMessage } from '~/board/UIState'
-import { useUIState } from '~/board/UIState'
+import { useMessages } from '~/board/UIState'
 
 import '~/style/messages.scss'
   // TS workaround for put in module
@@ -25,7 +25,7 @@ const Messages: React.FC<{
   showMoves
 }) => {
 
-  const { messages } = useUIState()
+  const messages = useMessages()
 
   const getIndentation = (m: ConsoleMessage): string => (
     m.type.includes('undo') || 
