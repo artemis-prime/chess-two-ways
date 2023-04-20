@@ -20,7 +20,7 @@ import { type BoardSnapshot } from '../../Snapshot'
 
 import type Tracking from './Tracking'
 
-const PIECES_BY_FILE = {
+const PIECETYPE_BY_FILE = {
   'a': 'rook',
   'b': 'knight',
   'c': 'bishop',
@@ -92,71 +92,69 @@ const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
 
 class Squares {
 
-  constructor (tr: Tracking, observeOccupant? : boolean) {
+  constructor (tr: Tracking, observePieces? : boolean) {
 
     for (const rank of RANKS) {
-      const rankSquares: any = {}
+      this[rank] = {}
         // White pieces
       if (rank === 1) {
         for (const file of FILES) {
-          rankSquares[file] = new Square(rank, file, { type: PIECES_BY_FILE[file], color: 'white' }, observeOccupant)
-          track(tr, rankSquares[file])
+          this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'white' }, observePieces)
+          track(tr, this[rank][file])
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
-          rankSquares[file] = new Square(rank, file, { type: 'pawn', color: 'white' }, observeOccupant)
+          this[rank][file] = new Square(rank, file, { type: 'pawn', color: 'white' }, observePieces)
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
-          rankSquares[file] = new Square(rank, file, { type: 'pawn', color: 'black' }, observeOccupant)
+          this[rank][file] = new Square(rank, file, { type: 'pawn', color: 'black' }, observePieces)
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
-          rankSquares[file] = new Square(rank, file, { type: PIECES_BY_FILE[file], color: 'black' }, observeOccupant)
-          track(tr, rankSquares[file])
+          this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'black' }, observePieces)
+          track(tr, this[rank][file])
         }
       }
       else {
         for (const file of FILES) {
-          rankSquares[file] = new Square(rank, file, null, observeOccupant)  
+          this[rank][file] = new Square(rank, file, null, observePieces)  
         }
       }
-      this[rank] = rankSquares as RankSquares
     } 
   }
 
   reset(tr: Tracking) {
 
     for (const rank of RANKS) {
-      const rankArray = this[rank]
       if (rank === 1) {
         for (const file of FILES) {
-          rankArray[file].piece = { type: PIECES_BY_FILE[file], color: 'white' }
-          track(tr, rankArray[file])
+          this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'white' }
+          track(tr, this[rank][file])
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
-          rankArray[file].piece = { type: 'pawn', color: 'white' }
+          this[rank][file].piece = { type: 'pawn', color: 'white' }
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
-          rankArray[file].piece = { type: 'pawn', color: 'black' }
+          this[rank][file].piece = { type: 'pawn', color: 'black' }
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
-          rankArray[file].piece = { type: PIECES_BY_FILE[file], color: 'black' }
-          track(tr, rankArray[file])
+          this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'black' }
+          track(tr, this[rank][file])
         }
       }
       else {
         for (const file of FILES) {
-          rankArray[file].piece = null
+          this[rank][file].piece = null
         }
       }
     } 
@@ -178,18 +176,16 @@ class Squares {
     }
 
     for (const rank of RANKS) {
-      const rankArray = this[rank]
       for (const file of FILES) {
-        pieceForSquare(rankArray[file])
-        if (rankArray[file].piece) {
-          track(tr, rankArray[file])
+        pieceForSquare(this[rank][file])
+        if (this[rank][file].piece) {
+          track(tr, this[rank][file])
         }
       }
     }
   }
 
-
-  syncTo = (source: Squares): void => {
+  syncTo(source: Squares): void {
     for (const key in source) {
       this[key] = deepCopyRankSquares(source[key])
     }
