@@ -1,20 +1,20 @@
   // @ts-ignore
 import React from 'react'
-import { observer } from 'mobx-react'
+import type { CSS } from '@stitches/react'
 import { DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 
-import type { Position, Piece } from '@artemis-prime/chess-core'
+import type { SquareDesc } from '@artemis-prime/chess-core'
+
+import { Box } from '~/primitives'
 
 import { useGame } from './GameProvider'
 import DraggingPiece from './DraggingPiece'
-import { useBoardOrientation } from './UIState'
+import { useBoardOrientation } from './UIStateProvider'
 import SquareComponent from './Square'
 import { ChessDnDShell } from './ChessDnD'
-import type { CSS } from '@stitches/react'
-import { Box } from '~/primitives'
 
-const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
+const Board: React.FC<{ css?: CSS }> = ({css}) => {
 
   const game = useGame()
   const { whiteOnBottom } = useBoardOrientation()
@@ -22,8 +22,8 @@ const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
   return (
     <ChessDnDShell>
       <Box className={'board'} css={css}>
-      {game.getBoardAsArray(whiteOnBottom).map((sq: {pos: Position, piece: Piece | null}) => (
-        <SquareComponent position={sq.pos} piece={sq.piece} key={`key-${sq.pos.rank}-${sq.pos.file}`} />
+      {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
+        <SquareComponent desc={d} key={`key-${d.position.rank}-${d.position.file}`} />
       ))}
       </Box>
       <DragOverlay modifiers={[snapCenterToCursor]}>
@@ -31,6 +31,6 @@ const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
       </DragOverlay>
     </ChessDnDShell>
   )
-})
+}
 
 export default Board

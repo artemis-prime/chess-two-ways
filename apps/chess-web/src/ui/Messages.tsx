@@ -6,8 +6,8 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 import { PIECETYPE_TO_UNICODE }  from '@artemis-prime/chess-core'
 
-import type { ConsoleMessage } from '~/board/UIState'
-import { useMessages } from '~/board/UIState'
+import type { ConsoleMessage } from '~/board/UIStateProvider'
+import { useMessages } from '~/board/UIStateProvider'
 
 import '~/style/messages.scss'
   // TS workaround for put in module

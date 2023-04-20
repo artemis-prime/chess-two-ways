@@ -5,10 +5,9 @@ import type Resolution from './Resolution'
 import type Check from './Check'
 
 // Convienence for game implementations / ui's.
-const getPositionStatus = (
+const getMoveActionStatus = (
   p: Position,
-  res: Resolution | null,
-  check: Check | null
+  res: Resolution | null
 ): PositionStatus => {
 
   if (res && positionsEqual(res.move.from, p)) {
@@ -43,7 +42,15 @@ const getPositionStatus = (
       }
     }
   }
-  else if (check) {
+  return 'none'
+}
+
+
+const getCheckStatus = (
+  p: Position,
+  check: Check | null
+): PositionStatus => {
+  if (check) {
     if (positionsEqual(check.kingPosition, p)) {
       return 'kingInCheck'
     }
@@ -54,4 +61,4 @@ const getPositionStatus = (
   return 'none'
 }
 
-export default getPositionStatus
+export { getMoveActionStatus, getCheckStatus }

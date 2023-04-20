@@ -8,7 +8,7 @@ import c from '~/style/colors'
 import { Flex } from '~/primitives'
 
 import registry from './pieceRegistry'
-import { useChessDnD } from './ChessDnD'
+import { useDraggingPiece } from './ChessDnD'
 import type { SpecificPieceProps } from './Piece'
 
 const PieceEffectsView = styled(Flex, {
@@ -21,42 +21,34 @@ const PieceEffectsView = styled(Flex, {
       white: {
         '& svg': {
           fill: c.ui.piece.white,
-          //filter: 'drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45))'
         },
       },
       black: {
         '& svg': {
           fill: c.ui.piece.black,
-          //filter: 'drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3))'
         },
       },
     },
   }
 })
 
-  // Note that piece is not nullable, since this 
-  // component should not be rendered in a square
-  // that doesn't contain one.
 const DraggingPiece: React.FC<{
   size: number
 }> = observer(({
   size
 }) => {
 
-  const dnd = useChessDnD()
+  const piece = useDraggingPiece()
 
-  if (dnd.resolvedDrag) {
-    const SpecificPiece = registry.get(dnd.resolvedDrag.move.piece.type) as React.ComponentType<SpecificPieceProps>
-    const pieceSize = dnd.resolvedDrag.move.piece.type === 'pawn' ? size * .85 : size
+  if (piece.pieceValue) {
+    const SpecificPiece = registry.get(piece.pieceValue.type) as React.ComponentType<SpecificPieceProps>
+    const pieceSize = piece.pieceValue.type === 'pawn' ? size * .85 : size
     return (
       <PieceEffectsView 
         justify='center'
         direction='row'
         align='center'
-        color={dnd.resolvedDrag.move.piece.color}
-        css={{
-          //cursor: 'move' ,
-        }}
+        color={piece.pieceValue.color}
       >
         <SpecificPiece size={pieceSize} />
       </PieceEffectsView>

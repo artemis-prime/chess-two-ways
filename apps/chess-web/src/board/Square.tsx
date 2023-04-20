@@ -6,20 +6,15 @@ import type * as Stitches from '@stitches/react'
 
 import { 
   FILES,
-  type Piece,
-  type Position, 
+  type SquareDesc, 
   type PositionStatus,
   positionToString, 
-  getPositionStatus
 } from '@artemis-prime/chess-core'
 
 import { styled } from '~/style/stitches.config'
 
-import { useGame } from './GameProvider'
 import PieceComponent from './Piece'
-import { useChessDnD } from './ChessDnD'
-import { usePulses } from './PulseProvider'
-
+import { usePulses } from './UIStateProvider'
 
 const EffectsView = styled('div', {
   position: 'absolute', 
@@ -67,29 +62,22 @@ type EffectsViewVariants = Stitches.VariantProps<typeof EffectsView>
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
-const SquareComponent: React.FC<{ 
-  position: Position
-  piece: Piece | null
-}> = observer(({ 
-  position,
-  piece
+const SquareComponent: React.FC<{
+  desc: SquareDesc 
+}> = observer(({
+  desc
 }) => {
 
-  const game = useGame()
-  const dnd = useChessDnD()
   const pulses = usePulses()
 
-  const posString = positionToString(position)
-  const {setNodeRef: droppableRef} = useDroppable({id: posString, data: {position}})
-
-  const getEffectFromStatus = (s: PositionStatus): EffectVariant  => {
-    if (s === 'castleRookFrom') {
-      return pulses.slow ? s : 'castleRookFromPulse' 
+  const getEffectFromStatus = (status: PositionStatus): EffectVariant  => {
+    if (status === 'castleRookFrom') {
+      return pulses.slow ? status : 'castleRookFromPulse' 
     }
-    else if (s === 'castleRookTo') {
-      return !pulses.slow ? s : 'castleRookToPulse' 
+    else if (status === 'castleRookTo') {
+      return !pulses.slow ? status : 'castleRookToPulse' 
     }
-    else if (s.includes('romote')) {
+    else if (status.includes('romote')) {
       if (pulses.fast) {
         return undefined
       }
@@ -101,33 +89,43 @@ const SquareComponent: React.FC<{
       'kingInCheck',
       'inCheckFrom',
       'capture'
-    ].includes(s as string)) {
+    ].includes(status as string)) {
       return undefined
     }
-    return s as EffectVariant 
+    return status as EffectVariant 
   }
 
-  const status = getPositionStatus(
-    position,
-    dnd.resolvedDrag,
-    game.check
+  return (
+    <EffectsView effect={getEffectFromStatus(desc.statusRef.status)} >
+      <PieceComponent desc={desc} />  
+    </EffectsView>
   )
+})
 
+const SquareDndWrapper: React.FC<{
+  desc: SquareDesc 
+}> = ({ 
+  desc
+}) => {
+
+  const posString = positionToString(desc.position)
+  const {setNodeRef: droppableRef} = useDroppable({
+    id: posString, 
+    data: {position: desc.position},
+  })
+
+    // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
   return (
     <div 
       ref={droppableRef}
       style={{ position: 'relative' }}
-      className={`square rank-${position.rank} rank-${(position.rank % 2) ? 'odd' : 'even'} ` +
-        `file-${position.file} file-${(FILES.indexOf(position.file) % 2) ? 'even' : 'odd'}` 
+      className={`square rank-${desc.position.rank} rank-${(desc.position.rank % 2) ? 'odd' : 'even'} ` +
+        `file-${desc.position.file} file-${(FILES.indexOf(desc.position.file) % 2) ? 'even' : 'odd'}` 
       }
     >
-      <EffectsView effect={getEffectFromStatus(status)}>
-      {(!!piece) && (
-        <PieceComponent position={position} piece={piece} status={status} />  
-      )}
-      </EffectsView>
+      <SquareComponent desc={desc} />
     </div>  
   )
-})
+}
 
-export default SquareComponent
+export default SquareDndWrapper

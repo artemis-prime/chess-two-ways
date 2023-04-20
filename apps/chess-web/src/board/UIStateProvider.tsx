@@ -2,10 +2,11 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
-  useState
+  useState,
+  useRef
 } from 'react'
 
-import { runInAction, autorun } from 'mobx'
+import { runInAction, autorun, makeAutoObservable } from 'mobx'
 import { useLocalObservable, observer } from 'mobx-react'
 
 import { 
@@ -28,8 +29,34 @@ export interface BoardOrientation {
   setAlternateBoard: (b: boolean) => void
 }
 
-export interface UIState extends BoardOrientation{
-  messages: ConsoleMessage[],
+export interface Pulses {
+  slow: boolean
+  fast: boolean
+}
+
+export interface ConsoleMessage {
+  message: string,
+  type: string, 
+  actionRecord?: ActionRecord,
+  note?: any 
+}
+
+interface UIState extends BoardOrientation {
+  pulses: Pulses
+  messages: ConsoleMessage[]
+}
+
+class PulsesImpl implements Pulses {
+
+  slow: boolean = false
+  fast: boolean = false
+  
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  setFast(b: boolean) { this.fast = b }
+  setSlow(b: boolean) { this.slow = b }
 }
 
 const UIStateContext = React.createContext<UIState | undefined>(undefined) 
@@ -42,11 +69,8 @@ export const useMessages = (): ConsoleMessage[] =>  {
   return (useContext(UIStateContext) as UIState).messages
 }
 
-export interface ConsoleMessage {
-  message: string,
-  type: string, 
-  actionRecord?: ActionRecord,
-  note?: any 
+export const usePulses = (): Pulses =>  {
+  return (useContext(UIStateContext) as UIState).pulses
 }
 
 const isTransient = (m: ConsoleMessage) => (
@@ -72,6 +96,23 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
       this.alternateBoard = b
     }, 
   })) 
+
+  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
+  
+  useEffect(() => {
+    const fast = setInterval(() => {
+      pulsesRef.current.setFast(!pulsesRef.current.fast)   
+    }, 200)  
+    const slow = setInterval(() => {
+      pulsesRef.current.setSlow(!pulsesRef.current.slow)   
+    }, 500)  
+
+    return () => {
+      clearInterval(fast)
+      clearInterval(slow)
+    }
+  }, [])
+
 
     // Note that autorun returns a cleanup function that deletes the created listener
     // This is advised by mobx docs: https://mobx.js.org/reactions.html
@@ -184,6 +225,7 @@ const UIStateProvider: React.FC< PropsWithChildren<{}>> = observer(({ children }
   
   return (
     <UIStateContext.Provider value={{
+      pulses: pulsesRef.current,
       messages,
       whiteOnBottom,
       setWhiteOnBottom,

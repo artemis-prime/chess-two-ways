@@ -3,7 +3,7 @@ import React from 'react'
 
 import type { CSS } from '@stitches/react'
 import { Button, Flex, Checkbox } from '~/primitives'
-import { useBoardOrientation } from '../board/UIState'
+import { useBoardOrientation } from '~/board/UIStateProvider'
 
 const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
 

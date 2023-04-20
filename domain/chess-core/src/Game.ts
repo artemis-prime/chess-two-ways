@@ -6,7 +6,6 @@ import {
   autorun,
   when
 } from 'mobx'
-import { computedFn } from 'mobx-utils'
 
 import type Action from './Action'
 import type ActionRecord from './ActionRecord'
@@ -34,10 +33,13 @@ import type Position from './Position'
 import { copyPosition, positionToString } from './Position'
 import type Resolution from './Resolution'
 import type { GameSnapshot } from './Snapshot'
+import type SquareDesc from './SquareDesc'
+import { getMoveActionStatus, getCheckStatus } from './statusUtil'
 
 import type { default as ActionResolver } from './game/ActionResolver'
 import Notifier from './game/Notifier'
 import registry from './game/resolverRegistry'
+import type Square from './game/Square'
 
 interface Game {
 
@@ -50,7 +52,7 @@ interface Game {
     //  2) endResolution() is called 
     // (Note that this is from of debouncing)
   resolveAction(m: Move): Action | null
-  takeResolvedAction(): void
+  takeResolvedAction(): boolean // action was taken
   endResolution(): void
   
   get canUndo(): boolean
@@ -80,8 +82,7 @@ interface Game {
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
 
-    // Utility method for easy rendering (mobx 'computedFn')
-  getBoardAsArray(reverse: boolean):  {pos: Position, piece: Piece | null}[]
+  getBoardAsArray(reverse: boolean): SquareDesc[]
 }
 
 class GameImpl implements Game {
@@ -100,7 +101,7 @@ class GameImpl implements Game {
     // the original state of the board, so _action[0] is conveniently 
     // the first move.  So its easy to go back and forth via undo / redo
   private _stateIndex = -1 
-  private _cachedResolution: Resolution | null = null 
+  private _resolution: Resolution | null = null 
 
   private _notifier: Notifier = new Notifier() 
 
@@ -120,7 +121,6 @@ class GameImpl implements Game {
       gameStatus: computed,
       currentTurn: computed,
       check: computed,
-      //boardAsArray: computed,
       playing: computed
     })
 
@@ -129,12 +129,14 @@ class GameImpl implements Game {
       '_currentTurn'| 
       '_toggleTurn' | 
       '_stateIndex' |
-      '_actions' 
+      '_actions' |
+      '_applyResolution'
     >(this, {
       _currentTurn: observable,
       _toggleTurn: action,
       _stateIndex: observable,
       _actions: observable,
+      _applyResolution: action
     })
 
     autorun(() => {
@@ -158,11 +160,10 @@ class GameImpl implements Game {
     return this._board.pieceAt(p)
   }
 
-  getBoardAsArray = computedFn((
-    whiteOnBottom: boolean
-  ): {pos: Position, piece: Piece | null}[] => (
-    (whiteOnBottom) ? this._board.boardAsArray  :[...this._board.boardAsArray].reverse()
-  ), true)
+  getBoardAsArray = (whiteOnBottom: boolean): SquareDesc[] => (
+
+    (whiteOnBottom) ? this._board.asSquareDescs  : [...this._board.asSquareDescs].reverse()
+  )
 
   callADraw(): void {
     this._board.setGameStatus({
@@ -268,7 +269,7 @@ class GameImpl implements Game {
 
     if (!this.playing) return null
 
-    if (!this._cachedResolution || !movesEqual(this._cachedResolution!.move, move)) {
+    if (!this._resolution || !movesEqual(this._resolution!.move, move)) {
       if (!move.piece) {
         this._notifier.message(`There's no piece at ${positionToString}!`, 'transient-warning') 
       }
@@ -294,31 +295,35 @@ class GameImpl implements Game {
         } 
         this._notifier.actionResolved(move, action)
       } 
-      this._cachedResolution = { move, action }
+      this._applyResolution({ move, action })
     }
-    return this._cachedResolution!.action
+    return this._resolution!.action
   }
 
   endResolution(): void {
-    this._cachedResolution = null
+    this._applyResolution(null)
   }
 
-  takeResolvedAction(): void {
+  takeResolvedAction(): boolean {
 
-    if (!this.playing) return
-    if (!this._cachedResolution?.action) return
-
+    if (!this.playing) {
+      return false
+    }
+    if (!this._resolution?.action) {
+      this.endResolution()
+      return false
+    }
       // TODO: create an async function that returns the promoteTo type.
       // eg, a dialog could popup
     const promoteTo = 'queen'
 
     const r = this._createActionRecord(
-      this._cachedResolution!.move, 
-      this._cachedResolution!.action!, 
+      this._resolution!.move, 
+      this._resolution!.action!, 
       promoteTo
     )
-    this._cachedResolution = null
     this._board.applyAction(r, 'do')
+    this._applyResolution(null)
     this._notifier.actionTaken(r)
     if (this._stateIndex + 1 < this._actions.length) {
         // If we've undone actions since the most recent 'real' move,
@@ -330,6 +335,7 @@ class GameImpl implements Game {
     this._stateIndex = this._actions.length - 1
     this._trackAndNotifyCheck()
     this._toggleTurn()
+    return true
   }
 
   get canUndo() {
@@ -367,6 +373,14 @@ class GameImpl implements Game {
       this._trackAndNotifyCheck()
       this._toggleTurn()
     }
+  }
+
+  private _applyResolution(res: Resolution | null) {
+
+    this._resolution = res
+    this._board.asSquares.forEach((sq: Square) => {
+      sq.status = getMoveActionStatus(sq, res)
+    });
   }
 
   private _createActionRecord(
@@ -430,8 +444,15 @@ class GameImpl implements Game {
   private _trackAndNotifyCheckForSide(side: Side): void {
 
     const { wasInCheck, inCheckFrom } = this._board.trackInCheck(side)
-    const inCheck = inCheckFrom.length > 0
+    const check = this._board.check
+      // We shouldn't clash with action / drag states, 
+      // since this code is called after 
+      // action statuses are cleared.
+    this._board.asSquares.forEach((sq: Square) => {
+      sq.status = getCheckStatus(sq, check) 
+    })
 
+    const inCheck = inCheckFrom.length > 0
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {
       this._notifier.inCheck({

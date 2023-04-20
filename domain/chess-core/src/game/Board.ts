@@ -27,6 +27,9 @@ import {
   FILES,
 } from '../Position'
 import { type BoardSnapshot, type PieceCode } from '../Snapshot'
+import Square from './Square'
+import type SquareDesc from '../SquareDesc'
+
 import {
   hasN,
   hasS,
@@ -80,7 +83,8 @@ interface BoardInternal extends Board {
   reset(isObservable? : boolean): void
 
   // Utility method for easy rendering (mobx 'computed')
-  get boardAsArray():  {pos: Position, piece: Piece | null}[]
+  get asSquares():  Square[]
+  get asSquareDescs():  SquareDesc[]
 }
 
 class BoardImpl implements BoardInternal {
@@ -89,6 +93,8 @@ class BoardImpl implements BoardInternal {
 
   private _tracking: Tracking 
   private _sq: Squares 
+  private _asSquares: Square[]
+  private _asSquareDescs: SquareDesc[]
 
   constructor(f: IsCaptureFn, isObservable?: boolean) {
 
@@ -102,11 +108,31 @@ class BoardImpl implements BoardInternal {
         trackInCheck: action,
         gameStatus: computed,
         check: computed,
-        boardAsArray: computed,
       })
     }
     this._tracking = new Tracking(isObservable)
     this._sq = new Squares(this._tracking, isObservable)
+    this._asSquares = []
+    this._asSquareDescs = []
+    for (const rank of RANKS_REVERSED) {
+      for (const file of FILES) {
+        this._asSquares.push(this._sq[rank][file]) 
+        this._asSquareDescs.push({
+          position: this._sq[rank][file],
+          pieceRef: this._sq[rank][file],
+          statusRef: this._sq[rank][file]
+        })
+      }
+    }
+
+  }
+
+  get asSquares(): Square[] {
+    return this._asSquares
+  }
+
+  get asSquareDescs(): SquareDesc[] {
+    return this._asSquareDescs
   }
 
   get gameStatus(): GameStatus {
@@ -360,15 +386,6 @@ class BoardImpl implements BoardInternal {
     return snapshot
   }
 
-  get boardAsArray(): {pos: Position, piece: Piece | null}[] {
-    const result: {pos: Position, piece: Piece | null}[] = []
-    for (const rank of RANKS_REVERSED) {
-      for (const file of FILES) {
-        result.push({ pos: copyPosition(this._sq[rank][file]), piece: this._sq[rank][file].piece}) 
-      }
-    }
-    return result
-  }
  
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   

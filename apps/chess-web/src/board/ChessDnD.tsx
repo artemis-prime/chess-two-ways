@@ -11,17 +11,17 @@ import {
   DragMoveEvent,
 } from '@dnd-kit/core'
 
-import { positionsEqual } from '@artemis-prime/chess-core'
+import { positionsEqual, ObsPieceRef } from '@artemis-prime/chess-core'
 
 import { useGame } from './GameProvider'
 
-import {type DnDState, type DnDStateInternal, getDnDStateSingleton} from './DnDState' 
+import {type DnDStateInternal, getDnDStateSingleton} from './DnDState' 
 import type DnDPayload from './DnDPayload'
 
 const ChessDnDContext = React.createContext<DnDStateInternal | undefined>(undefined) 
 
-const useChessDnD = (): DnDState => (
-  useContext(ChessDnDContext) as DnDState
+const useDraggingPiece = (): ObsPieceRef => (
+  useContext(ChessDnDContext) as ObsPieceRef
 )
 
 const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -31,19 +31,13 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const onDragStart = (event: DragStartEvent) => {
     stateRef.current.setPayload(event.active.data.current as DnDPayload)
-    console.log('drag started: ' + event.active.data.current?.piece.type)
+    //console.log('drag started: ' + event.active.data.current?.piece.type)
   }
 
   const onDragEnd = (event: DragEndEvent) => {
-    if (stateRef.current.resolvedAction) {
-      game.takeResolvedAction()
-      console.log('drag ended, action taken')
-    }
-    else {
-      console.log('drag ended, NO action taken')
-      game.endResolution()
-    }
+    const taken = game.takeResolvedAction()
     stateRef.current.clear()
+    //console.log(`drag ended: ${!taken ? 'NO ' : ''}action taken`)
   }
 
   const onDragMove = (event: DragMoveEvent) => {
@@ -51,22 +45,20 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
     if (pos && stateRef.current.payload) {
       if (!positionsEqual(pos, stateRef.current.squareOver!)) {
-        stateRef.current.setResolvedAction(
-          game.resolveAction({
-            piece: stateRef.current.payload.piece, 
-            from: stateRef.current.payload.from, 
-            to: pos
-          })
-        )
+        game.resolveAction({
+          piece: stateRef.current.payload.piece, 
+          from: stateRef.current.payload.from, 
+          to: pos
+        })
         stateRef.current.setSquareOver(pos)
       }
     }
   }
 
   const onDragCancel = (event: DragCancelEvent) => {
-    console.log('drag cancelled, NO action taken')
     game.endResolution()
     stateRef.current.clear()
+    //console.log('drag cancelled, NO action taken')
   }
 
   return (
@@ -85,5 +77,5 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 export {
   ChessDnDShell,
-  useChessDnD,
+  useDraggingPiece,
 }

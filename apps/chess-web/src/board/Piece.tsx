@@ -5,8 +5,7 @@ import { useDraggable } from '@dnd-kit/core'
 import type * as Stitches from '@stitches/react'
 
 import { 
-  type Position, 
-  type Piece, 
+  type SquareDesc,
   type PositionStatus,
   positionToString, 
   pieceToString
@@ -19,7 +18,7 @@ import { Flex } from '~/primitives'
 
 import { useGame } from './GameProvider'
 import registry from './pieceRegistry'
-import { usePulses } from './PulseProvider'
+import { usePulses } from './UIStateProvider'
 interface SpecificPieceProps {
   size?: string | number
 }
@@ -184,68 +183,84 @@ type EffectVariant = EffectsViewVariants['effect'] // includes undefined
   // component should not be rendered in a square
   // that doesn't contain one.
 const PieceComponent: React.FC<{
-  piece: Piece,
-  position: Position,
-  status: PositionStatus
+  desc: SquareDesc 
 }> = observer(({
-  piece,
-  position,
-  status
+  desc
 }) => {
 
   const game = useGame()
   const pulses = usePulses()
 
-  const uniqueID = positionToString(position) + pieceToString(piece)
-  const canDrag = game.currentTurn === piece.color
-  const dragInProcess = status === 'origin'
+  if (!desc.pieceRef.piece) {
+    return null
+  }
 
-  const {listeners, setNodeRef: draggableRef} = useDraggable({
-    id: uniqueID, 
-    disabled: !canDrag,
-    data: {
-      piece,
-      from: position
-    }
-  })
+  const canDrag = desc.pieceRef.piece && game.currentTurn === desc.pieceRef.piece.color
+  //const dragInProcess = desc.statusRef.status === 'origin'
 
-  const getEffectFromStatus = (s: PositionStatus): EffectVariant   => {
-    if (s.includes('capture')) {
+  const getEffectFromStatus = (status: PositionStatus): EffectVariant => {
+    if (status.includes('capture')) {
       return pulses.fast ? 'capture' : 'capturePulse' 
     }
-    else if (s === 'kingInCheck') {
-      return pulses.slow ? s : 'kingInCheckPulse' 
+    else if (status === 'kingInCheck') {
+      return pulses.slow ? 'kingInCheck' : 'kingInCheckPulse' 
     }
-    else if (s === 'inCheckFrom') {
-      return !pulses.slow ? s : 'inCheckFromPulse' 
+    else if (status === 'inCheckFrom') {
+      return !pulses.slow ? 'inCheckFrom' : 'inCheckFromPulse' 
     }
     return undefined 
   }
 
-  const SpecificPiece = registry.get(piece.type) as React.ComponentType<SpecificPieceProps>
-  const pieceSize = piece.type === 'pawn' ? '80%' :'94%'
+  const SpecificPiece = registry.get(desc.pieceRef.piece.type) as React.ComponentType<SpecificPieceProps>
 
   return (
     <PieceEffectsView 
-      ref={draggableRef}
-      {...listeners}
       justify='center'
       direction='row'
       align='center'
-      color={piece.color}
-      effect={getEffectFromStatus(status)}
+      color={desc.pieceRef.piece.color}
+      effect={getEffectFromStatus(desc.statusRef.status)}
       css={{
-        opacity: (dragInProcess ? 0.5 : 1), 
-        cursor: canDrag ? (dragInProcess ? 'move' : 'pointer') : 'default',
+        opacity: (desc.statusRef.status === 'origin' ? 0.5 : 1), 
+        cursor: canDrag ? (desc.statusRef.status === 'origin' ? 'move' : 'pointer') : 'default',
 //        border: '0.5px red solid'
       }}
     >
-      <SpecificPiece size={pieceSize} />
+      <SpecificPiece size={desc.pieceRef.piece.type === 'pawn' ? '80%' :'94%'} />
     </PieceEffectsView>
+  )
+})
+
+
+  // Note that piece is not nullable, since this 
+  // component should not be rendered in a square
+  // that doesn't contain one.
+const PieceDnDWrapper: React.FC<{
+  desc: SquareDesc 
+}> = observer(({
+  desc,
+}) => {
+
+  const game = useGame()
+  const canDrag = desc.pieceRef.piece && game.currentTurn === desc.pieceRef.piece.color
+  
+  const {listeners, setNodeRef: draggableRef} = useDraggable({
+    id: positionToString(desc.position) + (desc.pieceRef.piece ? pieceToString(desc.pieceRef.piece) : ''), 
+    disabled: !canDrag,
+    data: {
+      piece: desc.pieceRef.piece,
+      from: desc.position
+    }
+  })
+    // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
+  return (
+    <div ref={draggableRef}  {...listeners}>
+      <PieceComponent desc={desc} />
+    </div>
   )
 })
 
 export {
   type SpecificPieceProps,
-  PieceComponent as default
+  PieceDnDWrapper as default
 } 

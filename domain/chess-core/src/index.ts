@@ -12,6 +12,8 @@ export type { default as GameStatus } from './GameStatus'
 export type { default as Move } from './Move'
 export type { default as Piece, Color, Side, PieceType } from './Piece'
 export { pieceToString, piecesEqual, isOpponent } from './Piece'
+export type { default as ObsPieceRef } from './ObsPieceRef'
+export type { default as ObsStatusRef } from './ObsStatusRef'
 export type { default as Position} from './Position'
 export type { Rank, File } from './Position'
 export { 
@@ -24,6 +26,7 @@ export {
 export type { default as PositionStatus } from './PositionStatus'
 export type { default as Resolution} from './Resolution'
 export type { GameSnapshot } from './Snapshot'
+export type { default as SquareDesc } from './SquareDesc'
 
-export { default as getPositionStatus } from './getPositionStatus'
+export { getMoveActionStatus, getCheckStatus } from './statusUtil'
 export { default as PIECETYPE_TO_UNICODE} from './pieceTypeToUnicode'

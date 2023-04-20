@@ -1,44 +1,33 @@
 import { makeObservable, observable, action, computed } from 'mobx'
 
-import type { Action, Position, Resolution } from '@artemis-prime/chess-core'
+import type { 
+  Position, 
+  ObsPieceRef, 
+  Piece
+} from '@artemis-prime/chess-core'
 
 import type DnDPayload from './DnDPayload'
 
-  // For use by UI code to reflect state
-interface DnDState {
-  get resolvedDrag(): Resolution | null 
-}
-
-  // For use inside the DnD system
-interface DnDStateInternal extends DnDState {
+interface DnDStateInternal extends ObsPieceRef {
   payload: DnDPayload | null, 
   squareOver: Position | null
-  resolvedAction: Action | null
   setPayload: (p: DnDPayload | null) => void 
   setSquareOver: (p: Position | null) => void
-  setResolvedAction: (a: Action | null) => void
   clear: () => void 
 }
-
 class DnDStateImpl implements DnDStateInternal {
 
   static currentInstance: DnDStateImpl | null = null 
 
   payload: DnDPayload | null = null
   squareOver: Position | null = null
-  resolvedAction: Action | null = null
 
   constructor() {
     makeObservable(this, {
       payload: observable,
-      squareOver: observable,
-      resolvedAction: observable,
       setPayload: action,
-      clearPayload: action,
-      setSquareOver: action,
-      setResolvedAction: action,
       clear: action,
-      resolvedDrag: computed
+      pieceValue: computed
     }) 
   }
 
@@ -51,27 +40,16 @@ class DnDStateImpl implements DnDStateInternal {
   setSquareOver(p: Position | null): void {
     this.squareOver = p
   }
-  
-  setResolvedAction(a: Action | null) {
-    this.resolvedAction = a
-  }
 
   clear(): void {
     this.payload = null
     this.squareOver = null
-    this.resolvedAction = null
   }
 
-  get resolvedDrag(): Resolution | null {
-    return (this.payload && this.squareOver) 
-      ? 
-      {
-        move: {
-          ...this.payload,
-          to: this.squareOver
-        },
-        action: this.resolvedAction 
-      } 
+  get pieceValue(): Piece | null {
+    return (this.payload) 
+      ?
+      this.payload.piece 
       : 
       null
   }
@@ -87,7 +65,6 @@ const getDnDStateSingleton = (): DnDStateInternal => {
 
 export {
   getDnDStateSingleton,
-  type DnDState,  
   type DnDStateInternal
 }
 

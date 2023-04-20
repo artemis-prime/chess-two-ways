@@ -33,7 +33,7 @@ const UI: React.FC<{}> = () => {
     <div className={`app drawer-state-${drawerOpen ? 'open' : 'closed'}`}>
       <header className="app-header">
         <div />
-        <h1 className="app-header-text">Chess Three Ways - Web Souffl&eacute;</h1>
+        <h1 className="app-header-text">Chess Both Ways - Web Souffl&eacute;</h1>
         <div>
           <BurgerButton className='burger-button' onClick={toggleMenu} />
         </div>
@@ -50,7 +50,6 @@ const UI: React.FC<{}> = () => {
           <Dash />
         </Drawer>
       </FlexMain>
-      
     </div>
   )
 }
