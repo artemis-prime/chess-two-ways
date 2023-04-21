@@ -9,9 +9,9 @@ import type { SquareDesc } from '@artemis-prime/chess-core'
 import { Box } from '~/primitives'
 import { useBoardOrientation, useGame } from '~/service'
 
-import DraggingPiece from './DraggingPiece'
-import SquareComponent from './Square'
-import { ChessDnDShell } from './ChessDnD'
+import DraggingPiece from './board/DraggingPiece'
+import SquareComponent from './board/Square'
+import { ChessDnDShell } from './board/ChessDnD'
 
 const Board: React.FC<{ css?: CSS }> = ({css}) => {
 

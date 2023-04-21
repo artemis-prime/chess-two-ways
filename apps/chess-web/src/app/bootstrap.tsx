@@ -1,10 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import GameProvider from '~/service/GameProvider'
-import UIServicesProvider from '~/service/UIServicesProvider'
-
-import UI from './UI'
+import App from './App'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,11 +11,7 @@ const root = ReactDOM.createRoot(
   // https://stackoverflow.com/questions/48846289/why-is-my-react-component-is-rendering-twice
 root.render(
   <React.StrictMode>
-    <GameProvider >
-      <UIServicesProvider >
-        <UI />
-      </UIServicesProvider>
-    </GameProvider>
+    <App />
   </React.StrictMode>
 )
 

@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--  NOTE ON LOCATION OF THIS FILE: -->
+<!--  It is an idiom of the vite bundler to have index.html -->
+<!--  at the root of src/ and not say, someplace like public/, -->
+<!--  as it (rightly) thinks of it as part of the sourcecode and the -->
+<!--  root of the dependency graph.  Go vite! -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,6 +14,6 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="src/ui/index.tsx"></script> 
+    <script type="module" src="src/app/bootstrap.tsx"></script> 
   </body>
 </html>

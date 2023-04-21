@@ -1,7 +1,7 @@
   // @ts-ignore
 import React, { PropsWithChildren, useState } from 'react'
 
-import Board from '~/board/Board'
+import Board from './Board'
 
 import { 
   BurgerButton, 

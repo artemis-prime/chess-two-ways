@@ -7,7 +7,7 @@
   
   import { Button, Flex } from '~/primitives'
     
-  const UndoRedo: React.FC<{ css?: CSS }> = observer(({css}) => {
+  const UndoRedoWidget: React.FC<{ css?: CSS }> = observer(({css}) => {
   
     const game = useGame()
   
@@ -28,5 +28,5 @@
     )
   })
   
-  export default UndoRedo
+  export default UndoRedoWidget
   

@@ -1,10 +1,8 @@
 interface BoardOrientation {
   whiteOnBottom: boolean,
   setWhiteOnBottom: (b: boolean) => void
-  alternateBoard: boolean 
-  setAlternateBoard: (b: boolean) => void
+  autoOrientToCurrentTurn: boolean,
+  setAutoOrientToCurrentTurn: (b: boolean) => void 
 }
 
-export {
-  type BoardOrientation as default
-}
+export { type BoardOrientation as default }

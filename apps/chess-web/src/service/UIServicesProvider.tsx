@@ -36,8 +36,6 @@ class PulsesImpl implements Pulses {
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
 
-
-
 const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   const [whiteOnBottom, setWhiteOnBottom] = useState<boolean>(true)
@@ -50,10 +48,10 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     // combination where the useEffect fires dependant on other variables. This
     // needlessly creates / destroys many autorun instances. Better to just create it once
     // and listen for everything together :)
-  const alternater = useLocalObservable(() => ({
-    alternateBoard: false,
-    setAlternateBoard(b: boolean) {
-      this.alternateBoard = b
+  const autoOrienter = useLocalObservable(() => ({
+    autoOrientToCurrentTurn: false,
+    setAutoOrientToCurrentTurn(b: boolean) {
+      this.autoOrientToCurrentTurn = b
     }, 
   })) 
   
@@ -74,7 +72,7 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     // Note that autorun returns a cleanup function that deletes the created listener
     // This is advised by mobx docs: https://mobx.js.org/reactions.html
   useEffect(() => (autorun(() => {
-    if (alternater.alternateBoard) {
+    if (autoOrienter.autoOrientToCurrentTurn) {
       if (game.currentTurn === 'white') {
         setWhiteOnBottom(true)
       }
@@ -94,8 +92,8 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
       messages: messagesRef.current.messages,
       whiteOnBottom,
       setWhiteOnBottom,
-      alternateBoard: alternater.alternateBoard, 
-      setAlternateBoard: alternater.setAlternateBoard.bind(alternater)
+      autoOrientToCurrentTurn: autoOrienter.autoOrientToCurrentTurn, 
+      setAutoOrientToCurrentTurn: autoOrienter.setAutoOrientToCurrentTurn.bind(autoOrienter)
     }}>
       {children}
     </UIServicesContext.Provider>

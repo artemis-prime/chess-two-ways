@@ -8,20 +8,18 @@ import { useBoardOrientation } from '~/service'
 const BoardDirectionWidget: React.FC<{css?: CSS}> = ({css}) => {
 
   const {
-    alternateBoard, 
-    setAlternateBoard, 
+    autoOrientToCurrentTurn,
+    setAutoOrientToCurrentTurn,
     whiteOnBottom,
     setWhiteOnBottom
   } = useBoardOrientation()
 
-  const swapDirection = () => {
-    setWhiteOnBottom(!whiteOnBottom)  
-  }
+  const swapDirection = () => { setWhiteOnBottom(!whiteOnBottom) }
   
   return (
     <Flex direction='column' align='end' css={css}>
-      <Checkbox checked={alternateBoard} setChecked={setAlternateBoard}>auto-sync view</Checkbox>
-      <Button disabled={alternateBoard} onClick={swapDirection}>swap view</Button>
+      <Checkbox checked={autoOrientToCurrentTurn} setChecked={setAutoOrientToCurrentTurn}>auto-sync to turn</Checkbox>
+      <Button disabled={autoOrientToCurrentTurn} onClick={swapDirection}>swap view</Button>
     </Flex>
   )
 }
