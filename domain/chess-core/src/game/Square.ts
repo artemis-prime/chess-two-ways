@@ -1,40 +1,40 @@
 import { makeObservable, observable } from 'mobx'
 
 import type ObsPieceRef from '../ObsPieceRef'
-import type ObsStatusRef  from '../ObsStatusRef'
+import type ObsPositionStateRef  from '../ObsPositionStateRef'
 
 import type Piece from '../Piece'
 import type Position from '../Position'
 import type { File, Rank } from '../Position'
-import type PositionStatus from '../PositionStatus'
+import type PositionState from '../PositionState'
 
 class Square implements 
   Position, 
   ObsPieceRef,
-  ObsStatusRef
+  ObsPositionStateRef
 {
 
   readonly rank: Rank
   readonly file: File
   piece: Piece | null 
-  status: PositionStatus
+  state: PositionState
 
   constructor(
     rank: Rank, 
     file: File, 
     piece: Piece | null, 
-    status: PositionStatus, 
+    state: PositionState, 
     observePiece?: boolean
   ) {
     this.rank = rank
     this.file = file
     this.piece = piece
-    this.status = status
+    this.state = state
     
     if (observePiece) {
       makeObservable(this, { 
         piece: observable.shallow,
-        status: observable
+        state: observable
       })
     }
   }
@@ -44,7 +44,7 @@ class Square implements
       s.rank,
       s.file,
       s.piece ? {...s.piece} : null,
-      s.status
+      s.state
     )
   }
 }

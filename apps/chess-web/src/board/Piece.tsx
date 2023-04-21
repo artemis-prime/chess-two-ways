@@ -6,7 +6,7 @@ import type * as Stitches from '@stitches/react'
 
 import { 
   type SquareDesc,
-  type PositionStatus,
+  type PositionState,
   positionToString, 
   pieceToString
 } from '@artemis-prime/chess-core'
@@ -179,9 +179,6 @@ type EffectsViewVariants = Stitches.VariantProps<typeof PieceEffectsView>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
-  // Note that piece is not nullable, since this 
-  // component should not be rendered in a square
-  // that doesn't contain one.
 const PieceComponent: React.FC<{
   desc: SquareDesc 
 }> = observer(({
@@ -196,16 +193,15 @@ const PieceComponent: React.FC<{
   }
 
   const canDrag = desc.pieceRef.piece && game.currentTurn === desc.pieceRef.piece.color
-  //const dragInProcess = desc.statusRef.status === 'origin'
 
-  const getEffectFromStatus = (status: PositionStatus): EffectVariant => {
-    if (status.includes('capture')) {
+  const getEffectFromState = (state: PositionState): EffectVariant => {
+    if (state.includes('capture')) {
       return pulses.fast ? 'capture' : 'capturePulse' 
     }
-    else if (status === 'kingInCheck') {
+    else if (state === 'kingInCheck') {
       return pulses.slow ? 'kingInCheck' : 'kingInCheckPulse' 
     }
-    else if (status === 'inCheckFrom') {
+    else if (state === 'inCheckFrom') {
       return !pulses.slow ? 'inCheckFrom' : 'inCheckFromPulse' 
     }
     return undefined 
@@ -219,10 +215,10 @@ const PieceComponent: React.FC<{
       direction='row'
       align='center'
       color={desc.pieceRef.piece.color}
-      effect={getEffectFromStatus(desc.statusRef.status)}
+      effect={getEffectFromState(desc.posStateRef.state)}
       css={{
-        opacity: (desc.statusRef.status === 'origin' ? 0.5 : 1), 
-        cursor: canDrag ? (desc.statusRef.status === 'origin' ? 'move' : 'pointer') : 'default',
+        opacity: (desc.posStateRef.state === 'origin' ? 0.5 : 1), 
+        cursor: canDrag ? (desc.posStateRef.state === 'origin' ? 'move' : 'pointer') : 'default',
 //        border: '0.5px red solid'
       }}
     >

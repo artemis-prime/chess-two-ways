@@ -106,33 +106,33 @@ class Squares {
       if (rank === 1) {
         for (const file of FILES) {
           this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'white' }
-          this[rank][file].status = 'none'
+          this[rank][file].state = 'none'
           track(tr, this[rank][file])
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
           this[rank][file].piece = { type: 'pawn', color: 'white' }
-          this[rank][file].status = 'none'
+          this[rank][file].state = 'none'
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
           this[rank][file].piece = { type: 'pawn', color: 'black' }
-          this[rank][file].status = 'none'
+          this[rank][file].state = 'none'
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
           this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'black' }
-          this[rank][file].status = 'none'
+          this[rank][file].state = 'none'
           track(tr, this[rank][file])
         }
       }
       else {
         for (const file of FILES) {
           this[rank][file].piece = null
-          this[rank][file].status = 'none'
+          this[rank][file].state = 'none'
         }
       }
     } 
@@ -147,11 +147,11 @@ class Squares {
       const keyToTry = positionToString(sq)
       if (snapshot[keyToTry]) {
         sq.piece = pieceFromString(snapshot[keyToTry]) ?? null // in case undefined
-        sq.status = 'none'
+        sq.state = 'none'
       }
       else {
         sq.piece = null
-        sq.status = 'none'
+        sq.state = 'none'
       }
     }
 

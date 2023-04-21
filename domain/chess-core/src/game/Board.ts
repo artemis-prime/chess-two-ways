@@ -120,7 +120,7 @@ class BoardImpl implements BoardInternal {
         this._asSquareDescs.push({
           position: this._sq[rank][file],
           pieceRef: this._sq[rank][file],
-          statusRef: this._sq[rank][file]
+          posStateRef: this._sq[rank][file]
         })
       }
     }

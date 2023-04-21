@@ -1,14 +1,14 @@
-import type Position from './Position'
-import { positionsEqual } from './Position'
-import type PositionStatus from './PositionStatus'
-import type Resolution from './Resolution'
-import type Check from './Check'
+import type Position from '../Position'
+import { positionsEqual } from '../Position'
+import type PositionState from '../PositionState'
+import type Resolution from '../Resolution'
+import type Check from '../Check'
 
 // Convienence for game implementations / ui's.
-const getMoveActionStatus = (
+const getResolutionStateForPosition = (
   p: Position,
   res: Resolution | null
-): PositionStatus => {
+): PositionState => {
 
   if (res && positionsEqual(res.move.from, p)) {
     return 'origin'
@@ -46,10 +46,10 @@ const getMoveActionStatus = (
 }
 
 
-const getCheckStatus = (
+const getCheckStateForPosition = (
   p: Position,
   check: Check | null
-): PositionStatus => {
+): PositionState => {
   if (check) {
     if (positionsEqual(check.kingPosition, p)) {
       return 'kingInCheck'
@@ -61,4 +61,4 @@ const getCheckStatus = (
   return 'none'
 }
 
-export { getMoveActionStatus, getCheckStatus }
+export { getResolutionStateForPosition, getCheckStateForPosition }

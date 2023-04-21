@@ -7,7 +7,7 @@ import type * as Stitches from '@stitches/react'
 import { 
   FILES,
   type SquareDesc, 
-  type PositionStatus,
+  type PositionState,
   positionToString, 
 } from '@artemis-prime/chess-core'
 
@@ -70,14 +70,14 @@ const SquareComponent: React.FC<{
 
   const pulses = usePulses()
 
-  const getEffectFromStatus = (status: PositionStatus): EffectVariant  => {
-    if (status === 'castleRookFrom') {
-      return pulses.slow ? status : 'castleRookFromPulse' 
+  const getEffectFromState = (state: PositionState): EffectVariant  => {
+    if (state === 'castleRookFrom') {
+      return pulses.slow ? state : 'castleRookFromPulse' 
     }
-    else if (status === 'castleRookTo') {
-      return !pulses.slow ? status : 'castleRookToPulse' 
+    else if (state === 'castleRookTo') {
+      return !pulses.slow ? state : 'castleRookToPulse' 
     }
-    else if (status.includes('romote')) {
+    else if (state.includes('romote')) {
       if (pulses.fast) {
         return undefined
       }
@@ -89,14 +89,14 @@ const SquareComponent: React.FC<{
       'kingInCheck',
       'inCheckFrom',
       'capture'
-    ].includes(status as string)) {
+    ].includes(state as string)) {
       return undefined
     }
-    return status as EffectVariant 
+    return state as EffectVariant 
   }
 
   return (
-    <EffectsView effect={getEffectFromStatus(desc.statusRef.status)} >
+    <EffectsView effect={getEffectFromState(desc.posStateRef.state)} >
       <PieceComponent desc={desc} />  
     </EffectsView>
   )
@@ -108,16 +108,15 @@ const SquareDndWrapper: React.FC<{
   desc
 }) => {
 
-  const posString = positionToString(desc.position)
-  const {setNodeRef: droppableRef} = useDroppable({
-    id: posString, 
-    data: {position: desc.position},
+  const {setNodeRef: ref} = useDroppable({
+    id: positionToString(desc.position), 
+    data: { position: desc.position },
   })
 
     // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
   return (
     <div 
-      ref={droppableRef}
+      ref={ref}
       style={{ position: 'relative' }}
       className={`square rank-${desc.position.rank} rank-${(desc.position.rank % 2) ? 'odd' : 'even'} ` +
         `file-${desc.position.file} file-${(FILES.indexOf(desc.position.file) % 2) ? 'even' : 'odd'}` 

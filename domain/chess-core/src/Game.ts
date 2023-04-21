@@ -34,8 +34,8 @@ import { copyPosition, positionToString } from './Position'
 import type Resolution from './Resolution'
 import type { GameSnapshot } from './Snapshot'
 import type SquareDesc from './SquareDesc'
-import { getMoveActionStatus, getCheckStatus } from './statusUtil'
 
+import { getResolutionStateForPosition, getCheckStateForPosition } from './game/statusUtil'
 import type { default as ActionResolver } from './game/ActionResolver'
 import Notifier from './game/Notifier'
 import registry from './game/resolverRegistry'
@@ -379,7 +379,7 @@ class GameImpl implements Game {
 
     this._resolution = res
     this._board.asSquares.forEach((sq: Square) => {
-      sq.status = getMoveActionStatus(sq, res)
+      sq.state = getResolutionStateForPosition(sq, res)
     });
   }
 
@@ -449,7 +449,7 @@ class GameImpl implements Game {
       // since this code is called after 
       // action statuses are cleared.
     this._board.asSquares.forEach((sq: Square) => {
-      sq.status = getCheckStatus(sq, check) 
+      sq.state = getCheckStateForPosition(sq, check) 
     })
 
     const inCheck = inCheckFrom.length > 0

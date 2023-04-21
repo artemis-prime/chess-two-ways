@@ -43,11 +43,11 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const onDragMove = (event: DragMoveEvent) => {
 
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
-    if (pos && stateRef.current.payload) {
+    if (pos && stateRef.current.piece) {
       if (!positionsEqual(pos, stateRef.current.squareOver!)) {
         game.resolveAction({
-          piece: stateRef.current.payload.piece, 
-          from: stateRef.current.payload.from, 
+          piece: stateRef.current.piece, 
+          from: stateRef.current.from!, // will be set if piece is
           to: pos
         })
         stateRef.current.setSquareOver(pos)

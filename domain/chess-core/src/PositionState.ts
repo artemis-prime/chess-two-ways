@@ -4,7 +4,7 @@ import type Action from './Action'
   // or current check. 
   // These are not used by the domain core, but are a convenience 
   // for apps so the UI can give feedback.
-type PositionStatus = 
+type PositionState = 
    Action |           // current square resolves to the Action
   'origin' |          // origin of the drag
   'invalid' |         // over this square, but no valid move
@@ -15,4 +15,4 @@ type PositionStatus =
   'inCheckFrom'
 
 
-export { type PositionStatus as default }
+export { type PositionState as default }

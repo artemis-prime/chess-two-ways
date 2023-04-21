@@ -38,17 +38,17 @@ const DraggingPiece: React.FC<{
   size
 }) => {
 
-  const piece = useDraggingPiece()
+  const pieceRef = useDraggingPiece()
 
-  if (piece.pieceValue) {
-    const SpecificPiece = registry.get(piece.pieceValue.type) as React.ComponentType<SpecificPieceProps>
-    const pieceSize = piece.pieceValue.type === 'pawn' ? size * .85 : size
+  if (pieceRef.piece) {
+    const SpecificPiece = registry.get(pieceRef.piece.type) as React.ComponentType<SpecificPieceProps>
+    const pieceSize = pieceRef.piece.type === 'pawn' ? size * .85 : size
     return (
       <PieceEffectsView 
         justify='center'
         direction='row'
         align='center'
-        color={piece.pieceValue.color}
+        color={pieceRef.piece.color}
       >
         <SpecificPiece size={pieceSize} />
       </PieceEffectsView>

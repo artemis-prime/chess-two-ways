@@ -8,52 +8,47 @@ import type {
 
 import type DnDPayload from './DnDPayload'
 
-interface DnDStateInternal extends ObsPieceRef {
-  payload: DnDPayload | null, 
+interface DnDStateInternal  {
+
+  piece: Piece | null
+  from: Position | null
   squareOver: Position | null
   setPayload: (p: DnDPayload | null) => void 
   setSquareOver: (p: Position | null) => void
   clear: () => void 
 }
+
 class DnDStateImpl implements DnDStateInternal {
 
   static currentInstance: DnDStateImpl | null = null 
 
-  payload: DnDPayload | null = null
+  piece: Piece | null = null
+  from: Position | null = null
   squareOver: Position | null = null
 
   constructor() {
     makeObservable(this, {
-      payload: observable,
+      piece: observable,
+      from : observable,
       setPayload: action,
       clear: action,
-      pieceValue: computed
     }) 
   }
 
   setPayload(p: DnDPayload | null): void {
-    this.payload = p
+    this.from = p ? p.from : null
+    this.piece = p ? p.piece : null
   }
-
-  clearPayload(): void {this.payload = null}
 
   setSquareOver(p: Position | null): void {
     this.squareOver = p
   }
 
   clear(): void {
-    this.payload = null
+    this.piece = null
+    this.from = null
     this.squareOver = null
   }
-
-  get pieceValue(): Piece | null {
-    return (this.payload) 
-      ?
-      this.payload.piece 
-      : 
-      null
-  }
-
 }
 
 const getDnDStateSingleton = (): DnDStateInternal => {
