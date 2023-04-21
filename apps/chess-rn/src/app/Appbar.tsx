@@ -8,8 +8,8 @@ import {
   ColorValue
 } from 'react-native'
 
-import { styled } from '~/conf/stitches.config'
-import ui from '~/conf/conf'
+import { styled } from '~/style/stitches.config'
+import ui from '~/style/conf'
 
 const AppbarView = styled(View, {
 

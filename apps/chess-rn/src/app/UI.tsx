@@ -1,40 +1,22 @@
-import React, { PropsWithChildren, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   SafeAreaView,
   StatusBar,
-  Text,
   View,
 } from 'react-native'
 
-import { ThemeProvider, lightTheme, useTheme } from '~/conf/stitches.config'
-
 import BGImage from '~/primatives/BGImage'
-import Drawer from '~/primatives/Drawer'
+//import Drawer from '~/primatives/Drawer'
 
-import Board from '~/board/ChessBoard'
-import GameProvider from '~/board/GameProvider'
-import PulsesProvider from '~/board/PulseProvider'
+import Board from './Board'
 import Dash from './Dash'
-import Appbar from './Appbar'
+//import Appbar from './Appbar'
 
-import ui from '~/conf/conf'
+import ui from '~/style/conf'
 
+const UI: React.FC = () => {
 
-const AppShell: React.FC<PropsWithChildren> = ({
-  children
-}) => (
-  <ThemeProvider theme={lightTheme}>
-  <PulsesProvider>
-  <GameProvider >
-    {children}
-  </GameProvider>
-  </PulsesProvider>
-  </ThemeProvider>
-)
-
-const App: React.FC = () => {
-
-  const theme = useTheme()
+  //const theme = useTheme()
 
   useEffect(() => {
     //StatusBar.setHidden(true)
@@ -83,10 +65,4 @@ const App: React.FC = () => {
   )
 }
 
-const AppWithShell: React.FC = () => (
-  <AppShell>
-    <App />
-  </AppShell>
-)
-
-export default AppWithShell
+export default UI

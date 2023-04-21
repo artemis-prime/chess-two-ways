@@ -7,16 +7,15 @@ import {
 } from 'react-native'
 import { observer } from 'mobx-react'
 
-import { styled } from '~/conf/stitches.config'
-
 import { 
   type Piece as DomainPiece,
   type Color,
-  type PositionStatus,
+  type SquareDesc,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
-import { usePulses } from './PulseProvider'
+import { styled } from '~/style/stitches.config'
+import { usePulses } from '~/service'
 
 interface ShadowDesc {
   variant: 
@@ -161,25 +160,27 @@ const PieceShadow: React.FC<{
     // Size is safe, since if the layout-based size is unavailable,
     // this component won't be rendered.
 const Piece: React.FC<{  
-  piece: DomainPiece | null
-  status: PositionStatus,
+  desc: SquareDesc 
   size: number 
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  piece,
-  status,
+  desc,
   size,
   style 
 }) => {
 
   const pulses = usePulses()
 
+  if (!desc.pieceRef.piece) {
+    return null
+  }
+
   const normal = (): {
     fontSize: number
     pieceVariant: Color
   } => ({
     fontSize: size *.80,
-    pieceVariant: piece!.color
+    pieceVariant: desc.pieceRef.piece!.color
   })
 
   const bigger = (fs?: number): {
@@ -187,34 +188,35 @@ const Piece: React.FC<{
     pieceVariant: Color | 'whiteLarger' | 'blackLarger'
   } => ({
     fontSize: size * (fs ? fs : .9),
-    pieceVariant: `${piece!.color}Larger` as Color | 'whiteLarger' | 'blackLarger'
+    pieceVariant: `${desc.pieceRef.piece!.color}Larger` as Color | 'whiteLarger' | 'blackLarger'
   })
 
-  if (piece) {
-    const getTextPieceProps = (): TextPieceDesc => {
-      if (status === 'kingInCheck' && pulses.slow ) {
-        return { ...bigger(), shadows: IN_CHECK_SHADOWS }
-      } 
-      if (status === 'inCheckFrom' && !pulses.slow) {
-        return { ...bigger(.95), shadows: IN_CHECK_SHADOWS }
-      } 
-        // in 'capturePromote' case, the square will pulse w a yellow border as well.
-      else if (status.includes('capture') && pulses.fast) {
-        return { ...bigger(), shadows: CAPTURE_SHADOWS }
-      } 
-      else if (status === 'castleRookFrom' && pulses.slow) {
-          // pulse larger
-        return {
-          ...bigger(),
-          shadows: [ { variant: `${piece!.color}Larger`, color: NORMAL_SHADOW_COLOR[piece!.color] }]
-        }
-      }
-        // Default size and shadows
+    
+  const getTextPieceProps = (): TextPieceDesc => {
+    if (desc.posStateRef.state === 'kingInCheck' && pulses.slow ) {
+      return { ...bigger(), shadows: IN_CHECK_SHADOWS }
+    } 
+    if (desc.posStateRef.state === 'inCheckFrom' && !pulses.slow) {
+      return { ...bigger(.95), shadows: IN_CHECK_SHADOWS }
+    } 
+      // in 'capturePromote' case, the square will pulse w a yellow border as well.
+    else if (desc.posStateRef.state.includes('capture') && pulses.fast) {
+      return { ...bigger(), shadows: CAPTURE_SHADOWS }
+    } 
+    else if (desc.posStateRef.state === 'castleRookFrom' && pulses.slow) {
+        // pulse larger
       return {
-        ...normal(),
-        shadows: [ { variant: piece!.color, color: NORMAL_SHADOW_COLOR[piece!.color] }]
+        ...bigger(),
+        shadows: [ { variant: `${desc.pieceRef.piece!.color}Larger`, color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
       }
     }
+      // Default size and shadows
+    return {
+      ...normal(),
+      shadows: [ { variant: desc.pieceRef.piece!.color, color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
+    }
+  }
+
     const { 
       fontSize, 
       pieceVariant, 
@@ -225,12 +227,10 @@ const Piece: React.FC<{
 
     return (
       <View style={[style, { position: 'relative', width: '100%', height: '100%' }]} >
-        <PieceShadow {...{piece, fontSize, shadows, height}} /> 
-        <PieceText style={{ fontSize, height }} variant={pieceVariant}>{PIECETYPE_TO_UNICODE[piece.type]}</PieceText>
+        <PieceShadow piece={desc.pieceRef.piece!} {...{fontSize, shadows, height}} /> 
+        <PieceText style={{ fontSize, height }} variant={pieceVariant}>{PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}</PieceText>
       </View>
     ) 
-  }
-  return <></> 
 })
 
 export default Piece

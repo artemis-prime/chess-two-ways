@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { observer } from 'mobx-react'
 import { 
   View,
   StyleProp, 
   ViewStyle,
   LayoutChangeEvent 
 } from 'react-native'
-import { type Piece, type Position } from '@artemis-prime/chess-core'
 
-import { styled } from '~/conf/stitches.config'
+import { type SquareDesc } from '@artemis-prime/chess-core'
+
+import { styled } from '~/style/stitches.config'
+import { useGame } from '~/service'
 
 import BGImage from '~/primatives/BGImage'
-import { useGame } from '~/board/GameProvider'
-import { useConfigChessDnD } from './ChessDnD'
-import DraggingPiece from './DraggingPiece'
-import SquareComponent from './Square'
+
+import { ChessDnDShell, useConfigChessDnD } from './board/ChessDnD'
+import DraggingPiece from './board/DraggingPiece'
+import SquareComponent from './board/Square'
 
 const BoardInner = styled(View, {
   aspectRatio: 1,
@@ -38,7 +39,7 @@ const SquaresOuter = styled(View, {
   backgroundColor: 'transparent', // needed for gestures to work on android
 })
 
-const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = observer(({
+const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
   style 
 }) => {
   const whiteOnBottom = true // TODO: will be ui state soon :)
@@ -66,20 +67,26 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = observer(({
     <BoardInner style={style} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={layoutListener} >
-        {game.getBoardAsArray(whiteOnBottom).map((sq: {pos: Position, piece: Piece | null}) => (
-          <SquareComponent 
-            position={sq.pos} 
-            piece={sq.piece} 
+        {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
               // See comments above
-            sizeInLayout={boardSize && boardSize / 8 }
-            key={`key-${sq.pos.rank}-${sq.pos.file}`} 
-          />
+          <SquareComponent desc={d} sizeInLayout={boardSize && boardSize / 8 } key={`key-${d.position.rank}-${d.position.file}`} />
         ))}
         </SquaresOuter>
       </BGImage>
       <DraggingPiece sizeInLayout={boardSize && boardSize * .85 / 8} />
     </BoardInner>
   )
-})
+}
 
-export default Board
+
+const BoardWithDnD: React.FC<{ 
+  style?: StyleProp<ViewStyle> 
+}> = ({
+  style,
+}) => (
+  <ChessDnDShell>
+    <Board style={style} />
+  </ChessDnDShell>
+)
+
+export default BoardWithDnD

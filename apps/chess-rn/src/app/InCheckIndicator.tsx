@@ -5,9 +5,9 @@ import { autorun } from 'mobx'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
-import { useTheme } from '~/conf/stitches.config'
-import ui from '~/conf/conf'
-import { useGame } from '~/board/GameProvider'
+import { useTheme } from '~/style/stitches.config'
+import ui from '~/style/conf'
+import { useGame } from '~/service'
 
 const InCheckIndicator: React.FC = () => {
 

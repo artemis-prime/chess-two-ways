@@ -6,17 +6,18 @@ import {
   Text
 } from 'react-native'
 
-import { styled, useTheme } from '~/conf/stitches.config'
-import ui from '~/conf/conf'
+import { styled, useTheme } from '~/style/stitches.config'
+import ui from '~/style/conf'
 
 import BGImage from '~/primatives/BGImage'
-import GhostButton from '~/primatives/GhostButton'
+//import GhostButton from '~/primatives/GhostButton'
+
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 import InCheckIndicator from './InCheckIndicator'
-import { useGame } from '~/board/GameProvider'
+import { useGame } from '~/service'
 
-import toRestore from './gameDataForCastle'
+import toRestore from '../gameDataForCastle'
 
 const StyledBGImage = styled(BGImage, {
 

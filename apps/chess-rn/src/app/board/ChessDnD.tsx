@@ -23,7 +23,7 @@ import {
 //  pieceToString
 } from '@artemis-prime/chess-core'
 
-import { useGame } from './GameProvider'
+import { useGame } from '~/service'
 
 import type Point from './Point'
 import {type DnDState, type DnDStateInternal, getDnDStateSingleton} from './DnDState' 

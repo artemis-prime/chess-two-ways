@@ -11,6 +11,7 @@
     "prepare:web": "yarn build:domain && yarn refresh:web",
     "refresh:web": "yarn clean:web && yarn install",
     "refresh:rn": "yarn clean:rn && yarn install",
+    "tcheck:rn": "yarn workspace @artemis-prime/chess-react-native tcheck",
     "prepare:rn": "yarn build:domain && yarn refresh:rn",
     "serve:web": "yarn workspace @artemis-prime/chess-web start",
     "serve:rn": "yarn workspace @artemis-prime/chess-react-native start",

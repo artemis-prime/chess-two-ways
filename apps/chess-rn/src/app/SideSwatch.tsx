@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 
-import { styled } from '~/conf/stitches.config'
+import { styled } from '~/style/stitches.config'
 
 const SideSwatch = styled(View, {
 

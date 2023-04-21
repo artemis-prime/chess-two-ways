@@ -6,7 +6,7 @@ const path = require('path')
 module.exports = {
   watchFolders: [
     ...monorepoMetroTools.watchFolders,
-    path.resolve(__dirname, '../../domain/chess-core'),
+    path.resolve(__dirname, '../../just-the-chess'),
     path.resolve(__dirname, './src'),
     path.resolve(__dirname, '../../assets') 
   ],

@@ -5,23 +5,19 @@ import {
   ViewStyle 
 } from 'react-native'
 import { observer } from 'mobx-react'
-
-import { 
-  type Position, 
-  type Piece,
-  type PositionStatus,
-  FILES, 
-  getPositionStatus
-} from '@artemis-prime/chess-core'
-
-import { styled } from '~/conf/stitches.config'
 import type * as Stitches from 'stitches-native'
 
-import PieceComponent from './Piece'
+import { 
+  type PositionState, 
+  type SquareDesc,
+  type ObsPositionStateRef,
+  FILES 
+} from '@artemis-prime/chess-core'
 
-import { useChessDnD } from './ChessDnD'
-import { useGame } from './GameProvider'
-import { usePulses } from './PulseProvider'
+import { styled } from '~/style/stitches.config'
+import { usePulses } from '~/service'
+
+import PieceComponent from './Piece'
 
 const SquareInner = styled(View, {
   aspectRatio: 1,
@@ -82,37 +78,37 @@ type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
 const FeedbackView: React.FC<{
-  status: PositionStatus,
+  stateRef: ObsPositionStateRef,
   size: number 
 } & PropsWithChildren> = observer(({
-  status,
+  stateRef,
   size,
   children
 }) => {
 
   const pulses = usePulses()
 
-  const getEffectFromStatus = (s: PositionStatus): { effect: EffectVariant, style: any}  => {
+  const getEffectFromPositionState = (s: PositionState): { effect: EffectVariant, style: StyleProp<ViewStyle>}  => {
 
-    const style: any = {}
+    const style: StyleProp<ViewStyle> = {}
     let effect: EffectVariant = undefined
 
-    if (status === 'move' || status === 'castle') {
+    if (s === 'move' || s === 'castle') {
       effect = 'move'
       style.borderRadius = size / 2
     }
     
-    if (status.includes('romote')) {
+    if (s.includes('romote')) {
       if (pulses.fast) {
         effect = 'promote'
       }
     }
-    else if (status === 'castleRookFrom') {
+    else if (s === 'castleRookFrom') {
       if (pulses.slow) {
         effect = 'castleRookFrom'
       }
     }
-    else if (status === 'castleRookTo') {
+    else if (s === 'castleRookTo') {
         // alternate with from
       if (!pulses.slow) {
         effect = 'castleRookTo'
@@ -127,7 +123,7 @@ const FeedbackView: React.FC<{
     ].includes(s as string)) {
       return {
         effect: undefined,
-        style: {}
+        style: {} 
       }
     }
     return {
@@ -136,10 +132,8 @@ const FeedbackView: React.FC<{
     }
   }
 
-  const { effect, style } = getEffectFromStatus(status)
-
   return (
-    <StyledFeedbackView effect={effect} css={style} >
+    <StyledFeedbackView {...getEffectFromPositionState(stateRef.state)} >
       {children}
     </StyledFeedbackView>
   )
@@ -147,37 +141,26 @@ const FeedbackView: React.FC<{
 
 /* See comments in Board.tsx re sizing changes */
 const Square: React.FC<{  
-  position: Position
-  piece: Piece | null
+  desc: SquareDesc,
   sizeInLayout: number | undefined
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  position,
-  piece,
+  desc,
   sizeInLayout,
   style 
 }) => {
 
-  const rankOdd = (position.rank % 2)
-  const fileOdd = (FILES.indexOf(position.file) % 2)
+  const rankOdd = (desc.position.rank % 2)
+  const fileOdd = (FILES.indexOf(desc.position.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd) ? {brown: true} : {}
-
-  const dnd = useChessDnD()
-  const game = useGame()
-
-  const status = getPositionStatus(
-    position,
-    dnd.resolvedDrag,
-    game.check
-  )
 
     // Only do inner layout stuff if we have an accurate size available.
     // This avoids potentional jump after initial layout.
   return (
     <SquareInner {...brown} style={style}>
       {sizeInLayout && (
-      <FeedbackView size={sizeInLayout} status={status} >
-        <PieceComponent piece={piece} size={sizeInLayout} status={status} /> 
+      <FeedbackView size={sizeInLayout} stateRef={desc.posStateRef} >
+        <PieceComponent desc={desc} size={sizeInLayout} /> 
       </FeedbackView>
       )}
     </SquareInner>

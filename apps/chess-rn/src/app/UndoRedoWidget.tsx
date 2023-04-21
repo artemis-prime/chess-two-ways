@@ -9,12 +9,12 @@ import {
 
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/board/GameProvider'
+import { useGame } from '~/service'
 
 import GhostButton from '~/primatives/GhostButton'
   
-import ui from '~/conf/conf'
-import { useTheme } from '~/conf/stitches.config'
+import ui from '~/style/conf'
+import { useTheme } from '~/style/stitches.config'
 
 const UndoRedoWidget: React.FC<{ 
   style?: StyleProp<ViewStyle> 

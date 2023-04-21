@@ -1,15 +1,11 @@
 import React, {
-  useContext,
   PropsWithChildren,
   useEffect,
   useRef
 } from 'react'
 import { makeAutoObservable } from 'mobx'
 
-interface Pulses {
-  slow: boolean
-  fast: boolean
-}
+import type Pulses from './Pulses'
 
 class PulsesInternal implements Pulses {
   slow: boolean = false
@@ -24,10 +20,6 @@ class PulsesInternal implements Pulses {
 }
 
 const PulsesContext = React.createContext<PulsesInternal | undefined>(undefined) 
-
-export const usePulses = (): Pulses =>  {
-  return useContext(PulsesContext) as Pulses
-}
 
 const PulsesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
@@ -54,5 +46,8 @@ const PulsesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-export default PulsesProvider
+export {
+  PulsesProvider as default,
+  PulsesContext
+} 
  
