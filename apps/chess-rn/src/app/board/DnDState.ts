@@ -1,31 +1,33 @@
-import { makeObservable, observable, action, computed } from 'mobx'
+import { 
+  makeObservable, 
+  observable, 
+  action 
+} from 'mobx'
 
 import { 
-  type Action, 
   type Position, 
   type Piece, 
-  type Resolution
+  type ObsPieceRef
 } from '@artemis-prime/chess-core'
 
-import DnDPayload from './DnDPayload'
 import Point from './Point'
 
-  // For use by UI code to reflect state
-interface DnDState {
+interface DragState extends ObsPieceRef {
   offset: Point | null 
-  get resolvedDrag(): Resolution | null 
 }
 
   // For use inside the DnD system
-interface DnDStateInternal extends DnDState {
-  payload: DnDPayload | null, 
+interface DnDStateInternal extends DragState {
+
+  piece: Piece | null
+  from: Position | null
   squareOver: Position | null
-  resolvedAction: Action | null
-  setPayload: (piece: Piece, from: Position) => void 
-  clearPayload: () => void
+
+  setPiece: (piece: Piece) => void 
+  setFrom: (from: Position) => void 
   setOffset: (pt: Point) => void
   setSquareOver: (p: Position | null) => void
-  setResolvedAction: (a: Action | null) => void
+
   clear: () => void 
 }
 
@@ -33,35 +35,29 @@ class DnDStateImpl implements DnDStateInternal {
 
   static currentInstance: DnDStateImpl | null = null 
 
-  payload: DnDPayload | null = null
+  piece: Piece | null = null
+  from: Position | null = null
   offset: Point | null = null
   squareOver: Position | null = null
-  resolvedAction: Action | null = null
 
   constructor() {
     makeObservable(this, {
-      payload: observable,
+      piece: observable,
+      from: observable,
       offset: observable,
-      squareOver: observable,
-      resolvedAction: observable,
-      setPayload: action,
-      clearPayload: action,
+      setPiece: action,
+      setFrom: action,
       setOffset: action,
-      setSquareOver: action,
-      setResolvedAction: action,
       clear: action,
-      resolvedDrag: computed
     }) 
   }
 
-  setPayload(piece: Piece, from: Position): void {
-    this.payload = {
-      piece, 
-      from 
-    }
-  }
-
-  clearPayload(): void {this.payload = null}
+  setPiece(piece: Piece) {
+    this.piece = piece
+  } 
+  setFrom(from: Position) {
+    this.from = from
+  } 
 
   setOffset(pt: Point): void {
     this.offset = pt
@@ -71,29 +67,12 @@ class DnDStateImpl implements DnDStateInternal {
     this.squareOver = p
   }
   
-  setResolvedAction(a: Action | null) {
-    this.resolvedAction = a
-  }
 
   clear(): void {
-    this.payload = null
+    this.piece = null
+    this.from = null
     this.offset = null
     this.squareOver = null
-    this.resolvedAction = null
-  }
-
-  get resolvedDrag(): Resolution | null {
-    return (this.payload && this.squareOver) 
-      ? 
-      {
-        move: {
-          ...this.payload,
-          to: this.squareOver
-        },
-        action: this.resolvedAction 
-      } 
-      : 
-      null
   }
 }
 
@@ -106,6 +85,6 @@ const getDnDStateSingleton = (): DnDStateInternal => {
 
 export {
   getDnDStateSingleton,
-  type DnDState,  
+  type DragState,  
   type DnDStateInternal
 }

@@ -1,16 +1,14 @@
 import React, { 
   useContext, 
-//  useEffect, 
   useRef 
 } from 'react'
 import { LayoutChangeEvent } from 'react-native'
-//import { autorun } from 'mobx'
 
 import {
   Gesture,
   GestureDetector,
   PanGestureHandlerEventPayload,
-  GestureHandlerRootView // must have this due to bug
+  GestureHandlerRootView 
 } from 'react-native-gesture-handler'
 
 import { 
@@ -20,13 +18,16 @@ import {
   positionsEqual, 
   positionToString,
   layoutPositionToBoardPosition, 
-//  pieceToString
 } from '@artemis-prime/chess-core'
 
 import { useGame } from '~/service'
 
 import type Point from './Point'
-import {type DnDState, type DnDStateInternal, getDnDStateSingleton} from './DnDState' 
+import {
+  type DragState,
+  type DnDStateInternal, 
+  getDnDStateSingleton
+} from './DnDState' 
 
 
 interface ConfigChessDnD {
@@ -41,8 +42,8 @@ const useConfigChessDnD = (): ConfigChessDnD => (
   useContext(ConfigChessDnDContext) as ConfigChessDnD
 )
 
-const useChessDnD = (): DnDState => (
-  useContext(ChessDnDContext) as DnDState
+const useDragState = (): DragState => (
+  useContext(ChessDnDContext) as DragState
 )
 
 const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -52,18 +53,9 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const whiteOnBottomRef = useRef<boolean>(true)
   const setWhiteOnBottom = (b: boolean): void => { 
-    //console.warn("WHITE ON BOTTOM: " + b)
     whiteOnBottomRef.current = b 
   }
   const game = useGame()
-
-  /*
-  useEffect(() => {
-    return autorun(() => {
-      console.warn('offset: ' + stateRef.current.offset?.y)
-    })
-  })
-  */
 
   const squareFromTouchOffset = (pt: Point): Position | null => {
 
@@ -89,22 +81,19 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     dimensionsRef.current = { x: width, y: height }
   }
 
-  const onStartDragging = (e: PanGestureHandlerEventPayload) => {
-    //console.warn("START DRAG")
+  const onDragStart = (e: PanGestureHandlerEventPayload) => {
 
     const { x, y } = e
     const p = squareFromTouchOffset({x, y})
     if (!p) {
-      //console.warn("CANNOT DETERMINE SQUARE")
       return 
     }
 
     const piece = game.pieceAt(p)
     if (piece) {
-      //console.warn("FOUND PIECE: " + pieceToString(piece))
       if (game.currentTurn === piece.color) {
-        //console.warn("SETTING PAYLOAD")
-        stateRef.current.setPayload(piece, p)
+        stateRef.current.setPiece(piece)
+        stateRef.current.setFrom(p)
       }
     }
     else {
@@ -112,29 +101,27 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
   }
 
-  const onDragging = (e: PanGestureHandlerEventPayload) => {
-    if (stateRef.current.payload) {
+  const onDragUpdate = (e: PanGestureHandlerEventPayload) => {
+    if (stateRef.current.piece) {
       const { x, y } = e 
       stateRef.current.setOffset({x, y})
-      //console.warn("DRAG: " + y)
       const p = squareFromTouchOffset({x, y})
       if (p) {
         if (!positionsEqual(p, stateRef.current.squareOver!)) {
-          stateRef.current.setResolvedAction(
-            game.resolveAction({
-              piece: stateRef.current.payload.piece, 
-              from: stateRef.current.payload.from, 
-              to: p
-            })
-          )
+          game.resolveAction({
+            piece: stateRef.current.piece!, 
+            from: stateRef.current.from!,  // from is there if piece is
+            to: p
+          })
           stateRef.current.setSquareOver(p)
         }
       }
     }
   }
 
-  const onDragEnd = (e: PanGestureHandlerEventPayload) => {
-    if (stateRef.current.resolvedAction) {
+  const onDragEnd = (e: PanGestureHandlerEventPayload, succeeded: boolean) => {
+
+    if (succeeded) {
       game.takeResolvedAction()
     }
     else {
@@ -145,10 +132,12 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const dragGesture = Gesture.Pan()
     .runOnJS(true)
-    .onStart(onStartDragging)
-    .onUpdate(onDragging)
+    .onStart(onDragStart)
+    .onUpdate(onDragUpdate)
     .onEnd(onDragEnd);
 
+    // Need GestureHandlerRootView due to a bug.
+    // Not documented
   return (
     <GestureHandlerRootView >
     <ConfigChessDnDContext.Provider value={{
@@ -167,6 +156,6 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 export {
   ChessDnDShell,
-  useChessDnD,
+  useDragState,
   useConfigChessDnD,
 }

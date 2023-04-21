@@ -1,10 +1,10 @@
 import { makeObservable, observable, action } from 'mobx'
 
-import type { Piece, Position } from '@artemis-prime/chess-core'
+import type { Piece, Position, ObsPieceRef } from '@artemis-prime/chess-core'
 
 import type DnDPayload from './DnDPayload'
 
-interface DnDStateInternal  {
+interface DnDStateInternal extends ObsPieceRef {
 
   piece: Piece | null
   from: Position | null
