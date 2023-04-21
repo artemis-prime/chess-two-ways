@@ -26,9 +26,8 @@
   },
   "workspaces": {
     "packages": [
-      "domain/chess-core",
+      "just-the-chess",
       "apps/chess-web",
-      "apps/chess-cli",
       "apps/chess-rn"
     ],
     "nohoist": []
