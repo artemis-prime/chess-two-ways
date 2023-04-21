@@ -13,9 +13,9 @@ import { useGame } from '~/service'
 
 import BGImage from '~/primatives/BGImage'
 
+import Square from './board/Square'
 import { ChessDnDShell, useDnDConfig } from './board/ChessDnD'
 import DraggingPiece from './board/DraggingPiece'
-import SquareComponent from './board/Square'
 
 const BoardInner = styled(View, {
   aspectRatio: 1,
@@ -23,7 +23,6 @@ const BoardInner = styled(View, {
   backgroundColor: 'transparent', // needed for gestures to work on android
   borderWidth: 2,
   borderRadius: 3,
-  //borderColor: 'darkbrown',
   overflow: 'hidden', 
   borderColor: '$pieceBlack',
 })
@@ -69,7 +68,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
               // See comments above
-          <SquareComponent desc={d} sizeInLayout={boardSize && boardSize / 8 } key={`key-${d.position.rank}-${d.position.file}`} />
+          <Square desc={d} sizeInLayout={boardSize && boardSize / 8 } key={`key-${d.position.rank}-${d.position.file}`} />
         ))}
         </SquaresOuter>
       </BGImage>

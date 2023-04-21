@@ -9,9 +9,9 @@ import type { SquareDesc } from '@artemis-prime/chess-core'
 import { Box } from '~/primitives'
 import { useBoardOrientation, useGame } from '~/service'
 
-import DraggingPiece from './board/DraggingPiece'
-import SquareComponent from './board/Square'
 import { ChessDnDShell } from './board/ChessDnD'
+import Square from './board/Square'
+import DraggingPiece from './board/DraggingPiece'
 
 const Board: React.FC<{ css?: CSS }> = ({css}) => {
 
@@ -22,7 +22,7 @@ const Board: React.FC<{ css?: CSS }> = ({css}) => {
     <ChessDnDShell>
       <Box className={'board'} css={css}>
       {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
-        <SquareComponent desc={d} key={`key-${d.position.rank}-${d.position.file}`} />
+        <Square desc={d} key={`key-${d.position.rank}-${d.position.file}`} />
       ))}
       </Box>
       <DragOverlay modifiers={[snapCenterToCursor]}>
