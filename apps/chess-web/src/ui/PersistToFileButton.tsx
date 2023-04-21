@@ -2,7 +2,7 @@
 import React, { useRef } from 'react'
 
 import { Button } from '~/primitives'
-import { useGame } from '~/board/GameProvider'
+import { useGame } from '~/service'
 
 const PersistToFileButton: React.FC<React.PropsWithChildren> = ({children}) => {
 

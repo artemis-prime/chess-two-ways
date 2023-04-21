@@ -2,7 +2,7 @@
 import React from 'react'
 import { styled } from '~/style/stitches.config'
 
-import { useGame } from '~/board/GameProvider'
+import { useGame } from '~/service'
   
 const MyLabel = styled('label', {
 

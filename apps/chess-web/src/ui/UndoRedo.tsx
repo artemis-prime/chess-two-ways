@@ -3,7 +3,7 @@
   import { observer } from 'mobx-react'
   import type { CSS } from '@stitches/react'
 
-  import { useGame } from '~/board/GameProvider'
+  import { useGame } from '~/service'
   
   import { Button, Flex } from '~/primitives'
     

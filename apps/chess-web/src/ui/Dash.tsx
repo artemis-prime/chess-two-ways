@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/board/GameProvider'
+import { useGame } from '~/service'
 
 import { Button, Flex, Switch } from '~/primitives'
 

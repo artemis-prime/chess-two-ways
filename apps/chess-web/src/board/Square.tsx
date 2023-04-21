@@ -12,9 +12,9 @@ import {
 } from '@artemis-prime/chess-core'
 
 import { styled } from '~/style/stitches.config'
+import { usePulses } from '~/service'
 
 import PieceComponent from './Piece'
-import { usePulses } from './UIStateProvider'
 
 const EffectsView = styled('div', {
   position: 'absolute', 

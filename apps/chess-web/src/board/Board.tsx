@@ -7,10 +7,9 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import type { SquareDesc } from '@artemis-prime/chess-core'
 
 import { Box } from '~/primitives'
+import { useBoardOrientation, useGame } from '~/service'
 
-import { useGame } from './GameProvider'
 import DraggingPiece from './DraggingPiece'
-import { useBoardOrientation } from './UIStateProvider'
 import SquareComponent from './Square'
 import { ChessDnDShell } from './ChessDnD'
 

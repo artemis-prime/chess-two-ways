@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import GameProvider from '~/board/GameProvider'
-import UIStateProvider from '~/board/UIStateProvider'
+import GameProvider from '~/service/GameProvider'
+import UIServicesProvider from '~/service/UIServicesProvider'
 
 import UI from './UI'
 
@@ -15,9 +15,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <GameProvider >
-      <UIStateProvider >
+      <UIServicesProvider >
         <UI />
-      </UIStateProvider>
+      </UIServicesProvider>
     </GameProvider>
   </React.StrictMode>
 )

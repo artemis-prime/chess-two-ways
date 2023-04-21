@@ -15,10 +15,10 @@ import { styled } from '~/style/stitches.config'
 import c from '~/style/colors'
 
 import { Flex } from '~/primitives'
+import { usePulses, useGame } from '~/service'
 
-import { useGame } from './GameProvider'
 import registry from './pieceRegistry'
-import { usePulses } from './UIStateProvider'
+
 interface SpecificPieceProps {
   size?: string | number
 }
