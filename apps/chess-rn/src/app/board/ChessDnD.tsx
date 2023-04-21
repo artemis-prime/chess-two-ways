@@ -29,21 +29,25 @@ import {
   getDnDStateSingleton
 } from './DnDState' 
 
-
-interface ConfigChessDnD {
+interface ChessDnDConfig {
   layoutListener:(e: LayoutChangeEvent) => void
   setWhiteOnBottom: (b: boolean) => void 
 }
 
-const ConfigChessDnDContext = React.createContext<ConfigChessDnD | undefined>(undefined) 
-const ChessDnDContext = React.createContext<DnDStateInternal | undefined>(undefined) 
+  // Just a way of avoiding to Contexts, Providers, etc
+interface DnDDuo {
+  config: ChessDnDConfig
+  state: DragState
+}
 
-const useConfigChessDnD = (): ConfigChessDnD => (
-  useContext(ConfigChessDnDContext) as ConfigChessDnD
+const ChessDnDContext = React.createContext<DnDDuo | undefined>(undefined) 
+
+const useDnDConfig = (): ChessDnDConfig => (
+  (useContext(ChessDnDContext) as DnDDuo).config 
 )
 
 const useDragState = (): DragState => (
-  useContext(ChessDnDContext) as DragState
+  (useContext(ChessDnDContext) as DnDDuo).state 
 )
 
 const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -140,16 +144,17 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     // Not documented
   return (
     <GestureHandlerRootView >
-    <ConfigChessDnDContext.Provider value={{
-      layoutListener,
-      setWhiteOnBottom
-    }}>
-    <ChessDnDContext.Provider value={stateRef.current}>
+    <ChessDnDContext.Provider value={{
+      state: stateRef.current, 
+      config: {
+        layoutListener,
+        setWhiteOnBottom
+      }}}
+    >
       <GestureDetector gesture={dragGesture}>
         {children}
       </GestureDetector>
     </ChessDnDContext.Provider>
-    </ConfigChessDnDContext.Provider>
     </GestureHandlerRootView>
   )
 }
@@ -157,5 +162,5 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
 export {
   ChessDnDShell,
   useDragState,
-  useConfigChessDnD,
+  useDnDConfig,
 }

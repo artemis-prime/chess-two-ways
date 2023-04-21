@@ -13,7 +13,7 @@ import { useGame } from '~/service'
 
 import BGImage from '~/primatives/BGImage'
 
-import { ChessDnDShell, useConfigChessDnD } from './board/ChessDnD'
+import { ChessDnDShell, useDnDConfig } from './board/ChessDnD'
 import DraggingPiece from './board/DraggingPiece'
 import SquareComponent from './board/Square'
 
@@ -51,7 +51,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
     // we optimize by doing it here and informing them of changes.
     // We are a simple 8x8 grid after all! :)
   const [boardSize, setBoardSize] = useState<number | undefined>(undefined)
-  const { layoutListener: layoutListenerDnd, setWhiteOnBottom } = useConfigChessDnD()
+  const { layoutListener: layoutListenerDnd, setWhiteOnBottom } = useDnDConfig()
 
   useEffect(() => {
     setWhiteOnBottom(whiteOnBottom)
