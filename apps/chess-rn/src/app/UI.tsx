@@ -10,9 +10,24 @@ import BGImage from '~/primatives/BGImage'
 
 import Board from './Board'
 import Dash from './Dash'
-//import Appbar from './Appbar'
 
-import ui from '~/style/conf'
+import { styled } from '~/style/stitches.config'
+ 
+const MainContainer = styled(View, {
+
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+
+  h: '100%',
+  pl: '$2',
+  pr: '$2',
+  pt: '$2',
+  pb: 0,
+  mt: StatusBar.currentHeight!,
+  gap: 14, // bug?
+  backgroundColor: 'rgba(0, 0, 0, 0.2)'
+})
 
 const UI: React.FC = () => {
 
@@ -35,29 +50,16 @@ const UI: React.FC = () => {
       }}>
         <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent' /*theme.colors.headerBG */} />
         {/*
-        <Appbar style={{height: ui.layout.appBarHeight}}  backgroundColor={theme.colors.headerBG}/>
         <Drawer>
           <Text style={{ color: 'white' }}>ipsem lorem headerBG headerBG ipsem lorem headerBG 
             headerBG ipsem lorem headerBG headerBG ipsem lorem headerBG headerBG 
           </Text>
         </Drawer>
     */}
-        <View style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          alignItems: 'stretch',
-          height: '100%',
-          paddingLeft: ui.layout.appGutter,
-          paddingRight: ui.layout.appGutter,
-          paddingTop: ui.layout.appGutter + StatusBar.currentHeight!,
-          paddingBottom: 0,
-          gap: ui.layout.appGutter,
-          backgroundColor: 'rgba(0, 0, 0, 0.2)'
-        }} >
+        <MainContainer>
           <Dash />
           <Board />
-        </View>
+        </MainContainer>
       </BGImage>
     </SafeAreaView>
   )

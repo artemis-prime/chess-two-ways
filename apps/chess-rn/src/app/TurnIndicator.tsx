@@ -7,8 +7,7 @@ import {
   ViewStyle 
 } from 'react-native'
 
-import { styled } from '~/style/stitches.config'
-import ui from '~/style/conf'
+import { styled, common } from '~/style/stitches.config'
 
 import { useGame } from '~/service'
 import SideSwatch from './SideSwatch'
@@ -17,13 +16,10 @@ const OuterView = styled(View, {
   flexDirection: 'row',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  height: ui.typography.common.lineHeight,
+  height: '$common',
 })
 
-const StyledText = styled(Text, {
-  ...ui.typography.common,
-  color: '$dashText',
-})
+const StyledText = styled(Text, common.dashTextCommon)
 
 const TurnIndicator: React.FC<{
   style?: StyleProp<ViewStyle>
@@ -35,10 +31,7 @@ const TurnIndicator: React.FC<{
 
   return (
     <OuterView style={style}>
-      <SideSwatch color={game.currentTurn} style={{
-        height: ui.typography.common.lineHeight * 0.7, 
-        width: ui.typography.common.lineHeight * 1.3
-      }}/>
+      <SideSwatch color={game.currentTurn} />
       <StyledText>'s turn</StyledText>
     </OuterView>
   )

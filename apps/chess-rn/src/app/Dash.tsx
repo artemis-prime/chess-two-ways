@@ -3,21 +3,19 @@ import {
   View,
   StyleProp,
   ViewStyle,
-  Text
 } from 'react-native'
 
 import { styled, useTheme } from '~/style/stitches.config'
-import ui from '~/style/conf'
+import { useGame } from '~/service'
 
 import BGImage from '~/primatives/BGImage'
-//import GhostButton from '~/primatives/GhostButton'
 
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 import InCheckIndicator from './InCheckIndicator'
-import { useGame } from '~/service'
+import AppBarInDash from './AppBarInDash'
 
-import toRestore from '../gameDataForCastle'
+//import toRestore from '../gameDataForCastle'
 
 const StyledBGImage = styled(BGImage, {
 
@@ -25,10 +23,16 @@ const StyledBGImage = styled(BGImage, {
   flexShrink: 1,
   backgroundColor: '#333',
   minHeight: 150,
-  borderWidth: 2,
-  borderRadius: 8,
-  //borderTopRightRadius: 17,
+  borderWidth: '$thicker',
+  borderRadius: '$md',
   borderColor: '$dashBorder',
+})
+
+const DashInner = styled(View, {
+  p: '$3', 
+  flexDirection: 'column', 
+  justifyContent: 'flex-start', 
+  alignItems: 'flex-start'
 })
 
 const Dash: React.FC<{
@@ -36,44 +40,11 @@ const Dash: React.FC<{
 }> = ({
   style
 }) => {
-  
-  const game = useGame()
-  const theme = useTheme()
-
-  const restoreGame = () => {
-    //game.restoreFromSnapshot(toRestore)
-  }
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
-
-      <View style={{
-        flexDirection: 'row', 
-        justifyContent: 'flex-start', 
-        alignItems: 'center',
-
-        height: 40, 
-        width: '100%', 
-        backgroundColor: theme.colors.headerBG,
-        paddingLeft: 12,
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'gray',
-    }} >
-        <Text style={{
-          color: 'white',
-          fontSize: 22,
-          textAlignVertical: 'center',
-          fontWeight: "900",
-        }}>{'\u2630'}</Text>
-
-      </View>
-      <View style={{ 
-        padding: ui.layout.padding, 
-        //paddingTop: ui.layout.padding - 5,
-        flexDirection: 'column', 
-        justifyContent: 'flex-start', 
-        alignItems: 'flex-start'
-      }}>
+      <AppBarInDash />
+      <DashInner>
         <View style={{
           flexDirection: 'row', 
           justifyContent: 'space-between', 
@@ -84,12 +55,7 @@ const Dash: React.FC<{
           <UndoRedoWidget />
         </View>
         <InCheckIndicator />
-        {/*}
-        <GhostButton 
-          onClick={restoreGame}
-          style={{ alignSelf: 'flex-end' }}
-      >Restore</GhostButton> */}
-      </View>
+      </DashInner>
     </StyledBGImage>
   )
 }

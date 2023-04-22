@@ -17,11 +17,11 @@ interface ButtonViewProps extends PropsWithChildren {
 const ButtonShell: React.FC<{
   view: React.ComponentType<ButtonViewProps>
   onClick: () => void
-  viewStyle?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   view,
   onClick,
-  viewStyle,
+  style,
   disabled,
   children,
   ...rest
@@ -45,7 +45,7 @@ const ButtonShell: React.FC<{
 
   return (
     <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled}} >
-      <ButtonView state={disabled ? 'disabled' : buttonState} style={viewStyle} >
+      <ButtonView state={disabled ? 'disabled' : buttonState} style={style} >
         {children}
       </ButtonView>
     </Pressable>

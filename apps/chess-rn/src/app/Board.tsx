@@ -21,8 +21,8 @@ const BoardInner = styled(View, {
   aspectRatio: 1,
   width: '100%',
   backgroundColor: 'transparent', // needed for gestures to work on android
-  borderWidth: 2,
-  borderRadius: 3,
+  borderWidth: '$thicker',
+  borderRadius: '$sm',
   overflow: 'hidden', 
   borderColor: '$pieceBlack',
 })

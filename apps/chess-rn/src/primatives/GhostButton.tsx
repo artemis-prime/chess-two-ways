@@ -6,28 +6,27 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import { styled } from '~/style/stitches.config'
-import ui from '~/style/conf'
+import { styled, common } from '~/style/stitches.config'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
-const GhostStyledText = styled(Text, {
-  ...ui.typography.common,
-  color: '$dashText',
-  backgroundColor: 'transparent',
-  variants: {
-    state: {
-      disabled: {
-        color: '$gray9'
-      },
-      pressed: {
-        color: '$gray3',
-        textDecorationLine: 'underline',
-      },
-      default: {}
+const GhostStyledText = styled(Text, 
+  common.dashTextCommon,  
+  {
+    variants: {
+      state: {
+        disabled: {
+          color: '$gray9'
+        },
+        pressed: {
+          color: '$gray3',
+          textDecorationLine: 'underline',
+        },
+        default: {}
+      }
     }
   }
-})
+)
 
 const GhostText: React.FC<ButtonViewProps> = ({
   state,
@@ -48,7 +47,7 @@ const GhostButton: React.FC<{
   style,
   ...rest
 }) => (
-  <ButtonShell {...rest} viewStyle={style} onClick={onClick} view={GhostText} >
+  <ButtonShell {...rest} onClick={onClick} view={GhostText} style={style}  >
     {children}
   </ButtonShell>
 )

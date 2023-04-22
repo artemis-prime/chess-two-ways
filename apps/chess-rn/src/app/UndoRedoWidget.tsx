@@ -6,15 +6,13 @@ import {
   Text,
   ViewStyle,
 } from 'react-native'
-
 import { observer } from 'mobx-react'
 
 import { useGame } from '~/service'
-
 import GhostButton from '~/primatives/GhostButton'
-  
-import ui from '~/style/conf'
-import { useTheme } from '~/style/stitches.config'
+import { styled, common } from '~/style/stitches.config'
+
+const PipeSymbolText = styled(Text, common.dashTextCommon)
 
 const UndoRedoWidget: React.FC<{ 
   style?: StyleProp<ViewStyle> 
@@ -23,7 +21,6 @@ const UndoRedoWidget: React.FC<{
 }) => {
 
   const game = useGame()
-  const theme = useTheme()
 
   return (
     <View style={[{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }, style]} >
@@ -32,7 +29,7 @@ const UndoRedoWidget: React.FC<{
         onClick={game.undo.bind(game)}
         style={{ marginRight: !(game.canUndo || game.canRedo) ? 15 : 6 }}
       >Undo</GhostButton>
-      {(game.canUndo || game.canRedo) && <Text style={{...ui.typography.common, color: theme.colors.dashText }}>I</Text>}
+      {(game.canUndo || game.canRedo) && <PipeSymbolText>|</PipeSymbolText>}
       <GhostButton 
         disabled={!game.canRedo}
         onClick={game.redo.bind(game)}

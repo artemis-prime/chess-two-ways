@@ -54,6 +54,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>SqueakyChalkSound.ttf</string>
+		<string>IDidThis.ttf</string>
 	</array>
 </dict>
 </plist>

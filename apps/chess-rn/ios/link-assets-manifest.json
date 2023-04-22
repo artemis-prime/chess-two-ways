@@ -2,6 +2,10 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "../../assets/rn/font/IDidThis.ttf",
+      "sha1": "249f6415ea465f0cc596bff194dd17335740e18e"
+    },
+    {
       "path": "../../assets/rn/font/SqueakyChalkSound.ttf",
       "sha1": "686866c20b031203aff2ad2fd90ea4e5b9077c95"
     },

@@ -32,11 +32,6 @@ const SquareInner = styled(View, {
   }
 })
 
-const BORDER_COMMON = {
-  borderWidth: 1,
-  borderRadius: 0,
-}
- 
 const StyledFeedbackView = styled(View, {
 
   position: 'absolute', 
@@ -54,19 +49,20 @@ const StyledFeedbackView = styled(View, {
       },
       move: {
         borderColor: 'green',
-        ...BORDER_COMMON
+        borderWidth: '$normal',
+        borderRadius: '$rounded',
       },
       promote: {
         borderColor: 'yellow',
-        ...BORDER_COMMON
+        borderWidth: '$normal',
       },
       castleRookTo: {
         borderColor: 'darkgreen',
-        ...BORDER_COMMON
+        borderWidth: '$normal',
       },
       castleRookFrom: {
         borderColor: 'darkgreen',
-        ...BORDER_COMMON
+        borderWidth: '$normal'
       },
     }
   }
@@ -87,58 +83,33 @@ const FeedbackView: React.FC<{
 
   const pulses = usePulses()
 
-  const getEffectFromPositionState = (s: PositionState): { effect: EffectVariant, style: StyleProp<ViewStyle>}  => {
+  const getEffectFromPositionState = (s: PositionState): EffectVariant  => {
 
-    const style: StyleProp<ViewStyle> = {}
     let effect: EffectVariant = undefined
-
     if (s === 'move' || s === 'castle') {
       effect = 'move'
-      style.borderRadius = size / 2
     }
-    
-    if (s.includes('romote')) {
-      if (pulses.fast) {
-        effect = 'promote'
-      }
+    else if (s.includes('romote') && pulses.fast) {
+      effect = 'promote'
     }
-    else if (s === 'castleRookFrom') {
-      if (pulses.slow) {
-        effect = 'castleRookFrom'
-      }
+    else if (s === 'castleRookFrom' && pulses.slow) {
+      effect = 'castleRookFrom'
     }
-    else if (s === 'castleRookTo') {
-        // alternate with from
-      if (!pulses.slow) {
-        effect = 'castleRookTo'
-      }
+      // // alternate with castleRookFrom
+    else if (s === 'castleRookTo' && !pulses.slow) {
+      effect = 'castleRookTo'
     }
-    else if ([
-      'invalid',
-      'none',
-      'kingInCheck',
-      'inCheckFrom',
-      'capture'
-    ].includes(s as string)) {
-      return {
-        effect: undefined,
-        style: {} 
-      }
-    }
-    return {
-      effect,
-      style
-    }
+    return effect
   }
 
   return (
-    <StyledFeedbackView {...getEffectFromPositionState(stateRef.state)} >
+    <StyledFeedbackView effect={getEffectFromPositionState(stateRef.state)} >
       {children}
     </StyledFeedbackView>
   )
 })
 
-/* See comments in Board.tsx re sizing changes */
+  // See comments in Board.tsx re sizing changes 
 const Square: React.FC<{  
   desc: SquareDesc,
   sizeInLayout: number | undefined

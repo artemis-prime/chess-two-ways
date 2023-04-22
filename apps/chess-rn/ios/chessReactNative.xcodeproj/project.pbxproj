@@ -18,6 +18,7 @@
 		3A1A34E837504593ADD14E93 /* chess_bg_1920.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4D112CB4A9C84743864FE2C5 /* chess_bg_1920.jpg */; };
 		CCF87B3929E34C9390F34727 /* slate_bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DC657720F3D04510999D0E40 /* slate_bg.jpg */; };
 		22AD6A99349E4AB9A4B35707 /* wood_grain_bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8318F2F888BE494F92339D09 /* wood_grain_bg.jpg */; };
+		854D9731ED0F45C8BE6DE0D3 /* IDidThis.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61BA204E5A93476F9813E091 /* IDidThis.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		4D112CB4A9C84743864FE2C5 /* chess_bg_1920.jpg */ = {isa = PBXFileReference; name = "chess_bg_1920.jpg"; path = "../../../assets/rn/img/chess_bg_1920.jpg"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		DC657720F3D04510999D0E40 /* slate_bg.jpg */ = {isa = PBXFileReference; name = "slate_bg.jpg"; path = "../../../assets/rn/img/slate_bg.jpg"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		8318F2F888BE494F92339D09 /* wood_grain_bg.jpg */ = {isa = PBXFileReference; name = "wood_grain_bg.jpg"; path = "../../../assets/rn/img/wood_grain_bg.jpg"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		61BA204E5A93476F9813E091 /* IDidThis.ttf */ = {isa = PBXFileReference; name = "IDidThis.ttf"; path = "../../../assets/rn/font/IDidThis.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +166,7 @@
 				4D112CB4A9C84743864FE2C5 /* chess_bg_1920.jpg */,
 				DC657720F3D04510999D0E40 /* slate_bg.jpg */,
 				8318F2F888BE494F92339D09 /* wood_grain_bg.jpg */,
+				61BA204E5A93476F9813E091 /* IDidThis.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 				3A1A34E837504593ADD14E93 /* chess_bg_1920.jpg in Resources */,
 				CCF87B3929E34C9390F34727 /* slate_bg.jpg in Resources */,
 				22AD6A99349E4AB9A4B35707 /* wood_grain_bg.jpg in Resources */,
+				854D9731ED0F45C8BE6DE0D3 /* IDidThis.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

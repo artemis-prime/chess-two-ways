@@ -5,14 +5,14 @@ import { autorun } from 'mobx'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
-import { useTheme } from '~/style/stitches.config'
-import ui from '~/style/conf'
+import { styled, common } from '~/style/stitches.config'
 import { useGame } from '~/service'
+
+const StyledText = styled(Text, common.dashTextAlertSmaller)
 
 const InCheckIndicator: React.FC = () => {
 
   const game = useGame()
-  const theme = useTheme()
   const [squaresString, setSquaresString] = useState<string>('')
 
     // Note that autorun returns a cleanup function that deletes the created listener
@@ -27,10 +27,8 @@ const InCheckIndicator: React.FC = () => {
     setSquaresString(str)
   })), [])
 
-  return !!squaresString ? (
-    <Text style={{...ui.typography.smaller, color: theme.colors.dashAlert}}>
-      {`In check from ${squaresString}!`}
-    </Text> 
+  return squaresString ? (
+    <StyledText>{`In check from ${squaresString}!`}</StyledText> 
   ) : null
 }
 
