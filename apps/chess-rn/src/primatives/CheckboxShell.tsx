@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from 'react'
+import React, { PropsWithChildren, useEffect, useState } from 'react'
 import { 
   Pressable,
   PressableProps,
@@ -10,7 +10,9 @@ import {
 type CheckboxState = 'checked' | 'unchecked' | 'pressed' | 'disabled'
 
 interface CheckboxViewProps extends PropsWithChildren {
-  state: CheckboxState
+  checked: boolean,
+  pressed?: boolean,
+  disabled?: boolean | null, // to match type of Pressable prop
   style?: StyleProp<ViewStyle>
 }
 
@@ -18,36 +20,36 @@ const CheckboxShell: React.FC<{
   view: React.ComponentType<CheckboxViewProps>
   checked: boolean,
   setChecked: (b: boolean) => void,
-  viewStyle?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   view,
   checked,
   setChecked,
-  viewStyle,
+  style,
   disabled,
   children,
   ...rest
 }) => {
 
-  const [checkboxState, setCheckboxState] = useState<CheckboxState>('unchecked')
+  const [pressed, setPressed] = useState<boolean>(false)
 
   const CheckboxView = view // must convert the referenced variable to uppercase
 
   const onPressIn = (e: GestureResponderEvent): void => {
-    setCheckboxState('pressed')
+    setPressed(true)
   }
 
   const onPressOut = (e: GestureResponderEvent): void => {
-    setCheckboxState(checked ? 'checked' : 'unchecked')
+    setPressed(false)
   }
 
   const onPress = (e: GestureResponderEvent): void => {
     setChecked(!checked)
   }
 
-  return (
+    return (
     <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled}} >
-      <CheckboxView state={disabled ? 'disabled' : checkboxState} style={viewStyle} >
+      <CheckboxView {...{checked, pressed, disabled}} style={style} >
         {children}
       </CheckboxView>
     </Pressable>

@@ -9,8 +9,8 @@ import {
 import { observer } from 'mobx-react'
 
 import { useGame } from '~/service'
-import GhostButton from '~/primatives/GhostButton'
 import { styled, common } from '~/style/stitches.config'
+import { GhostButton } from '~/primatives'
 
 const PipeSymbolText = styled(Text, common.dashTextCommon)
 

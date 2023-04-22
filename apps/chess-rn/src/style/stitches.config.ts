@@ -15,6 +15,7 @@ const {
   css, 
   styled,
   useTheme, 
+  theme,
   ThemeProvider  
 } = createStitches({
   theme: {
@@ -199,6 +200,7 @@ export {
   css, 
   styled,
   useTheme, 
+  theme,
   ThemeProvider,  
   common
 } 

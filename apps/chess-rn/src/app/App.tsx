@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ThemeProvider, lightTheme } from '~/style/stitches.config'
+import { ThemeProvider, theme } from '~/style/stitches.config'
 
 import GameProvider from '~/service/GameProvider'
 import PulsesProvider from '~/service/PulsesProvider'
@@ -8,7 +8,7 @@ import PulsesProvider from '~/service/PulsesProvider'
 import UI from './UI'
 
 const App: React.FC = () => (
-  <ThemeProvider theme={lightTheme}>
+  <ThemeProvider theme={theme}>
     <PulsesProvider>
       <GameProvider >
         <UI />

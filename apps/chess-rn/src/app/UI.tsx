@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   SafeAreaView,
   StatusBar,
   View,
 } from 'react-native'
 
-import BGImage from '~/primatives/BGImage'
+import { styled } from '~/style/stitches.config'
+import { BGImage } from '~/primatives'
 //import Drawer from '~/primatives/Drawer'
 
 import Board from './Board'
 import Dash from './Dash'
-
-import { styled } from '~/style/stitches.config'
  
 const MainContainer = styled(View, {
 
@@ -25,18 +24,12 @@ const MainContainer = styled(View, {
   pt: '$2',
   pb: 0,
   mt: StatusBar.currentHeight!,
-  gap: 14, // bug?
+  gap: 11, // bug? Doesn't seem to recognize size token values.
   backgroundColor: 'rgba(0, 0, 0, 0.2)'
 })
 
 const UI: React.FC = () => {
 
-  //const theme = useTheme()
-
-  useEffect(() => {
-    //StatusBar.setHidden(true)
-  }, [])
-  
   return (
     <SafeAreaView style={{
       height: '100%',
@@ -48,7 +41,7 @@ const UI: React.FC = () => {
         alignItems: 'stretch',
         height: '100%',
       }}>
-        <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent' /*theme.colors.headerBG */} />
+        <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
         {/*
         <Drawer>
           <Text style={{ color: 'white' }}>ipsem lorem headerBG headerBG ipsem lorem headerBG 

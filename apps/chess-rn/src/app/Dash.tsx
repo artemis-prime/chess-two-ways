@@ -5,10 +5,9 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import { styled, useTheme } from '~/style/stitches.config'
-import { useGame } from '~/service'
+import { styled } from '~/style/stitches.config'
 
-import BGImage from '~/primatives/BGImage'
+import { BGImage } from '~/primatives'
 
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
