@@ -6,6 +6,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native'
+import { observer } from 'mobx-react'
 
 type CheckboxState = 'checked' | 'unchecked' | 'pressed' | 'disabled'
 
@@ -47,14 +48,14 @@ const CheckboxShell: React.FC<{
     setChecked(!checked)
   }
 
-    return (
-    <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled}} >
+  return (
+    <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled: !!disabled}} >
       <CheckboxView {...{checked, pressed, disabled}} style={style} >
         {children}
       </CheckboxView>
     </Pressable>
   )
-} 
+}
 
 export {
   CheckboxShell as default,

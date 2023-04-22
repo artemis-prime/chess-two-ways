@@ -1,14 +1,16 @@
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useEffect } from 'react'
 import { 
   Text,
   PressableProps,
   StyleProp,
   ViewStyle,
 } from 'react-native'
+import { observer } from 'mobx-react'
 
 import { styled } from '~/style/stitches.config'
 
 import { CheckboxShell, type CheckboxViewProps } from '~/primatives'
+import { useUI } from '~/service'
 
 
 const MenuButtonCheckboxView = styled(Text, {
@@ -57,13 +59,15 @@ const MenuButtonView: React.FC<CheckboxViewProps> = ({
 )
 
 const MenuButton: React.FC<{
-  checked: boolean,
-  setChecked: (b: boolean) => void,
   style?: StyleProp<ViewStyle>
-} & PressableProps & PropsWithChildren> = (
+} & PressableProps & PropsWithChildren> = observer((
   props
-) => (
-  <CheckboxShell {...props} view={MenuButtonView} />
-)
+) => {
+
+  const ui = useUI()
+  return (
+    <CheckboxShell {...props} checked={ui.menuOpen} setChecked={ui.setMenuOpen} view={MenuButtonView} />
+  )
+})
 
 export default MenuButton

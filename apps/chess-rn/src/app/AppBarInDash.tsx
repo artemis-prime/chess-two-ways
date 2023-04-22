@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { 
   View,
   StyleProp,
@@ -27,11 +27,9 @@ const AppBarInDash: React.FC<{
   style
 }) => {
   
-  const [checked, setChecked] = useState<boolean>(true)
-
   return (
-    <AppBarView style={[style, {borderBottomColor: (checked) ? 'red' : 'gray'}]}>
-      <MenuButton checked={checked} setChecked={setChecked} />
+    <AppBarView style={style}>
+      <MenuButton />
     </AppBarView>
   )
 }

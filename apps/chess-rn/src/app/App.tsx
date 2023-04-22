@@ -3,17 +3,17 @@ import React from 'react'
 import { ThemeProvider, theme } from '~/style/stitches.config'
 
 import GameProvider from '~/service/GameProvider'
-import PulsesProvider from '~/service/PulsesProvider'
+import UIServicesProvider from '~/service/UIServicesProvider'
 
 import UI from './UI'
 
 const App: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <PulsesProvider>
+    <UIServicesProvider>
       <GameProvider >
         <UI />
       </GameProvider>
-    </PulsesProvider>
+    </UIServicesProvider>
   </ThemeProvider>
 )
 

@@ -5,11 +5,12 @@ import {
   ViewStyle,
   LayoutChangeEvent 
 } from 'react-native'
+import { observer } from 'mobx-react'
 
 import { type SquareDesc } from '@artemis-prime/chess-core'
 
 import { styled } from '~/style/stitches.config'
-import { useGame } from '~/service'
+import { useGame, useUI } from '~/service'
 import { BGImage } from '~/primatives'
 
 import Square from './board/Square'
@@ -36,13 +37,14 @@ const SquaresOuter = styled(View, {
   backgroundColor: 'transparent', // needed for gestures to work on android
 })
 
-const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
+const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = observer(({
   style 
 }) => {
   const whiteOnBottom = true // TODO: will be ui state soon :)
 
   const game = useGame()
-
+  const ui = useUI()
+  
     // Squares need to know their size in pt to do internal layout.
     // Instead of forcing each square listen for it's own size changes,
     // we optimize by doing it here and informing them of changes.
@@ -61,7 +63,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
   }
 
   return (
-    <BoardInner style={style} collapsable={false}>
+    <BoardInner style={style} pointerEvents={(ui.menuOpen ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
@@ -73,7 +75,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = ({
       <DraggingPiece sizeInLayout={boardSize && boardSize * .85 / 8} />
     </BoardInner>
   )
-}
+})
 
 
 const BoardWithDnD: React.FC<{ 

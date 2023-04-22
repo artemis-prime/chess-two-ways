@@ -4,10 +4,11 @@ import {
   StatusBar,
   View,
 } from 'react-native'
+import { observer } from 'mobx-react'
 
-import { styled } from '~/style/stitches.config'
+import { styled, useTheme } from '~/style/stitches.config'
+import { useUI } from '~/service'
 import { BGImage } from '~/primatives'
-//import Drawer from '~/primatives/Drawer'
 
 import Board from './Board'
 import Dash from './Dash'
@@ -23,39 +24,63 @@ const MainContainer = styled(View, {
   pr: '$2',
   pt: '$2',
   pb: 0,
-  mt: StatusBar.currentHeight!,
   gap: 11, // bug? Doesn't seem to recognize size token values.
-  backgroundColor: 'rgba(0, 0, 0, 0.2)'
+  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+
+  variants: {
+    menuOpen: {
+      true: {
+        mt: 0,
+      },
+      false: {
+        mt: StatusBar.currentHeight!,
+      }
+    }
+  }
 })
 
-const UI: React.FC = () => {
+const BGImageView = styled(BGImage, {
+
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  height: '100%',
+
+  variants: {
+    menuOpen: {
+      true: {
+        left: '60%',
+        top: 120,
+        borderTopLeftRadius: '$md',
+        borderWidth: 1,
+        borderColor: '$gray11'
+      },
+      false: {
+        top: 0,
+        left: 0
+      }
+    }
+  }
+})
+
+const UI: React.FC = observer(() => {
+
+  const theme = useTheme()
+  const ui = useUI()
 
   return (
-    <SafeAreaView style={{
-      height: '100%',
-    }}>
-      <BGImage imageURI={'chess_bg_1920'} style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-        height: '100%',
-      }}>
-        <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-        {/*
-        <Drawer>
-          <Text style={{ color: 'white' }}>ipsem lorem headerBG headerBG ipsem lorem headerBG 
-            headerBG ipsem lorem headerBG headerBG ipsem lorem headerBG headerBG 
-          </Text>
-        </Drawer>
-    */}
-        <MainContainer>
-          <Dash />
-          <Board />
-        </MainContainer>
-      </BGImage>
+    <SafeAreaView style={{ height: '100%' }}>
+      <View style={{width: '100%', height: '100%', backgroundColor: theme.colors.headerBG}} >
+        <BGImageView imageURI={'chess_bg_1920'} menuOpen={ui.menuOpen}>
+          <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
+          <MainContainer menuOpen={ui.menuOpen} >
+            <Dash />
+            <Board />
+          </MainContainer>
+        </BGImageView>
+      </View>
     </SafeAreaView>
   )
-}
+})
 
 export default UI

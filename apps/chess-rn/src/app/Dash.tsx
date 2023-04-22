@@ -4,6 +4,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native'
+import { observer } from 'mobx-react'
 
 import { styled } from '~/style/stitches.config'
 
@@ -13,8 +14,7 @@ import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 import InCheckIndicator from './InCheckIndicator'
 import AppBarInDash from './AppBarInDash'
-
-//import toRestore from '../gameDataForCastle'
+import { useUI } from '~/service'
 
 const StyledBGImage = styled(BGImage, {
 
@@ -36,14 +36,16 @@ const DashInner = styled(View, {
 
 const Dash: React.FC<{
   style?: StyleProp<ViewStyle>
-}> = ({
+}> = observer(({
   style
 }) => {
+
+  const ui = useUI()
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
       <AppBarInDash />
-      <DashInner>
+      <DashInner pointerEvents={(ui.menuOpen ? 'none' : 'auto')}>
         <View style={{
           flexDirection: 'row', 
           justifyContent: 'space-between', 
@@ -57,6 +59,6 @@ const Dash: React.FC<{
       </DashInner>
     </StyledBGImage>
   )
-}
+})
 
 export default Dash

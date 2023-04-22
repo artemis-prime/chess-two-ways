@@ -1,11 +1,9 @@
 import { useContext } from 'react'
 
 import type Pulses from './Pulses'
-import { PulsesContext } from './PulsesProvider'
+import { UIServicesContext, type UIServices } from './UIServicesProvider'
 
 const usePulses = (): Pulses =>  {
-  return useContext(PulsesContext) as Pulses
+  return (useContext(UIServicesContext) as UIServices).pulses
 }
-
 export default usePulses
-
