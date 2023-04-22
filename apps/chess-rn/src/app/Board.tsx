@@ -34,7 +34,6 @@ const SquaresOuter = styled(View, {
   flexDirection: 'row',
   justifyContent: 'flex-start',
   flexWrap: 'wrap',
-  position: 'relative',
   backgroundColor: 'transparent', // needed for gestures to work on android
 })
 

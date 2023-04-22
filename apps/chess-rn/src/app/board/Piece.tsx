@@ -1,38 +1,32 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { 
   StyleProp,
   Text, 
   View,
-  ViewStyle 
+  ViewStyle,
+  TextStyle,
+  ColorValue 
 } from 'react-native'
 import { observer } from 'mobx-react'
 
 import { 
-  type Piece as DomainPiece,
-  type Color,
   type SquareDesc,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/style/stitches.config'
+import { styled, useTheme } from '~/style/stitches.config'
 import { usePulses } from '~/service'
 
 interface ShadowDesc {
   variant: 
-    Color | 
-    'whiteLarger' | 
-    'blackLarger' | 
+    'normal' |
+    'large' | 
     'effectRt1' | 
     'effectRt2' | 
     'effectLt1' | 
     'effectLt2'
-  color: string
-}
 
-interface TextPieceDesc {
-  fontSize: number 
-  pieceVariant: Color | 'whiteLarger' | 'blackLarger'
-  shadows: ShadowDesc[]
+  color: ColorValue
 }
 
 const IN_CHECK_SHADOWS = [
@@ -50,8 +44,8 @@ const CAPTURE_SHADOWS = [
 ] as ShadowDesc[]
 
 const NORMAL_SHADOW_COLOR = {
-  white: 'rgba(0, 0, 0, 0.3)',
-  black: 'rgba(0, 0, 0, 0.5)'
+  white: 'rgba(0, 0, 0, 0.3)' as ColorValue,
+  black: 'rgba(0, 0, 0, 0.5)' as ColorValue
 }
 
 interface Offset {
@@ -76,36 +70,25 @@ const sumOffsets = (o1: Offset, o2: Offset): Offset => ({
   top: o1.top + o2.top
 })
 
-const PieceText = styled(Text, {
+const PieceFigure = styled(Text, {
 
   fontWeight: '600', 
   textAlign: 'center',
   textAlignVertical: 'center',
   width: '100%',
-  position: 'relative',
   variants: {
-    variant: {
-      white: {
-        color: '$pieceWhite',
+    figureSize: {
+      'normal': {
         ...IMAGE_OFFSET
       },
-      black: {
-        color: '$pieceBlack',
-        ...IMAGE_OFFSET
-      },
-      whiteLarger: {
-        color: '$pieceWhite',
-        ...IMAGE_OFFSET_LARGER
-      }, 
-      blackLarger: {
-        color: '$pieceBlack',
+      'large': {
         ...IMAGE_OFFSET_LARGER
       }
     }
   }
 })
 
-const ShadowText = styled(Text, {
+const ShadowFigure = styled(Text, {
 
   fontWeight: '600', 
   textAlign: 'center',
@@ -114,16 +97,10 @@ const ShadowText = styled(Text, {
   position: 'absolute',
   variants: {
     variant: {
-      white: {
+      normal: {
         ...sumOffsets(IMAGE_OFFSET, {left: 2, top: 2}),
       },
-      black: {
-        ...sumOffsets(IMAGE_OFFSET, {left: 2, top: 2}),
-      },
-      whiteLarger: {
-        ...sumOffsets(IMAGE_OFFSET_LARGER, {left: 2, top: 2}),
-      },
-      blackLarger: {
+      large: {
         ...sumOffsets(IMAGE_OFFSET_LARGER, {left: 2, top: 2}),
       },
       effectRt1: {
@@ -143,17 +120,16 @@ const ShadowText = styled(Text, {
 })
 
   // https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native 
-const PieceShadow: React.FC<{
-  piece: DomainPiece
-  fontSize: number
-  shadows: ShadowDesc[]
-}> = ({
-  piece,
-  fontSize,
-  shadows
+const Shadows: React.FC<{
+  descs: ShadowDesc[]
+  style?: StyleProp<TextStyle>
+} & PropsWithChildren> = ({
+  descs,
+  style,
+  children
 }) => (<>
-  {shadows.map((d, i) => (
-    <ShadowText style={{fontSize, color: d.color}} variant={d.variant} key={i}>{PIECETYPE_TO_UNICODE[piece.type]}</ShadowText> 
+  {descs.map((d, i) => (
+    <ShadowFigure style={[{color: d.color}, style]} variant={d.variant} key={i}>{children}</ShadowFigure> 
   ))}
 </>)
 
@@ -170,67 +146,74 @@ const Piece: React.FC<{
 }) => {
 
   const pulses = usePulses()
+  const theme = useTheme()
 
   if (!desc.pieceRef.piece) {
     return null
   }
 
-  const normal = (): {
-    fontSize: number
-    pieceVariant: Color
-  } => ({
-    fontSize: size *.80,
-    pieceVariant: desc.pieceRef.piece!.color
-  })
+  const { 
+    fontSize, 
+    figureSize, 
+    shadows
+  } = ((): {
+    fontSize: number 
+    figureSize: 'normal' | 'large' 
+    shadows: ShadowDesc[]
+  } => {
 
-  const bigger = (fs?: number): {
-    fontSize: number
-    pieceVariant: Color | 'whiteLarger' | 'blackLarger'
-  } => ({
-    fontSize: size * (fs ? fs : .9),
-    pieceVariant: `${desc.pieceRef.piece!.color}Larger` as Color | 'whiteLarger' | 'blackLarger'
-  })
-
-    
-  const getTextPieceProps = (): TextPieceDesc => {
     if (desc.posStateRef.state === 'kingInCheck' && pulses.slow ) {
-      return { ...bigger(), shadows: IN_CHECK_SHADOWS }
+      return { 
+        fontSize: size * .9, 
+        figureSize: 'large', 
+        shadows: IN_CHECK_SHADOWS 
+      }
     } 
     if (desc.posStateRef.state === 'inCheckFrom' && !pulses.slow) {
-      return { ...bigger(.95), shadows: IN_CHECK_SHADOWS }
+      return { 
+        fontSize: size * .95, 
+        figureSize: 'large', 
+        shadows: IN_CHECK_SHADOWS 
+      }
     } 
       // in 'capturePromote' case, the square will pulse w a yellow border as well.
     else if (desc.posStateRef.state.includes('capture') && pulses.fast) {
-      return { ...bigger(), shadows: CAPTURE_SHADOWS }
+      return { 
+        fontSize: size * .9, 
+        figureSize: 'large', 
+        shadows: CAPTURE_SHADOWS 
+      }
     } 
     else if (desc.posStateRef.state === 'castleRookFrom' && pulses.slow) {
         // pulse larger
       return {
-        ...bigger(),
-        shadows: [ { variant: `${desc.pieceRef.piece!.color}Larger`, color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
+        fontSize: size * .9, 
+        figureSize: 'large',
+        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
       }
     }
       // Default size and shadows
     return {
-      ...normal(),
-      shadows: [ { variant: desc.pieceRef.piece!.color, color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
+      fontSize: size *.8,
+      figureSize: 'normal',
+      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
     }
-  }
+  })()
 
-    const { 
-      fontSize, 
-      pieceVariant, 
-      shadows
-    } = getTextPieceProps()
+  const height = fontSize * 1.1 // ensure no clipping 
+  const color = (desc.pieceRef.piece!.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
 
-    const height = fontSize * 1.1 // ensure no clipping
-
-    return (
-      <View style={[style, { position: 'relative', width: '100%', height: '100%' }]} >
-        <PieceShadow piece={desc.pieceRef.piece!} {...{fontSize, shadows, height}} /> 
-        <PieceText style={{ fontSize, height }} variant={pieceVariant}>{PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}</PieceText>
-      </View>
-    ) 
+    // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
+  return (
+    <View style={[style, { width: '100%', height: '100%' }]} >
+      <Shadows descs={shadows} style={{ fontSize, height  }} >
+        {PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}
+      </Shadows> 
+      <PieceFigure figureSize={figureSize} style={{ fontSize, height, color }} >
+        {PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}
+      </PieceFigure>
+    </View>
+  ) 
 })
 
 export default Piece

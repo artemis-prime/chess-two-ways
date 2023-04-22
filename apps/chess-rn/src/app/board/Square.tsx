@@ -23,7 +23,6 @@ const SquareInner = styled(View, {
   aspectRatio: 1,
   width: '12.5%',
   height: '12.5%',
-  position: 'relative',
   variants: {
     brown: {
       true: {

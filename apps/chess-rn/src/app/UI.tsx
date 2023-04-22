@@ -25,7 +25,6 @@ const UI: React.FC = () => {
   return (
     <SafeAreaView style={{
       height: '100%',
-      position: 'relative',
     }}>
       <BGImage imageURI={'chess_bg_1920'} style={{
         display: 'flex',
@@ -33,7 +32,6 @@ const UI: React.FC = () => {
         justifyContent: 'flex-start',
         alignItems: 'stretch',
         height: '100%',
-        position: 'relative',
       }}>
         <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent' /*theme.colors.headerBG */} />
         {/*
