@@ -35,8 +35,10 @@ const DashInner = styled(View, {
 })
 
 const Dash: React.FC<{
+  setMenuOpen: (b: boolean) => void
   style?: StyleProp<ViewStyle>
 }> = observer(({
+  setMenuOpen,
   style
 }) => {
 
@@ -44,7 +46,7 @@ const Dash: React.FC<{
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
-      <AppBarInDash />
+      <AppBarInDash setMenuOpen={setMenuOpen} />
       <DashInner pointerEvents={(ui.menuOpen ? 'none' : 'auto')}>
         <View style={{
           flexDirection: 'row', 

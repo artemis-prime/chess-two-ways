@@ -59,14 +59,17 @@ const MenuButtonView: React.FC<CheckboxViewProps> = ({
 )
 
 const MenuButton: React.FC<{
+  setMenuOpen: (b: boolean) => void
   style?: StyleProp<ViewStyle>
-} & PressableProps & PropsWithChildren> = observer((
-  props
+} & PressableProps & PropsWithChildren> = observer(({
+  setMenuOpen,
+  ...rest
+  }
 ) => {
 
   const ui = useUI()
   return (
-    <CheckboxShell {...props} checked={ui.menuOpen} setChecked={ui.setMenuOpen} view={MenuButtonView} />
+    <CheckboxShell {...rest} checked={ui.menuOpen} setChecked={setMenuOpen} view={MenuButtonView} />
   )
 })
 
