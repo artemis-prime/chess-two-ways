@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import {
+  Animated,
+  LayoutChangeEvent,
   SafeAreaView,
   StatusBar,
   View,
+  Image
 } from 'react-native'
 import { observer } from 'mobx-react'
 
@@ -26,18 +29,41 @@ const MainContainer = styled(View, {
   pb: 0,
   gap: 11, // bug? Doesn't seem to recognize size token values.
   backgroundColor: 'rgba(0, 0, 0, 0.2)',
-
+  
   variants: {
-    menuOpen: {
-      true: {
-        mt: 0,
-      },
+    padForStatus: {
+      true: {},
       false: {
-        mt: StatusBar.currentHeight!,
+        borderColor: '#444',
+        borderTopLeftRadius: '$md',
+        borderWidth: 2,
       }
     }
   }
 })
+
+  // Creates the appearance of border radius though only
+  // siblings are involved.  Yes, I tried everything else, 
+  // believe you me!  Yessiree
+const CornerShim: React.FC<{
+  left: number,
+  top: number
+}> = ({
+  left,
+  top
+}) => (
+  <Image 
+    source={{uri: 'menu_corner_shim_14x14'}} 
+    resizeMode='cover'
+    style={{
+      position: 'absolute',
+      width: 7, // half since image was captured at double density (ok for both case)
+      height: 7,
+      left,
+      top,
+    }} 
+  />
+)
 
 const BGImageView = styled(BGImage, {
 
@@ -45,39 +71,75 @@ const BGImageView = styled(BGImage, {
   justifyContent: 'flex-start',
   alignItems: 'stretch',
   height: '100%',
-
-  variants: {
-    menuOpen: {
-      true: {
-        left: '60%',
-        top: 120,
-        borderTopLeftRadius: '$md',
-        borderWidth: 1,
-        borderColor: '$gray11'
-      },
-      false: {
-        top: 0,
-        left: 0
-      }
-    }
-  }
 })
 
 const UI: React.FC = observer(() => {
 
+  const [padForStatusBar, setPadForStatusBar] = useState<boolean>(true)
+  const menuAnimationValue = useRef(new Animated.Value(0)).current
+  const widthRef = useRef<number>(0)
   const theme = useTheme()
   const ui = useUI()
+
+  const onLayout = (e: LayoutChangeEvent): void  => {
+    const {nativeEvent: { layout: {width}}} = e;
+    widthRef.current = width
+  }
+
+  const setMenuOpen = (opening: boolean): void => {
+    if (opening) {
+      setPadForStatusBar(false)
+    }
+    Animated.timing(menuAnimationValue, {
+      toValue: opening ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true
+    }).start(() => {
+      ui.setMenuOpen(opening)
+      if (!opening) {
+        setPadForStatusBar(true)
+      }
+    })
+  } 
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <View style={{width: '100%', height: '100%', backgroundColor: theme.colors.headerBG}} >
-        <BGImageView imageURI={'chess_bg_1920'} menuOpen={ui.menuOpen}>
+        <Animated.View onLayout={onLayout} style={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: theme.colors.headerBG,
+          transform: [
+            {
+              translateX: menuAnimationValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, widthRef.current * .6]
+              })
+            },
+            {
+              translateY: menuAnimationValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 120]
+              })
+            }
+          ],
+        }}>
+        <BGImageView imageURI={'chess_bg_1920'} >
+          <View style={{ 
+              // pseudo margin element... best way to achieve the desired animation effect
+            width: '100%', 
+            height: StatusBar.currentHeight!, 
+              // slight tint to match MainContainer 
+            backgroundColor : padForStatusBar ? 'rgba(0, 0, 0, 0.2)' : theme.colors.headerBG 
+          }} />
           <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-          <MainContainer menuOpen={ui.menuOpen} >
-            <Dash />
+          {!padForStatusBar && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
+          <MainContainer padForStatus={padForStatusBar}>
+            <Dash setMenuOpen={setMenuOpen} />
             <Board />
           </MainContainer>
         </BGImageView>
+        </Animated.View>
       </View>
     </SafeAreaView>
   )

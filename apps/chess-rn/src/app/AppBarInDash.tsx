@@ -22,14 +22,16 @@ const AppBarView = styled(View, {
 })
 
 const AppBarInDash: React.FC<{
+  setMenuOpen: (b: boolean) => void
   style?: StyleProp<ViewStyle>
 }> = ({
+  setMenuOpen,
   style
 }) => {
   
   return (
     <AppBarView style={style}>
-      <MenuButton />
+      <MenuButton setMenuOpen={setMenuOpen}/>
     </AppBarView>
   )
 }
