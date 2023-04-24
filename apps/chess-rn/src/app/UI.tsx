@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
   Animated,
-  LayoutChangeEvent,
+  Dimensions,
+  Image,
   SafeAreaView,
   StatusBar,
   View,
-  Image
 } from 'react-native'
 import { observer } from 'mobx-react'
 
@@ -15,7 +15,10 @@ import { BGImage } from '~/primatives'
 
 import Board from './Board'
 import Dash from './Dash'
- 
+
+  //https://reactnative.dev/docs/dimensions
+const screenDimensions = Dimensions.get('screen')
+
 const MainContainer = styled(View, {
 
   flexDirection: 'column',
@@ -77,14 +80,20 @@ const UI: React.FC = observer(() => {
 
   const [padForStatusBar, setPadForStatusBar] = useState<boolean>(true)
   const menuAnimationValue = useRef(new Animated.Value(0)).current
-  const widthRef = useRef<number>(0)
+  const widthRef = useRef<number>(screenDimensions.width)
   const theme = useTheme()
   const ui = useUI()
 
-  const onLayout = (e: LayoutChangeEvent): void  => {
-    const {nativeEvent: { layout: {width}}} = e;
-    widthRef.current = width
-  }
+    //https://reactnative.dev/docs/dimensions
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      'change',
+      ({screen}) => {
+        widthRef.current = screen.width;
+      },
+    );
+    return () => subscription?.remove();
+  })
 
   const setMenuOpen = (opening: boolean): void => {
     if (opening) {
@@ -105,7 +114,7 @@ const UI: React.FC = observer(() => {
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <View style={{width: '100%', height: '100%', backgroundColor: theme.colors.headerBG}} >
-        <Animated.View onLayout={onLayout} style={{
+        <Animated.View style={{
           width: '100%',
           height: '100%',
           backgroundColor: theme.colors.headerBG,
@@ -113,7 +122,7 @@ const UI: React.FC = observer(() => {
             {
               translateX: menuAnimationValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, widthRef.current * .6]
+                outputRange: [0, widthRef.current  * .6] 
               })
             },
             {
