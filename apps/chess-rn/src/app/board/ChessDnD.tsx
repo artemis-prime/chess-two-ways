@@ -140,8 +140,8 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     .onUpdate(onDragUpdate)
     .onEnd(onDragEnd);
 
-    // Need GestureHandlerRootView due to a bug.
-    // Not documented
+    // On Android, deed GestureHandlerRootView.
+    // https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/events
   return (
     <GestureHandlerRootView >
     <ChessDnDContext.Provider value={{
