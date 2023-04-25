@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { 
   View,
   StyleProp,
@@ -7,14 +7,13 @@ import {
 
 import { styled } from '~/style/stitches.config'
 
-import MenuButton from './MenuButton'
-
 const AppBarView = styled(View, {
   flexDirection: 'row', 
   justifyContent: 'flex-start', 
-  alignItems: 'center',
+  alignItems: 'stretch',
   h: '$appBarHeight', 
   w: '100%', 
+  //pt: '$1',
   //pl: '$3',
   backgroundColor: '$headerBG',
   borderBottomWidth: 0.5,
@@ -22,16 +21,15 @@ const AppBarView = styled(View, {
 })
 
 const AppBarInDash: React.FC<{
-  setMenuOpen: (b: boolean) => void
   style?: StyleProp<ViewStyle>
-}> = ({
-  setMenuOpen,
+} & PropsWithChildren> = ({
+  children,
   style
 }) => {
   
   return (
     <AppBarView style={style}>
-      <MenuButton setMenuOpen={setMenuOpen}/>
+      {children}
     </AppBarView>
   )
 }

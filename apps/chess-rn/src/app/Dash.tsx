@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Children, PropsWithChildren } from 'react'
 import { 
   View,
   StyleProp,
@@ -23,8 +23,11 @@ const StyledBGImage = styled(BGImage, {
   backgroundColor: '#333',
   minHeight: 150,
   borderWidth: '$thicker',
-  borderRadius: '$md',
-  borderColor: '$dashBorder',
+  borderTopLeftRadius: '$lg',
+  borderTopRightRadius: '$lg',
+  borderBottomLeftRadius: '$sm',
+  borderBottomRightRadius: '$sm',
+  borderColor: '$pieceBlack',
 })
 
 const DashInner = styled(View, {
@@ -35,10 +38,9 @@ const DashInner = styled(View, {
 })
 
 const Dash: React.FC<{
-  setMenuOpen: (b: boolean) => void
   style?: StyleProp<ViewStyle>
-}> = observer(({
-  setMenuOpen,
+} & PropsWithChildren> = observer(({
+  children,
   style
 }) => {
 
@@ -46,7 +48,9 @@ const Dash: React.FC<{
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
-      <AppBarInDash setMenuOpen={setMenuOpen} />
+      <AppBarInDash >
+        {children}
+      </AppBarInDash>
       <DashInner pointerEvents={(ui.menuOpen ? 'none' : 'auto')}>
         <View style={{
           flexDirection: 'row', 

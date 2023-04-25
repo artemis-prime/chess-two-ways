@@ -1,13 +1,28 @@
 import React, { useRef, useState, useEffect } from 'react'
 import {
-  Animated,
   Dimensions,
   Image,
   SafeAreaView,
   StatusBar,
   View,
 } from 'react-native'
+import { autorun } from 'mobx'
 import { observer } from 'mobx-react'
+
+import {
+  Gesture,
+  Directions,
+} from 'react-native-gesture-handler'
+
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  Easing, 
+  withTiming,
+  interpolate,
+  Extrapolation,  
+  runOnJS,
+ } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/style/stitches.config'
 import { useUI } from '~/service'
@@ -15,6 +30,7 @@ import { BGImage } from '~/primatives'
 
 import Board from './Board'
 import Dash from './Dash'
+import MenuFlingHandle from './MenuFlingHandle'
 
   //https://reactnative.dev/docs/dimensions
 const screenDimensions = Dimensions.get('screen')
@@ -79,60 +95,104 @@ const BGImageView = styled(BGImage, {
 const UI: React.FC = observer(() => {
 
   const [padForStatusBar, setPadForStatusBar] = useState<boolean>(true)
-  const menuAnimationValue = useRef(new Animated.Value(0)).current
   const widthRef = useRef<number>(screenDimensions.width)
   const theme = useTheme()
   const ui = useUI()
+
+    // 0 <--> 1, styles are interpolated as needed
+  const menuAnimation = useSharedValue(0) 
+  const menuOpenProxy = useSharedValue(false)
+
+  autorun(() => {
+    menuOpenProxy.value = ui.menuOpen
+  })
 
     //https://reactnative.dev/docs/dimensions
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
       'change',
       ({screen}) => {
-        widthRef.current = screen.width;
+        widthRef.current = screen.width
       },
-    );
-    return () => subscription?.remove();
+    )
+    return () => {subscription?.remove()}
   })
+  
+  const onMenuAnimationDone = (open: boolean) => {
+    ui.setMenuOpen(open)
+    if (!open) {
+      setPadForStatusBar(true)
+    }
+  }
 
-  const setMenuOpen = (opening: boolean): void => {
+  const gesture = Gesture.Fling()
+    .direction(Directions.RIGHT | Directions.LEFT)
+    .runOnJS(true)
+    .onBegin((e) => {
+      //console.warn("FLING BEGIN: " + menuOpenProxy.value)
+    })
+    .onStart((e) => {
+
+      if (!menuOpenProxy.value) {
+        setPadForStatusBar(false)
+      }
+      //console.warn("FLING: " + menuOpenProxy.value)
+      //animationValue.value = withTiming(open ? openValue : closedValue, { duration: 100 });
+      menuAnimation.value = withTiming(
+        menuOpenProxy.value ? 0 : 1, 
+        {
+          duration: 200,
+          easing: menuOpenProxy.value ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
+        },
+        () => {
+          // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
+          // Calling a mobx store or modifying a React ref is not allowed on the UI thread.
+          // We could have used a SharedValue, but this is simpler.
+          runOnJS(onMenuAnimationDone)(!menuOpenProxy.value)
+        }
+      )
+    })
+
+/*
+  const openMenu = (opening: boolean): void => {
     if (opening) {
       setPadForStatusBar(false)
     }
-    Animated.timing(menuAnimationValue, {
-      toValue: opening ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true
-    }).start(() => {
-      ui.setMenuOpen(opening)
-      if (!opening) {
-        setPadForStatusBar(true)
+    menuAnimation.value = withTiming(
+      opening ? 1 : 0, 
+      {
+        duration: 200,
+        easing: opening ? Easing.in(Easing.exp) : Easing.out(Easing.exp),
+      },
+      () => {
+        // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
+        // Calling a mobx store or modifying a React ref is not allowed on the UI thread.
+        // We could have used a SharedValue, but this is simpler.
+        runOnJS(onMenuAnimationDone)(opening)
       }
-    })
-  } 
+    )
+  }
+  */
+  
+  const transformStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(menuAnimation.value, [0, 1], [0, widthRef.current  * .6], { extrapolateRight: Extrapolation.CLAMP })
+    const translateY = interpolate(menuAnimation.value, [0, 1], [0, 120], { extrapolateRight: Extrapolation.CLAMP })
+
+    return {
+      transform: [{ translateX }, { translateY }]
+    }
+  })
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <View style={{width: '100%', height: '100%', backgroundColor: theme.colors.headerBG}} >
-        <Animated.View style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: theme.colors.headerBG,
-          transform: [
-            {
-              translateX: menuAnimationValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, widthRef.current  * .6] 
-              })
-            },
-            {
-              translateY: menuAnimationValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 120]
-              })
-            }
-          ],
-        }}>
+        <Animated.View style={[{
+            width: '100%',
+            height: '100%',
+            backgroundColor: theme.colors.headerBG,
+          },
+          transformStyle
+        ]}>
         <BGImageView imageURI={'chess_bg_1920'} >
           <View style={{ 
               // pseudo margin element... best way to achieve the desired animation effect
@@ -144,7 +204,9 @@ const UI: React.FC = observer(() => {
           <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
           {!padForStatusBar && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
           <MainContainer padForStatus={padForStatusBar}>
-            <Dash setMenuOpen={setMenuOpen} />
+            <Dash >
+              <MenuFlingHandle open={ui.menuOpen} gesture={gesture}/>
+            </Dash>
             <Board />
           </MainContainer>
         </BGImageView>
