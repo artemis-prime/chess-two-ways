@@ -1,6 +1,6 @@
 interface UIState {
-  menuOpen: boolean,
-  setMenuOpen: (b: boolean) => void
+  menuVisible: boolean,
+  setMenuVisible: (b: boolean) => void
 }
 
 export { type UIState as default}

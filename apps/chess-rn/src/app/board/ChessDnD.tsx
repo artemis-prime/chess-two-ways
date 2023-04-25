@@ -8,7 +8,6 @@ import {
   Gesture,
   GestureDetector,
   PanGestureHandlerEventPayload,
-  GestureHandlerRootView 
 } from 'react-native-gesture-handler'
 
 import { 
@@ -140,10 +139,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     .onUpdate(onDragUpdate)
     .onEnd(onDragEnd);
 
-    // On Android, deed GestureHandlerRootView.
-    // https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/events
   return (
-    <GestureHandlerRootView >
     <ChessDnDContext.Provider value={{
       state: stateRef.current, 
       config: {
@@ -155,7 +151,6 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
         {children}
       </GestureDetector>
     </ChessDnDContext.Provider>
-    </GestureHandlerRootView>
   )
 }
 

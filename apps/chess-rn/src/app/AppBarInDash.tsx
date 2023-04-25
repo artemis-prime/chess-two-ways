@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { 
   View,
   StyleProp,
@@ -6,32 +6,31 @@ import {
 } from 'react-native'
 
 import { styled } from '~/style/stitches.config'
-
-import MenuButton from './MenuButton'
+import type MenuFlingHandleProps from './MenuFlingHandleProps'
+import MenuFlingHandle from './MenuFlingHandle'
 
 const AppBarView = styled(View, {
   flexDirection: 'row', 
   justifyContent: 'flex-start', 
-  alignItems: 'center',
+  alignItems: 'stretch',
   h: '$appBarHeight', 
   w: '100%', 
-  //pl: '$3',
   backgroundColor: '$headerBG',
   borderBottomWidth: 0.5,
   borderBottomColor: 'gray',
 })
 
 const AppBarInDash: React.FC<{
-  setMenuOpen: (b: boolean) => void
+  menuHandleProps: MenuFlingHandleProps
   style?: StyleProp<ViewStyle>
-}> = ({
-  setMenuOpen,
+} > = ({
+  menuHandleProps,
   style
 }) => {
   
   return (
     <AppBarView style={style}>
-      <MenuButton setMenuOpen={setMenuOpen}/>
+      <MenuFlingHandle {...menuHandleProps}/>
     </AppBarView>
   )
 }

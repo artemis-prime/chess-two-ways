@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Children, PropsWithChildren } from 'react'
 import { 
   View,
   StyleProp,
@@ -7,14 +7,14 @@ import {
 import { observer } from 'mobx-react'
 
 import { styled } from '~/style/stitches.config'
-
+import { useUI } from '~/service'
 import { BGImage } from '~/primatives'
 
 import UndoRedoWidget from './UndoRedoWidget'
 import TurnIndicator from './TurnIndicator'
 import InCheckIndicator from './InCheckIndicator'
 import AppBarInDash from './AppBarInDash'
-import { useUI } from '~/service'
+import type MenuFlingHandleProps from './MenuFlingHandleProps'
 
 const StyledBGImage = styled(BGImage, {
 
@@ -23,8 +23,11 @@ const StyledBGImage = styled(BGImage, {
   backgroundColor: '#333',
   minHeight: 150,
   borderWidth: '$thicker',
-  borderRadius: '$md',
-  borderColor: '$dashBorder',
+  borderTopLeftRadius: '$lg',
+  borderTopRightRadius: '$lg',
+  borderBottomLeftRadius: '$sm',
+  borderBottomRightRadius: '$sm',
+  borderColor: '$pieceBlack',
 })
 
 const DashInner = styled(View, {
@@ -35,10 +38,10 @@ const DashInner = styled(View, {
 })
 
 const Dash: React.FC<{
-  setMenuOpen: (b: boolean) => void
+  menuHandleProps: MenuFlingHandleProps
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  setMenuOpen,
+  menuHandleProps,
   style
 }) => {
 
@@ -46,8 +49,8 @@ const Dash: React.FC<{
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
-      <AppBarInDash setMenuOpen={setMenuOpen} />
-      <DashInner pointerEvents={(ui.menuOpen ? 'none' : 'auto')}>
+      <AppBarInDash menuHandleProps={menuHandleProps} />
+      <DashInner pointerEvents={(ui.menuVisible ? 'none' : 'auto')}>
         <View style={{
           flexDirection: 'row', 
           justifyContent: 'space-between', 
