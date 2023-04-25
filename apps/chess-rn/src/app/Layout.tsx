@@ -38,6 +38,8 @@ import {
   GameBGImage
 } from './LayoutComponents'
 
+import Menu from './Menu'
+
   //https://reactnative.dev/docs/dimensions
 const screenDimensions = Dimensions.get('screen')
 
@@ -46,17 +48,17 @@ const OPEN_MENU_X_FRACTION = 0.6
 
 const Layout: React.FC = observer(() => {
 
-  const widthRef = useRef<number>(screenDimensions.width)
+  const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const theme = useTheme()
   const ui = useUI()
 
     // 0 <--> 1, styles are interpolated as needed
-  const menuAnimation = useSharedValue<number>(0) 
+  const menuOpenAnimation = useSharedValue<number>(ui.menuVisible ? 1 : 0) 
 
     // Designed to be safely shared by both threads.
     // mobx observables, being proxied get flagged 
     // and an Error is thrown. 
-  const menuVisibleShared = useSharedValue<boolean>(false) 
+  const menuVisibleShared = useSharedValue<boolean>(ui.menuVisible) 
     
     // Keep them in sync.  We'll read and mutate
     // the mobx one only on this thread,
@@ -66,7 +68,7 @@ const Layout: React.FC = observer(() => {
     //https://reactnative.dev/docs/dimensions
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change',
-      ({screen}) => { widthRef.current = screen.width },
+      ({screen}) => { sizeRef.current = {w: screen.width, h: screen.height }},
     )
     return () => {subscription?.remove()}
   })
@@ -76,7 +78,7 @@ const Layout: React.FC = observer(() => {
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
     .onStart((e) => {
-      menuAnimation.value = withTiming(
+      menuOpenAnimation.value = withTiming(
         menuVisibleShared.value ? 0 : 1, 
         {
           duration: 200,
@@ -99,13 +101,13 @@ const Layout: React.FC = observer(() => {
 
   const animatedGameContainerStyles = useAnimatedStyle(() => {
     const translateX = interpolate(
-      menuAnimation.value, 
+      menuOpenAnimation.value, 
       [0, 1], 
-      [0, widthRef.current  * OPEN_MENU_X_FRACTION], 
+      [0, sizeRef.current.w  * OPEN_MENU_X_FRACTION], 
       { extrapolateRight: Extrapolation.CLAMP }
     )
     const translateY = interpolate(
-      menuAnimation.value, 
+      menuOpenAnimation.value, 
       [0, 1], 
       [0, OPEN_MENU_Y_OFFSET], 
       { extrapolateRight: Extrapolation.CLAMP }
@@ -116,6 +118,12 @@ const Layout: React.FC = observer(() => {
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <OuterContainer>
+        {ui.menuVisible && (<Menu style={{
+          left: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .1,
+          top: theme.sizes.appBarHeight + theme.space[5],
+          width: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .8, 
+          height: sizeRef.current.h * .8
+        }} />) }
         <Animated.View style={[ regularGameContainerStyles, animatedGameContainerStyles ]}>
           <GameBGImage imageURI={'chess_bg_1920'} >
             {/* pseudo margin element... best way to achieve the desired animation effect */}

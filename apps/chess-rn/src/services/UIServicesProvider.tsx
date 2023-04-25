@@ -26,7 +26,7 @@ interface UIServices extends BoardOrientation {
 
 class UIStateImpl implements UIState {
   
-  menuVisible: boolean = false
+  menuVisible: boolean = true
   
   constructor() {
     makeObservable(this, {
