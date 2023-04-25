@@ -6,7 +6,7 @@ import { ThemeProvider, theme } from '~/style/stitches.config'
 import GameProvider from '~/service/GameProvider'
 import UIServicesProvider from '~/service/UIServicesProvider'
 
-import UI from './UI'
+import Layout from './Layout'
 
     // On Android, deed GestureHandlerRootView.
     // https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/events
@@ -15,7 +15,7 @@ const App: React.FC = () => (
     <UIServicesProvider>
       <GameProvider >
         <GestureHandlerRootView >
-          <UI />
+          <Layout />
         </GestureHandlerRootView >
       </GameProvider>
     </UIServicesProvider>

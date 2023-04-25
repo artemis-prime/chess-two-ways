@@ -10,11 +10,14 @@ import { styled } from '~/style/stitches.config'
 import { useUI } from '~/service'
 import { BGImage } from '~/primatives'
 
-import UndoRedoWidget from './UndoRedoWidget'
-import TurnIndicator from './TurnIndicator'
-import InCheckIndicator from './InCheckIndicator'
-import AppBarInDash from './AppBarInDash'
-import type MenuFlingHandleProps from './MenuFlingHandleProps'
+import {
+  UndoRedoWidget,
+  TurnIndicator,
+  InCheckIndicator,
+  AppBarInDash,
+  type MenuFlingHandleProps
+} from '~/app/widgets'
+
 
 const StyledBGImage = styled(BGImage, {
 

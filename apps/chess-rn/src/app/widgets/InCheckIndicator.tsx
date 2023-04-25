@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Text } from 'react-native'
 import { autorun } from 'mobx'
 
-import { positionToString } from '@artemis-prime/chess-core'
+import { type Position, positionToString } from '@artemis-prime/chess-core'
 
 import { styled, common } from '~/style/stitches.config'
 import { useGame } from '~/service'
@@ -20,7 +20,7 @@ const InCheckIndicator: React.FC = () => {
   useEffect(() => (autorun(() => {
     let str = ''
     if (game.check) {
-      str = game.check.from.reduce((acc, current, i) => (
+      str = game.check.from.reduce((acc: string, current: Position, i: number) => (
         ((i > 0) ? ', ' : '') + acc + positionToString(current)
       ), '')
     }
