@@ -1,4 +1,4 @@
-import React, { Children, PropsWithChildren } from 'react'
+import React from 'react'
 import { 
   View,
   StyleProp,
@@ -6,8 +6,8 @@ import {
 } from 'react-native'
 import { observer } from 'mobx-react'
 
-import { styled } from '~/style/stitches.config'
-import { useUI } from '~/service'
+import { styled } from '~/styles/stitches.config'
+import { useUI } from '~/services'
 import { BGImage } from '~/primatives'
 
 import {

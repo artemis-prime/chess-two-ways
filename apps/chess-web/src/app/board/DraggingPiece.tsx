@@ -2,8 +2,8 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import { styled } from '~/style/stitches.config'
-import c from '~/style/colors'
+import { styled } from '~/styles/stitches.config'
+import c from '~/styles/colors'
 
 import { Flex } from '~/primitives'
 

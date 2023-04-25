@@ -11,8 +11,8 @@ import {
   positionToString, 
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/style/stitches.config'
-import { usePulses } from '~/service'
+import { styled } from '~/styles/stitches.config'
+import { usePulses } from '~/services'
 
 import PieceComponent from './Piece'
 

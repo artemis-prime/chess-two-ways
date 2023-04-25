@@ -14,8 +14,8 @@ import {
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
-import { styled, useTheme } from '~/style/stitches.config'
-import { usePulses } from '~/service'
+import { styled, useTheme } from '~/styles/stitches.config'
+import { usePulses } from '~/services'
 
 interface ShadowDesc {
   variant: 

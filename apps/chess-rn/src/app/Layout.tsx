@@ -24,8 +24,8 @@ import Animated, {
   AnimateStyle
  } from 'react-native-reanimated'
 
-import { useTheme } from '~/style/stitches.config'
-import { useUI } from '~/service'
+import { useTheme } from '~/styles/stitches.config'
+import { useUI } from '~/services'
 
 import Board from './Board'
 import Dash from './Dash'

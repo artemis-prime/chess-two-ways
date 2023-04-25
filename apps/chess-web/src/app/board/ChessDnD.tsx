@@ -13,7 +13,7 @@ import {
 
 import { positionsEqual, ObsPieceRef } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
 
 import {type DnDStateInternal, getDnDStateSingleton} from './DnDState' 
 import type DnDPayload from './DnDPayload'

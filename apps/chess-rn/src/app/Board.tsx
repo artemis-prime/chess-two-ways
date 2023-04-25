@@ -9,8 +9,8 @@ import { observer } from 'mobx-react'
 
 import { type SquareDesc } from '@artemis-prime/chess-core'
 
-import { styled } from '~/style/stitches.config'
-import { useGame, useUI } from '~/service'
+import { styled } from '~/styles/stitches.config'
+import { useGame, useUI } from '~/services'
 import { BGImage } from '~/primatives'
 
 import Square from './board/Square'

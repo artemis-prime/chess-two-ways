@@ -6,7 +6,7 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/style/stitches.config'
+import { styled, common } from '~/styles/stitches.config'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 

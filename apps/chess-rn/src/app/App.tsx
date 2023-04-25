@@ -1,10 +1,10 @@
 import React from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import { ThemeProvider, theme } from '~/style/stitches.config'
+import { ThemeProvider, theme } from '~/styles/stitches.config'
 
-import GameProvider from '~/service/GameProvider'
-import UIServicesProvider from '~/service/UIServicesProvider'
+import GameProvider from '~/services/GameProvider'
+import UIServicesProvider from '~/services/UIServicesProvider'
 
 import Layout from './Layout'
 

@@ -1,8 +1,8 @@
   // @ts-ignore
 import React from 'react'
-import { styled } from '~/style/stitches.config'
+import { styled } from '~/styles/stitches.config'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
   
 const MyLabel = styled('label', {
 

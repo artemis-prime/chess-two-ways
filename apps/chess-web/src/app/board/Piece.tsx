@@ -11,11 +11,11 @@ import {
   pieceToString
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/style/stitches.config'
-import c from '~/style/colors'
+import { styled } from '~/styles/stitches.config'
+import c from '~/styles/colors'
 
 import { Flex } from '~/primitives'
-import { usePulses, useGame } from '~/service'
+import { usePulses, useGame } from '~/services'
 
 import registry from './pieceRegistry'
 

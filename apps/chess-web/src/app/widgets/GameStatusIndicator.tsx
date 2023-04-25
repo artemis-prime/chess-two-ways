@@ -2,9 +2,9 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
 
-import '~/style/gameStatusIndicator.scss'
+import '~/styles/gameStatusIndicator.scss'
 
 const GameStatusIndicator: React.FC<{}> = observer(() => {
 

@@ -8,8 +8,8 @@ import {
 } from 'react-native'
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/service'
-import { styled, common } from '~/style/stitches.config'
+import { useGame } from '~/services'
+import { styled, common } from '~/styles/stitches.config'
 import { GhostButton } from '~/primatives'
 
 const PipeSymbolText = styled(Text, common.dashTextCommon)

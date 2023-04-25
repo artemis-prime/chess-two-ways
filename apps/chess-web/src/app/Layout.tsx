@@ -12,8 +12,8 @@ import {
 
 import Dash from './Dash'
 
-import '~/style/fonts.scss'
-import '~/style/main.scss'
+import '~/styles/fonts.scss'
+import '~/styles/main.scss'
 
 const Side: React.FC<PropsWithChildren & { className?: string }> = ({children, className}) => (
   <Flex justify='center' align='center' className={className} >
@@ -21,13 +21,11 @@ const Side: React.FC<PropsWithChildren & { className?: string }> = ({children, c
   </Flex>
 )
 
-const UI: React.FC<{}> = () => {
+const Layout: React.FC<{}> = () => {
   
   const [drawerOpen, setDrawerOpen] = useState<boolean >(false) 
 
-  const toggleMenu = () => {
-    setDrawerOpen((prev) => (!prev))
-  }
+  const toggleMenu = () => { setDrawerOpen((prev) => (!prev)) }
   
   return (
     <div className={`app drawer-state-${drawerOpen ? 'open' : 'closed'}`}>
@@ -54,4 +52,4 @@ const UI: React.FC<{}> = () => {
   )
 }
 
-export default UI
+export default Layout

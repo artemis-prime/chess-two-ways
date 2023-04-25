@@ -4,7 +4,7 @@ import {
   View,
 } from 'react-native'
 
-import { styled } from '~/style/stitches.config'
+import { styled } from '~/styles/stitches.config'
 import { BGImage } from '~/primatives'
 
 const OuterContainer = styled(View, {

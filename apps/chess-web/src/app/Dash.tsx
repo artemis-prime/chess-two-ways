@@ -2,18 +2,19 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 
-import { useGame } from '~/service'
-
+import { useGame } from '~/services'
 import { Button, Flex, Switch } from '~/primitives'
 
-import Messages from './Messages'
-import TurnIndicator from './TurnIndicator'
-import GameStatusIndicator from './GameStatusIndicator'
-import UndoRedo from './UndoRedoWidget'
-import PersistToFileButton from './PersistToFileButton'
-import RestoreFromFileButton from './RestoreFromFileButton'
-import InCheckIndicator from './InCheckIndicator'
-import BoardDirectionWidget from './BoardDirectionWidget'
+import {
+  BoardDirectionWidget,
+  GameStatusIndicator,
+  InCheckIndicator,
+  Messages,
+  PersistToFileButton,
+  RestoreFromFileButton,
+  TurnIndicator,
+  UndoRedoWidget,
+} from '~/app/widgets'
 
 const Dash: React.FC<{}> = observer(() => {
 
@@ -41,7 +42,7 @@ const Dash: React.FC<{}> = observer(() => {
           )}
         </Flex>
         <Flex direction='column' justify='start' align='end' >
-          <UndoRedo />
+          <UndoRedoWidget />
           <BoardDirectionWidget css={{marginBottom: '18px'}}/>
           <Flex direction='column' justify='start' align='end' css={{fontSize: '0.9rem', marginBottom: '24px'}}>
           {(game.playing) && (<>

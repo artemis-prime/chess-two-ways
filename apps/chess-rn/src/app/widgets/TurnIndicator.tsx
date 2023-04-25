@@ -7,9 +7,9 @@ import {
   ViewStyle 
 } from 'react-native'
 
-import { styled, common } from '~/style/stitches.config'
+import { styled, common } from '~/styles/stitches.config'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
 import SideSwatch from './SideSwatch'
 
 const OuterView = styled(View, {

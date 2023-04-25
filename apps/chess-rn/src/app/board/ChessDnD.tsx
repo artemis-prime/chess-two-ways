@@ -19,7 +19,7 @@ import {
   layoutPositionToBoardPosition, 
 } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
 
 import type Point from './Point'
 import {

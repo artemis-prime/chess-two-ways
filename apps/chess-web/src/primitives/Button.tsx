@@ -1,6 +1,6 @@
-import { styled } from '~/style/stitches.config'
+import { styled } from '~/styles/stitches.config'
 
-import c from '~/style/colors'
+import c from '~/styles/colors'
 
 const buttonCommon = {
   cursor: 'pointer',

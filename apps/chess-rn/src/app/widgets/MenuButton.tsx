@@ -7,10 +7,10 @@ import {
 } from 'react-native'
 import { observer } from 'mobx-react'
 
-import { styled } from '~/style/stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 import { CheckboxShell, type CheckboxViewProps } from '~/primatives'
-import { useUI } from '~/service'
+import { useUI } from '~/services'
 
 
 const MenuButtonCheckboxView = styled(Text, {

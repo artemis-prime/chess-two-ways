@@ -11,7 +11,7 @@ import {
   GestureDetector
 } from 'react-native-gesture-handler'
 
-import { styled } from '~/style/stitches.config'
+import { styled } from '~/styles/stitches.config'
 
 const UNICODE = {
   BURGER_MENU: '\u2630',

@@ -5,8 +5,8 @@ import { autorun } from 'mobx'
 
 import { type Position, positionToString } from '@artemis-prime/chess-core'
 
-import { styled, common } from '~/style/stitches.config'
-import { useGame } from '~/service'
+import { styled, common } from '~/styles/stitches.config'
+import { useGame } from '~/services'
 
 const StyledText = styled(Text, common.dashTextAlertSmaller)
 

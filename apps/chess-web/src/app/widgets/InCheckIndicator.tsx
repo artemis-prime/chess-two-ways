@@ -4,7 +4,7 @@ import { autorun } from 'mobx'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/service'
+import { useGame } from '~/services'
 
 const InCheckIndicator: React.FC = () => {
 

@@ -1,15 +1,15 @@
   // @ts-ignore
 import React from 'react'
 
-import GameProvider from '~/service/GameProvider'
-import UIServicesProvider from '~/service/UIServicesProvider'
+import GameProvider from '~/services/GameProvider'
+import UIServicesProvider from '~/services/UIServicesProvider'
 
-import UI from './UI'
+import Layout from './Layout'
 
 const App: React.FC = () => (
   <GameProvider >
     <UIServicesProvider >
-      <UI />
+      <Layout />
     </UIServicesProvider>
   </GameProvider>
 )
