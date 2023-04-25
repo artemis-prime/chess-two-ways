@@ -22,6 +22,7 @@ import Animated, {
   interpolate,
   Extrapolation,  
   runOnJS,
+  interpolateColor
  } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/style/stitches.config'
@@ -34,6 +35,9 @@ import MenuFlingHandle from './MenuFlingHandle'
 
   //https://reactnative.dev/docs/dimensions
 const screenDimensions = Dimensions.get('screen')
+
+const OPEN_MENU_Y_OFFSET = 120
+const OPEN_MENU_X_FRACTION = 0.6
 
 const MainContainer = styled(View, {
 
@@ -50,9 +54,9 @@ const MainContainer = styled(View, {
   backgroundColor: 'rgba(0, 0, 0, 0.2)',
   
   variants: {
-    padForStatus: {
-      true: {},
-      false: {
+    showBorder: {
+      false: {},
+      true: {
         borderColor: '#444',
         borderTopLeftRadius: '$md',
         borderWidth: 2,
@@ -129,15 +133,12 @@ const UI: React.FC = observer(() => {
     .direction(Directions.RIGHT | Directions.LEFT)
     .runOnJS(true)
     .onBegin((e) => {
-      //console.warn("FLING BEGIN: " + menuOpenProxy.value)
     })
     .onStart((e) => {
 
       if (!menuOpenProxy.value) {
         setPadForStatusBar(false)
       }
-      //console.warn("FLING: " + menuOpenProxy.value)
-      //animationValue.value = withTiming(open ? openValue : closedValue, { duration: 100 });
       menuAnimation.value = withTiming(
         menuOpenProxy.value ? 0 : 1, 
         {
@@ -153,30 +154,9 @@ const UI: React.FC = observer(() => {
       )
     })
 
-/*
-  const openMenu = (opening: boolean): void => {
-    if (opening) {
-      setPadForStatusBar(false)
-    }
-    menuAnimation.value = withTiming(
-      opening ? 1 : 0, 
-      {
-        duration: 200,
-        easing: opening ? Easing.in(Easing.exp) : Easing.out(Easing.exp),
-      },
-      () => {
-        // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
-        // Calling a mobx store or modifying a React ref is not allowed on the UI thread.
-        // We could have used a SharedValue, but this is simpler.
-        runOnJS(onMenuAnimationDone)(opening)
-      }
-    )
-  }
-  */
-  
   const transformStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(menuAnimation.value, [0, 1], [0, widthRef.current  * .6], { extrapolateRight: Extrapolation.CLAMP })
-    const translateY = interpolate(menuAnimation.value, [0, 1], [0, 120], { extrapolateRight: Extrapolation.CLAMP })
+    const translateX = interpolate(menuAnimation.value, [0, 1], [0, widthRef.current  * OPEN_MENU_X_FRACTION], { extrapolateRight: Extrapolation.CLAMP })
+    const translateY = interpolate(menuAnimation.value, [0, 1], [0, OPEN_MENU_Y_OFFSET], { extrapolateRight: Extrapolation.CLAMP })
 
     return {
       transform: [{ translateX }, { translateY }]
@@ -194,16 +174,18 @@ const UI: React.FC = observer(() => {
           transformStyle
         ]}>
         <BGImageView imageURI={'chess_bg_1920'} >
-          <View style={{ 
+          <Animated.View style={{ 
               // pseudo margin element... best way to achieve the desired animation effect
             width: '100%', 
-            height: StatusBar.currentHeight!, 
+            height: StatusBar.currentHeight!, //interpolate(menuAnimation.value, [0, 1], [StatusBar.currentHeight!, 0]), 
               // slight tint to match MainContainer 
-            backgroundColor : padForStatusBar ? 'rgba(0, 0, 0, 0.2)' : theme.colors.headerBG 
+            backgroundColor : interpolateColor(menuAnimation.value, [0, 1], 
+              ['rgba(0, 0, 0, 0.2)', theme.colors.headerBG]
+            )
           }} />
           <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-          {!padForStatusBar && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
-          <MainContainer padForStatus={padForStatusBar}>
+          {ui.menuOpen && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
+          <MainContainer showBorder={ui.menuOpen}>
             <Dash >
               <MenuFlingHandle open={ui.menuOpen} gesture={gesture}/>
             </Dash>
