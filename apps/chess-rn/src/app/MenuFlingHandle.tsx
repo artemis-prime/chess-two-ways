@@ -13,6 +13,12 @@ import {
 
 import { styled } from '~/style/stitches.config'
 
+const UNICODE = {
+  BURGER_MENU: '\u2630',
+  ARROW_TO_CORNER_DOWN_RIGHT: '\u21F2',
+  ARROW_TO_CORNER_UP_LEFT:'\u21F1'
+}
+
 const Figure = styled(Text, {
   color: 'white',
   fontWeight: "900",
@@ -36,16 +42,10 @@ const MenuFlingHandle: React.FC<{
       opacity: 0.8
     }]} collapsable={false} >
     { menuVisible ? (
-      <Figure style={{fontSize: 30, top: -2, left: -1}}>
-      {'\u21F1'}
-      </Figure>
+      <Figure style={{fontSize: 30, top: -2, left: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
     ) : (<>
-      <Figure style={{fontSize: 23}}>
-        {'\u2630'}
-      </Figure>
-      <Figure style={{fontSize: 18, top: 2, left: 2}}>
-        {'\u21F2'}
-      </Figure>
+      <Figure style={{fontSize: 23}}>{UNICODE.BURGER_MENU}</Figure>
+      <Figure style={{fontSize: 18, top: 2, left: 2}}>{UNICODE.ARROW_TO_CORNER_DOWN_RIGHT}</Figure>
     </>)}
     </View>
   </GestureDetector>

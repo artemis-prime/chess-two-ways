@@ -32,12 +32,11 @@ import { BGImage } from '~/primatives'
 
 import Board from './Board'
 import Dash from './Dash'
-import MenuFlingHandle from './MenuFlingHandle'
 
   //https://reactnative.dev/docs/dimensions
 const screenDimensions = Dimensions.get('screen')
 
-const OPEN_MENU_Y_OFFSET = 120
+const OPEN_MENU_Y_OFFSET = 92
 const OPEN_MENU_X_FRACTION = 0.6
 
 const OuterContainer = styled(View, {
@@ -142,9 +141,6 @@ const UI: React.FC = observer(() => {
 
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
-    .runOnJS(true)
-    .onBegin((e) => {
-    })
     .onStart((e) => {
       menuAnimation.value = withTiming(
         menuVisibleProxy.value ? 0 : 1, 
