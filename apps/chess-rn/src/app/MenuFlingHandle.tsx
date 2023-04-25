@@ -19,11 +19,11 @@ const Figure = styled(Text, {
 })
 
 const MenuFlingHandle: React.FC<{
-  open: boolean
+  menuVisible: boolean
   gesture: FlingGesture
   style?: StyleProp<ViewStyle> 
 }> = ({
-  open,
+  menuVisible,
   gesture,
   style
 }) => (
@@ -35,7 +35,7 @@ const MenuFlingHandle: React.FC<{
       paddingLeft: 8,
       opacity: 0.8
     }]} collapsable={false} >
-    { open ? (
+    { menuVisible ? (
       <Figure style={{fontSize: 30, top: -2, left: -1}}>
       {'\u21F1'}
       </Figure>

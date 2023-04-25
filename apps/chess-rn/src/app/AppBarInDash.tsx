@@ -6,6 +6,8 @@ import {
 } from 'react-native'
 
 import { styled } from '~/style/stitches.config'
+import type MenuFlingHandleProps from './MenuFlingHandleProps'
+import MenuFlingHandle from './MenuFlingHandle'
 
 const AppBarView = styled(View, {
   flexDirection: 'row', 
@@ -13,23 +15,22 @@ const AppBarView = styled(View, {
   alignItems: 'stretch',
   h: '$appBarHeight', 
   w: '100%', 
-  //pt: '$1',
-  //pl: '$3',
   backgroundColor: '$headerBG',
   borderBottomWidth: 0.5,
   borderBottomColor: 'gray',
 })
 
 const AppBarInDash: React.FC<{
+  menuHandleProps: MenuFlingHandleProps
   style?: StyleProp<ViewStyle>
-} & PropsWithChildren> = ({
-  children,
+} > = ({
+  menuHandleProps,
   style
 }) => {
   
   return (
     <AppBarView style={style}>
-      {children}
+      <MenuFlingHandle {...menuHandleProps}/>
     </AppBarView>
   )
 }

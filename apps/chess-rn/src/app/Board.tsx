@@ -63,7 +63,7 @@ const Board: React.FC<{ style?: StyleProp<ViewStyle> }> = observer(({
   }
 
   return (
-    <BoardInner style={style} pointerEvents={(ui.menuOpen ? 'none' : 'auto')} collapsable={false}>
+    <BoardInner style={style} pointerEvents={(ui.menuVisible ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (

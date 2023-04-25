@@ -1,10 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import {
   Dimensions,
   Image,
   SafeAreaView,
   StatusBar,
   View,
+  ViewStyle
 } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react'
@@ -22,7 +23,7 @@ import Animated, {
   interpolate,
   Extrapolation,  
   runOnJS,
-  interpolateColor
+  AnimateStyle
  } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/style/stitches.config'
@@ -39,7 +40,12 @@ const screenDimensions = Dimensions.get('screen')
 const OPEN_MENU_Y_OFFSET = 120
 const OPEN_MENU_X_FRACTION = 0.6
 
-const MainContainer = styled(View, {
+const OuterContainer = styled(View, {
+  height: '100%', 
+  backgroundColor: '$headerBG'
+})
+
+const GameAreaView = styled(View, {
 
   flexDirection: 'column',
   justifyContent: 'flex-start',
@@ -65,6 +71,21 @@ const MainContainer = styled(View, {
   }
 })
 
+const StatusBarSpacer = styled(View, {
+  width: '100%', 
+  height: StatusBar.currentHeight!,
+  variants: {
+    menuVisible: {
+      true: {
+        backgroundColor: '$headerBG'
+      },
+      false: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)' // to match the rest of the app area  
+      }
+    }
+  } 
+})
+
   // Creates the appearance of border radius though only
   // siblings are involved.  Yes, I tried everything else, 
   // believe you me!  Yessiree
@@ -88,8 +109,7 @@ const CornerShim: React.FC<{
   />
 )
 
-const BGImageView = styled(BGImage, {
-
+const GameBGImage = styled(BGImage, {
   flexDirection: 'column',
   justifyContent: 'flex-start',
   alignItems: 'stretch',
@@ -98,36 +118,27 @@ const BGImageView = styled(BGImage, {
 
 const UI: React.FC = observer(() => {
 
-  const [padForStatusBar, setPadForStatusBar] = useState<boolean>(true)
   const widthRef = useRef<number>(screenDimensions.width)
   const theme = useTheme()
   const ui = useUI()
 
     // 0 <--> 1, styles are interpolated as needed
   const menuAnimation = useSharedValue(0) 
-  const menuOpenProxy = useSharedValue(false)
+  const menuVisibleProxy = useSharedValue(false) // can be used on both threads
 
   autorun(() => {
-    menuOpenProxy.value = ui.menuOpen
+    menuVisibleProxy.value = ui.menuVisible // keep values in sync
   })
 
     //https://reactnative.dev/docs/dimensions
   useEffect(() => {
-    const subscription = Dimensions.addEventListener(
-      'change',
-      ({screen}) => {
-        widthRef.current = screen.width
-      },
+    const subscription = Dimensions.addEventListener('change',
+      ({screen}) => { widthRef.current = screen.width },
     )
     return () => {subscription?.remove()}
   })
   
-  const onMenuAnimationDone = (open: boolean) => {
-    ui.setMenuOpen(open)
-    if (!open) {
-      setPadForStatusBar(true)
-    }
-  }
+  const onMenuAnimationDone = (open: boolean): void => { ui.setMenuVisible(open) }
 
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
@@ -135,65 +146,59 @@ const UI: React.FC = observer(() => {
     .onBegin((e) => {
     })
     .onStart((e) => {
-
-      if (!menuOpenProxy.value) {
-        setPadForStatusBar(false)
-      }
       menuAnimation.value = withTiming(
-        menuOpenProxy.value ? 0 : 1, 
+        menuVisibleProxy.value ? 0 : 1, 
         {
           duration: 200,
-          easing: menuOpenProxy.value ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
+          easing: menuVisibleProxy.value ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
         },
         () => {
           // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
           // Calling a mobx store or modifying a React ref is not allowed on the UI thread.
           // We could have used a SharedValue, but this is simpler.
-          runOnJS(onMenuAnimationDone)(!menuOpenProxy.value)
+          runOnJS(onMenuAnimationDone)(!menuVisibleProxy.value)
         }
       )
     })
 
-  const transformStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(menuAnimation.value, [0, 1], [0, widthRef.current  * OPEN_MENU_X_FRACTION], { extrapolateRight: Extrapolation.CLAMP })
-    const translateY = interpolate(menuAnimation.value, [0, 1], [0, OPEN_MENU_Y_OFFSET], { extrapolateRight: Extrapolation.CLAMP })
+  const regularGameContainerStyles = {
+    width: '100%',
+    height: '100%',
+    backgroundColor: theme.colors.headerBG,
+  } as AnimateStyle<ViewStyle> 
 
-    return {
-      transform: [{ translateX }, { translateY }]
-    }
+  const transformGameContainerStyles = useAnimatedStyle(() => {
+    const translateX = interpolate(
+      menuAnimation.value, 
+      [0, 1], 
+      [0, widthRef.current  * OPEN_MENU_X_FRACTION], 
+      { extrapolateRight: Extrapolation.CLAMP }
+    )
+    const translateY = interpolate(
+      menuAnimation.value, 
+      [0, 1], 
+      [0, OPEN_MENU_Y_OFFSET], 
+      { extrapolateRight: Extrapolation.CLAMP }
+    )
+    return { transform: [{ translateX }, { translateY }] }
   })
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
-      <View style={{width: '100%', height: '100%', backgroundColor: theme.colors.headerBG}} >
-        <Animated.View style={[{
-            width: '100%',
-            height: '100%',
-            backgroundColor: theme.colors.headerBG,
-          },
-          transformStyle
-        ]}>
-        <BGImageView imageURI={'chess_bg_1920'} >
-          <Animated.View style={{ 
-              // pseudo margin element... best way to achieve the desired animation effect
-            width: '100%', 
-            height: StatusBar.currentHeight!, //interpolate(menuAnimation.value, [0, 1], [StatusBar.currentHeight!, 0]), 
-              // slight tint to match MainContainer 
-            backgroundColor : interpolateColor(menuAnimation.value, [0, 1], 
-              ['rgba(0, 0, 0, 0.2)', theme.colors.headerBG]
-            )
-          }} />
-          <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-          {ui.menuOpen && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
-          <MainContainer showBorder={ui.menuOpen}>
-            <Dash >
-              <MenuFlingHandle open={ui.menuOpen} gesture={gesture}/>
-            </Dash>
-            <Board />
-          </MainContainer>
-        </BGImageView>
+      <OuterContainer>
+        <Animated.View style={[ regularGameContainerStyles, transformGameContainerStyles ]}>
+          <GameBGImage imageURI={'chess_bg_1920'} >
+            {/* pseudo margin element... best way to achieve the desired animation effect */}
+            <StatusBarSpacer menuVisible={ui.menuVisible} />
+            <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
+            {ui.menuVisible && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
+            <GameAreaView showBorder={ui.menuVisible}>
+              <Dash menuHandleProps={{menuVisible: ui.menuVisible, gesture}} />
+              <Board />
+            </GameAreaView>
+          </GameBGImage>
         </Animated.View>
-      </View>
+      </OuterContainer>
     </SafeAreaView>
   )
 })
