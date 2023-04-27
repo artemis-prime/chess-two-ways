@@ -1,6 +1,7 @@
 {
   "name": "@artemis-prime/chess-core",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "build": "yarn install && npx tsc",
     "clean": "rm -rf ./dist && rm -rf ./node_modules"

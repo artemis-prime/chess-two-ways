@@ -25,7 +25,10 @@ import {
   RANKS,
   RANKS_REVERSED,
   FILES,
+  type File,
+  type Rank,
 } from '../Position'
+
 import { type BoardSnapshot, type PieceCode } from '../Snapshot'
 import Square from './Square'
 import type SquareDesc from '../SquareDesc'
@@ -44,7 +47,7 @@ import {
 import type IsCaptureFn from './IsCaptureFn'
 
 import Tracking from './board/Tracking'
-import Squares from './board/Squares'
+import BoardSquares from './board/BoardSquares'
 
 interface Board {
 
@@ -92,9 +95,9 @@ class BoardImpl implements BoardInternal {
   private _isCapture: IsCaptureFn
 
   private _tracking: Tracking 
-  private _sq: Squares 
-  private _asSquares: Square[]
-  private _asSquareDescs: SquareDesc[]
+  private _squares: BoardSquares 
+  private _asSquareArray: Square[]
+  private _asSquareDescArray: SquareDesc[]
 
   constructor(f: IsCaptureFn, isObservable?: boolean) {
 
@@ -111,16 +114,16 @@ class BoardImpl implements BoardInternal {
       })
     }
     this._tracking = new Tracking(isObservable)
-    this._sq = new Squares(this._tracking, isObservable)
-    this._asSquares = []
-    this._asSquareDescs = []
+    this._squares = new BoardSquares(this._tracking, isObservable)
+    this._asSquareArray = []
+    this._asSquareDescArray = []
     for (const rank of RANKS_REVERSED) {
       for (const file of FILES) {
-        this._asSquares.push(this._sq[rank][file]) 
-        this._asSquareDescs.push({
-          position: this._sq[rank][file],
-          pieceRef: this._sq[rank][file],
-          posStateRef: this._sq[rank][file]
+        this._asSquareArray.push(this._squ(rank, file)) 
+        this._asSquareDescArray.push({
+          position: this._squ(rank, file),
+          pieceRef: this._squ(rank, file),
+          posStateRef: this._squ(rank, file)
         })
       }
     }
@@ -128,11 +131,11 @@ class BoardImpl implements BoardInternal {
   }
 
   get asSquares(): Square[] {
-    return this._asSquares
+    return this._asSquareArray
   }
 
   get asSquareDescs(): SquareDesc[] {
-    return this._asSquareDescs
+    return this._asSquareDescArray
   }
 
   get gameStatus(): GameStatus {
@@ -147,17 +150,17 @@ class BoardImpl implements BoardInternal {
 
   syncTo(other: BoardInternal): void {
     const theOther = other as BoardImpl
-    this._sq.syncTo(theOther._sq) 
+    this._squares.syncTo(theOther._squares) 
     this._tracking.syncTo(theOther._tracking) 
   }
 
   pieceAt(pos: Position): Piece | null {
-    return this._sq[pos.rank][pos.file].piece
+    return this._sq(pos).piece
   }
  
   colorAt(pos: Position): Color | null {
-    if (this._sq[pos.rank][pos.file].piece) {
-      return this._sq[pos.rank][pos.file].piece!.color
+    if (this._sq(pos).piece) {
+      return this._sq(pos).piece!.color
     }
     return null
   }
@@ -169,15 +172,15 @@ class BoardImpl implements BoardInternal {
   pawnPositions(side: Side): Position[] {
     const result = [] as Position[]
     for (const rank of RANKS) {
-      const rankArray = this._sq[rank]
+      const rankArray = this._squares[rank]
       for (const file of FILES) {
-        if (rankArray[file].piece 
+        if (rankArray[file]!.piece 
           && 
-          rankArray[file].piece!.type === 'pawn' 
+          rankArray[file]!.piece!.type === 'pawn' 
           && 
-          rankArray[file].piece!.color === side
+          rankArray[file]!.piece!.color === side
         ) {
-          result.push(copyPosition(rankArray[file]))
+          result.push(copyPosition(rankArray[file]!))
         }
       }
     }
@@ -223,7 +226,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-          if (!!this._sq[to.rank][FILES[fileIndex]].piece) {
+          if (!!this._squ(to.rank, FILES[fileIndex]).piece) {
             return false
           }
         }
@@ -231,7 +234,7 @@ class BoardImpl implements BoardInternal {
       else {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-          if (!!this._sq[to.rank][FILES[fileIndex]].piece) {
+          if (!!this._squ(to.rank, FILES[fileIndex]).piece) {
             return false
           }
         }
@@ -248,7 +251,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // one-based
         for (let rank = from.rank - 1; rank > to.rank; rank--) {
-          if (!!this._sq[rank][from.file].piece) {
+          if (!!this._squ(rank as Rank, from.file).piece) {
             return false
           }
         }
@@ -256,7 +259,7 @@ class BoardImpl implements BoardInternal {
       else {
           // one-based
         for (let rank = from.rank + 1; rank < to.rank; rank++) {
-          if (!!this._sq[rank][from.file].piece) {
+          if (!!this._squ(rank as Rank, from.file).piece) {
             return false
           }
         }
@@ -278,7 +281,7 @@ class BoardImpl implements BoardInternal {
       // --> NE
     if (deltaFile > 0 && deltaRank > 0 ) {
       for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) + 1; rank < to.rank && fileIndex < FILES.indexOf(to.file); rank++, fileIndex++) {
-        if (!!this._sq[rank][FILES[fileIndex]].piece) {
+        if (!!this._squ(rank as Rank, FILES[fileIndex]).piece) {
           return false
         }
       }
@@ -286,7 +289,7 @@ class BoardImpl implements BoardInternal {
       // --> SE
     else if (deltaFile > 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) + 1; rank > to.rank && fileIndex < FILES.indexOf(to.file); rank--, fileIndex++) {
-        if (!!this._sq[rank][FILES[fileIndex]].piece) {
+        if (!!this._squ(rank as Rank, FILES[fileIndex]).piece) {
           return false
         }
       }
@@ -294,7 +297,7 @@ class BoardImpl implements BoardInternal {
       // --> SW
     else if (deltaFile < 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) - 1; rank > to.rank && fileIndex > FILES.indexOf(to.file);  rank--, fileIndex--) {
-        if (!!this._sq[rank][FILES[fileIndex]].piece) {
+        if (!!this._squ(rank as Rank, FILES[fileIndex]).piece) {
           return false
         }
       }
@@ -302,7 +305,7 @@ class BoardImpl implements BoardInternal {
       // --> NW
       else if (deltaFile < 0 && deltaRank > 0) {
         for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) - 1; rank < to.rank && fileIndex > FILES.indexOf(to.file); rank++, fileIndex--) {
-          if (!!this._sq[rank][FILES[fileIndex]].piece) {
+          if (!!this._squ(rank as Rank, FILES[fileIndex]).piece) {
             return false
           }
         }
@@ -344,20 +347,20 @@ class BoardImpl implements BoardInternal {
     else if (mode === 'undo') {
       this._move(r.to, r.from, true)
       if (r.action.includes('capture')) {
-        this._sq[r.to.rank][r.to.file].piece = r.captured!
+        this._sq(r.to).piece = r.captured!
       }
       if (r.action.includes('romote')) {
           // the _move above just returned the piece to 'from'
-        const self = this._sq[r.from.rank][r.from.file].piece!
-        this._sq[r.from.rank][r.from.file].piece = {color: self.color, type: 'pawn'}
+        const self = this._sq(r.from).piece!
+        this._sq(r.from).piece = {color: self.color, type: 'pawn'}
       }
     }
     else {
         // Note that _move also takes care of capture ;)
       this._move(r.from, r.to, (mode !== 'do'))
       if (r.action.includes('romote')) {
-        const self = this._sq[r.to.rank][r.to.file].piece!
-        this._sq[r.to.rank][r.to.file].piece = {color: self.color, type: r.promotedTo!}
+        const self = this._sq(r.to).piece!
+        this._sq(r.to).piece = {color: self.color, type: r.promotedTo!}
       }
     }
 
@@ -366,20 +369,20 @@ class BoardImpl implements BoardInternal {
 
   reset(): void {
     this._tracking.reset()
-    this._sq.reset(this._tracking)
+    this._squares.reset(this._tracking)
   }
 
   restoreFromSnapshot(snapshot: BoardSnapshot): void {
     this._tracking.reset()
-    this._sq.syncToSnapshot(snapshot, this._tracking)
+    this._squares.syncToSnapshot(snapshot, this._tracking)
   }
 
   takeSnapshot(): BoardSnapshot {
     const snapshot: BoardSnapshot = {}
     for (const rank of RANKS) {
       for (const file of FILES) {
-        if (this._sq[rank][file].piece) {
-          snapshot[`${file}${rank}`] = pieceToString(this._sq[rank][file].piece!) as PieceCode
+        if (this._squ(rank, file).piece) {
+          snapshot[`${file}${rank}`] = pieceToString(this._squ(rank, file).piece!) as PieceCode
         }
       }
     }
@@ -389,6 +392,14 @@ class BoardImpl implements BoardInternal {
  
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
+  _sq(p: Position): Square {
+    return this._squares[p.rank][p.file]!
+  }
+
+  _squ(r: Rank, f: File): Square {
+    return this._squares[r][f]!
+  }
+
   _sideIsInCheckFrom(side: Side): Position[] {
     return this._positionCanBeCapturedFrom(
       this._tracking[side].king,
@@ -399,7 +410,7 @@ class BoardImpl implements BoardInternal {
 
   private _trackCastlingEligability(moved: Position): void {
 
-    const fromPieace = this._sq[moved.rank][moved.file].piece
+    const fromPieace = this._sq(moved).piece
 
     if (fromPieace?.type === 'king') {
       this._tracking[fromPieace!.color].castling.kingHasMoved = true
@@ -420,8 +431,8 @@ class BoardImpl implements BoardInternal {
       this._trackCastlingEligability(from)
     }
 
-    this._sq[to.rank][to.file].piece = this._sq[from.rank][from.file].piece
-    this._sq[from.rank][from.file].piece = null 
+    this._sq(to).piece = this._sq(from).piece
+    this._sq(from).piece = null 
   }
 
   private _castle(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void {
@@ -563,14 +574,14 @@ class BoardImpl implements BoardInternal {
   private _getSurroundingSquares(pos: Position) /* it returns what it returns ;) */ {
 
     return {
-      N: hasN(pos) ? this._sq[getNRank(pos)][pos.file] : undefined,
-      NE: (hasN(pos) && hasE(pos)) ? this._sq[getNRank(pos)][getEFile(pos)] : undefined,
-      E: (hasE(pos)) ? this._sq[pos.rank][getEFile(pos)] : undefined,
-      SE: (hasS(pos) && hasE(pos)) ? this._sq[getSRank(pos)][getEFile(pos)] : undefined,
-      S: (hasS(pos)) ? this._sq[getSRank(pos)][pos.file] : undefined,
-      SW: (hasS(pos) && hasW(pos)) ? this._sq[getSRank(pos)][getWFile(pos)] : undefined,
-      W: (hasW(pos)) ? this._sq[pos.rank][getWFile(pos)] : undefined,
-      NW: (hasN(pos) && hasW(pos)) ? this._sq[getNRank(pos)][getWFile(pos)] : undefined,
+      N: hasN(pos) ? this._squ(getNRank(pos), pos.file) : undefined,
+      NE: (hasN(pos) && hasE(pos)) ? this._squ(getNRank(pos), getEFile(pos)) : undefined,
+      E: (hasE(pos)) ? this._squ(pos.rank, getEFile(pos)) : undefined,
+      SE: (hasS(pos) && hasE(pos)) ? this._squ(getSRank(pos), getEFile(pos)) : undefined,
+      S: (hasS(pos)) ? this._squ(getSRank(pos), pos.file) : undefined,
+      SW: (hasS(pos) && hasW(pos)) ? this._squ(getSRank(pos), getWFile(pos)) : undefined,
+      W: (hasW(pos)) ? this._squ(pos.rank, getWFile(pos)) : undefined,
+      NW: (hasN(pos) && hasW(pos)) ? this._squ(getNRank(pos), getWFile(pos)) : undefined,
         // Neighbor is open (so vulnerable from certain types from afar),
         // or contains an opponent capable of capturing from this neighboring square
       vulnerableOnDiagonalFromPrimaries(sideToCapture: Side): boolean {
@@ -658,7 +669,6 @@ class BoardImpl implements BoardInternal {
   }
 
 
-
   _dumpTracking(): void {
     console.log(this._tracking)
   }
@@ -668,7 +678,7 @@ class BoardImpl implements BoardInternal {
     console.log(target)
   }
   _dumpSquares(): void {
-    console.log(this._sq)
+    console.log(this._squares)
   }
 }
 

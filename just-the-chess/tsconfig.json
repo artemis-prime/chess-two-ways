@@ -1,15 +1,15 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "es2022",
+    "target": "ES2018",
     "declaration": true,
-    "module": "esnext",
-    "noImplicitAny": false,
+    "module": "es6",
+    "noImplicitAny": true,
     "outDir": "dist",
     "sourceMap": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
@@ -17,7 +17,6 @@
     "useDefineForClassFields": true
   },
   "exclude": [
-    "node_modules",
     "dist"
   ],
 }

@@ -6,8 +6,11 @@ import { gray, orange } from '@radix-ui/colors'
 
 const isTablet = DeviceInfo.isTablet()
 
-const LINEHEIGHT_COMMON = 34
-const LINEHEIGHT_SMALLER = 28
+const LINEHEIGHTS = {
+  menu: 40,
+  common: 34,
+  smaller: 28
+} 
 
 // Cf: https://github.com/Temzasse/stitches-native/blob/main/example/src/styles/styled.ts#L56
 const { 
@@ -63,12 +66,12 @@ const {
       thick: 3,
     },
     fontSizes: {
-      common: LINEHEIGHT_COMMON * 0.6,
-      smaller: LINEHEIGHT_SMALLER * 0.6  
+      common: LINEHEIGHTS.common * 0.6,
+      smaller: LINEHEIGHTS.smaller * 0.6,  
+      menu: LINEHEIGHTS.menu * .7
     },
     lineHeights: {
-      common: LINEHEIGHT_COMMON,
-      smaller: LINEHEIGHT_SMALLER  
+      ...LINEHEIGHTS
     },
     letterSpacings: {
       tight: 0.1,
@@ -83,20 +86,19 @@ const {
       2: 7,
       3: 11,
       4: 16,
-      5: LINEHEIGHT_SMALLER,
-      6: LINEHEIGHT_COMMON,
-      7: 46,
-      8: 56,
-      9: 72,
+      5: LINEHEIGHTS.smaller,
+      6: LINEHEIGHTS.common,
+      7: LINEHEIGHTS.menu,
+      8: 52,
+      9: 64,
       max: '$9' as const,
     },
     sizes: {
       hairlineWidth: StyleSheet.hairlineWidth,
-      common: LINEHEIGHT_COMMON,
-      smaller: LINEHEIGHT_SMALLER,  
+      ...LINEHEIGHTS,
       appBarHeight: 42,
-      swatchNormalHeight: LINEHEIGHT_COMMON * 0.7,
-      swatchNormalWidth: LINEHEIGHT_COMMON * 1.3, 
+      swatchNormalHeight: LINEHEIGHTS.common * 0.7,
+      swatchNormalWidth: LINEHEIGHTS.common * 1.3, 
     },
     radii: {
       none: 0,
@@ -175,6 +177,13 @@ const {
 })
 
 const common = {
+  menuTextCommon: css({
+    fontFamily: 'sans',
+    lineHeight: '$menu',
+    fontWeight: '$semibold',
+    fontSize: '$menu',
+    color: '$dashText'
+  }),
   dashTextCommon: css({
     fontFamily: '$common',
     lineHeight: '$common',

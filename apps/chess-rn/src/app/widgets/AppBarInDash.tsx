@@ -21,16 +21,16 @@ const AppBarView = styled(View, {
 })
 
 const AppBarInDash: React.FC<{
-  menuHandleProps: MenuFlingHandleProps
   style?: StyleProp<ViewStyle>
-} > = ({
-  menuHandleProps,
+} & MenuFlingHandleProps> = ({
+  menuVisible,
+  gesture,
   style
 }) => {
   
   return (
     <AppBarView style={style}>
-      <MenuFlingHandle {...menuHandleProps}/>
+      <MenuFlingHandle {...{menuVisible, gesture}}/>
     </AppBarView>
   )
 }

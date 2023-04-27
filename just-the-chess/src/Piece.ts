@@ -131,7 +131,7 @@ const pieceFromString = (s: string): Piece | undefined => {
     }
     return {
       color: (c === 'w') ? 'white' : 'black',
-      type: PIECETYPE_FROM_LETTER[t]
+      type: PIECETYPE_FROM_LETTER[t as PieceTypeCode] as PieceType
     }
   }
   return undefined

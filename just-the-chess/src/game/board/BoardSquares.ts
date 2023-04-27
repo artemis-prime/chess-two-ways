@@ -11,10 +11,11 @@ import {
   type File, 
   positionToString, 
   copyPosition, 
+  type Rank,
   RANKS, 
   FILES 
 } from '../../Position'
-import { type BoardSnapshot } from '../../Snapshot'
+import { type BoardSnapshot, type PositionCode } from '../../Snapshot'
 
 import type Tracking from './Tracking'
 
@@ -51,29 +52,38 @@ const track = (tr: Tracking, pos: Square): void => {
   }
 }
 
-type RankSquares = {
+type RankSquares = Partial<{
   [key in File]: Square
-}
+}>
 
+
+  // https://stackoverflow.com/questions/59656190/define-key-type-for-object-in-for-in
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
-  const result = {}
-  for (const key in rs) {
-    result[key] = rs[key] ? Square.copy(rs[key]) : null // just for shits and giggles. 
+  const result: RankSquares = {}
+  for (const key of FILES) {
+    result[key] = Square.copy(rs[key] as Square) 
   }
   return result as RankSquares
 }
 
-class Squares {
+class BoardSquares {
+
+  1: RankSquares
+  2: RankSquares
+  3: RankSquares
+  4: RankSquares
+  5: RankSquares
+  6: RankSquares
+  7: RankSquares
+  8: RankSquares
 
   constructor (tr: Tracking, observePieces? : boolean) {
 
     for (const rank of RANKS) {
-      this[rank] = {}
-        // White pieces
       if (rank === 1) {
         for (const file of FILES) {
           this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'white' }, 'none', observePieces)
-          track(tr, this[rank][file])
+          track(tr, this[rank][file]!)
         }
       }
       else if (rank === 2) {
@@ -89,7 +99,7 @@ class Squares {
       else if (rank === 8) {
         for (const file of FILES) {
           this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'black' }, 'none', observePieces)
-          track(tr, this[rank][file])
+          track(tr, this[rank][file]!)
         }
       }
       else {
@@ -105,34 +115,34 @@ class Squares {
     for (const rank of RANKS) {
       if (rank === 1) {
         for (const file of FILES) {
-          this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'white' }
-          this[rank][file].state = 'none'
-          track(tr, this[rank][file])
+          this[rank][file]!.piece = { type: PIECETYPE_BY_FILE[file], color: 'white' }
+          this[rank][file]!.state = 'none'
+          track(tr, this[rank][file]!)
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
-          this[rank][file].piece = { type: 'pawn', color: 'white' }
-          this[rank][file].state = 'none'
+          this[rank][file]!.piece = { type: 'pawn', color: 'white' }
+          this[rank][file]!.state = 'none'
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
-          this[rank][file].piece = { type: 'pawn', color: 'black' }
-          this[rank][file].state = 'none'
+          this[rank][file]!.piece = { type: 'pawn', color: 'black' }
+          this[rank][file]!.state = 'none'
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
-          this[rank][file].piece = { type: PIECETYPE_BY_FILE[file], color: 'black' }
-          this[rank][file].state = 'none'
-          track(tr, this[rank][file])
+          this[rank][file]!.piece = { type: PIECETYPE_BY_FILE[file], color: 'black' }
+          this[rank][file]!.state = 'none'
+          track(tr, this[rank][file]!)
         }
       }
       else {
         for (const file of FILES) {
-          this[rank][file].piece = null
-          this[rank][file].state = 'none'
+          this[rank][file]!.piece = null
+          this[rank][file]!.state = 'none'
         }
       }
     } 
@@ -144,9 +154,9 @@ class Squares {
   syncToSnapshot(snapshot: BoardSnapshot, tr: Tracking): void {
 
     const assignToSquare = (sq: Square): void => {
-      const keyToTry = positionToString(sq)
+      const keyToTry = positionToString(sq) as PositionCode
       if (snapshot[keyToTry]) {
-        sq.piece = pieceFromString(snapshot[keyToTry]) ?? null // in case undefined
+        sq.piece = pieceFromString(snapshot[keyToTry]!) ?? null // in case undefined
         sq.state = 'none'
       }
       else {
@@ -157,19 +167,19 @@ class Squares {
 
     for (const rank of RANKS) {
       for (const file of FILES) {
-        assignToSquare(this[rank][file])
-        if (this[rank][file].piece) {
-          track(tr, this[rank][file])
+        assignToSquare(this[rank][file]!)
+        if (this[rank][file]!.piece) {
+          track(tr, this[rank][file]!)
         }
       }
     }
   }
 
-  syncTo(source: Squares): void {
-    for (const key in source) {
+  syncTo(source: BoardSquares): void {
+    for (const key of RANKS) {
       this[key] = deepCopyRankSquares(source[key])
     }
   }
 } 
 
-export default Squares
+export default BoardSquares
