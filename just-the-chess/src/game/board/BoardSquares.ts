@@ -11,7 +11,6 @@ import {
   type File, 
   positionToString, 
   copyPosition, 
-  type Rank,
   RANKS, 
   FILES 
 } from '../../Position'
