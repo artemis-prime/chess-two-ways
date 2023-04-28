@@ -3,7 +3,7 @@ import Square from '../Square'
 import { 
   type PieceType, 
   type PrimaryPieceType, 
-  pieceFromString,
+  pieceFromCodeString,
   isPrimaryType 
 } from '../../Piece'
 
@@ -53,16 +53,22 @@ type RankSquares = {
   [key in File]: Square
 }
 
-const rankSquaresFromArray = (sqs: Square[]): RankSquares => ({
-  a: sqs[0],
-  b: sqs[1],
-  c: sqs[2],
-  d: sqs[3],
-  e: sqs[4],
-  f: sqs[5],
-  g: sqs[6],
-  h: sqs[7],
-})
+const rankSquaresFromArray = (sqs: Square[]): RankSquares => {
+  
+  if (sqs.length !== 8) {
+    throw new Error('rankSquaresFromArray(): array of Squares must contain exactly 8 elements!')
+  }
+  return {
+    a: sqs[0],
+    b: sqs[1],
+    c: sqs[2],
+    d: sqs[3],
+    e: sqs[4],
+    f: sqs[5],
+    g: sqs[6],
+    h: sqs[7],
+  }
+}
 
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
   const squares = Object.values(rs)
@@ -84,29 +90,45 @@ class BoardSquares {
   7: RankSquares
   8: RankSquares
 
-  static visitForReset(sq: Square, tr: Tracking): void {
+  static visitAsNewGame(sq: Square, tr: Tracking, assignState = true): void {
     if (sq.rank === 1) {
       sq.piece = { type: HOME_RANK[sq.file], color: 'white' }
-      sq.state = 'none'
       track(tr, sq)
     }
     else if (sq.rank === 2) {
       sq.piece = { type: 'pawn', color: 'white' }
-      sq.state = 'none'
     }
     else if (sq.rank === 8) {
       sq.piece = { type: HOME_RANK[sq.file], color: 'black' }
-      sq.state = 'none'
       track(tr, sq)
     }
     else if (sq.rank === 7) {
       sq.piece = { type: 'pawn', color: 'black' }
-      sq.state = 'none'
     }
     else {
       sq.piece = null
+    }
+    if (assignState) {
       sq.state = 'none'
     }
+  }
+
+    // Intentionally forgiving. If a key corresponding to a
+    // square is found and its value successfully parsed, a piece is placed there. 
+    // If not, the square is empty (no Errors are ever thrown)
+  static visitWithSnapshot(sq: Square, snapshot: BoardSnapshot, tr: Tracking): void {
+    const keyToTry = positionToString(sq) as PositionCode
+    if (snapshot[keyToTry]) {
+        // If pieceFromCodeString is undefined, default to null
+      sq.piece = pieceFromCodeString(snapshot[keyToTry]!) ?? null 
+      if (sq.piece) {
+        track(tr, sq)
+      }
+    }
+    else {
+      sq.piece = null
+    }
+    sq.state = 'none'
   }
 
   constructor (tr: Tracking, observePieces? : boolean) {
@@ -114,7 +136,7 @@ class BoardSquares {
       const sqs: Square[] = []
       for (const file of FILES) {
         const sq = new Square(rank, file, null, 'none', observePieces)  
-        BoardSquares.visitForReset(sq, tr)
+        BoardSquares.visitAsNewGame(sq, tr, false)
         sqs.push(sq)
       }
       this[rank] = rankSquaresFromArray(sqs)
@@ -124,34 +146,15 @@ class BoardSquares {
   reset(tr: Tracking) {
     for (const rank of RANKS) {
       for (const file of FILES) {
-        BoardSquares.visitForReset(this[rank][file], tr)
+        BoardSquares.visitAsNewGame(this[rank][file], tr)
       }
     }
   }
  
-    // Intentionally forgiving. If meaningful keys are found, 
-    // their values are parsed. If they can be parsed, pieces are created.
-    // If not, no Errors are thrown and square is just empty.
   syncToSnapshot(snapshot: BoardSnapshot, tr: Tracking): void {
-
-    const visit = (sq: Square): void => {
-      const keyToTry = positionToString(sq) as PositionCode
-      if (snapshot[keyToTry]) {
-        sq.piece = pieceFromString(snapshot[keyToTry]!) ?? null // in case undefined
-        sq.state = 'none'
-        if (sq.piece) {
-          track(tr, sq)
-        }
-      }
-      else {
-        sq.piece = null
-        sq.state = 'none'
-      }
-    }
-
     for (const rank of RANKS) {
       for (const file of FILES) {
-        visit(this[rank][file])
+        BoardSquares.visitWithSnapshot(this[rank][file], snapshot, tr)
       }
     }
   }

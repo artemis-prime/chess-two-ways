@@ -99,6 +99,7 @@ const piecesEqual = (p1: Piece | null, p2: Piece | null): boolean => (
 
 type PieceFormat = 'T' | 'Type' | 'cT' | 'c-Type' | 'color Type'
 
+  // 'cT' is the format parsed by pieceFromCodeString() below
 const pieceToString = (p: Piece, format?: PieceFormat): string => {
   const form: PieceFormat = format ?? 'cT'
   switch (form) {
@@ -110,17 +111,17 @@ const pieceToString = (p: Piece, format?: PieceFormat): string => {
   }
 }
 
-const pieceFromString = (s: string): Piece | undefined => {
+const pieceFromCodeString = (s: string): Piece | undefined => {
   if (s.length === 2) {
-    const c = s.slice(0, 1)
-    const t = s.slice(1, 2)
+    const colorCode = s.slice(0, 1)
+    const typeCode = s.slice(1, 2)
 
-    if (!(c === 'w' || c === 'b') || !Object.keys(PIECETYPE_FROM_CODE).includes(t)) {
+    if (!(colorCode === 'w' || colorCode === 'b') || !Object.keys(PIECETYPE_FROM_CODE).includes(typeCode)) {
       return undefined
     }
     return {
-      color: (c === 'w') ? 'white' : 'black',
-      type: PIECETYPE_FROM_CODE[t as PieceTypeCode] as PieceType
+      color: (colorCode === 'w') ? 'white' : 'black',
+      type: PIECETYPE_FROM_CODE[typeCode as PieceTypeCode] as PieceType
     }
   }
   return undefined
@@ -149,5 +150,5 @@ export {
   pieceToString,
   isOpponent,
   opponent,
-  pieceFromString 
+  pieceFromCodeString 
 }

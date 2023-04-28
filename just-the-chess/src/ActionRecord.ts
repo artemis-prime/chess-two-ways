@@ -2,7 +2,7 @@ import type Piece from './Piece'
 import { 
   type PrimaryPieceType, 
   pieceToString, 
-  pieceFromString,
+  pieceFromCodeString,
   PIECETYPE_NAMES,
   PIECETYPE_FROM_CODE, 
   type PieceTypeCode,
@@ -88,7 +88,7 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const castleRecord = castleRecordIfCastle()
   if (castleRecord) return castleRecord
 
-  const piece = pieceFromString(lan.slice(0,2))
+  const piece = pieceFromCodeString(lan.slice(0,2))
   const from = positionFromString(lan.slice(2,4))
   const isCapture = lan.charAt(4) === 'x'
   const captured = isCapture ? {type: PIECETYPE_FROM_CODE[lan.charAt(5) as PieceTypeCode] as PieceType, color: opponent(piece!.color)} : undefined
