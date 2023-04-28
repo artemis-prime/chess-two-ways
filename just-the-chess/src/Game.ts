@@ -208,7 +208,7 @@ class GameImpl implements Game {
       // The actionsRestored() notification should be after the game state change.
     await when(() => this._board.gameStatus.state === 'restored');
     this._notifier.actionsRestored([...this._actions])
-    this._trackAndNotifyCheck()
+    this._notifyCheck(null)
   }
 
   takeSnapshot(): GameSnapshot {
@@ -282,9 +282,12 @@ class GameImpl implements Game {
         })
         if (action) {
           const r = this._createActionRecord(move, action)
+          const previousCheck = this._scratchBoard.check
+          const wasInCheck = previousCheck && previousCheck.side === r.piece.color
           this._scratchBoard.applyAction(r, 'do')
-          const { wasInCheck, inCheckFrom } = this._scratchBoard.trackInCheck(r.piece.color)
-          if (inCheckFrom.length > 0) {
+          const check = this._scratchBoard.check
+          const isInCheck = check && check.side === r.piece.color
+          if (isInCheck) {
             this._notifier.message(`${actionRecordToLAN(r)} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
@@ -322,9 +325,11 @@ class GameImpl implements Game {
       this._resolution!.action!, 
       promoteTo
     )
+    const previousCheck = this._board.check
     this._board.applyAction(r, 'do')
     this._applyResolution(null)
     this._notifier.actionTaken(r)
+    this._notifyCheck(previousCheck)
     if (this._stateIndex + 1 < this._actions.length) {
         // If we've undone actions since the most recent 'real' move,
         // truncate the stack since we can no longer meaningfully 
@@ -333,7 +338,6 @@ class GameImpl implements Game {
     }
     this._actions.push(r)
     this._stateIndex = this._actions.length - 1
-    this._trackAndNotifyCheck()
     this._toggleTurn()
     return true
   }
@@ -352,9 +356,10 @@ class GameImpl implements Game {
         })
       }
       const r = this._actions[this._stateIndex]
+      const previousCheck = this._board.check
       this._board.applyAction(r, 'undo')
       this._notifier.actionUndon(r)
-      this._trackAndNotifyCheck()
+      this._notifyCheck(previousCheck)
       this._stateIndex--
       this._toggleTurn()
     }
@@ -368,9 +373,10 @@ class GameImpl implements Game {
     if (this.canRedo) {
       this._stateIndex++
       const r = this._actions[this._stateIndex]
+      const previousCheck = this._board.check
       this._board.applyAction(r, 'redo')
       this._notifier.actionRedon(r)
-      this._trackAndNotifyCheck()
+      this._notifyCheck(previousCheck)
       this._toggleTurn()
     }
   }
@@ -392,11 +398,7 @@ class GameImpl implements Game {
       ...move,
       action,
       promotedTo: action.includes('romote') ? (promoteTo ? promoteTo : 'queen') : undefined,
-      captured: (action === 'capture' || action === 'capturePromote') 
-        ? 
-        {...this._board.pieceAt(move.to)!} 
-        : 
-        undefined
+      captured: (action.includes('capture')) ? {...this._board.pieceAt(move.to)!} : undefined
     }
   }
 
@@ -405,9 +407,8 @@ class GameImpl implements Game {
     return moves.some((rm: Resolution) => {
       const r = this._createActionRecord(rm.move, rm.action!)
       this._scratchBoard.applyAction(r, 'do')
-      const { inCheckFrom } = this._scratchBoard.trackInCheck(side)
-      this._scratchBoard.applyAction(r, 'undo')
-      return inCheckFrom.length === 0
+      const check = this._scratchBoard.check
+      return !check
     })
   }
 
@@ -438,25 +439,21 @@ class GameImpl implements Game {
     })
   }
 
-  private _trackAndNotifyCheckForSide(side: Side): void {
+  private _notifyCheckForSide(side: Side, previousCheck: Check | null): void {
 
-    const { wasInCheck, inCheckFrom } = this._board.trackInCheck(side)
+    const wasInCheck = !!previousCheck
     const check = this._board.check
+    const inCheck = !!check && check.side === side
+
       // We shouldn't clash with action / drag states, 
       // since this code is called after 
       // action statuses are cleared.
     this._board.asSquares.forEach((sq: Square) => {
       sq.state = getCheckStateForPosition(sq, check) 
     })
-
-    const inCheck = inCheckFrom.length > 0
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {
-      this._notifier.inCheck({
-        side, 
-        from: inCheckFrom,
-        kingPosition: this._board.kingPosition(side), 
-      })
+      this._notifier.inCheck(check)
     }
     else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  
@@ -479,9 +476,9 @@ class GameImpl implements Game {
     // We have to check each side after every actions, since 
     // can put an opponent in check w a move,
     // or take oneself out of check
-  private _trackAndNotifyCheck(): void {
-    this._trackAndNotifyCheckForSide('white')
-    this._trackAndNotifyCheckForSide('black')
+  private _notifyCheck(previousCheck: Check | null): void {
+    this._notifyCheckForSide('white', previousCheck)
+    this._notifyCheckForSide('black', previousCheck)
   }
 
   private _toggleTurn(): void {

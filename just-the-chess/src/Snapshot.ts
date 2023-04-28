@@ -1,13 +1,29 @@
-import type { File, Rank } from './Position'
+import type { PositionCode } from './Position'
 import type { PieceTypeCode, ColorCode } from './Piece'
+import type CastlingTracking from './CastlingTracking'
 
-type PositionCode = `${File}${Rank}`
+
 type PieceCode = `${ColorCode}${PieceTypeCode}`
 
   // Only squares with pieces get a key.
   // (if absent, the corresponding square is empty)
-type BoardSnapshot = {
-  [key in PositionCode]?: PieceCode  
+type SquaresSnapshot = {
+  [key in PositionCode]?: PieceCode 
+}
+
+interface TrackingSnapshotForSide {
+  inCheckFrom: PositionCode[]
+  castling: CastlingTracking
+}
+
+interface TrackingSnapshot {
+  white: TrackingSnapshotForSide
+  black: TrackingSnapshotForSide
+}
+
+interface BoardSnapshot {
+  squares: SquaresSnapshot
+  tracking: TrackingSnapshot
 }
 
 interface GameSnapshot {
@@ -23,5 +39,8 @@ export {
   type GameSnapshot,
   type BoardSnapshot,
   type PositionCode,
-  type PieceCode
+  type PieceCode,
+  type SquaresSnapshot,
+  type TrackingSnapshotForSide,
+  type TrackingSnapshot
 } 

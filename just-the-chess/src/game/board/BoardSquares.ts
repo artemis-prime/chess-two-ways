@@ -9,11 +9,12 @@ import {
 
 import { 
   type File, 
+  type PositionCode,
   positionToString, 
   RANKS, 
   FILES 
 } from '../../Position'
-import { type BoardSnapshot, type PositionCode } from '../../Snapshot'
+import type { SquaresSnapshot } from '../../Snapshot'
 
 import type Tracking from './Tracking'
 
@@ -37,14 +38,7 @@ const track = (tr: Tracking, pos: Square): void => {
   }
   else {
     if (isPrimaryType(pos.piece!.type)) {
-      const primaryType = pos.piece!.type as PrimaryPieceType
-      const positions = tr[pos.piece!.color].primaries.get(primaryType)
-      if (!positions) {
-        tr[pos.piece!.color].primaries.set(primaryType, [pos])
-      }
-      else {
-        positions.push(pos)  
-      }
+      tr[pos.piece!.color].setPrimaryTypePosition(pos.piece!.type as PrimaryPieceType, pos)
     }  
   }
 }
@@ -116,7 +110,7 @@ class BoardSquares {
     // Intentionally forgiving. If a key corresponding to a
     // square is found and its value successfully parsed, a piece is placed there. 
     // If not, the square is empty (no Errors are ever thrown)
-  static visitWithSnapshot(sq: Square, snapshot: BoardSnapshot, tr: Tracking): void {
+  static visitWithSnapshot(sq: Square, snapshot: SquaresSnapshot, tr: Tracking): void {
     const keyToTry = positionToString(sq) as PositionCode
     if (snapshot[keyToTry]) {
         // If pieceFromCodeString is undefined, default to null
@@ -151,7 +145,7 @@ class BoardSquares {
     }
   }
  
-  syncToSnapshot(snapshot: BoardSnapshot, tr: Tracking): void {
+  syncToSnapshot(snapshot: SquaresSnapshot, tr: Tracking): void {
     for (const rank of RANKS) {
       for (const file of FILES) {
         BoardSquares.visitWithSnapshot(this[rank][file], snapshot, tr)

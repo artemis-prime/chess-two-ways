@@ -11,6 +11,8 @@ interface Position {
   readonly file: File
 }
 
+type PositionCode = `${File}${Rank}`
+
 // Assumptions: 
 // 1) row and column or based on the standard 2D layout where origin is top-left,
 //    and offsets are positive.
@@ -39,7 +41,7 @@ const positionsEqual = (s1: Position, s2: Position): boolean => (
   !!s1 && !!s2 && (s1.file === s2.file) && (s1.rank === s2.rank)
 )
 
-const positionToString = (pos: Position): string => (
+const positionToString = (pos: Position): PositionCode => (
   `${pos.file}${pos.rank}`  
 )
 
@@ -63,6 +65,7 @@ export {
   type Position as default, 
   type Rank,
   type File,
+  type PositionCode,
   RANKS,
   RANKS_REVERSED,
   FILES,

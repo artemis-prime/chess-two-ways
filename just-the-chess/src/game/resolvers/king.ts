@@ -10,9 +10,7 @@ import type {
 import { FILES, positionsEqual } from '../../Position'
 import { isOpponent } from '../../Piece'
 
-
 import type Board from '../Board'
-
 
 import {
   hasN,
@@ -80,14 +78,17 @@ const amCastling = (
 
   let eligable = false
   if (correctSquares) {
-    const reasonDenied = [] as string[]
-    eligable = board.eligableToCastle(
+    const reasonDenied = board.cannotCastleBecause(
       move.piece.color, 
-      (move.to.file === 'g') ? 'kingside' : 'queenside', 
-      reasonDenied
+      (move.to.file === 'g') ? 'kingside' : 'queenside' 
     )
-    if (!eligable && messageFn) {
-      messageFn(reasonDenied[0])
+    if (reasonDenied) {
+      if (messageFn) {
+        messageFn(reasonDenied)
+      }
+    }
+    else {
+      eligable = true 
     }
   }
 

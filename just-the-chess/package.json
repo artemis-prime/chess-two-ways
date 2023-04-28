@@ -11,6 +11,7 @@
   "author": "artemis-prime",
   "license": "UNLICENSED",
   "dependencies": {
-    "mobx": "6.5.0"
+    "mobx": "6.5.0",
+    "mobx-utils": "^6.0.6"
   }
 }
