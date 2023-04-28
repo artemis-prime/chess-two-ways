@@ -20,7 +20,7 @@ import {
 const resolve = (
   board: Board,
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): Action | null => {
   
   if (board.isClearAlongDiagonal(move.from, move.to)) {

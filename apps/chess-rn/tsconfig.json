@@ -1,24 +1,16 @@
 {
   //  "extends": "@tsconfig/react-native/tsconfig.json",
+  "extends": "../../just-the-chess/tsconfig",
+
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
     "types": ["react-native"],
     "lib": [
       "es2019"
     ],
+    "composite": true,
     "allowJs": true,
     "jsx": "react-native",
     "noEmit": true,
-    "isolatedModules": true,
-    "strict": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "useDefineForClassFields": true, // mobx
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
@@ -28,6 +20,10 @@
     "node_modules",
     "babel.config.js",
     "metro.config.js",
-  ]
+  ],
+  "references": [
+    { "path": "../../just-the-chess" },
+  ],
+
 }
   

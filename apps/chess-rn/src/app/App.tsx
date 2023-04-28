@@ -8,7 +8,8 @@ import UIServicesProvider from '~/services/UIServicesProvider'
 
 import Layout from './Layout'
 
-    // On Android, deed GestureHandlerRootView.
+    // On Android, need a single GestureHandlerRootView
+    // at the root of all gesture use.
     // https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/events
 const App: React.FC = () => (
   <ThemeProvider theme={theme}>

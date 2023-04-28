@@ -1,16 +1,23 @@
-import React, { useRef, useEffect } from 'react'
+import React, { 
+  useRef, 
+  useEffect, 
+  useState 
+} from 'react'
 import {
   Dimensions,
   SafeAreaView,
   StatusBar,
-  ViewStyle
+  ViewStyle,
+  ImageStyle,
+  View
 } from 'react-native'
 import { autorun } from 'mobx'
-import { observer } from 'mobx-react'
+//import { observer } from 'mobx-react'
 
 import {
   Gesture,
   Directions,
+  FlingGesture,
 } from 'react-native-gesture-handler'
 
 import Animated, { 
@@ -21,7 +28,8 @@ import Animated, {
   interpolate,
   Extrapolation,  
   runOnJS,
-  AnimateStyle
+  AnimateStyle,
+  interpolateColor,
  } from 'react-native-reanimated'
 
 import { useTheme } from '~/styles/stitches.config'
@@ -32,105 +40,153 @@ import Dash from './Dash'
 
 import {
   OuterContainer,
-  GameAreaView,
+  GameArea,
+  GameContainer,
   StatusBarSpacer,
   CornerShim,
   GameBGImage
 } from './LayoutComponents'
 
-  //https://reactnative.dev/docs/dimensions
+//import Menu, { MenuTitle } from './Menu'
+
 const screenDimensions = Dimensions.get('screen')
 
 const OPEN_MENU_Y_OFFSET = 92
 const OPEN_MENU_X_FRACTION = 0.6
 
-const Layout: React.FC = observer(() => {
+const GameAreaInner: React.FC<{
+  gesture: FlingGesture 
+}> = ({
+  gesture
+}) => {
 
-  const widthRef = useRef<number>(screenDimensions.width)
+  const ui = useUI()
+  const [menuVisible, setMenuVisible] = useState<boolean>(ui.menuVisible)
+
+  useEffect(() => {
+    return autorun(() => {
+      setMenuVisible(ui.menuVisible)
+    })
+  })
+
+  return (<>
+    <Dash disableInput={menuVisible} menuVisible={menuVisible} gesture={gesture} />
+    <Board disableInput={menuVisible} />
+  </>)
+}
+
+const GameAreaInnerOuter: React.FC<{
+  gesture: FlingGesture 
+}> = ({
+  gesture
+}) => (
+  <Animated.View collapsable={false} style={{gap: 11}}>
+    <GameAreaInner gesture={gesture}/>
+  </Animated.View>
+)
+  
+
+const Layout: React.FC = () => {
+
+  const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const theme = useTheme()
   const ui = useUI()
 
-    // 0 <--> 1, styles are interpolated as needed
-  const menuAnimation = useSharedValue<number>(0) 
+    // Can be referenced on both threads.
+    // Mobx observables on the other, being proxied, get flagged 
+    // and an Error is thrown (Since they are proxied object)
+  const menuVisible_sv = useSharedValue<boolean>(ui.menuVisible) 
 
-    // Designed to be safely shared by both threads.
-    // mobx observables, being proxied get flagged 
-    // and an Error is thrown. 
-  const menuVisibleShared = useSharedValue<boolean>(false) 
-    
-    // Keep them in sync.  We'll read and mutate
-    // the mobx one only on this thread,
-    // and then only read the shared verion on the UI thread
-  autorun(() => { menuVisibleShared.value = ui.menuVisible })
+    // 0 <--> 1: default state <--> menu visible 
+    // Animated styles are interpolated as needed.
+    // ui.menuVisible is mutated at the END of the animation.
+  const menuAnimationBase = useSharedValue<number>(menuVisible_sv.value ? 1 : 0) 
 
-    //https://reactnative.dev/docs/dimensions
+    // Needs to change at slightly different times then ui.menuVisible
+  const [menuFullyVisible, setMenuFullyVisible] = useState<boolean>(menuVisible_sv.value)
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change',
-      ({screen}) => { widthRef.current = screen.width },
+      ({screen}) => { sizeRef.current = {w: screen.width, h: screen.height }},
     )
-    return () => {subscription?.remove()}
+    return () => { subscription?.remove() }
   })
-  
-  const setMenuVisible = (open: boolean): void => { ui.setMenuVisible(open) }
 
+  const onAnimationStarted = (): void => {
+    if (menuVisible_sv.value) {
+      setMenuFullyVisible(false)   
+    }
+  }
+
+  const _setMenuVisible = (visible: boolean): void => { 
+     if (visible) {
+      setMenuFullyVisible(true)  
+    }
+    menuVisible_sv.value = visible
+    ui.setMenuVisible(visible) 
+  }
+  
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
     .onStart((e) => {
-      menuAnimation.value = withTiming(
-        menuVisibleShared.value ? 0 : 1, 
+      runOnJS(onAnimationStarted)()
+      menuAnimationBase.value = withTiming(
+        menuVisible_sv.value ? 0 : 1, 
         {
           duration: 200,
-          easing: menuVisibleShared.value ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
+          easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
         },
         () => {
           // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
-          // Reading from / mutating a mobx observable 
-          // is not allowed on the UI thread.
-          runOnJS(setMenuVisible)(!menuVisibleShared.value)
+          // Accessing mobx observables is not allowed on the UI thread.
+          runOnJS(_setMenuVisible)(!menuVisible_sv.value)
         }
       )
     })
 
-  const regularGameContainerStyles = {
-    width: '100%',
-    height: '100%',
-    backgroundColor: theme.colors.headerBG,
-  } as AnimateStyle<ViewStyle> 
-
-  const animatedGameContainerStyles = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      menuAnimation.value, 
+  const gameContainerAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
+    left: interpolate(
+      menuAnimationBase.value, 
       [0, 1], 
-      [0, widthRef.current  * OPEN_MENU_X_FRACTION], 
+      [0, sizeRef.current.w  * OPEN_MENU_X_FRACTION], 
       { extrapolateRight: Extrapolation.CLAMP }
-    )
-    const translateY = interpolate(
-      menuAnimation.value, 
+    ),
+    top: interpolate(
+      menuAnimationBase.value, 
       [0, 1], 
       [0, OPEN_MENU_Y_OFFSET], 
       { extrapolateRight: Extrapolation.CLAMP }
     )
-    return { transform: [{ translateX }, { translateY }] }
-  })
+  }), [sizeRef.current.w])
+
+  const statusBarSpacerAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
+    backgroundColor: interpolateColor(      
+      menuAnimationBase.value, 
+      [0, 1], 
+      ['rgba(0, 0, 0, 0.2)', theme.colors.headerBG]
+    ) 
+  }))
+
+  const cornerShimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
+    opacity: menuAnimationBase.value
+  }))
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
+      <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
-        <Animated.View style={[ regularGameContainerStyles, animatedGameContainerStyles ]}>
+        <GameContainer animatedStyle={gameContainerAnimatedStyle}>
           <GameBGImage imageURI={'chess_bg_1920'} >
-            {/* pseudo margin element... best way to achieve the desired animation effect */}
-            <StatusBarSpacer menuVisible={ui.menuVisible} />
-            <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-            {ui.menuVisible && <CornerShim left={0} top={StatusBar.currentHeight!} /> }
-            <GameAreaView showBorder={ui.menuVisible}>
-              <Dash menuHandleProps={{menuVisible: ui.menuVisible, gesture}} />
-              <Board />
-            </GameAreaView>
+            <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
+            <CornerShim animatedStyle={cornerShimAnimatedStyle} />
+            <GameArea showBorder={menuFullyVisible}>
+              <GameAreaInnerOuter gesture={gesture} />
+            </GameArea>
           </GameBGImage>
-        </Animated.View>
+        </GameContainer>
       </OuterContainer>
     </SafeAreaView>
   )
-})
+}
 
 export default Layout

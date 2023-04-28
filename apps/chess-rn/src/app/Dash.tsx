@@ -4,10 +4,8 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native'
-import { observer } from 'mobx-react'
 
 import { styled } from '~/styles/stitches.config'
-import { useUI } from '~/services'
 import { BGImage } from '~/primatives'
 
 import {
@@ -41,19 +39,18 @@ const DashInner = styled(View, {
 })
 
 const Dash: React.FC<{
-  menuHandleProps: MenuFlingHandleProps
+  disableInput: boolean,
   style?: StyleProp<ViewStyle>
-}> = observer(({
-  menuHandleProps,
-  style
+} & MenuFlingHandleProps> = ({
+  disableInput,
+  style,
+  ...rest
 }) => {
-
-  const ui = useUI()
 
   return (
     <StyledBGImage imageURI={'slate_bg'}  style={style}>
-      <AppBarInDash menuHandleProps={menuHandleProps} />
-      <DashInner pointerEvents={(ui.menuVisible ? 'none' : 'auto')}>
+      <AppBarInDash {...rest} />
+      <DashInner pointerEvents={(disableInput ? 'none' : 'auto')}>
         <View style={{
           flexDirection: 'row', 
           justifyContent: 'space-between', 
@@ -67,6 +64,6 @@ const Dash: React.FC<{
       </DashInner>
     </StyledBGImage>
   )
-})
+}
 
 export default Dash

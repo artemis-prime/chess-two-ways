@@ -84,7 +84,7 @@ const isOneRankMove = (
 const resolve = (
   board: Board, 
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): Action | null => {
   
   const toPiece = board.pieceAt(move.to)

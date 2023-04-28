@@ -4,7 +4,10 @@ import {
   pieceToString, 
   pieceFromString,
   PIECE_TYPE_NAMES,
-  PIECETYPE_FROM_LETTER 
+  PIECETYPE_FROM_LETTER, 
+  type PieceTypeCode,
+  type PieceType,
+  opponent
 } from './Piece'
 import type Move from './Move'
 import type Action from './Action'
@@ -88,17 +91,17 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const piece = pieceFromString(lan.slice(0,2))
   const from = positionFromString(lan.slice(2,4))
   const isCapture = lan.charAt(4) === 'x'
-  const captured = isCapture ? PIECETYPE_FROM_LETTER[lan.charAt(5)] : undefined
+  const captured = isCapture ? {type: PIECETYPE_FROM_LETTER[lan.charAt(5) as PieceTypeCode] as PieceType, color: opponent(piece!.color)} : undefined
   const toPositionIndex = (isCapture) ? 6 : 4
   const to = positionFromString(lan.slice(toPositionIndex,toPositionIndex + 2))
   const isPromote = lan.charAt(toPositionIndex + 2) === '='
-  const promotedTo = (isPromote) ? PIECETYPE_FROM_LETTER[lan.charAt(toPositionIndex + 3)] : undefined
+  const promotedTo = (isPromote) ? PIECETYPE_FROM_LETTER[lan.charAt(toPositionIndex + 3) as PieceTypeCode] as PrimaryPieceType : undefined
 
   if (!piece) throw new Error('lanToActionRecord(): error parsing piece! (note: ' + note.toString() + ')')
   if (!from) throw new Error('lanToActionRecord(): error parsing from poistion! (note: ' + note.toString() + ')')
   if (!to) throw new Error('lanToActionRecord(): error parsing to poistion! (note: ' + note.toString() + ')')
 
-  let action
+  let action: Action
   if (isCapture) {
     action = isPromote ? 'capturePromote' : 'capture' 
   }

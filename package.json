@@ -22,18 +22,15 @@
     "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web && yarn clean:rn"
   },
   "devDependencies": {
+    "@types/node": "^18.15.11",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.4"
   },
   "workspaces": {
     "packages": [
       "just-the-chess",
       "apps/chess-web",
       "apps/chess-rn"
-    ],
-    "nohoist": []
-  },
-  "dependencies": {
-    "@types/node": "^18.15.11"
+    ]
   }
 }
