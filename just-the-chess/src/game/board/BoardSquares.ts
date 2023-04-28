@@ -65,7 +65,6 @@ const rankSquaresFromArray = (sqs: Square[]): RankSquares => ({
 })
 
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
-
   const squares = Object.values(rs)
   const rankArray: Square[] = []
   for (const square of squares) {
@@ -85,84 +84,51 @@ class BoardSquares {
   7: RankSquares
   8: RankSquares
 
-  constructor (tr: Tracking, observePieces? : boolean) {
+  static visitForReset(sq: Square, tr: Tracking): void {
+    if (sq.rank === 1) {
+      sq.piece = { type: HOME_RANK[sq.file], color: 'white' }
+      sq.state = 'none'
+      track(tr, sq)
+    }
+    else if (sq.rank === 2) {
+      sq.piece = { type: 'pawn', color: 'white' }
+      sq.state = 'none'
+    }
+    else if (sq.rank === 8) {
+      sq.piece = { type: HOME_RANK[sq.file], color: 'black' }
+      sq.state = 'none'
+      track(tr, sq)
+    }
+    else if (sq.rank === 7) {
+      sq.piece = { type: 'pawn', color: 'black' }
+      sq.state = 'none'
+    }
+    else {
+      sq.piece = null
+      sq.state = 'none'
+    }
+  }
 
+  constructor (tr: Tracking, observePieces? : boolean) {
     for (const rank of RANKS) {
       const sqs: Square[] = []
-      if (rank === 1) {
-        for (const file of FILES) {
-          const sq = new Square(rank, file, { type: HOME_RANK[file], color: 'white' }, 'none', observePieces)
-          sqs.push(sq)
-          track(tr, sq)
-        }
-      }
-      else if (rank === 2) {
-        for (const file of FILES) {
-          const sq =  new Square(rank, file, { type: 'pawn', color: 'white' }, 'none', observePieces)
-          sqs.push(sq)
-        }
-      }
-      else if (rank === 7) {
-        for (const file of FILES) {
-          const sq = new Square(rank, file, { type: 'pawn', color: 'black' }, 'none', observePieces)
-          sqs.push(sq)
-        }
-      }
-      else if (rank === 8) {
-        for (const file of FILES) {
-          const sq = new Square(rank, file, { type: HOME_RANK[file], color: 'black' }, 'none', observePieces)
-          sqs.push(sq)
-          track(tr, sq)
-        }
-      }
-      else {
-        for (const file of FILES) {
-          const sq = new Square(rank, file, null, 'none', observePieces)  
-          sqs.push(sq)
-        }
+      for (const file of FILES) {
+        const sq = new Square(rank, file, null, 'none', observePieces)  
+        BoardSquares.visitForReset(sq, tr)
+        sqs.push(sq)
       }
       this[rank] = rankSquaresFromArray(sqs)
     } 
   }
 
   reset(tr: Tracking) {
-
     for (const rank of RANKS) {
-      if (rank === 1) {
-        for (const file of FILES) {
-          this[rank][file].piece = { type: HOME_RANK[file], color: 'white' }
-          this[rank][file].state = 'none'
-          track(tr, this[rank][file])
-        }
+      for (const file of FILES) {
+        BoardSquares.visitForReset(this[rank][file], tr)
       }
-      else if (rank === 2) {
-        for (const file of FILES) {
-          this[rank][file].piece = { type: 'pawn', color: 'white' }
-          this[rank][file].state = 'none'
-        }
-      }
-      else if (rank === 7) {
-        for (const file of FILES) {
-          this[rank][file].piece = { type: 'pawn', color: 'black' }
-          this[rank][file].state = 'none'
-        }
-      }
-      else if (rank === 8) {
-        for (const file of FILES) {
-          this[rank][file].piece = { type: HOME_RANK[file], color: 'black' }
-          this[rank][file].state = 'none'
-          track(tr, this[rank][file])
-        }
-      }
-      else {
-        for (const file of FILES) {
-          this[rank][file].piece = null
-          this[rank][file].state = 'none'
-        }
-      }
-    } 
+    }
   }
-  
+ 
     // Intentionally forgiving. If meaningful keys are found, 
     // their values are parsed. If they can be parsed, pieces are created.
     // If not, no Errors are thrown and square is just empty.
