@@ -20,17 +20,17 @@ type PieceType =
   'king'
 
 //  https://stackoverflow.com/questions/44480644/string-union-to-string-array
-const _PRIMARY_PIECES = [
+const PRIMARIES_AS_PIECETYPE = [
   'queen',
   'rook',
   'bishop',
   'knight'
 ] as const 
-type _PrimaryPiecesArrayType = typeof _PRIMARY_PIECES
+type _PrimaryPiecesArrayType = typeof PRIMARIES_AS_PIECETYPE
 type PrimaryPieceType = _PrimaryPiecesArrayType[number]
 
   // more convenient to coerce here
-const PRIMARY_PIECES = _PRIMARY_PIECES as readonly string[]
+const PRIMARIES_AS_STRING = PRIMARIES_AS_PIECETYPE as readonly string[]
 
   // see above
   // pawns can only be promoted to these.
@@ -151,7 +151,8 @@ export {
   type PieceFormat,
   type PieceTypeCode,
   type ColorCode,
-  PRIMARY_PIECES,
+  PRIMARIES_AS_STRING,
+  PRIMARIES_AS_PIECETYPE,
   COLOR_FROM_CODE,
   PIECE_TYPE_NAMES,
   PIECETYPE_FROM_LETTER,

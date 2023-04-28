@@ -12,7 +12,7 @@ import {
   type Color, 
   type PrimaryPieceType, 
   type Side, 
-  PRIMARY_PIECES,
+  PRIMARIES_AS_STRING,
   opponent,
   isOpponent,
   pieceToString,
@@ -534,7 +534,7 @@ class BoardImpl implements BoardInternal {
       } 
       if (r.action.includes('capture')) {
           // track the captured piece, if it is of interest
-        if (PRIMARY_PIECES.includes(r.captured!.type)) {
+        if (PRIMARIES_AS_STRING.includes(r.captured!.type)) {
           const positions = this._tracking[r.captured!.color].primaries.get(r.captured!.type as PrimaryPieceType)!
           const index = positions.findIndex((e) => (positionsEqual(e, r.to)))
           if (mode === 'undo') {
@@ -552,7 +552,7 @@ class BoardImpl implements BoardInternal {
       }
       if (r.action === 'move' || r.action.includes('capture')) {
             // track the moved or capturing piece, if it is of interest
-        if ((PRIMARY_PIECES as readonly string[]).includes(r.piece.type)) {
+        if (PRIMARIES_AS_STRING.includes(r.piece.type)) {
           const positions = this._tracking[side].primaries.get(r.piece.type as PrimaryPieceType)!
           if (mode === 'undo') {
             const index = positions.findIndex((e) => (positionsEqual(e, r.to)))
@@ -585,36 +585,36 @@ class BoardImpl implements BoardInternal {
         // Neighbor is open (so vulnerable from certain types from afar),
         // or contains an opponent capable of capturing from this neighboring square
       vulnerableOnDiagonalFromPrimaries(sideToCapture: Side): boolean {
-        return (this.NE && (!this.NE!.piece || isOpponent(this.NE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        return !!(this.NE && (!this.NE!.piece || isOpponent(this.NE!.piece, sideToCapture, ['bishop', 'queen']))) 
         || 
-        (this.SE && (!this.SE!.piece || isOpponent(this.SE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.SE && (!this.SE!.piece || isOpponent(this.SE!.piece, sideToCapture, ['bishop', 'queen']))) 
         || 
-        (this.SW && (!this.SW!.piece || isOpponent(this.SW!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.SW && (!this.SW!.piece || isOpponent(this.SW!.piece, sideToCapture, ['bishop', 'queen']))) 
         || 
-        (this.NW && (!this.NW!.piece || isOpponent(this.NW!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.NW && (!this.NW!.piece || isOpponent(this.NW!.piece, sideToCapture, ['bishop', 'queen']))) 
       },
         // Neighbor is open (so vulnerable from certain types from afar),
         // or contains an opponent capable of capturing from this neighboring square
       vulnerableOnRankOrFileFromPrimaries(sideToCapture: Side): boolean {
-        return (this.N && (!this.N!.piece || isOpponent(this.N!.piece, sideToCapture, ['rook', 'queen']))) 
+        return !!(this.N && (!this.N!.piece || isOpponent(this.N!.piece, sideToCapture, ['rook', 'queen']))) 
           || 
-          (this.S && (!this.S!.piece || isOpponent(this.S!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.S && (!this.S!.piece || isOpponent(this.S!.piece, sideToCapture, ['rook', 'queen']))) 
           || 
-          (this.E && (!this.E!.piece || isOpponent(this.E!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.E && (!this.E!.piece || isOpponent(this.E!.piece, sideToCapture, ['rook', 'queen']))) 
           || 
-          (this.W && (!this.W!.piece || isOpponent(this.W!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.W && (!this.W!.piece || isOpponent(this.W!.piece, sideToCapture, ['rook', 'queen']))) 
       },
         // All other opposing piece will be explicitly checked from their cached positions.
       getOpposingPawnsOrKing(sideToCapture: Side): Position[] {
 
         const possibleSquaresForOppositePawns = (sideToCapture === 'white') ? [this.NE, this.NW] : [this.SE, this.SW] 
         const actualSquaresWithOppositePawns = possibleSquaresForOppositePawns.filter(
-          (sqToTest) => (isOpponent(sqToTest?.piece, sideToCapture, 'pawn'))
-        )
+          (sqToTest) => (sqToTest && isOpponent(sqToTest.piece, sideToCapture, 'pawn'))
+        ) as Square[]
 
         const possibleSquaresForOppositeKing = [this.N, this.NE, this.NW, this.S, this.SE, this.SW]
         const actualSquareWithOppositeKing = possibleSquaresForOppositeKing.find(
-          (sqToTest) => (isOpponent(sqToTest?.piece, sideToCapture, 'king'))
+          (sqToTest) => (sqToTest && isOpponent(sqToTest.piece, sideToCapture, 'king'))
         )
 
         return actualSquareWithOppositeKing ? [...actualSquaresWithOppositePawns, actualSquareWithOppositeKing] : actualSquaresWithOppositePawns

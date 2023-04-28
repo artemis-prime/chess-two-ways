@@ -3,7 +3,7 @@ import Square from '../Square'
 import { 
   type PieceType, 
   type PrimaryPieceType, 
-  PRIMARY_PIECES, 
+  PRIMARIES_AS_STRING, 
   pieceFromString 
 } from '../../Piece'
 
@@ -38,7 +38,7 @@ const track = (tr: Tracking, pos: Square): void => {
     tr[pos.piece!.color].king = sqCopy
   }
   else {
-    if (PRIMARY_PIECES.includes(pos.piece!.type)) {
+    if (PRIMARIES_AS_STRING.includes(pos.piece!.type)) {
       const type = pos.piece!.type as PrimaryPieceType
       const positions = tr[pos.piece!.color].primaries.get(type)
       if (!positions) {
@@ -54,7 +54,6 @@ const track = (tr: Tracking, pos: Square): void => {
 type RankSquares = Partial<{
   [key in File]: Square
 }>
-
 
   // https://stackoverflow.com/questions/59656190/define-key-type-for-object-in-for-in
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
@@ -79,6 +78,7 @@ class BoardSquares {
   constructor (tr: Tracking, observePieces? : boolean) {
 
     for (const rank of RANKS) {
+      this[rank] = {}
       if (rank === 1) {
         for (const file of FILES) {
           this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'white' }, 'none', observePieces)

@@ -66,7 +66,7 @@ const legalMove = (move: Move): boolean => {
 const amCastling = (
   board: Board, 
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): boolean => {
 
   const homeRank = (move.piece.color === 'white') ? 1 : 8
@@ -145,7 +145,7 @@ const castlablePositions = (
 const resolve = (
   board: Board,
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): Action | null => {
   
   if (legalMove(move)) {

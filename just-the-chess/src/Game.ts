@@ -23,10 +23,11 @@ import {
   type PieceType, 
   type PrimaryPieceType, 
   type Side, 
-  PRIMARY_PIECES,
+  PRIMARIES_AS_STRING,
   COLOR_FROM_CODE,
   opponent,
-  type ColorCode
+  type ColorCode,
+  PRIMARIES_AS_PIECETYPE
 } from './Piece'
 
 import type Position from './Position'
@@ -422,7 +423,7 @@ class GameImpl implements Game {
   }
 
   private _primariesCanMove(side: Side): boolean {
-    return PRIMARY_PIECES.some((type: PrimaryPieceType) => {
+    return PRIMARIES_AS_PIECETYPE.some((type: PrimaryPieceType) => {
       const positions = this._board.primaryPositions(side, type)
       const resolver = this._resolvers.get(type)
       return resolver && positions.some((pos) => {

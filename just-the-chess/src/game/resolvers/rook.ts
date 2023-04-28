@@ -19,7 +19,7 @@ import {
 const resolve = (
   board: Board,
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): Action | null => {
   
   if (board.isClearAlongRank(move.from, move.to) || board.isClearAlongFile(move.from, move.to) ) {

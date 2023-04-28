@@ -54,23 +54,6 @@ const screenDimensions = Dimensions.get('screen')
 const OPEN_MENU_Y_OFFSET = 92
 const OPEN_MENU_X_FRACTION = 0.6
 
-/*
-const Foo: React.FC<{
-  //animatedStyle: AnimateStyle<ViewStyle>
-} & PropsWithChildren> = ({
-  //animatedStyle,
-  children 
-}) => {
-  //const theme = useTheme()
-
-  return (
-    <View >
-      {children}
-    </View>
-  )
-}
-*/
-
 const GameAreaInner: React.FC<{
   gesture: FlingGesture 
 }> = ({
@@ -97,9 +80,9 @@ const GameAreaInnerOuter: React.FC<{
 }> = ({
   gesture
 }) => (
-  <View collapsable={false} style={{gap: 11}}>
+  <Animated.View collapsable={false} style={{gap: 11}}>
     <GameAreaInner gesture={gesture}/>
-  </View>
+  </Animated.View>
 )
   
 

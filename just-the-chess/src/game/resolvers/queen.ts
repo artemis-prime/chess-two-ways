@@ -38,7 +38,7 @@ const legalMove = (
 const resolve = (
   board: Board,
   move: Move,
-  messageFn?: (s: String) => void
+  messageFn?: (s: string) => void
 ): Action | null => {
   
   if (legalMove(board, move.from, move.to)) {
