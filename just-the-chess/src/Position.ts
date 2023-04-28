@@ -39,11 +39,6 @@ const positionsEqual = (s1: Position, s2: Position): boolean => (
   !!s1 && !!s2 && (s1.file === s2.file) && (s1.rank === s2.rank)
 )
 
-const copyPosition = (toCopy: Position): Position => ({
-  rank: toCopy.rank,
-  file: toCopy.file
-})
-
 const positionToString = (pos: Position): string => (
   `${pos.file}${pos.rank}`  
 )
@@ -72,7 +67,6 @@ export {
   RANKS_REVERSED,
   FILES,
   positionsEqual, 
-  copyPosition, 
   positionToString,
   positionFromString,
   layoutPositionToBoardPosition

@@ -3,8 +3,8 @@ import {
   type PrimaryPieceType, 
   pieceToString, 
   pieceFromString,
-  PIECE_TYPE_NAMES,
-  PIECETYPE_FROM_LETTER, 
+  PIECETYPE_NAMES,
+  PIECETYPE_FROM_CODE, 
   type PieceTypeCode,
   type PieceType,
   opponent
@@ -45,7 +45,7 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
       str += verbose ?
         `captures ${r.captured!.type} (${positionToString(r.to)})`
         :
-        `x${PIECE_TYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}`
+        `x${PIECETYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}`
     break
     case 'move':
       str += verbose ?
@@ -57,13 +57,13 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
       str += verbose ?
         `is promoted to a ${r.promotedTo} at (${positionToString(r.to)})`
         :
-        `${positionToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo!].short}`
+        `${positionToString(r.to)}=${PIECETYPE_NAMES[r.promotedTo!].short}`
     break
     case 'capturePromote':
       str += verbose ?
         `captures ${r.captured!.type} and is promoted to a ${r.promotedTo} at (${positionToString(r.to)})`
         :
-        `x${PIECE_TYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}=${PIECE_TYPE_NAMES[r.promotedTo!].short}`
+        `x${PIECETYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}=${PIECETYPE_NAMES[r.promotedTo!].short}`
     break
   } 
   return str
@@ -91,11 +91,11 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const piece = pieceFromString(lan.slice(0,2))
   const from = positionFromString(lan.slice(2,4))
   const isCapture = lan.charAt(4) === 'x'
-  const captured = isCapture ? {type: PIECETYPE_FROM_LETTER[lan.charAt(5) as PieceTypeCode] as PieceType, color: opponent(piece!.color)} : undefined
+  const captured = isCapture ? {type: PIECETYPE_FROM_CODE[lan.charAt(5) as PieceTypeCode] as PieceType, color: opponent(piece!.color)} : undefined
   const toPositionIndex = (isCapture) ? 6 : 4
   const to = positionFromString(lan.slice(toPositionIndex,toPositionIndex + 2))
   const isPromote = lan.charAt(toPositionIndex + 2) === '='
-  const promotedTo = (isPromote) ? PIECETYPE_FROM_LETTER[lan.charAt(toPositionIndex + 3) as PieceTypeCode] as PrimaryPieceType : undefined
+  const promotedTo = (isPromote) ? PIECETYPE_FROM_CODE[lan.charAt(toPositionIndex + 3) as PieceTypeCode] as PrimaryPieceType : undefined
 
   if (!piece) throw new Error('lanToActionRecord(): error parsing piece! (note: ' + note.toString() + ')')
   if (!from) throw new Error('lanToActionRecord(): error parsing from poistion! (note: ' + note.toString() + ')')

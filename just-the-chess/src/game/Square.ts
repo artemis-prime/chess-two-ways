@@ -39,12 +39,12 @@ class Square implements
     }
   }
 
-  static copy(s: Square): Square {
+  clone(): Square {
     return new Square(
-      s.rank,
-      s.file,
-      s.piece ? {...s.piece} : null,
-      s.state
+      this.rank,
+      this.file,
+      this.piece ? {...this.piece} : null,
+      this.state
     )
   }
 }

@@ -3,14 +3,13 @@ import Square from '../Square'
 import { 
   type PieceType, 
   type PrimaryPieceType, 
-  PRIMARIES_AS_STRING, 
-  pieceFromString 
+  pieceFromString,
+  isPrimaryType 
 } from '../../Piece'
 
 import { 
   type File, 
   positionToString, 
-  copyPosition, 
   RANKS, 
   FILES 
 } from '../../Position'
@@ -18,7 +17,7 @@ import { type BoardSnapshot, type PositionCode } from '../../Snapshot'
 
 import type Tracking from './Tracking'
 
-const PIECETYPE_BY_FILE = {
+const HOME_RANK = {
   'a': 'rook',
   'b': 'knight',
   'c': 'bishop',
@@ -33,35 +32,46 @@ const PIECETYPE_BY_FILE = {
 
   // call for all Square that contains a piece
 const track = (tr: Tracking, pos: Square): void => {
-  const sqCopy = copyPosition(pos)
   if (pos.piece!.type === 'king') {
-    tr[pos.piece!.color].king = sqCopy
+    tr[pos.piece!.color].king = pos
   }
   else {
-    if (PRIMARIES_AS_STRING.includes(pos.piece!.type)) {
-      const type = pos.piece!.type as PrimaryPieceType
-      const positions = tr[pos.piece!.color].primaries.get(type)
+    if (isPrimaryType(pos.piece!.type)) {
+      const primaryType = pos.piece!.type as PrimaryPieceType
+      const positions = tr[pos.piece!.color].primaries.get(primaryType)
       if (!positions) {
-        tr[pos.piece!.color].primaries.set(type, [sqCopy])
+        tr[pos.piece!.color].primaries.set(primaryType, [pos])
       }
       else {
-        positions.push(sqCopy)  
+        positions.push(pos)  
       }
     }  
   }
 }
 
-type RankSquares = Partial<{
+type RankSquares = {
   [key in File]: Square
-}>
+}
 
-  // https://stackoverflow.com/questions/59656190/define-key-type-for-object-in-for-in
+const rankSquaresFromArray = (sqs: Square[]): RankSquares => ({
+  a: sqs[0],
+  b: sqs[1],
+  c: sqs[2],
+  d: sqs[3],
+  e: sqs[4],
+  f: sqs[5],
+  g: sqs[6],
+  h: sqs[7],
+})
+
 const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
-  const result: RankSquares = {}
-  for (const key of FILES) {
-    result[key] = Square.copy(rs[key] as Square) 
+
+  const squares = Object.values(rs)
+  const rankArray: Square[] = []
+  for (const square of squares) {
+    rankArray.push(square.clone()) 
   }
-  return result as RankSquares
+  return rankSquaresFromArray(rankArray)
 }
 
 class BoardSquares {
@@ -78,34 +88,40 @@ class BoardSquares {
   constructor (tr: Tracking, observePieces? : boolean) {
 
     for (const rank of RANKS) {
-      this[rank] = {}
+      const sqs: Square[] = []
       if (rank === 1) {
         for (const file of FILES) {
-          this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'white' }, 'none', observePieces)
-          track(tr, this[rank][file]!)
+          const sq = new Square(rank, file, { type: HOME_RANK[file], color: 'white' }, 'none', observePieces)
+          sqs.push(sq)
+          track(tr, sq)
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
-          this[rank][file] = new Square(rank, file, { type: 'pawn', color: 'white' }, 'none', observePieces)
+          const sq =  new Square(rank, file, { type: 'pawn', color: 'white' }, 'none', observePieces)
+          sqs.push(sq)
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
-          this[rank][file] = new Square(rank, file, { type: 'pawn', color: 'black' }, 'none', observePieces)
+          const sq = new Square(rank, file, { type: 'pawn', color: 'black' }, 'none', observePieces)
+          sqs.push(sq)
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
-          this[rank][file] = new Square(rank, file, { type: PIECETYPE_BY_FILE[file], color: 'black' }, 'none', observePieces)
-          track(tr, this[rank][file]!)
+          const sq = new Square(rank, file, { type: HOME_RANK[file], color: 'black' }, 'none', observePieces)
+          sqs.push(sq)
+          track(tr, sq)
         }
       }
       else {
         for (const file of FILES) {
-          this[rank][file] = new Square(rank, file, null, 'none', observePieces)  
+          const sq = new Square(rank, file, null, 'none', observePieces)  
+          sqs.push(sq)
         }
       }
+      this[rank] = rankSquaresFromArray(sqs)
     } 
   }
 
@@ -114,34 +130,34 @@ class BoardSquares {
     for (const rank of RANKS) {
       if (rank === 1) {
         for (const file of FILES) {
-          this[rank][file]!.piece = { type: PIECETYPE_BY_FILE[file], color: 'white' }
-          this[rank][file]!.state = 'none'
-          track(tr, this[rank][file]!)
+          this[rank][file].piece = { type: HOME_RANK[file], color: 'white' }
+          this[rank][file].state = 'none'
+          track(tr, this[rank][file])
         }
       }
       else if (rank === 2) {
         for (const file of FILES) {
-          this[rank][file]!.piece = { type: 'pawn', color: 'white' }
-          this[rank][file]!.state = 'none'
+          this[rank][file].piece = { type: 'pawn', color: 'white' }
+          this[rank][file].state = 'none'
         }
       }
       else if (rank === 7) {
         for (const file of FILES) {
-          this[rank][file]!.piece = { type: 'pawn', color: 'black' }
-          this[rank][file]!.state = 'none'
+          this[rank][file].piece = { type: 'pawn', color: 'black' }
+          this[rank][file].state = 'none'
         }
       }
       else if (rank === 8) {
         for (const file of FILES) {
-          this[rank][file]!.piece = { type: PIECETYPE_BY_FILE[file], color: 'black' }
-          this[rank][file]!.state = 'none'
-          track(tr, this[rank][file]!)
+          this[rank][file].piece = { type: HOME_RANK[file], color: 'black' }
+          this[rank][file].state = 'none'
+          track(tr, this[rank][file])
         }
       }
       else {
         for (const file of FILES) {
-          this[rank][file]!.piece = null
-          this[rank][file]!.state = 'none'
+          this[rank][file].piece = null
+          this[rank][file].state = 'none'
         }
       }
     } 
@@ -149,14 +165,17 @@ class BoardSquares {
   
     // Intentionally forgiving. If meaningful keys are found, 
     // their values are parsed. If they can be parsed, pieces are created.
-    // if not, square is empty (no Error's are thrown)
+    // If not, no Errors are thrown and square is just empty.
   syncToSnapshot(snapshot: BoardSnapshot, tr: Tracking): void {
 
-    const assignToSquare = (sq: Square): void => {
+    const visit = (sq: Square): void => {
       const keyToTry = positionToString(sq) as PositionCode
       if (snapshot[keyToTry]) {
         sq.piece = pieceFromString(snapshot[keyToTry]!) ?? null // in case undefined
         sq.state = 'none'
+        if (sq.piece) {
+          track(tr, sq)
+        }
       }
       else {
         sq.piece = null
@@ -166,17 +185,14 @@ class BoardSquares {
 
     for (const rank of RANKS) {
       for (const file of FILES) {
-        assignToSquare(this[rank][file]!)
-        if (this[rank][file]!.piece) {
-          track(tr, this[rank][file]!)
-        }
+        visit(this[rank][file])
       }
     }
   }
 
   syncTo(source: BoardSquares): void {
-    for (const key of RANKS) {
-      this[key] = deepCopyRankSquares(source[key])
+    for (const rank of RANKS) {
+      this[rank] = deepCopyRankSquares(source[rank])
     }
   }
 } 

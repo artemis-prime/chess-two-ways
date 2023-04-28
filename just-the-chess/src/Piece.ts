@@ -2,6 +2,19 @@ type Color =
   'black' | 
   'white'
 
+type PieceType =
+  'pawn' |
+  'queen' |
+  'bishop' |
+  'rook' |
+  'knight' | 
+  'king'
+
+interface Piece {
+  readonly type: PieceType
+  readonly color: Color
+} 
+  
 type ColorCode = 'w' | 'b'
 
 const COLOR_FROM_CODE = {
@@ -11,39 +24,20 @@ const COLOR_FROM_CODE = {
   [key in ColorCode] : Color
 }
 
-type PieceType =
-  'pawn' |
-  'queen' |
-  'bishop' |
-  'rook' |
-  'knight' | 
-  'king'
-
 //  https://stackoverflow.com/questions/44480644/string-union-to-string-array
-const PRIMARIES_AS_PIECETYPE = [
+const PRIMARY_PIECETYPES = [
   'queen',
   'rook',
   'bishop',
   'knight'
 ] as const 
-type _PrimaryPiecesArrayType = typeof PRIMARIES_AS_PIECETYPE
-type PrimaryPieceType = _PrimaryPiecesArrayType[number]
+type PrimaryPieceType = (typeof PRIMARY_PIECETYPES)[number]
 
-  // more convenient to coerce here
-const PRIMARIES_AS_STRING = PRIMARIES_AS_PIECETYPE as readonly string[]
+const isPrimaryType = (t: PieceType): boolean => (
+  (PRIMARY_PIECETYPES as readonly PieceType[]).includes(t)  
+)
 
-  // see above
-  // pawns can only be promoted to these.
-  // (Also, only the locations of these pieces get cached for testing sideIsInCheck) 
-/**  please leave
-type PrimaryPieceType = 
-  'queen' |
-  'rook' |
-  'bishop' |
-  'knight'  
-*/
-
-const PIECE_TYPE_NAMES = {
+const PIECETYPE_NAMES = {
   pawn: {
     short: 'P',
     long: 'Pawn'
@@ -70,7 +64,7 @@ const PIECE_TYPE_NAMES = {
   },
 }
 
-const PIECETYPE_FROM_LETTER = {
+const PIECETYPE_FROM_CODE = {
   P: 'pawn',
   Q: 'queen',
   B: 'bishop',
@@ -78,13 +72,8 @@ const PIECETYPE_FROM_LETTER = {
   N: 'knight',
   K: 'king'
 }
+type PieceTypeCode = keyof typeof PIECETYPE_FROM_CODE 
 
-type PieceTypeCode = keyof typeof PIECETYPE_FROM_LETTER 
-
-interface Piece {
-  readonly type: PieceType
-  readonly color: Color
-} 
 
   // opponent of side, and if supplied
   // equal to type or one of the types
@@ -101,9 +90,9 @@ const isOpponent = (p: Piece | null, side: Side, type?: PieceType | PieceType[])
 
 type Side = Color
 
-  // equal if both null,
+  // Equal if both null,
   // otherwise, not equal if only one is,
-  // otherwise, according to fields
+  // otherwise, according to fields' equality
 const piecesEqual = (p1: Piece | null, p2: Piece | null): boolean => (
   (!p1 && !p2) ? true : (p1?.type === p2?.type) && (p1?.color === p2?.color)
 )
@@ -113,11 +102,11 @@ type PieceFormat = 'T' | 'Type' | 'cT' | 'c-Type' | 'color Type'
 const pieceToString = (p: Piece, format?: PieceFormat): string => {
   const form: PieceFormat = format ?? 'cT'
   switch (form) {
-    case 'T': return PIECE_TYPE_NAMES[p.type].short
-    case 'Type': return PIECE_TYPE_NAMES[p.type].long
-    case 'cT': return p.color.charAt(0) + PIECE_TYPE_NAMES[p.type].short
-    case 'c-Type': return `${p.color.charAt(0)}-${PIECE_TYPE_NAMES[p.type].long}`
-    case 'color Type': return `${p.color} ${PIECE_TYPE_NAMES[p.type].long}`
+    case 'T': return PIECETYPE_NAMES[p.type].short
+    case 'Type': return PIECETYPE_NAMES[p.type].long
+    case 'cT': return p.color.charAt(0) + PIECETYPE_NAMES[p.type].short
+    case 'c-Type': return `${p.color.charAt(0)}-${PIECETYPE_NAMES[p.type].long}`
+    case 'color Type': return `${p.color} ${PIECETYPE_NAMES[p.type].long}`
   }
 }
 
@@ -126,12 +115,12 @@ const pieceFromString = (s: string): Piece | undefined => {
     const c = s.slice(0, 1)
     const t = s.slice(1, 2)
 
-    if (!(c === 'w' || c === 'b') || !Object.keys(PIECETYPE_FROM_LETTER).includes(t)) {
+    if (!(c === 'w' || c === 'b') || !Object.keys(PIECETYPE_FROM_CODE).includes(t)) {
       return undefined
     }
     return {
       color: (c === 'w') ? 'white' : 'black',
-      type: PIECETYPE_FROM_LETTER[t as PieceTypeCode] as PieceType
+      type: PIECETYPE_FROM_CODE[t as PieceTypeCode] as PieceType
     }
   }
   return undefined
@@ -151,11 +140,11 @@ export {
   type PieceFormat,
   type PieceTypeCode,
   type ColorCode,
-  PRIMARIES_AS_STRING,
-  PRIMARIES_AS_PIECETYPE,
+  PRIMARY_PIECETYPES,
+  isPrimaryType,
   COLOR_FROM_CODE,
-  PIECE_TYPE_NAMES,
-  PIECETYPE_FROM_LETTER,
+  PIECETYPE_NAMES,
+  PIECETYPE_FROM_CODE,
   piecesEqual,
   pieceToString,
   isOpponent,

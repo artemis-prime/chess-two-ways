@@ -23,15 +23,14 @@ import {
   type PieceType, 
   type PrimaryPieceType, 
   type Side, 
-  PRIMARIES_AS_STRING,
   COLOR_FROM_CODE,
   opponent,
   type ColorCode,
-  PRIMARIES_AS_PIECETYPE
+  PRIMARY_PIECETYPES
 } from './Piece'
 
 import type Position from './Position'
-import { copyPosition, positionToString } from './Position'
+import { positionToString } from './Position'
 import type Resolution from './Resolution'
 import type { GameSnapshot } from './Snapshot'
 import type SquareDesc from './SquareDesc'
@@ -389,11 +388,8 @@ class GameImpl implements Game {
     action: Action,
     promoteTo?: PrimaryPieceType, 
   ): ActionRecord {
-      // deep copy all
     return {
-      piece: {...move.piece},
-      from: copyPosition(move.from), 
-      to: copyPosition(move.to),
+      ...move,
       action,
       promotedTo: action.includes('romote') ? (promoteTo ? promoteTo : 'queen') : undefined,
       captured: (action === 'capture' || action === 'capturePromote') 
@@ -423,7 +419,7 @@ class GameImpl implements Game {
   }
 
   private _primariesCanMove(side: Side): boolean {
-    return PRIMARIES_AS_PIECETYPE.some((type: PrimaryPieceType) => {
+    return PRIMARY_PIECETYPES.some((type: PrimaryPieceType) => {
       const positions = this._board.primaryPositions(side, type)
       const resolver = this._resolvers.get(type)
       return resolver && positions.some((pos) => {
