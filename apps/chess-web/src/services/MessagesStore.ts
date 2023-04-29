@@ -1,7 +1,8 @@
 import { 
   runInAction, 
   makeObservable, 
-  observable 
+  observable,
+  action 
 } from 'mobx'
 
 import { 
@@ -28,7 +29,9 @@ class MessageStore implements ChessListener {
 
   constructor() {
     makeObservable(this, {
-      messages: observable 
+      messages: observable,
+      _pushMessage: action, 
+      gameStatusChanged: action
     })
   }
 

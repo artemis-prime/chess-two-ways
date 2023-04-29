@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 import { styled } from '~/styles/stitches.config'
 
@@ -20,11 +19,12 @@ const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) =>
 
   const game = useGame()
 
-  const readFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const readFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const originalEvent = e
     e.preventDefault()
     const reader = new FileReader()
-    reader.onload = async (e) => { 
-      const text = (e.target?.result)
+    reader.onload = (e: ProgressEvent<FileReader>) => { 
+      const text = (e.target.result)
       if (text && typeof text === 'string') {
         const g: any = JSON.parse(text as string)
         if (g.artemisPrimeChessGame) {
@@ -37,12 +37,18 @@ const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) =>
       else {
         console.warn('Chess: File parse error')
       }
-    };
+        // Allow the same file to be selected consecutively. 
+        // https://github.com/ngokevin/react-file-reader-input/issues/11
+      originalEvent.target.value = ''
+    }
+    reader.onerror = (e: ProgressEvent<FileReader>) => {
+      console.error("RestoreFromFileButton.readFile(): File Error!") 
+    }
     reader.readAsText((e.target as any).files[0])
   }
 
   return (
-    <MyLabel className="custom-file-upload">
+    <MyLabel>
       <input type="file" onChange={readFile}/>
       {children}
     </MyLabel>

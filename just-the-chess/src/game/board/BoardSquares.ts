@@ -102,7 +102,7 @@ class BoardSquares {
       sq.setPiece(null)
     }
     if (assignState) {
-      sq.setStatus('none')
+      sq.setPositionState('none')
     }
   }
 
@@ -118,7 +118,7 @@ class BoardSquares {
     else {
       sq.setPiece(null)
     }
-    sq.setStatus('none')
+    sq.setPositionState('none')
   }
 
   constructor (tr: Tracking, observePieces? : boolean) {

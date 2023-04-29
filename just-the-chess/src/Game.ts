@@ -207,7 +207,7 @@ class GameImpl implements Game {
     this._board.restoreFromSnapshot(g.board)
     this._currentTurn = COLOR_FROM_CODE[g.currentTurn]
     this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
-    //this._stateIndex = g.stateIndex
+    this._stateIndex = this._actions.length - 1
     this._board.setGameStatus({
       state: 'restored',
       victor: undefined
@@ -391,7 +391,7 @@ class GameImpl implements Game {
 
     this._resolution = res
     this._board.asSquares.forEach((sq: Square) => {
-      sq.state = getResolutionStateForPosition(sq, res)
+      sq.setPositionState(getResolutionStateForPosition(sq, res))
     });
   }
 
@@ -450,7 +450,7 @@ class GameImpl implements Game {
       // since this code is called after 
       // action statuses are cleared.
     this._board.asSquares.forEach((sq: Square) => {
-      sq.state = getCheckStateForPosition(sq, check) 
+      sq.setPositionState(getCheckStateForPosition(sq, check)) 
     })
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {

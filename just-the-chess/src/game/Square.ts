@@ -33,10 +33,10 @@ class Square implements
     
     if (observePiece) {
       makeObservable(this, { 
-        piece: observable.shallow,
+        piece: observable,
         state: observable,
         setPiece: action,
-        setStatus: action
+        setPositionState: action
       })
     }
   }
@@ -45,7 +45,7 @@ class Square implements
     this.piece = p
   }
 
-  setStatus(s: PositionState): void {
+  setPositionState(s: PositionState): void {
     this.state = s 
   }
 
