@@ -1,16 +1,55 @@
-import { makeObservable, observable, action, makeAutoObservable } from 'mobx'
+import { makeObservable, observable, action } from 'mobx'
 
-import type { PrimaryPieceType, Side } from '../../Piece'
-import type Position from '../../Position'
 import type GameStatus from '../../GameStatus'
 import type CastlingTracking from '../../CastlingTracking'
-import type { TrackingSnapshot, TrackingSnapshotForSide, PositionCode } from '../../Snapshot'
-import { positionFromString, positionToString } from '../../Position'
+import type Move from '../../Move'
+import type Position from '../../Position'
+import type Piece from '../../Piece'
+import { 
+  isPrimaryType, 
+  type PrimaryPieceType, 
+  type Side 
+} from '../../Piece'
+import { 
+  positionFromString, 
+  positionsEqual, 
+  positionToString, 
+  type Rank, 
+  type PositionCode 
+} from '../../Position'
 
 const DEFAULT_GAME_STATUS: GameStatus = {
   state: 'new',
   victor: undefined
 }
+
+interface TrackingForSideSnapshot {
+  king: PositionCode,
+  primaries: {
+    queen: PositionCode[]
+    bishop: PositionCode[]
+    knight: PositionCode[]
+    rook: {
+      kingside: {
+        position: PositionCode | null,
+        capturePos: PositionCode | null
+      }
+      queenside: {
+        position: PositionCode | null,
+        capturePos: PositionCode | null
+      }
+    }
+  }
+  inCheckFrom: PositionCode[]
+  castling: CastlingTracking
+}
+
+interface TrackingSnapshot {
+  white: TrackingForSideSnapshot
+  black: TrackingForSideSnapshot
+}
+
+
 
 class CastlingTrackingInternal implements CastlingTracking {
 
@@ -21,20 +60,7 @@ class CastlingTrackingInternal implements CastlingTracking {
     queenside: 0
   }
 
-  constructor(_observable?: boolean) {
-    if (_observable) {
-      makeObservable(this, {
-        hasCastled: observable,
-        kingMoveCount: observable,
-        reset: action,
-        restoreFromSnapshot: action 
-      })
-      makeObservable(this.rookMoveCounts, {
-        kingside: observable,
-        queenside: observable
-      })
-    }
-  }
+  constructor() {}
 
   reset() {
     this.hasCastled = false
@@ -43,6 +69,12 @@ class CastlingTrackingInternal implements CastlingTracking {
       kingside: 0,
       queenside: 0
     }
+  }
+
+  syncTo(source: CastlingTrackingInternal) {
+    this.hasCastled = source.hasCastled 
+    this.kingMoveCount = source.kingMoveCount 
+    this.rookMoveCounts = {...source.rookMoveCounts} 
   }
 
   restoreFromSnapshot(snapshot: CastlingTracking): void {
@@ -62,22 +94,54 @@ class CastlingTrackingInternal implements CastlingTracking {
   }
 }
 
-class Tracking_Side {
+type PrimariesTrackedAsArrays = 'queen' | 'knight' | 'bishop'
+
+  // position is null if it's been captured,
+  // in which case capturePos will be populated.
+  // This is needed to restore proper tracking
+  // after an undo of a capture
+type RookTracking = {
+  position: Position | null
+  capturePos: Position | undefined 
+}
+class TrackingForSide {
 
   king: Position
 
-  private primaries = new Map<PrimaryPieceType, Position[]>([
-    ['queen', []],
-    ['rook', []],
-    ['bishop', []],
-    ['knight', []],
-  ])
+  private primaries: {
+    queen: Position[]
+    bishop: Position[]
+    knight: Position[]
+    rook: {
+      kingside: RookTracking
+      queenside: RookTracking
+    }
+  }
 
   inCheckFrom: Position[] = []
   castling: CastlingTrackingInternal
 
   constructor(side: Side, _observable?: boolean ) {
-    this.king = { rank: (side === 'white') ? 1 : 8, file: 'e' }
+
+    const rank = (side === 'white') ? 1 : 8 as Rank
+    this.king = { rank, file: 'e' }
+
+    this.primaries = {
+      queen: [],
+      bishop: [],
+      knight: [],
+      rook: {
+        kingside: { 
+          position: { rank, file: 'h'},
+          capturePos: undefined
+        },
+        queenside: { 
+          position: { rank, file: 'a'},
+          capturePos: undefined
+        }
+      }
+    }
+
     if (_observable) {
       makeObservable(this, {
         inCheckFrom: observable,
@@ -85,30 +149,75 @@ class Tracking_Side {
         restoreFromSnapshot: action
       })
     }
-    this.castling = new CastlingTrackingInternal(_observable)
+    this.castling = new CastlingTrackingInternal()
   }
 
   reset(side: Side): void {
-    this.king = { rank: (side === 'white') ? 1 : 8, file: 'e' }
-    this.primaries = new Map<PrimaryPieceType, Position[]>([
-      ['queen', []],
-      ['rook', []],
-      ['bishop', []],
-      ['knight', []],
-    ])
+    const rank = (side === 'white') ? 1 : 8 as Rank
+    this.king = { rank, file: 'e' }
+    this.primaries = {
+      queen: [],
+      bishop: [],
+      knight: [],
+      rook: {
+        kingside: { 
+          position: { rank, file: 'h'},
+          capturePos: undefined
+        },
+        queenside: { 
+          position: { rank, file: 'a'},
+          capturePos: undefined
+        }
+      }
+    }
+
     this.inCheckFrom.length = 0
     this.castling.reset()
   }
 
-  takeSnapshot(): TrackingSnapshotForSide {
+  takeSnapshot(): TrackingForSideSnapshot {
     return {
+      king: positionToString(this.king),
+      primaries: {
+        queen: this.primaries.queen.map((pos) => (positionToString(pos))),
+        bishop: this.primaries.bishop.map((pos) => (positionToString(pos))),
+        knight: this.primaries.knight.map((pos) => (positionToString(pos))),
+        rook: {
+          kingside: {
+            position: this.primaries.rook.kingside.position ? positionToString(this.primaries.rook.kingside.position) : null,
+            capturePos: this.primaries.rook.kingside.capturePos ? positionToString(this.primaries.rook.kingside.capturePos) : null,
+          },
+          queenside: {
+            position: this.primaries.rook.queenside.position ? positionToString(this.primaries.rook.queenside.position) : null,
+            capturePos: this.primaries.rook.queenside.capturePos ? positionToString(this.primaries.rook.queenside.capturePos) : null,
+          }
+        }
+      },
       inCheckFrom: this.inCheckFrom.map((pos) => (positionToString(pos))),
       castling: this.castling.takeSnapshot()
     }
   }
 
-  restoreFromSnapshot(snapshot: TrackingSnapshotForSide): void {
+  restoreFromSnapshot(snapshot: TrackingForSideSnapshot): void {
+    this.king = positionFromString(snapshot.king)!
+    this.primaries = {
+      queen: snapshot.primaries.queen.map((e) => (positionFromString(e)!)),
+      bishop: snapshot.primaries.bishop.map((e) => (positionFromString(e)!)),
+      knight: snapshot.primaries.knight.map((e) => (positionFromString(e)!)),
+      rook: {
+        kingside: {
+          position: positionFromString(snapshot.primaries.rook.kingside.position) ?? null,
+          capturePos: positionFromString(snapshot.primaries.rook.kingside.capturePos) ?? undefined
+        },
+        queenside: {
+          position: positionFromString(snapshot.primaries.rook.queenside.position) ?? null,
+          capturePos: positionFromString(snapshot.primaries.rook.queenside.capturePos) ?? undefined
+        }
+      }
+    }
 
+      // Maintain array ref (do not assign a new via map())
+      // to preserve mobx proxy
     this.inCheckFrom.length = 0
     snapshot.inCheckFrom.forEach((el) => {
         // we know the source of the strings, so safe
@@ -119,42 +228,245 @@ class Tracking_Side {
 
 
     // Note, the source object may have observable components, but
-    // this object won't.  We will always only sync from observable to non-observable
+    // this object won't.  We will *always* only sync from observable to non-observable
     // https://mobx.js.org/observable-state.html#converting-observables-back-to-vanilla-javascript-collections
-  syncTo (source: Tracking_Side) {
-    const sourceMapAsArray = Array.from(source.primaries)
-    const deepArrayCopy = sourceMapAsArray.map(([key, value]) => (
-      [key, [...value]]
-    ))
-    this.primaries = new Map<PrimaryPieceType, Position[]>(deepArrayCopy as typeof sourceMapAsArray)
-    this.inCheckFrom = source.inCheckFrom.slice() 
+  syncTo (source: TrackingForSide) {
     this.king = source.king
-    this.castling.hasCastled = source.castling.hasCastled 
-    this.castling.kingMoveCount = source.castling.kingMoveCount 
-    this.castling.rookMoveCounts = {...source.castling.rookMoveCounts}
+    this.primaries = {
+      queen: [...source.primaries.queen],
+      bishop: [...source.primaries.bishop],
+      knight: [...source.primaries.knight],
+      rook: {
+        kingside: {
+          position: source.primaries.rook.kingside.position,
+          capturePos: source.primaries.rook.kingside.capturePos
+        },
+        queenside: {
+          position: source.primaries.rook.queenside.position,
+          capturePos: source.primaries.rook.queenside.capturePos
+        }
+      }
+    }
+    this.inCheckFrom = source.inCheckFrom.slice() 
+    this.castling.syncTo(source.castling)
   }
+    // called when pos contains a rook
+  private _rookSideFromPosition(pos: Position): 'kingside' | 'queenside' {
+    const { kingside, queenside } = this.primaries.rook
+    if (kingside.position && positionsEqual(pos, kingside.position)) {
+      return 'kingside'
+    }
+    else if (queenside.position && positionsEqual(pos, queenside.position)) {
+      return 'queenside'
+    }
+    throw new Error( "Tracking._rookSideFromPosition(): could not determin rook side from position!")
+  }
+
+  private _rookSideFromCapturePos(pos: Position): 'kingside' | 'queenside' {
+    const { kingside, queenside } = this.primaries.rook
+    if (kingside.capturePos && positionsEqual(pos, kingside.capturePos)) {
+      return 'kingside'
+    }
+    else if (queenside.capturePos && positionsEqual(pos, queenside.capturePos)) {
+      return 'queenside'
+    }
+    throw new Error( "Tracking._rookSideFromCapturePos(): could not determin rook side from position!")
+  }
+  
 
   getPrimaryTypePositions(t: PrimaryPieceType): Position[] {
-    return this.primaries.get(t)!
+    if (t === 'rook') {
+      const rookPositions: Position [] = []
+      if (this.primaries.rook.kingside.position) {
+        rookPositions.push(this.primaries.rook.kingside.position)  
+      }
+      if (this.primaries.rook.queenside.position) {
+        rookPositions.push(this.primaries.rook.queenside.position)  
+      }
+      return rookPositions
+    }
+    return [...this.primaries[t]]
   }
 
-  setPrimaryTypePosition(t: PrimaryPieceType, pos: Position): void {
-    const positions = this.primaries.get(t)!
-    positions.push(pos)  
+  getRookTracking(rookSide: 'kingside' | 'queenside'): RookTracking {
+    return this.primaries.rook[rookSide]
   }
+
+  trackPositionChange(m: Move, mode: 'do' | 'undo' | 'redo'): void {
+    if (m.piece.type === 'king') {
+      if (mode === 'undo') {
+        this.king = m.from
+        if (!this.castling.hasCastled) {
+          this.castling.kingMoveCount -= 1
+        }
+      }
+      else {
+        this.king = m.to
+        if (!this.castling.hasCastled) {
+          this.castling.kingMoveCount += 1
+        }
+      }
+    }
+    else if (isPrimaryType(m.piece.type)) {
+      if (m.piece.type === 'rook' ) {
+        if (mode === 'undo') {
+          const rookSide = this._rookSideFromPosition(m.to)
+          this.primaries.rook[rookSide].position = m.from
+          if (!this.castling.hasCastled) {
+            this.castling.rookMoveCounts[rookSide] -= 1
+          }
+        }
+        else {
+          const rookSide = this._rookSideFromPosition(m.from)
+          this.primaries.rook[rookSide].position = m.to
+          if (!this.castling.hasCastled) {
+            this.castling.rookMoveCounts[rookSide] += 1
+          }
+        }
+      }
+      else {
+        const positions = this.primaries[m.piece.type as PrimariesTrackedAsArrays]
+        if (mode === 'undo') {
+          const index = positions.findIndex((p) => (positionsEqual(p, m.to)))
+          if (index !== -1) {
+            positions[index] = m.from
+          }
+        }
+        else {
+          const index = positions.findIndex((p) => (positionsEqual(p, m.from)))
+          if (index !== -1) {
+            positions[index] = m.to
+          }
+        }
+      }
+    }
+  }
+
+  trackCapture(piece: Piece, pos: Position, mode: 'do' | 'undo' | 'redo'): void {
+
+    if (!isPrimaryType(piece.type)) return; 
+
+    if (piece.type === 'rook' ) {
+      if (mode === 'undo') {
+        const rookSide = this._rookSideFromCapturePos(pos)
+        this.primaries.rook[rookSide].position = pos
+        this.primaries.rook[rookSide].capturePos = undefined
+      }
+      else {
+        const rookSide = this._rookSideFromPosition(pos)
+        this.primaries.rook[rookSide].position = null
+        this.primaries.rook[rookSide].capturePos = pos
+      }
+    }
+    else {
+      const positions = this.primaries[piece.type as PrimariesTrackedAsArrays]
+      const index = positions.findIndex((e) => (positionsEqual(e, pos)))
+      if (mode === 'undo') {
+          // shouldn't find it, since we're undoing a capture
+        if (index === -1) {
+          positions.push(pos)
+        }
+      }
+      else {
+        if (index !== -1) {
+          positions.splice(index, 1)
+        }
+      }
+    }
+  }
+
+  trackPromotion(pos: Position, mode: 'do' | 'undo' | 'redo' ) {
+      // Track the new piece of the promoted to type.
+      // Either create a new slot of it with the to square,
+      // or destroy said slot if undo
+    const positions = this.primaries.queen
+    if (mode === 'undo') {
+        // remove the slot created for the piece promoted to. 
+      const index = positions.findIndex((e) => (positionsEqual(e, pos)))
+      if (index !== -1) {
+        positions.splice(index, 1)
+      }
+    } 
+    else {
+      // create another slot for the piece type promoted to.
+      // (from piece was type 'pawn', so ignore)
+      positions.push(pos)
+    } 
+   
+  }
+
+  trackCastle(m: Move, mode: 'do' | 'undo' | 'redo'): void {
+      // castling does not effect the move counts for king and rooks
+    if (mode === 'undo') {
+      this.king = m.from
+      this.castling.hasCastled = false
+    }
+    else {
+      this.king = m.to
+      this.castling.hasCastled = true
+    }
+
+      /****  
+        // Now, on to tracking the rook involved...
+        // Note that m.to is the *king's* 'to'!
+        // This is the castling logic...
+        if (K: e --> g) {
+           R: h --> f
+        }
+          // K: e --> c
+        else {
+          R: a --> d
+        }
+      ****/
+    const rank = m.from.rank
+    let rook: {
+      rookSide: 'kingside' | 'queenside'
+      from: Position
+      to: Position
+    } 
+    if (m.to.file === 'g') {
+      rook = {
+        rookSide: 'kingside',
+        from: {rank, file: 'h'},
+        to: {rank, file: 'f'}
+      }
+    }
+    else {
+      rook = {
+        rookSide: 'queenside',
+        from: {rank, file: 'a'},
+        to: {rank, file: 'd'}
+      }
+    }
+    if (mode === 'undo') {
+      this.primaries.rook[rook.rookSide].position = rook.from
+    }
+    else {
+      this.primaries.rook[rook.rookSide].position = rook.to
+    }
+  }
+
+  trackAsReset(piece: Piece, pos: Position): void {
+      // king and rook are initialized in constructor() and during reset()
+    if (piece.type !== 'king' && piece.type !== 'rook') {
+      const positions = this.primaries[piece.type as PrimariesTrackedAsArrays]
+      positions.push(pos)  
+    }
+  }
+
 }
 
 class Tracking {
 
-  white: Tracking_Side
-  black: Tracking_Side
+  white: TrackingForSide
+  black: TrackingForSide
 
     // Need to initialize for babel : https://github.com/mobxjs/mobx/issues/2486
   gameStatus: GameStatus = DEFAULT_GAME_STATUS
 
   constructor(observeMe?: boolean) {
-    this.white = new Tracking_Side('white', observeMe)
-    this.black = new Tracking_Side('black', observeMe)
+    this.white = new TrackingForSide('white', observeMe)
+    this.black = new TrackingForSide('black', observeMe)
     if (observeMe) {
       makeObservable(this, {
         gameStatus: observable.shallow,
@@ -189,4 +501,7 @@ class Tracking {
   }
 }
 
-export default Tracking
+export {
+  Tracking as default,
+  type TrackingSnapshot
+}

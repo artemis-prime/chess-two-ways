@@ -45,7 +45,10 @@ const positionToString = (pos: Position): PositionCode => (
   `${pos.file}${pos.rank}`  
 )
 
-const positionFromString = (s: string): Position | undefined => {
+const positionFromString = (s: string | null): Position | null | undefined => {
+  if (s === null) {
+    return null
+  }
   if (s.length === 2) {
     const f = s.slice(0, 1)
     const r = +s.slice(1, 2)

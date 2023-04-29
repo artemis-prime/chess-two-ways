@@ -1,10 +1,10 @@
 import Square from '../Square'
 
 import { 
-  type PieceType, 
-  type PrimaryPieceType, 
+  type PieceType,
+  type PieceCode, 
   pieceFromCodeString,
-  isPrimaryType 
+  pieceToString,
 } from '../../Piece'
 
 import { 
@@ -14,11 +14,10 @@ import {
   RANKS, 
   FILES 
 } from '../../Position'
-import type { SquaresSnapshot } from '../../Snapshot'
 
 import type Tracking from './Tracking'
 
-const HOME_RANK = {
+const INITIAL_HOME_RANK = {
   'a': 'rook',
   'b': 'knight',
   'c': 'bishop',
@@ -31,16 +30,10 @@ const HOME_RANK = {
   [key in File]: PieceType
 }
 
-  // call for all Square that contains a piece
-const track = (tr: Tracking, pos: Square): void => {
-  if (pos.piece!.type === 'king') {
-    tr[pos.piece!.color].king = pos
-  }
-  else {
-    if (isPrimaryType(pos.piece!.type)) {
-      tr[pos.piece!.color].setPrimaryTypePosition(pos.piece!.type as PrimaryPieceType, pos)
-    }  
-  }
+  // Call only for Squares that contains a piece
+const trackAsReset = (tr: Tracking, sq: Square): void => {
+  const side = sq.piece!.color
+  tr[side].trackAsReset(sq.piece!, sq)
 }
 
 type RankSquares = {
@@ -73,6 +66,12 @@ const deepCopyRankSquares = (rs: RankSquares): RankSquares => {
   return rankSquaresFromArray(rankArray)
 }
 
+  // Only squares with pieces get a key.
+  // (if absent, the corresponding square is simple empty)
+type SquaresSnapshot = {
+  [key in PositionCode]?: PieceCode 
+}
+
 class BoardSquares {
 
   1: RankSquares
@@ -86,15 +85,15 @@ class BoardSquares {
 
   static visitAsNewGame(sq: Square, tr: Tracking, assignState = true): void {
     if (sq.rank === 1) {
-      sq.piece = { type: HOME_RANK[sq.file], color: 'white' }
-      track(tr, sq)
+      sq.piece = { type: INITIAL_HOME_RANK[sq.file], color: 'white' }
+      trackAsReset(tr, sq)
     }
     else if (sq.rank === 2) {
       sq.piece = { type: 'pawn', color: 'white' }
     }
     else if (sq.rank === 8) {
-      sq.piece = { type: HOME_RANK[sq.file], color: 'black' }
-      track(tr, sq)
+      sq.piece = { type: INITIAL_HOME_RANK[sq.file], color: 'black' }
+      trackAsReset(tr, sq)
     }
     else if (sq.rank === 7) {
       sq.piece = { type: 'pawn', color: 'black' }
@@ -110,14 +109,11 @@ class BoardSquares {
     // Intentionally forgiving. If a key corresponding to a
     // square is found and its value successfully parsed, a piece is placed there. 
     // If not, the square is empty (no Errors are ever thrown)
-  static visitWithSnapshot(sq: Square, snapshot: SquaresSnapshot, tr: Tracking): void {
+  static visitWithSnapshot(sq: Square, snapshot: SquaresSnapshot): void {
     const keyToTry = positionToString(sq) as PositionCode
     if (snapshot[keyToTry]) {
         // If pieceFromCodeString is undefined, default to null
       sq.piece = pieceFromCodeString(snapshot[keyToTry]!) ?? null 
-      if (sq.piece) {
-        track(tr, sq)
-      }
     }
     else {
       sq.piece = null
@@ -145,10 +141,22 @@ class BoardSquares {
     }
   }
  
-  syncToSnapshot(snapshot: SquaresSnapshot, tr: Tracking): void {
+  takeSnapshot(): SquaresSnapshot {
+    const snapshot: SquaresSnapshot = {}
     for (const rank of RANKS) {
       for (const file of FILES) {
-        BoardSquares.visitWithSnapshot(this[rank][file], snapshot, tr)
+        if (this[rank][file].piece) {
+          snapshot[`${file}${rank}`] = pieceToString(this[rank][file].piece!) as PieceCode
+        }
+      }
+    }
+    return snapshot
+  }
+
+  restoreFromSnapshot(snapshot: SquaresSnapshot): void {
+    for (const rank of RANKS) {
+      for (const file of FILES) {
+        BoardSquares.visitWithSnapshot(this[rank][file], snapshot)
       }
     }
   }
@@ -160,4 +168,7 @@ class BoardSquares {
   }
 } 
 
-export default BoardSquares
+export {
+  BoardSquares as default,
+  type SquaresSnapshot
+}

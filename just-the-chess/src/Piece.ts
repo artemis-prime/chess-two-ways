@@ -74,6 +74,8 @@ const PIECETYPE_FROM_CODE = {
 }
 type PieceTypeCode = keyof typeof PIECETYPE_FROM_CODE 
 
+type PieceCode = `${ColorCode}${PieceTypeCode}`
+
 
   // opponent of side, and if supplied
   // equal to type or one of the types
@@ -140,6 +142,7 @@ export {
   type Side,
   type PieceFormat,
   type PieceTypeCode,
+  type PieceCode,
   type ColorCode,
   PRIMARY_PIECETYPES,
   isPrimaryType,

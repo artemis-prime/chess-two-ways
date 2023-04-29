@@ -10,7 +10,7 @@ import {
 import type Action from './Action'
 import type ActionRecord from './ActionRecord'
 import { actionRecordToLAN, lanToActionRecord } from './ActionRecord'
-import type { default as Board, BoardInternal } from './game/Board'
+import type { default as Board, BoardInternal, BoardSnapshot } from './game/Board'
 import { createBoard } from './game/Board'
 import type Check from './Check'
 import type ChessListener from './ChessListener'
@@ -32,7 +32,6 @@ import {
 import type Position from './Position'
 import { positionToString } from './Position'
 import type Resolution from './Resolution'
-import type { GameSnapshot } from './Snapshot'
 import type SquareDesc from './SquareDesc'
 
 import { getResolutionStateForPosition, getCheckStateForPosition } from './game/statusUtil'
@@ -40,6 +39,16 @@ import type { default as ActionResolver } from './game/ActionResolver'
 import Notifier from './game/Notifier'
 import registry from './game/resolverRegistry'
 import type Square from './game/Square'
+
+  // These would be persisted to and read from a file
+  // by implementing apps. (see chess-web)
+interface GameSnapshot {
+
+  artemisPrimeChessGame: any
+  board: BoardSnapshot
+  actions: string[]
+  currentTurn: ColorCode
+}
 
 interface Game {
 
@@ -203,6 +212,7 @@ class GameImpl implements Game {
       state: 'restored',
       victor: undefined
     })
+    
       // await the state change. We effectively create a new listerner, 
       // which be definition is after the autorun() in GameImpl's constructor.
       // The actionsRestored() notification should be after the game state change.
@@ -316,14 +326,10 @@ class GameImpl implements Game {
       this.endResolution()
       return false
     }
-      // TODO: create an async function that returns the promoteTo type.
-      // eg, a dialog could popup
-    const promoteTo = 'queen'
 
     const r = this._createActionRecord(
       this._resolution!.move, 
-      this._resolution!.action!, 
-      promoteTo
+      this._resolution!.action
     )
     const previousCheck = this._board.check
     this._board.applyAction(r, 'do')
@@ -389,15 +395,10 @@ class GameImpl implements Game {
     });
   }
 
-  private _createActionRecord(
-    move: Move,
-    action: Action,
-    promoteTo?: PrimaryPieceType, 
-  ): ActionRecord {
+  private _createActionRecord(move: Move, action: Action): ActionRecord {
     return {
       ...move,
       action,
-      promotedTo: action.includes('romote') ? (promoteTo ? promoteTo : 'queen') : undefined,
       captured: (action.includes('capture')) ? {...this._board.pieceAt(move.to)!} : undefined
     }
   }
@@ -495,5 +496,6 @@ const getGameSingleton = () => {
 
 export {
   getGameSingleton,
-  type Game as default  
+  type Game as default,
+  type GameSnapshot  
 }
