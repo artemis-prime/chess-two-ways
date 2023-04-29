@@ -1,4 +1,4 @@
-import { makeObservable, observable } from 'mobx'
+import { makeObservable, observable, action } from 'mobx'
 
 import type ObsPieceRef from '../ObsPieceRef'
 import type ObsPositionStateRef  from '../ObsPositionStateRef'
@@ -33,10 +33,20 @@ class Square implements
     
     if (observePiece) {
       makeObservable(this, { 
-        piece: observable.shallow,
-        state: observable
+        piece: observable,
+        state: observable,
+        setPiece: action,
+        setPositionState: action
       })
     }
+  }
+
+  setPiece(p: Piece | null): void {
+    this.piece = p
+  }
+
+  setPositionState(s: PositionState): void {
+    this.state = s 
   }
 
   clone(): Square {

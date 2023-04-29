@@ -1,24 +1,11 @@
 {
+  "extends": "../tsconfig.base",
+
   "compilerOptions": {
-    "rootDir": "./src",
-    "target": "ES2018",
-    "declaration": true,
     "composite": true,
-    "module": "es6",
-    "strict": true,
     "outDir": "dist",
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": false,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
-    "useDefineForClassFields": true // mobx
+    "noEmit": false
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "dist"
-  ],
+  "exclude": [ "dist/**"],
 }

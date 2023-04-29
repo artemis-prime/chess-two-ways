@@ -10,7 +10,7 @@ import {
   type ObsPieceRef
 } from '@artemis-prime/chess-core'
 
-import Point from './Point'
+import type Point from './Point'
 
 interface DragState extends ObsPieceRef {
   offset: Point | null 

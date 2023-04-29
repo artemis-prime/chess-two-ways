@@ -1,11 +1,11 @@
-import React, { PropsWithChildren } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
-  StyleProp,
   Text, 
   View,
-  ViewStyle,
-  TextStyle,
-  ColorValue 
+  type StyleProp,
+  type ViewStyle,
+  type TextStyle,
+  type ColorValue 
 } from 'react-native'
 import { observer } from 'mobx-react'
 

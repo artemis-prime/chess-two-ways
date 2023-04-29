@@ -4,8 +4,6 @@ import {
   makeObservable, 
 } from 'mobx'
 
-import { computedFn } from 'mobx-utils'
-
 import type ActionRecord from '../ActionRecord'
 import type Check from '../Check'
 import type GameStatus from '../GameStatus'
@@ -14,23 +12,18 @@ import {
   type Color, 
   type PrimaryPieceType, 
   type Side, 
-  isPrimaryType,
   opponent,
   isOpponent,
-  pieceToString
 } from '../Piece'
 
 import type Position from '../Position'
 import { 
-  positionsEqual,   
   RANKS,
   RANKS_REVERSED,
   FILES,
-  type File,
   type Rank,
 } from '../Position'
 
-import type { BoardSnapshot, PieceCode, SquaresSnapshot } from '../Snapshot'
 import Square from './Square'
 import type SquareDesc from '../SquareDesc'
 
@@ -47,8 +40,8 @@ import {
 
 import type IsCaptureFn from './IsCaptureFn'
 
-import Tracking from './board/Tracking'
-import BoardSquares from './board/BoardSquares'
+import Tracking, { type TrackingSnapshot } from './board/Tracking'
+import BoardSquares, { type SquaresSnapshot } from './board/BoardSquares'
 
 interface Board {
 
@@ -56,12 +49,17 @@ interface Board {
   colorAt(pos: Position): Color | null 
   positionCanBeCaptured(pos: Position, asSide: Side): boolean 
   
-  eligableToCastle(color: Side, side: 'kingside' | 'queenside'): boolean   // mobx computedFn
-  cannotCastleBecause(color: Side, side: 'kingside' | 'queenside'): string | null // returns reason or null if ok // mobx computedFn
+  eligableToCastle(color: Side, side: 'kingside' | 'queenside'): boolean   
+  cannotCastleBecause(color: Side, side: 'kingside' | 'queenside'): string | null // returns reason or null if ok 
 
   isClearAlongRank(from: Position, to: Position): boolean
   isClearAlongFile(from: Position, to: Position): boolean
   isClearAlongDiagonal(from: Position, to: Position): boolean
+}
+
+interface BoardSnapshot {
+  squares: SquaresSnapshot
+  tracking: TrackingSnapshot
 }
 
   // This interface is visable to GameImpl, but not to any UI
@@ -300,27 +298,32 @@ class BoardImpl implements BoardInternal {
     return true
   }
 
-  cannotCastleBecause = computedFn((color: Color, side: 'kingside' | 'queenside'): string | null => {
+  cannotCastleBecause = (color: Color, rookSide: 'kingside' | 'queenside'): string | null => {
     const { inCheckFrom, castling: {hasCastled, kingMoveCount, rookMoveCounts} } = this._tracking[color]
+    const rookTracking = this._tracking[color].getRookTracking(rookSide)
     const inCheck = inCheckFrom.length > 0
-    const rookHasMoved = rookMoveCounts[side] > 0
+      // has been captured or has moved 
+    const rookHasMoved = rookMoveCounts[rookSide] > 0 
+    const rookHasBeenCaptured = rookTracking.position === null
     const kingHasMoved = kingMoveCount > 0
     
-    const eligable = !inCheck && !hasCastled && !kingHasMoved && !rookHasMoved
+    const eligable = !inCheck && !hasCastled && !kingHasMoved && !rookHasMoved && !rookHasBeenCaptured
 
     if (!eligable) {
-      return (inCheck) ? `${color} cannot castle out of check!` 
+      return (inCheck ? 
+        `${color} cannot castle out of check!` 
         : 
-        color + ' is not eligable to castle ' + ((kingHasMoved || hasCastled) ?  '' : side + ' ') +
-          'because ' + 
-        (hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')
+        `${color} is not eligable to castle ${((kingHasMoved || hasCastled) ?  '' : rookSide + ' ')}because ` + 
+        ((hasCastled) ? 'it has already castled!' : 
+          (kingHasMoved ? 'the king has already moved!' : 
+            (rookHasBeenCaptured ? 'that rook has been captured!' : 'that rook has already moved!')))) 
     }  
     return null
-  })
+  }
 
-  eligableToCastle = computedFn((color: Color, side: 'kingside' | 'queenside'): boolean => {
+  eligableToCastle = (color: Color, side: 'kingside' | 'queenside'): boolean => {
     return !(!!this.cannotCastleBecause(color, side))
-  })
+  }
 
   positionCanBeCaptured(pos: Position, asSide: Side): boolean {
     return this._positionCanBeCapturedFrom(pos, asSide, 'boolean') as boolean
@@ -341,76 +344,37 @@ class BoardImpl implements BoardInternal {
         const self = this._sq(r.from).piece!
         this._sq(r.from).piece = {color: self.color, type: 'pawn'}
       }
-      else {
-        const fromPieace = this._sq(r.from).piece
-
-        if (fromPieace?.type === 'king') {
-          this._tracking[fromPieace!.color].castling.kingMoveCount -= 1
-        }
-        else if (fromPieace?.type === 'rook') {
-          if (r.from.file === 'h') {
-            this._tracking[fromPieace.color].castling.rookMoveCounts.kingside -= 1
-          }
-          else if (r.from.file === 'a') {
-            this._tracking[fromPieace.color].castling.rookMoveCounts.queenside -= 1
-          }
-        }
-  
-      }
     }
     else {
         // Note that _move also takes care of capture ;)
       this._move(r.from, r.to)
       if (r.action.includes('romote')) {
         const self = this._sq(r.to).piece!
-        this._sq(r.to).piece = {color: self.color, type: r.promotedTo!}
-      }
-      else {
-        const fromPieace = this._sq(r.from).piece
-
-        if (fromPieace?.type === 'king') {
-          this._tracking[fromPieace!.color].castling.kingMoveCount += 1
-        }
-        else if (fromPieace?.type === 'rook') {
-          if (r.from.file === 'h') {
-            this._tracking[fromPieace.color].castling.rookMoveCounts.kingside += 1
-          }
-          else if (r.from.file === 'a') {
-            this._tracking[fromPieace.color].castling.rookMoveCounts.queenside += 1
-          }
-        }
+        this._sq(r.to).piece = {color: self.color, type: 'queen'}
       }
     }
 
-    this._trackPrimaries(r, mode)
+    this._track(r, mode)
       // Track inCheck for both, since various codepaths can result in 
       // either side being in check.
     this._trackInCheck('black')
     this._trackInCheck('white')
   }
 
-    reset(): void {
+  reset(): void {
     this._tracking.reset()
     this._squares.reset(this._tracking)
   }
 
   restoreFromSnapshot(snapshot: BoardSnapshot): void {
     this._tracking.reset()
-    this._squares.syncToSnapshot(snapshot.squares, this._tracking)
+    this._squares.restoreFromSnapshot(snapshot.squares)
     this._tracking.restoreFromSnapshot(snapshot.tracking)
   }
 
   takeSnapshot(): BoardSnapshot {
-    const squares: SquaresSnapshot = {}
-    for (const rank of RANKS) {
-      for (const file of FILES) {
-        if (this._squares[rank][file].piece) {
-          squares[`${file}${rank}`] = pieceToString(this._squares[rank][file].piece!) as PieceCode
-        }
-      }
-    }
     return {
-      squares,
+      squares: this._squares.takeSnapshot(),
       tracking: this._tracking.takeSnapshot()
     }
   }
@@ -450,8 +414,6 @@ class BoardImpl implements BoardInternal {
         this._move({...r.from, file: 'c'}, r.from, true)  
         this._move({...r.from, file: 'd'}, {...r.from, file: 'a'}, true) 
       }
-
-      this._tracking[(r.from.rank === 1) ? 'white' : 'black'].castling.hasCastled = false 
     }
     else {
       if (r.to.file === 'g') {
@@ -462,108 +424,25 @@ class BoardImpl implements BoardInternal {
         this._move(r.from, {...r.from, file: 'c'}, true)  
         this._move({...r.from, file: 'a'}, {...r.from, file: 'd'}, true) 
       }
-
-      this._tracking[(r.from.rank === 1) ? 'white' : 'black'].castling.hasCastled = true 
     }
   }
 
-  private _trackPrimaries(r: ActionRecord, mode: 'do' | 'undo' | 'redo'): void {
+  private _track(r: ActionRecord, mode: 'do' | 'undo' | 'redo'): void {
 
     const side = r.piece.color
-    if (r.piece.type === 'king') {
-      if (mode === 'undo') {
-        this._tracking[side].king = r.from
-      }
-      else {
-        this._tracking[side].king = r.to
-      }
-    }
+      // fall through, for rooks
     if (r.action === 'castle') {
-        // track the rook
-      const positions = this._tracking[side].getPrimaryTypePositions('rook')
-      if (r.to.file === 'g') {
-        if (mode === 'undo') {
-          const index = positions.findIndex((e) => (positionsEqual(e, {...r.from, file: 'f'})))
-          if (index !== -1) {
-            positions[index] = {...positions[index], file: 'h'}
-          }
-        }
-        else {
-          const index = positions.findIndex((e) => (positionsEqual(e, {...r.from, file: 'h'})))
-          if (index !== -1) {
-            positions[index] = {...r.from, file: 'f'}
-          }
-        }
-      }
-      else {
-        if (mode === 'undo') {
-          const index = positions.findIndex((e) => (positionsEqual(e, {...r.from, file: 'd'})))
-          if (index !== -1) {
-            positions[index] = {...positions[index], file: 'a'}
-          }
-        }
-        else {
-          const index = positions.findIndex((e) => (positionsEqual(e, {...r.from, file: 'a'})))
-          if (index !== -1) {
-            positions[index] = {...positions[index], file: 'd'}
-          }
-        }
-      }
+      this._tracking[side].trackCastle(r, mode)
     }
     else {
-      if (r.promotedTo) {
-          // Track the new piece of the promoted to type.
-          // Either create a new slot of it with the to square,
-          // or destroy said slot if undo
-        const positions = this._tracking[side].getPrimaryTypePositions(r.promotedTo)
-        if (mode === 'undo') {
-            // remove the slot created for the piece promoted to. 
-          const index = positions.findIndex((e) => (positionsEqual(e, r.to)))
-          if (index !== -1) {
-            positions.splice(index, 1)
-          }
-        } 
-        else {
-          // create another slot for the piece type promoted to.
-          // (from piece was type 'pawn', so ignore)
-          positions.push(r.to)
-        } 
+      if (r.action.includes('romote')) {
+        this._tracking[side].trackPromotion(r.to, mode)
       } 
       if (r.action.includes('capture')) {
-          // track the captured piece, if it is of interest
-        if (isPrimaryType(r.captured!.type)) {
-          const positions = this._tracking[r.captured!.color].getPrimaryTypePositions(r.captured!.type as PrimaryPieceType)
-          const index = positions.findIndex((e) => (positionsEqual(e, r.to)))
-          if (mode === 'undo') {
-              // shouldn't find it, since we're undoing a capture
-            if (index === -1) {
-              positions.push(r.to)
-            }
-          }
-          else {
-            if (index !== -1) {
-              positions.splice(index, 1)
-            }
-          }
-        }
+        this._tracking[side].trackCapture(r.captured!, r.to, mode)
       }
       if (r.action === 'move' || r.action.includes('capture')) {
-            // track the moved or capturing piece, if it is of interest
-        if (isPrimaryType(r.piece.type)) {
-          const positions = this._tracking[side].getPrimaryTypePositions(r.piece.type as PrimaryPieceType)
-          if (mode === 'undo') {
-            const index = positions.findIndex((e) => (positionsEqual(e, r.to)))
-            if (index !== -1) {
-              positions[index] = r.from
-            }
-          }
-          else {
-            const index = positions.findIndex((e) => (positionsEqual(e, r.from)))
-            if (index !== -1) {
-              positions[index] = r.to
-            }
-          }
-        }
+        this._tracking[side].trackPositionChange(r, mode)
       }
     }
   }
@@ -686,4 +565,9 @@ const createBoard = (f: IsCaptureFn, isObservable?: boolean): BoardInternal => (
   new BoardImpl(f, isObservable)
 )
 
-export { type Board as default, type BoardInternal, createBoard }  
+export { 
+  type Board as default, 
+  type BoardInternal, 
+  type BoardSnapshot, 
+  createBoard 
+}  

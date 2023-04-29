@@ -3,4 +3,4 @@ interface Point {
   y: number
 }
 
-export default Point
+export { type Point as default }

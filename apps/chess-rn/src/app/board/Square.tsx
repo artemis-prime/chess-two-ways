@@ -1,8 +1,8 @@
-import React, { PropsWithChildren } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
-  StyleProp,
+  type StyleProp,
   View,
-  ViewStyle 
+  type ViewStyle 
 } from 'react-native'
 import { observer } from 'mobx-react'
 import type * as Stitches from 'stitches-native'

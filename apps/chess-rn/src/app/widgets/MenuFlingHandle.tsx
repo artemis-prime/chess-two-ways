@@ -2,12 +2,12 @@ import React  from 'react'
 import { 
   Text,
   View,
-  StyleProp,
-  ViewStyle,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native'
 
 import {
-  FlingGesture,
+  type FlingGesture,
   GestureDetector
 } from 'react-native-gesture-handler'
 

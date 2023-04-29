@@ -1,5 +1,5 @@
 {
-  "extends": "../../just-the-chess/tsconfig",
+  "extends": "../../tsconfig.base",
 
   "compilerOptions": {
     "lib": [

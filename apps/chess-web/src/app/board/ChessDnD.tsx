@@ -5,13 +5,13 @@ import React, {
 
 import { 
   DndContext, 
-  DragStartEvent,
-  DragEndEvent,
-  DragCancelEvent,
-  DragMoveEvent,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragCancelEvent,
+  type DragMoveEvent,
 } from '@dnd-kit/core'
 
-import { positionsEqual, ObsPieceRef } from '@artemis-prime/chess-core'
+import { positionsEqual, type ObsPieceRef } from '@artemis-prime/chess-core'
 
 import { useGame } from '~/services'
 

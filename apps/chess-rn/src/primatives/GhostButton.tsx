@@ -1,9 +1,9 @@
-import React, { PropsWithChildren } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
-  PressableProps,
-  StyleProp,
+  type PressableProps,
+  type StyleProp,
   Text,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native'
 
 import { styled, common } from '~/styles/stitches.config'

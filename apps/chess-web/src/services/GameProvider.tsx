@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import React, { type PropsWithChildren } from 'react'
 
 import type { Game } from '@artemis-prime/chess-core'
 import { getGameSingleton } from '@artemis-prime/chess-core'

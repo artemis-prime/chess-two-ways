@@ -1,6 +1,5 @@
 import type Piece from './Piece'
 import { 
-  type PrimaryPieceType, 
   pieceToString, 
   pieceFromCodeString,
   PIECETYPE_NAMES,
@@ -14,14 +13,12 @@ import type Action from './Action'
 import { positionToString, positionFromString } from './Position'
 
   // Describes a change of state.
-  // Must contain enough info to undo and redo the state change
+  // Must contain enough info to undo and redo the change 
 interface ActionRecord extends Move {
   action: Action
     // Both are needed to 'undo' or 'redo' a 'capturePromote' Action.
     // Required if action is 'capture'. Needed for 'undo' 
   captured?: Piece
-    // Required if action is 'promote'. Needed for 'redo' 
-  promotedTo?: PrimaryPieceType 
 }
 
 
@@ -55,15 +52,15 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
     break
     case 'promote':
       str += verbose ?
-        `is promoted to a ${r.promotedTo} at (${positionToString(r.to)})`
+        `is promoted to a queen at (${positionToString(r.to)})`
         :
-        `${positionToString(r.to)}=${PIECETYPE_NAMES[r.promotedTo!].short}`
+        `${positionToString(r.to)}=Q`
     break
     case 'capturePromote':
       str += verbose ?
-        `captures ${r.captured!.type} and is promoted to a ${r.promotedTo} at (${positionToString(r.to)})`
+        `captures ${r.captured!.type} and is promoted to a queen at (${positionToString(r.to)})`
         :
-        `x${PIECETYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}=${PIECETYPE_NAMES[r.promotedTo!].short}`
+        `x${PIECETYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}=Q`
     break
   } 
   return str
@@ -95,7 +92,6 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const toPositionIndex = (isCapture) ? 6 : 4
   const to = positionFromString(lan.slice(toPositionIndex,toPositionIndex + 2))
   const isPromote = lan.charAt(toPositionIndex + 2) === '='
-  const promotedTo = (isPromote) ? PIECETYPE_FROM_CODE[lan.charAt(toPositionIndex + 3) as PieceTypeCode] as PrimaryPieceType : undefined
 
   if (!piece) throw new Error('lanToActionRecord(): error parsing piece! (note: ' + note.toString() + ')')
   if (!from) throw new Error('lanToActionRecord(): error parsing from poistion! (note: ' + note.toString() + ')')
@@ -109,7 +105,7 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
     action = isPromote ? 'promote' : 'move'
   }
 
-  return {piece, to, from, action, captured, promotedTo}
+  return {piece, to, from, action, captured}
 }
 
 export { type ActionRecord as default, actionRecordToLAN, lanToActionRecord }

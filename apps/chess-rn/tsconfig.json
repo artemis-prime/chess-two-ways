@@ -1,6 +1,6 @@
 {
-  //  "extends": "@tsconfig/react-native/tsconfig.json",
-  "extends": "../../just-the-chess/tsconfig",
+  // CF:  "extends": "@tsconfig/react-native/tsconfig.json",
+  "extends": "../../tsconfig.base",
 
   "compilerOptions": {
     "types": ["react-native"],
@@ -16,6 +16,10 @@
       "~/*": ["./src/*"],
     },
   },
+  "include": [
+    "app.json",
+    "src/"
+  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

@@ -1,12 +1,11 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react'
+import React, { type PropsWithChildren, useState } from 'react'
 import { 
+  type GestureResponderEvent,
   Pressable,
-  PressableProps,
-  GestureResponderEvent,
-  StyleProp,
-  ViewStyle,
+  type PressableProps,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native'
-import { observer } from 'mobx-react'
 
 type CheckboxState = 'checked' | 'unchecked' | 'pressed' | 'disabled'
 

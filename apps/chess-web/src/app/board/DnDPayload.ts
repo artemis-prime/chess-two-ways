@@ -5,4 +5,4 @@ interface DnDPayload {
   from: Position
 }
 
-export default DnDPayload
+export { type DnDPayload as default }
