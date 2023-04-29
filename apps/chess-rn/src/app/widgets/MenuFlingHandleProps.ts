@@ -1,4 +1,4 @@
-import { FlingGesture } from "react-native-gesture-handler"
+import { type FlingGesture } from 'react-native-gesture-handler'
 
 interface MenuFlingHandleProps {
   menuVisible: boolean

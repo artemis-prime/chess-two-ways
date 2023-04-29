@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 
 import GameProvider from '~/services/GameProvider'

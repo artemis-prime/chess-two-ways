@@ -1,36 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import {
   StatusBar,
   View,
-  ViewStyle,
-  ImageStyle,
-  StyleProp
+  type ViewStyle,
+  type ImageStyle,
+  type StyleProp
 } from 'react-native'
 
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  Easing, 
-  withTiming,
-  interpolate,
-  Extrapolation,  
-  runOnJS,
-  AnimateStyle,
-  interpolateColor,
-  SharedValue,
-  useDerivedValue,
-  runOnUI
- } from 'react-native-reanimated'
+import Animated, { type AnimateStyle } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/styles/stitches.config'
 import { BGImage } from '~/primatives'
-import { PropsWithChildren } from 'react'
 
 const OuterContainer = styled(View, {
   height: '100%', 
   backgroundColor: '$headerBG'
 })
 
+/*
 const GameAreaView = styled(View, {
 
   flexDirection: 'column',
@@ -56,6 +43,7 @@ const GameAreaView = styled(View, {
     }
   }
 })
+*/
 
 const GameArea: React.FC<{
   showBorder: boolean

@@ -1,9 +1,9 @@
-import React, { PropsWithChildren, useEffect } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
   Text,
-  PressableProps,
-  StyleProp,
-  ViewStyle,
+  type PressableProps,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native'
 import { observer } from 'mobx-react'
 

@@ -5,15 +5,15 @@ import {
 } from 'mobx'
 
 import { 
-  Action,
-  ActionRecord,
-  Move,
-  Check,  
-  Side, 
+  type Action,
+  type ActionRecord,
+  type Move,
+  type Check,  
+  type Side, 
+  type GameStatus,
+  type ChessListener,
   actionRecordToLAN, 
   positionToString,
-  GameStatus,
-  ChessListener
 } from '@artemis-prime/chess-core'
 
 import type ConsoleMessage from './ConsoleMessage'

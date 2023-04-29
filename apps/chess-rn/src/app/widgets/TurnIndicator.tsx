@@ -3,8 +3,8 @@ import { observer } from 'mobx-react'
 import { 
   View, 
   Text, 
-  StyleProp, 
-  ViewStyle 
+  type StyleProp, 
+  type ViewStyle 
 } from 'react-native'
 
 import { styled, common } from '~/styles/stitches.config'

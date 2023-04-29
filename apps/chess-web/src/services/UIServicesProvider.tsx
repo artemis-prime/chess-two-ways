@@ -1,6 +1,5 @@
 import React, {
-  PropsWithChildren,
-  useContext,
+  type PropsWithChildren,
   useEffect,
   useState,
   useRef
@@ -36,7 +35,7 @@ class PulsesImpl implements Pulses {
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
 
-const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
+const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const [whiteOnBottom, setWhiteOnBottom] = useState<boolean>(true)
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())

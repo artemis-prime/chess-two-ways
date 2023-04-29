@@ -1,8 +1,5 @@
-import React, { PropsWithChildren } from 'react'
-import { 
-  ImageBackground, 
-  ImageBackgroundProps
-} from 'react-native'
+import React, { type PropsWithChildren } from 'react'
+import { ImageBackground, type ImageBackgroundProps } from 'react-native'
 
 const BGImage: React.FC<
   {

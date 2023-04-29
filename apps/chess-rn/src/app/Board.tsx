@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { 
   View,
-  StyleProp, 
-  ViewStyle,
-  LayoutChangeEvent 
+  type StyleProp, 
+  type ViewStyle,
+  type LayoutChangeEvent 
 } from 'react-native'
 
 import { type SquareDesc } from '@artemis-prime/chess-core'

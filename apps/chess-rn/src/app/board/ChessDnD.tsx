@@ -2,12 +2,12 @@ import React, {
   useContext, 
   useRef 
 } from 'react'
-import { LayoutChangeEvent } from 'react-native'
+import { type LayoutChangeEvent } from 'react-native'
 
 import {
   Gesture,
   GestureDetector,
-  PanGestureHandlerEventPayload,
+  type PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler'
 
 import { 

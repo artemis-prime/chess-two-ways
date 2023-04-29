@@ -214,7 +214,7 @@ class GameImpl implements Game {
     })
     
       // await the state change. We effectively create a new listerner, 
-      // which be definition is after the autorun() in GameImpl's constructor.
+      // which by definition is after the autorun() in GameImpl's constructor.
       // The actionsRestored() notification should be after the game state change.
     await when(() => this._board.gameStatus.state === 'restored');
     this._notifier.actionsRestored([...this._actions])

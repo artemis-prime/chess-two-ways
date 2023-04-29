@@ -85,24 +85,24 @@ class BoardSquares {
 
   static visitAsNewGame(sq: Square, tr: Tracking, assignState = true): void {
     if (sq.rank === 1) {
-      sq.piece = { type: INITIAL_HOME_RANK[sq.file], color: 'white' }
+      sq.setPiece({ type: INITIAL_HOME_RANK[sq.file], color: 'white' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 2) {
-      sq.piece = { type: 'pawn', color: 'white' }
+      sq.setPiece({ type: 'pawn', color: 'white' })
     }
     else if (sq.rank === 8) {
-      sq.piece = { type: INITIAL_HOME_RANK[sq.file], color: 'black' }
+      sq.setPiece({ type: INITIAL_HOME_RANK[sq.file], color: 'black' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 7) {
-      sq.piece = { type: 'pawn', color: 'black' }
+      sq.setPiece({ type: 'pawn', color: 'black' })
     }
     else {
-      sq.piece = null
+      sq.setPiece(null)
     }
     if (assignState) {
-      sq.state = 'none'
+      sq.setStatus('none')
     }
   }
 
@@ -113,12 +113,12 @@ class BoardSquares {
     const keyToTry = positionToString(sq) as PositionCode
     if (snapshot[keyToTry]) {
         // If pieceFromCodeString is undefined, default to null
-      sq.piece = pieceFromCodeString(snapshot[keyToTry]!) ?? null 
+      sq.setPiece(pieceFromCodeString(snapshot[keyToTry]!) ?? null) 
     }
     else {
-      sq.piece = null
+      sq.setPiece(null)
     }
-    sq.state = 'none'
+    sq.setStatus('none')
   }
 
   constructor (tr: Tracking, observePieces? : boolean) {

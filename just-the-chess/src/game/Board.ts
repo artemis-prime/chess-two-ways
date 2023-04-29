@@ -303,17 +303,20 @@ class BoardImpl implements BoardInternal {
     const rookTracking = this._tracking[color].getRookTracking(rookSide)
     const inCheck = inCheckFrom.length > 0
       // has been captured or has moved 
-    const rookHasMoved = rookTracking.position === null || rookMoveCounts[rookSide] > 0 
+    const rookHasMoved = rookMoveCounts[rookSide] > 0 
+    const rookHasBeenCaptured = rookTracking.position === null
     const kingHasMoved = kingMoveCount > 0
     
-    const eligable = !inCheck && !hasCastled && !kingHasMoved && !rookHasMoved
+    const eligable = !inCheck && !hasCastled && !kingHasMoved && !rookHasMoved && !rookHasBeenCaptured
 
     if (!eligable) {
-      return (inCheck) ? `${color} cannot castle out of check!` 
+      return (inCheck ? 
+        `${color} cannot castle out of check!` 
         : 
-        color + ' is not eligable to castle ' + ((kingHasMoved || hasCastled) ?  '' : rookSide + ' ') +
-          'because ' + 
-        (hasCastled) ? 'it has already castled!' : (kingHasMoved ? 'the king has moved!' : 'that rook has moved!')
+        `${color} is not eligable to castle ${((kingHasMoved || hasCastled) ?  '' : rookSide + ' ')}because ` + 
+        ((hasCastled) ? 'it has already castled!' : 
+          (kingHasMoved ? 'the king has already moved!' : 
+            (rookHasBeenCaptured ? 'that rook has been captured!' : 'that rook has already moved!')))) 
     }  
     return null
   }

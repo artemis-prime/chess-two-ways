@@ -1,8 +1,8 @@
 import React from 'react'
 import { 
   View,
-  StyleProp,
-  ViewStyle,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native'
 
 import { styled } from '~/styles/stitches.config'

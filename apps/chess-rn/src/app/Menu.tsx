@@ -1,5 +1,11 @@
-import React, { PropsWithChildren } from 'react'
-import { View, Text, ViewStyle, StyleProp } from 'react-native'
+import React, { type PropsWithChildren } from 'react'
+import { 
+  View, 
+  Text, 
+  type ViewStyle, 
+  type StyleProp 
+} from 'react-native'
+
 import { styled, common } from '~/styles/stitches.config'
 
 const MenuTitleText = styled(Text, common.menuTextCommon)

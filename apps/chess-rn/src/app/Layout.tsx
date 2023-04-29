@@ -7,17 +7,15 @@ import {
   Dimensions,
   SafeAreaView,
   StatusBar,
-  ViewStyle,
-  ImageStyle,
-  View
+  type ViewStyle,
+  type ImageStyle,
 } from 'react-native'
 import { autorun } from 'mobx'
-//import { observer } from 'mobx-react'
 
 import {
   Gesture,
   Directions,
-  FlingGesture,
+  type FlingGesture,
 } from 'react-native-gesture-handler'
 
 import Animated, { 
@@ -28,7 +26,7 @@ import Animated, {
   interpolate,
   Extrapolation,  
   runOnJS,
-  AnimateStyle,
+  type AnimateStyle,
   interpolateColor,
  } from 'react-native-reanimated'
 
