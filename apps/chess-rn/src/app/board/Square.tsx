@@ -73,11 +73,9 @@ type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
 const FeedbackView: React.FC<{
-  stateRef: ObsSquareStateRef,
-  size: number 
+  squareStateRef: ObsSquareStateRef,
 } & PropsWithChildren> = observer(({
-  stateRef,
-  size,
+  squareStateRef,
   children
 }) => {
 
@@ -103,7 +101,7 @@ const FeedbackView: React.FC<{
   }
 
   return (
-    <StyledFeedbackView effect={getEffectFromPositionState(stateRef.squareState)} >
+    <StyledFeedbackView effect={getEffectFromPositionState(squareStateRef.squareState)} >
       {children}
     </StyledFeedbackView>
   )
@@ -129,7 +127,7 @@ const Square: React.FC<{
   return (
     <SquareInner {...brown} style={style}>
       {sizeInLayout && (
-      <FeedbackView size={sizeInLayout} stateRef={square.squareStateRef} >
+      <FeedbackView squareStateRef={square} >
         <PieceComponent square={square} size={sizeInLayout} /> 
       </FeedbackView>
       )}

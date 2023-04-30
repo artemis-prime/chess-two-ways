@@ -11,6 +11,7 @@ import { observer } from 'mobx-react'
 
 import { 
   type ObsSquare,
+  type Color,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
@@ -44,8 +45,10 @@ const CAPTURE_SHADOWS = [
 ] as ShadowDesc[]
 
 const NORMAL_SHADOW_COLOR = {
-  white: 'rgba(0, 0, 0, 0.3)' as ColorValue,
-  black: 'rgba(0, 0, 0, 0.5)' as ColorValue
+  white: 'rgba(0, 0, 0, 0.3)',
+  black: 'rgba(0, 0, 0, 0.5)'
+} as {
+  [key in Color]: ColorValue
 }
 
 interface Offset {
@@ -189,28 +192,28 @@ const Piece: React.FC<{
       return {
         fontSize: size * .9, 
         figureSize: 'large',
-        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[square.piece!.color] }]
+        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
       }
     }
       // Default size and shadows
     return {
       fontSize: size *.8,
       figureSize: 'normal',
-      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[square.piece!.color] }]
+      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
     }
   })()
 
   const height = fontSize * 1.1 // ensure no clipping 
-  const color = (square.piece!.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
+  const color = (square.piece.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
 
     // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
   return (
     <View style={[style, { width: '100%', height: '100%' }]} >
       <Shadows descs={shadows} style={{ fontSize, height  }} >
-        {PIECETYPE_TO_UNICODE[square.piece!.type]}
+        {PIECETYPE_TO_UNICODE[square.piece.type]}
       </Shadows> 
       <PieceFigure figureSize={figureSize} style={{ fontSize, height, color }} >
-        {PIECETYPE_TO_UNICODE[square.piece!.type]}
+        {PIECETYPE_TO_UNICODE[square.piece.type]}
       </PieceFigure>
     </View>
   ) 

@@ -112,7 +112,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
       if (p) {
         if (!positionsEqual(p, stateRef.current.squareOver!)) {
           game.resolveAction({
-            piece: stateRef.current.piece!, 
+            piece: stateRef.current.piece, 
             from: stateRef.current.from!,  // from is there if piece is
             to: p
           })
