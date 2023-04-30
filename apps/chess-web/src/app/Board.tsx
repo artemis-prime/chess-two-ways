@@ -3,7 +3,7 @@ import type { CSS } from '@stitches/react'
 import { DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 
-import type { SquareDesc } from '@artemis-prime/chess-core'
+import type { ObsSquare } from '@artemis-prime/chess-core'
 
 import { Box } from '~/primitives'
 import { useBoardOrientation, useGame } from '~/services'
@@ -20,8 +20,8 @@ const Board: React.FC<{ css?: CSS }> = ({css}) => {
   return (
     <ChessDnDShell>
       <Box className={'board'} css={css}>
-      {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
-        <Square desc={d} key={`key-${d.position.rank}-${d.position.file}`} />
+      {game.getBoardAsArray(whiteOnBottom).map((s: ObsSquare) => (
+        <Square square={s} key={`key-${s.rank}-${s.file}`} />
       ))}
       </Box>
       <DragOverlay modifiers={[snapCenterToCursor]}>

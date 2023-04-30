@@ -4,8 +4,8 @@ import { useDraggable } from '@dnd-kit/core'
 import type { VariantProps } from '@stitches/react'
 
 import { 
-  type SquareDesc,
-  type PositionState,
+  type ObsSquare,
+  type SquareState,
   positionToString, 
   pieceToString
 } from '@artemis-prime/chess-core'
@@ -179,21 +179,21 @@ type EffectsViewVariants = VariantProps<typeof PieceEffectsView>
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 const PieceComponent: React.FC<{
-  desc: SquareDesc 
+  square: ObsSquare 
 }> = observer(({
-  desc
+  square
 }) => {
 
   const game = useGame()
   const pulses = usePulses()
 
-  if (!desc.pieceRef.piece) {
+  if (!square.piece) {
     return null
   }
 
-  const canDrag = desc.pieceRef.piece && game.currentTurn === desc.pieceRef.piece.color
+  const canDrag = square.piece && game.currentTurn === square.piece.color
 
-  const getEffectFromState = (state: PositionState): EffectVariant => {
+  const getEffectFromState = (state: SquareState): EffectVariant => {
     if (state.includes('capture')) {
       return pulses.fast ? 'capture' : 'capturePulse' 
     }
@@ -206,51 +206,48 @@ const PieceComponent: React.FC<{
     return undefined 
   }
 
-  const SpecificPiece = registry.get(desc.pieceRef.piece.type) as React.ComponentType<SpecificPieceProps>
+  const SpecificPiece = registry.get(square.piece.type) as React.ComponentType<SpecificPieceProps>
 
   return (
     <PieceEffectsView 
       justify='center'
       direction='row'
       align='center'
-      color={desc.pieceRef.piece.color}
-      effect={getEffectFromState(desc.posStateRef.state)}
+      color={square.piece.color}
+      effect={getEffectFromState(square.squareState)}
       css={{
-        opacity: (desc.posStateRef.state === 'origin' ? 0.5 : 1), 
-        cursor: canDrag ? (desc.posStateRef.state === 'origin' ? 'move' : 'pointer') : 'default',
+        opacity: (square.squareState === 'origin' ? 0.5 : 1), 
+        cursor: canDrag ? (square.squareState === 'origin' ? 'move' : 'pointer') : 'default',
 //        border: '0.5px red solid'
       }}
     >
-      <SpecificPiece size={desc.pieceRef.piece.type === 'pawn' ? '80%' :'94%'} />
+      <SpecificPiece size={square.piece.type === 'pawn' ? '80%' :'94%'} />
     </PieceEffectsView>
   )
 })
 
 
-  // Note that piece is not nullable, since this 
-  // component should not be rendered in a square
-  // that doesn't contain one.
 const PieceDnDWrapper: React.FC<{
-  desc: SquareDesc 
+  square: ObsSquare 
 }> = observer(({
-  desc,
+  square,
 }) => {
 
   const game = useGame()
-  const canDrag = desc.pieceRef.piece && game.currentTurn === desc.pieceRef.piece.color
+  const canDrag = square.piece && game.currentTurn === square.piece.color
   
   const {listeners, setNodeRef: draggableRef} = useDraggable({
-    id: positionToString(desc.position) + (desc.pieceRef.piece ? pieceToString(desc.pieceRef.piece) : ''), 
+    id: positionToString(square) + (square.piece ? pieceToString(square.piece) : ''), 
     disabled: !canDrag,
     data: {
-      piece: desc.pieceRef.piece,
-      from: desc.position
+      piece: square.piece,
+      from: square
     }
   })
     // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
   return (
     <div ref={draggableRef}  {...listeners}>
-      <PieceComponent desc={desc} />
+      <PieceComponent square={square} />
     </div>
   )
 })

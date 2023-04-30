@@ -6,7 +6,7 @@ import {
   type LayoutChangeEvent 
 } from 'react-native'
 
-import { type SquareDesc } from '@artemis-prime/chess-core'
+import { type ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled } from '~/styles/stitches.config'
 import { useGame } from '~/services'
@@ -70,9 +70,9 @@ const Board: React.FC<{
     <BoardInner style={style} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg'}  >
         <SquaresOuter onLayout={layoutListener} >
-        {game.getBoardAsArray(whiteOnBottom).map((d: SquareDesc) => (
+        {game.getBoardAsArray(whiteOnBottom).map((s: ObsSquare) => (
               // See comments above
-          <Square desc={d} sizeInLayout={boardSize && boardSize / 8 } key={`key-${d.position.rank}-${d.position.file}`} />
+          <Square square={s} sizeInLayout={boardSize && boardSize / 8 } key={`key-${s.rank}-${s.file}`} />
         ))}
         </SquaresOuter>
       </BGImage>

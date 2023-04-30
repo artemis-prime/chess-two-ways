@@ -5,12 +5,12 @@ import {
   type ViewStyle 
 } from 'react-native'
 import { observer } from 'mobx-react'
-import type * as Stitches from 'stitches-native'
+import type {  VariantProps } from 'stitches-native'
 
 import { 
-  type PositionState, 
-  type SquareDesc,
-  type ObsPositionStateRef,
+  type SquareState, 
+  type ObsSquare,
+  type ObsSquareStateRef,
   FILES 
 } from '@artemis-prime/chess-core'
 
@@ -67,13 +67,13 @@ const StyledFeedbackView = styled(View, {
     }
   }
 })
-type EffectsViewVariants = Stitches.VariantProps<typeof StyledFeedbackView>
+type EffectsViewVariants = VariantProps<typeof StyledFeedbackView>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
 const FeedbackView: React.FC<{
-  stateRef: ObsPositionStateRef,
+  stateRef: ObsSquareStateRef,
   size: number 
 } & PropsWithChildren> = observer(({
   stateRef,
@@ -83,7 +83,7 @@ const FeedbackView: React.FC<{
 
   const pulses = usePulses()
 
-  const getEffectFromPositionState = (s: PositionState): EffectVariant  => {
+  const getEffectFromPositionState = (s: SquareState): EffectVariant  => {
 
     let effect: EffectVariant = undefined
     if (s === 'move' || s === 'castle') {
@@ -103,7 +103,7 @@ const FeedbackView: React.FC<{
   }
 
   return (
-    <StyledFeedbackView effect={getEffectFromPositionState(stateRef.state)} >
+    <StyledFeedbackView effect={getEffectFromPositionState(stateRef.squareState)} >
       {children}
     </StyledFeedbackView>
   )
@@ -111,17 +111,17 @@ const FeedbackView: React.FC<{
 
   // See comments in Board.tsx re sizing changes 
 const Square: React.FC<{  
-  desc: SquareDesc,
+  square: ObsSquare,
   sizeInLayout: number | undefined
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  desc,
+  square,
   sizeInLayout,
   style 
 }) => {
 
-  const rankOdd = (desc.position.rank % 2)
-  const fileOdd = (FILES.indexOf(desc.position.file) % 2)
+  const rankOdd = (square.rank % 2)
+  const fileOdd = (FILES.indexOf(square.file) % 2)
   const brown = (rankOdd && fileOdd) || (!rankOdd && !fileOdd) ? {brown: true} : {}
 
     // Only do inner layout stuff if we have an accurate size available.
@@ -129,8 +129,8 @@ const Square: React.FC<{
   return (
     <SquareInner {...brown} style={style}>
       {sizeInLayout && (
-      <FeedbackView size={sizeInLayout} stateRef={desc.posStateRef} >
-        <PieceComponent desc={desc} size={sizeInLayout} /> 
+      <FeedbackView size={sizeInLayout} stateRef={square.squareStateRef} >
+        <PieceComponent square={square} size={sizeInLayout} /> 
       </FeedbackView>
       )}
     </SquareInner>

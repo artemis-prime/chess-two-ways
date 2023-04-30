@@ -1,59 +1,62 @@
 import { makeObservable, observable, action } from 'mobx'
 
-import type ObsPieceRef from '../ObsPieceRef'
-import type ObsPositionStateRef  from '../ObsPositionStateRef'
+import type ObsSquare from '../ObsSquare'
 
 import type Piece from '../Piece'
 import type Position from '../Position'
 import type { File, Rank } from '../Position'
-import type PositionState from '../PositionState'
+import type SquareState from '../SquareState'
 
-class Square implements 
-  Position, 
-  ObsPieceRef,
-  ObsPositionStateRef
-{
+class Square implements ObsSquare {
 
   readonly rank: Rank
   readonly file: File
-  piece: Piece | null 
-  state: PositionState
+  occupant: Piece | null 
+  state: SquareState
 
   constructor(
     rank: Rank, 
     file: File, 
-    piece: Piece | null, 
-    state: PositionState, 
-    observePiece?: boolean
+    occupant: Piece | null, 
+    squareState: SquareState, 
+    observeState?: boolean
   ) {
     this.rank = rank
     this.file = file
-    this.piece = piece
-    this.state = state
+    this.occupant = occupant
+    this.state = squareState
     
-    if (observePiece) {
+    if (observeState) {
       makeObservable(this, { 
-        piece: observable,
+        occupant: observable,
         state: observable,
-        setPiece: action,
-        setPositionState: action
+        setOccupant: action,
+        setSquareState: action
       })
     }
   }
 
-  setPiece(p: Piece | null): void {
-    this.piece = p
+  setOccupant(p: Piece | null): void {
+    this.occupant = p
   }
 
-  setPositionState(s: PositionState): void {
+  setSquareState(s: SquareState): void {
     this.state = s 
+  }
+
+  get piece(): Piece | null {
+    return this.occupant
+  }
+
+  get squareState(): SquareState {
+    return this.state
   }
 
   clone(): Square {
     return new Square(
       this.rank,
       this.file,
-      this.piece ? {...this.piece} : null,
+      this.occupant ? {...this.occupant} : null,
       this.state
     )
   }

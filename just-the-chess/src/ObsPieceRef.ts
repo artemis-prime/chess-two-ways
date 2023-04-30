@@ -1,8 +1,8 @@
 import type Piece from './Piece'
 
-// see SquareDesc comments
+// see ObsSquare comments
 interface ObsPieceRef {
-  piece: Piece | null
+  get piece(): Piece | null
 }
 
 export { type ObsPieceRef as default}

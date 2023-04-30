@@ -5,8 +5,8 @@ import type { VariantProps } from '@stitches/react'
 
 import { 
   FILES,
-  type SquareDesc, 
-  type PositionState,
+  type ObsSquare, 
+  type SquareState,
   positionToString, 
 } from '@artemis-prime/chess-core'
 
@@ -62,14 +62,14 @@ type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 
 
 const SquareComponent: React.FC<{
-  desc: SquareDesc 
+  square: ObsSquare 
 }> = observer(({
-  desc
+  square
 }) => {
 
   const pulses = usePulses()
 
-  const getEffectFromState = (state: PositionState): EffectVariant  => {
+  const getEffectFromState = (state: SquareState): EffectVariant  => {
     if (state === 'castleRookFrom') {
       return pulses.slow ? state : 'castleRookFromPulse' 
     }
@@ -95,21 +95,21 @@ const SquareComponent: React.FC<{
   }
 
   return (
-    <EffectsView effect={getEffectFromState(desc.posStateRef.state)} >
-      <PieceComponent desc={desc} />  
+    <EffectsView effect={getEffectFromState(square.squareState)} >
+      <PieceComponent square={square} />  
     </EffectsView>
   )
 })
 
 const SquareDndWrapper: React.FC<{
-  desc: SquareDesc 
+  square: ObsSquare 
 }> = ({ 
-  desc
+  square
 }) => {
 
   const {setNodeRef: ref} = useDroppable({
-    id: positionToString(desc.position), 
-    data: { position: desc.position },
+    id: positionToString(square), 
+    data: { position: square },
   })
 
     // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
@@ -117,11 +117,11 @@ const SquareDndWrapper: React.FC<{
     <div 
       ref={ref}
       style={{ position: 'relative' }}
-      className={`square rank-${desc.position.rank} rank-${(desc.position.rank % 2) ? 'odd' : 'even'} ` +
-        `file-${desc.position.file} file-${(FILES.indexOf(desc.position.file) % 2) ? 'even' : 'odd'}` 
+      className={`square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} ` +
+        `file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}` 
       }
     >
-      <SquareComponent desc={desc} />
+      <SquareComponent square={square} />
     </div>  
   )
 }

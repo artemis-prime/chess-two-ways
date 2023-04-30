@@ -32,7 +32,7 @@ import {
 import type Position from './Position'
 import { positionToString } from './Position'
 import type Resolution from './Resolution'
-import type SquareDesc from './SquareDesc'
+import type ObsSquare from './ObsSquare'
 
 import { getResolutionStateForPosition, getCheckStateForPosition } from './game/statusUtil'
 import type { default as ActionResolver } from './game/ActionResolver'
@@ -91,7 +91,7 @@ interface Game {
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
 
-  getBoardAsArray(reverse: boolean): SquareDesc[]
+  getBoardAsArray(reverse: boolean): ObsSquare[]
 }
 
 class GameImpl implements Game {
@@ -169,7 +169,7 @@ class GameImpl implements Game {
     return this._board.pieceAt(p)
   }
 
-  getBoardAsArray = (whiteOnBottom: boolean): SquareDesc[] => (
+  getBoardAsArray = (whiteOnBottom: boolean): ObsSquare[] => (
 
     (whiteOnBottom) ? this._board.asSquareDescs  : [...this._board.asSquareDescs].reverse()
   )
@@ -392,7 +392,7 @@ class GameImpl implements Game {
 
     this._resolution = res
     this._board.asSquares.forEach((sq: Square) => {
-      sq.setPositionState(getResolutionStateForPosition(sq, res))
+      sq.setSquareState(getResolutionStateForPosition(sq, res))
     });
   }
 
@@ -451,7 +451,7 @@ class GameImpl implements Game {
       // since this code is called after 
       // action statuses are cleared.
     this._board.asSquares.forEach((sq: Square) => {
-      sq.setPositionState(getCheckStateForPosition(sq, check)) 
+      sq.setSquareState(getCheckStateForPosition(sq, check)) 
     })
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {
