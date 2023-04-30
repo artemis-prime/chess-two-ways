@@ -222,11 +222,12 @@ class GameImpl implements Game {
   }
 
   takeSnapshot(): GameSnapshot {
+    const actionsToCurrentState = [...this._actions]
+    actionsToCurrentState.length = this._stateIndex + 1 // truncate to current state 
     return {
       artemisPrimeChessGame: true,
       board: this._board.takeSnapshot(),
-      actions: this._actions.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
-      //stateIndex: this._stateIndex,
+      actions: actionsToCurrentState.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
       currentTurn: this._currentTurn.charAt(0) as ColorCode
     }
   }  
