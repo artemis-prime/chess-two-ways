@@ -8,7 +8,7 @@
     "build:domain": "yarn workspace @artemis-prime/chess-core build",
     "build:web": "yarn workspace @artemis-prime/chess-web build",
     "tcheck:web": "yarn workspace @artemis-prime/chess-web tcheck",
-    "prepare:web": "yarn build:domain && yarn refresh:web",
+    "prepare:web": "yarn build:domain && yarn refresh:web && yarn tcheck:web",
     "refresh:web": "yarn clean:web && yarn install",
     "refresh:rn": "yarn clean:rn && yarn install",
     "tcheck:rn": "yarn workspace @artemis-prime/chess-react-native tcheck",

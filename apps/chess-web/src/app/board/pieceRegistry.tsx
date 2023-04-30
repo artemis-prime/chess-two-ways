@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 
 import type { PieceType } from '@artemis-prime/chess-core'

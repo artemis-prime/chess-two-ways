@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 
 import type { SpecificPieceProps } from '../Piece'
@@ -19,4 +18,3 @@ const Bishop: React.FC<SpecificPieceProps> = ({
 )
 
 export default Bishop
-

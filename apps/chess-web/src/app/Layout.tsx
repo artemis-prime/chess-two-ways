@@ -1,5 +1,4 @@
-  // @ts-ignore
-import React, { PropsWithChildren, useState } from 'react'
+import React, { type PropsWithChildren, useState } from 'react'
 
 import Board from './Board'
 

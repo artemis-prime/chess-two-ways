@@ -1,8 +1,7 @@
-  // @ts-ignore
 import React from 'react'
 import { observer } from 'mobx-react'
 import { useDroppable } from '@dnd-kit/core'
-import type * as Stitches from '@stitches/react'
+import type { VariantProps } from '@stitches/react'
 
 import { 
   FILES,
@@ -57,7 +56,7 @@ const EffectsView = styled('div', {
   }
 })
 
-type EffectsViewVariants = Stitches.VariantProps<typeof EffectsView>
+type EffectsViewVariants = VariantProps<typeof EffectsView>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 

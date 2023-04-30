@@ -1,5 +1,5 @@
 // vscode doesn't seem to see the import as possible,
-// even though vite / tsc does
+// even though vite / tsc does. Dunno
 // @ts-ignore 
 import fromSASS from './colors.module.scss' 
 

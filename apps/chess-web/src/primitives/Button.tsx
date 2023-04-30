@@ -1,3 +1,4 @@
+import React from 'react'
 import { styled } from '~/styles/stitches.config'
 
 import c from '~/styles/colors'
@@ -8,7 +9,6 @@ const buttonCommon = {
   border: `1.5px solid ${c.gray[1]}`,
   borderRadius: '8px',
 }
-
 
 const Button = styled('button', {
 

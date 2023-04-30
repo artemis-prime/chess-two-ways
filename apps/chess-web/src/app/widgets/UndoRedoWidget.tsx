@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 import { observer } from 'mobx-react'
 import type { CSS } from '@stitches/react'

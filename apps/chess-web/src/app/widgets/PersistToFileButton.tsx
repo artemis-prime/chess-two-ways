@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React, { useRef } from 'react'
 
 import { Button } from '~/primitives'

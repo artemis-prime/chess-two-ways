@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React from 'react'
 import type { CSS } from '@stitches/react'
 import { DragOverlay } from '@dnd-kit/core'

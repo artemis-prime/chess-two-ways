@@ -1,3 +1,6 @@
+import React, { type PropsWithChildren } from 'react'
 import { styled } from '~/styles/stitches.config'
 
-export default styled('div', {})
+const Box = styled('div', {})
+
+export default Box

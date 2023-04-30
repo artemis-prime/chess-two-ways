@@ -1,8 +1,7 @@
-  // @ts-ignore
 import React from 'react'
 import { observer } from 'mobx-react'
 import { useDraggable } from '@dnd-kit/core'
-import type * as Stitches from '@stitches/react'
+import type { VariantProps } from '@stitches/react'
 
 import { 
   type SquareDesc,
@@ -175,7 +174,7 @@ const PieceEffectsView = styled(Flex, {
     },
   ]
 })
-type EffectsViewVariants = Stitches.VariantProps<typeof PieceEffectsView>
+type EffectsViewVariants = VariantProps<typeof PieceEffectsView>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
 

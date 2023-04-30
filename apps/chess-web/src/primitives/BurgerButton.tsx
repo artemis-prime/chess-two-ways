@@ -1,4 +1,3 @@
-// @ts-ignore
 import React from 'react'
 
 const BurgerButton: React.FC<{

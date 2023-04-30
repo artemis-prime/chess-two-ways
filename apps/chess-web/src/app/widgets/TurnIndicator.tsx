@@ -1,4 +1,3 @@
-// @ts-ignore
 import React from 'react'
 import { observer } from 'mobx-react'
 
@@ -6,7 +5,7 @@ import { useGame } from '~/services'
 
 import '~/styles/turnIndicator.scss'
 
-const TurnIndicator: React.FC<{}> = observer(() => {
+const TurnIndicator: React.FC = observer(() => {
 
   const game = useGame()
 

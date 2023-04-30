@@ -24,7 +24,7 @@ const RestoreFromFileButton: React.FC<React.PropsWithChildren> = ({children}) =>
     e.preventDefault()
     const reader = new FileReader()
     reader.onload = (e: ProgressEvent<FileReader>) => { 
-      const text = (e.target.result)
+      const text = (e.target?.result)
       if (text && typeof text === 'string') {
         const g: any = JSON.parse(text as string)
         if (g.artemisPrimeChessGame) {

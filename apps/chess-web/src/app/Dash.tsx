@@ -1,4 +1,3 @@
-  // @ts-ignore
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 
