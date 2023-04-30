@@ -25,7 +25,7 @@ import {
 } from '../Position'
 
 import Square from './Square'
-import type SquareDesc from '../SquareDesc'
+import type ObsSquare from '../ObsSquare'
 
 import {
   hasN,
@@ -84,7 +84,7 @@ interface BoardInternal extends Board {
 
   // Utility methods for easy traversing / rendering (mobx 'computed')
   get asSquares():  Square[]
-  get asSquareDescs():  SquareDesc[]
+  get asSquareDescs():  ObsSquare[]
 
 }
 
@@ -95,7 +95,6 @@ class BoardImpl implements BoardInternal {
   private _tracking: Tracking 
   private _squares: BoardSquares 
   private _asSquareArray: Square[]
-  private _asSquareDescArray: SquareDesc[]
 
   constructor(f: IsCaptureFn, isObservable?: boolean) {
 
@@ -113,15 +112,9 @@ class BoardImpl implements BoardInternal {
     this._tracking = new Tracking(isObservable)
     this._squares = new BoardSquares(this._tracking, isObservable)
     this._asSquareArray = []
-    this._asSquareDescArray = []
     for (const rank of RANKS_REVERSED) {
       for (const file of FILES) {
         this._asSquareArray.push(this._squares[rank][file]) 
-        this._asSquareDescArray.push({
-          position: this._squares[rank][file],
-          pieceRef: this._squares[rank][file],
-          posStateRef: this._squares[rank][file]
-        })
       }
     }
 
@@ -131,8 +124,8 @@ class BoardImpl implements BoardInternal {
     return this._asSquareArray
   }
 
-  get asSquareDescs(): SquareDesc[] {
-    return this._asSquareDescArray
+  get asSquareDescs(): ObsSquare[] {
+    return this._asSquareArray as ObsSquare[]
   }
 
   get gameStatus(): GameStatus {
@@ -152,12 +145,12 @@ class BoardImpl implements BoardInternal {
   }
 
   pieceAt(pos: Position): Piece | null {
-    return this._sq(pos).piece
+    return this._sq(pos).occupant
   }
  
   colorAt(pos: Position): Color | null {
-    if (this._sq(pos).piece) {
-      return this._sq(pos).piece!.color
+    if (this._sq(pos).occupant) {
+      return this._sq(pos).occupant!.color
     }
     return null
   }
@@ -170,7 +163,7 @@ class BoardImpl implements BoardInternal {
     
     const result = [] as Position[]
     const visit = (sq: Square): void => {
-      if (sq.piece && sq.piece.color === side ) {
+      if (sq.occupant && sq.occupant.color === side ) {
         result.push(sq)
       } 
     }
@@ -211,7 +204,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) - 1; fileIndex > FILES.indexOf(to.file); fileIndex--) {
-          if (!!this._squares[to.rank][FILES[fileIndex]].piece) {
+          if (!!this._squares[to.rank][FILES[fileIndex]].occupant) {
             return false
           }
         }
@@ -219,7 +212,7 @@ class BoardImpl implements BoardInternal {
       else {
           // zero based!
         for (let fileIndex = FILES.indexOf(from.file) + 1; fileIndex < FILES.indexOf(to.file); fileIndex++) {
-          if (!!this._squares[to.rank][FILES[fileIndex]].piece) {
+          if (!!this._squares[to.rank][FILES[fileIndex]].occupant) {
             return false
           }
         }
@@ -236,7 +229,7 @@ class BoardImpl implements BoardInternal {
       if (delta < 0) {
           // one-based
         for (let rank = from.rank - 1; rank > to.rank; rank--) {
-          if (!!this._squares[rank as Rank][from.file].piece) {
+          if (!!this._squares[rank as Rank][from.file].occupant) {
             return false
           }
         }
@@ -244,7 +237,7 @@ class BoardImpl implements BoardInternal {
       else {
           // one-based
         for (let rank = from.rank + 1; rank < to.rank; rank++) {
-          if (!!this._squares[rank as Rank][from.file].piece) {
+          if (!!this._squares[rank as Rank][from.file].occupant) {
             return false
           }
         }
@@ -266,7 +259,7 @@ class BoardImpl implements BoardInternal {
       // --> NE
     if (deltaFile > 0 && deltaRank > 0 ) {
       for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) + 1; rank < to.rank && fileIndex < FILES.indexOf(to.file); rank++, fileIndex++) {
-        if (!!this._squares[rank as Rank][FILES[fileIndex]].piece) {
+        if (!!this._squares[rank as Rank][FILES[fileIndex]].occupant) {
           return false
         }
       }
@@ -274,7 +267,7 @@ class BoardImpl implements BoardInternal {
       // --> SE
     else if (deltaFile > 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) + 1; rank > to.rank && fileIndex < FILES.indexOf(to.file); rank--, fileIndex++) {
-        if (!!this._squares[rank as Rank][FILES[fileIndex]].piece) {
+        if (!!this._squares[rank as Rank][FILES[fileIndex]].occupant) {
           return false
         }
       }
@@ -282,7 +275,7 @@ class BoardImpl implements BoardInternal {
       // --> SW
     else if (deltaFile < 0 && deltaRank < 0) {
       for (let rank = from.rank - 1, fileIndex = FILES.indexOf(from.file) - 1; rank > to.rank && fileIndex > FILES.indexOf(to.file);  rank--, fileIndex--) {
-        if (!!this._squares[rank as Rank][FILES[fileIndex]].piece) {
+        if (!!this._squares[rank as Rank][FILES[fileIndex]].occupant) {
           return false
         }
       }
@@ -290,7 +283,7 @@ class BoardImpl implements BoardInternal {
       // --> NW
       else if (deltaFile < 0 && deltaRank > 0) {
         for (let rank = from.rank + 1, fileIndex = FILES.indexOf(from.file) - 1; rank < to.rank && fileIndex > FILES.indexOf(to.file); rank++, fileIndex--) {
-          if (!!this._squares[rank as Rank][FILES[fileIndex]].piece) {
+          if (!!this._squares[rank as Rank][FILES[fileIndex]].occupant) {
             return false
           }
         }
@@ -337,20 +330,20 @@ class BoardImpl implements BoardInternal {
     else if (mode === 'undo') {
       this._move(r.to, r.from)
       if (r.action.includes('capture')) {
-        this._sq(r.to).piece = r.captured!
+        this._sq(r.to).occupant = r.captured!
       }
       if (r.action.includes('romote')) {
           // the _move above just returned the piece to 'from'
-        const self = this._sq(r.from).piece!
-        this._sq(r.from).piece = {color: self.color, type: 'pawn'}
+        const self = this._sq(r.from).occupant!
+        this._sq(r.from).occupant = {color: self.color, type: 'pawn'}
       }
     }
     else {
         // Note that _move also takes care of capture ;)
       this._move(r.from, r.to)
       if (r.action.includes('romote')) {
-        const self = this._sq(r.to).piece!
-        this._sq(r.to).piece = {color: self.color, type: 'queen'}
+        const self = this._sq(r.to).occupant!
+        this._sq(r.to).occupant = {color: self.color, type: 'queen'}
       }
     }
 
@@ -399,8 +392,8 @@ class BoardImpl implements BoardInternal {
 
   private _move(from: Position, to: Position, ignoreCastling?: boolean): void {
 
-    this._sq(to).piece = this._sq(from).piece
-    this._sq(from).piece = null 
+    this._sq(to).occupant = this._sq(from).occupant
+    this._sq(from).occupant = null 
   }
 
   private _castle(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void {
@@ -462,25 +455,25 @@ class BoardImpl implements BoardInternal {
         // Neighbor is open (so vulnerable from certain types from afar),
         // or contains an opponent capable of capturing from this neighboring square
       vulnerableOnDiagonalFromPrimaries(sideToCapture: Side): boolean {
-        return !!(this.NE && (!this.NE!.piece || isOpponent(this.NE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        return !!(this.NE && (!this.NE!.occupant || isOpponent(this.NE!.occupant, sideToCapture, ['bishop', 'queen']))) 
         || 
-        !!(this.SE && (!this.SE!.piece || isOpponent(this.SE!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.SE && (!this.SE!.occupant || isOpponent(this.SE!.occupant, sideToCapture, ['bishop', 'queen']))) 
         || 
-        !!(this.SW && (!this.SW!.piece || isOpponent(this.SW!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.SW && (!this.SW!.occupant || isOpponent(this.SW!.occupant, sideToCapture, ['bishop', 'queen']))) 
         || 
-        !!(this.NW && (!this.NW!.piece || isOpponent(this.NW!.piece, sideToCapture, ['bishop', 'queen']))) 
+        !!(this.NW && (!this.NW!.occupant || isOpponent(this.NW!.occupant, sideToCapture, ['bishop', 'queen']))) 
       },
 
         // Neighbor is open (so vulnerable from certain types from afar),
         // or contains an opponent capable of capturing from this neighboring square
       vulnerableOnRankOrFileFromPrimaries(sideToCapture: Side): boolean {
-        return !!(this.N && (!this.N!.piece || isOpponent(this.N!.piece, sideToCapture, ['rook', 'queen']))) 
+        return !!(this.N && (!this.N!.occupant || isOpponent(this.N!.occupant, sideToCapture, ['rook', 'queen']))) 
           || 
-          !!(this.S && (!this.S!.piece || isOpponent(this.S!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.S && (!this.S!.occupant || isOpponent(this.S!.occupant, sideToCapture, ['rook', 'queen']))) 
           || 
-          !!(this.E && (!this.E!.piece || isOpponent(this.E!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.E && (!this.E!.occupant || isOpponent(this.E!.occupant, sideToCapture, ['rook', 'queen']))) 
           || 
-          !!(this.W && (!this.W!.piece || isOpponent(this.W!.piece, sideToCapture, ['rook', 'queen']))) 
+          !!(this.W && (!this.W!.occupant || isOpponent(this.W!.occupant, sideToCapture, ['rook', 'queen']))) 
       },
 
         // All other opposing piece will be explicitly checked from their cached positions.
@@ -488,12 +481,12 @@ class BoardImpl implements BoardInternal {
 
         const possibleSquaresForOppositePawns = (sideToCapture === 'white') ? [this.NE, this.NW] : [this.SE, this.SW] 
         const actualSquaresWithOppositePawns = possibleSquaresForOppositePawns.filter(
-          (sqToTest) => (sqToTest && isOpponent(sqToTest.piece, sideToCapture, 'pawn'))
+          (sqToTest) => (sqToTest && isOpponent(sqToTest.occupant, sideToCapture, 'pawn'))
         ) as Square[]
 
         const possibleSquaresForOppositeKing = [this.N, this.NE, this.NW, this.S, this.SE, this.SW]
         const actualSquareWithOppositeKing = possibleSquaresForOppositeKing.find(
-          (sqToTest) => (sqToTest && isOpponent(sqToTest.piece, sideToCapture, 'king'))
+          (sqToTest) => (sqToTest && isOpponent(sqToTest.occupant, sideToCapture, 'king'))
         )
 
         return actualSquareWithOppositeKing ? [...actualSquaresWithOppositePawns, actualSquareWithOppositeKing] : actualSquaresWithOppositePawns

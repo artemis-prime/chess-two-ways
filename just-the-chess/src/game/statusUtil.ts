@@ -1,6 +1,6 @@
 import type Position from '../Position'
 import { positionsEqual } from '../Position'
-import type PositionState from '../PositionState'
+import type SquareState from '../SquareState'
 import type Resolution from '../Resolution'
 import type Check from '../Check'
 
@@ -8,7 +8,7 @@ import type Check from '../Check'
 const getResolutionStateForPosition = (
   p: Position,
   res: Resolution | null
-): PositionState => {
+): SquareState => {
 
   if (res && positionsEqual(res.move.from, p)) {
     return 'origin'
@@ -49,7 +49,7 @@ const getResolutionStateForPosition = (
 const getCheckStateForPosition = (
   p: Position,
   check: Check | null
-): PositionState => {
+): SquareState => {
   if (check) {
     if (positionsEqual(check.kingPosition, p)) {
       return 'kingInCheck'

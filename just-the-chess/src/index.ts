@@ -14,7 +14,7 @@ export type { default as Move } from './Move'
 export type { default as Piece, Color, Side, PieceType } from './Piece'
 export { pieceToString, piecesEqual, isOpponent } from './Piece'
 export type { default as ObsPieceRef } from './ObsPieceRef'
-export type { default as ObsPositionStateRef } from './ObsPositionStateRef'
+export type { default as ObsSquareStateRef } from './ObsSquareStateRef'
 export type { default as Position} from './Position'
 export type { Rank, File } from './Position'
 export { 
@@ -24,8 +24,8 @@ export {
   FILES, 
   RANKS, 
 } from './Position'
-export type { default as PositionState } from './PositionState'
+export type { default as SquareState } from './SquareState'
 export type { default as Resolution} from './Resolution'
-export type { default as SquareDesc } from './SquareDesc'
+export type { default as ObsSquare } from './ObsSquare'
 
 export { default as PIECETYPE_TO_UNICODE} from './pieceTypeToUnicode'

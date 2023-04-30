@@ -10,7 +10,8 @@ import {
 import { observer } from 'mobx-react'
 
 import { 
-  type SquareDesc,
+  type ObsSquare,
+  type Color,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
@@ -44,8 +45,10 @@ const CAPTURE_SHADOWS = [
 ] as ShadowDesc[]
 
 const NORMAL_SHADOW_COLOR = {
-  white: 'rgba(0, 0, 0, 0.3)' as ColorValue,
-  black: 'rgba(0, 0, 0, 0.5)' as ColorValue
+  white: 'rgba(0, 0, 0, 0.3)',
+  black: 'rgba(0, 0, 0, 0.5)'
+} as {
+  [key in Color]: ColorValue
 }
 
 interface Offset {
@@ -136,11 +139,11 @@ const Shadows: React.FC<{
     // Size is safe, since if the layout-based size is unavailable,
     // this component won't be rendered.
 const Piece: React.FC<{  
-  desc: SquareDesc 
+  square: ObsSquare 
   size: number 
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  desc,
+  square,
   size,
   style 
 }) => {
@@ -148,7 +151,7 @@ const Piece: React.FC<{
   const pulses = usePulses()
   const theme = useTheme()
 
-  if (!desc.pieceRef.piece) {
+  if (!square.piece) {
     return null
   }
 
@@ -162,14 +165,14 @@ const Piece: React.FC<{
     shadows: ShadowDesc[]
   } => {
 
-    if (desc.posStateRef.state === 'kingInCheck' && pulses.slow ) {
+    if (square.squareState === 'kingInCheck' && pulses.slow ) {
       return { 
         fontSize: size * .9, 
         figureSize: 'large', 
         shadows: IN_CHECK_SHADOWS 
       }
     } 
-    if (desc.posStateRef.state === 'inCheckFrom' && !pulses.slow) {
+    if (square.squareState === 'inCheckFrom' && !pulses.slow) {
       return { 
         fontSize: size * .95, 
         figureSize: 'large', 
@@ -177,40 +180,40 @@ const Piece: React.FC<{
       }
     } 
       // in 'capturePromote' case, the square will pulse w a yellow border as well.
-    else if (desc.posStateRef.state.includes('capture') && pulses.fast) {
+    else if (square.squareState.includes('capture') && pulses.fast) {
       return { 
         fontSize: size * .9, 
         figureSize: 'large', 
         shadows: CAPTURE_SHADOWS 
       }
     } 
-    else if (desc.posStateRef.state === 'castleRookFrom' && pulses.slow) {
+    else if (square.squareState === 'castleRookFrom' && pulses.slow) {
         // pulse larger
       return {
         fontSize: size * .9, 
         figureSize: 'large',
-        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
+        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
       }
     }
       // Default size and shadows
     return {
       fontSize: size *.8,
       figureSize: 'normal',
-      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[desc.pieceRef.piece!.color] }]
+      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
     }
   })()
 
   const height = fontSize * 1.1 // ensure no clipping 
-  const color = (desc.pieceRef.piece!.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
+  const color = (square.piece.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
 
     // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
   return (
     <View style={[style, { width: '100%', height: '100%' }]} >
       <Shadows descs={shadows} style={{ fontSize, height  }} >
-        {PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}
+        {PIECETYPE_TO_UNICODE[square.piece.type]}
       </Shadows> 
       <PieceFigure figureSize={figureSize} style={{ fontSize, height, color }} >
-        {PIECETYPE_TO_UNICODE[desc.pieceRef.piece!.type]}
+        {PIECETYPE_TO_UNICODE[square.piece.type]}
       </PieceFigure>
     </View>
   ) 

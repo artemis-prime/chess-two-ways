@@ -1,7 +1,8 @@
 import { 
   makeObservable, 
   observable, 
-  action 
+  action, 
+  computed
 } from 'mobx'
 
 import { 
@@ -19,7 +20,6 @@ interface DragState extends ObsPieceRef {
   // For use inside the DnD system
 interface DnDStateInternal extends DragState {
 
-  piece: Piece | null
   from: Position | null
   squareOver: Position | null
 
@@ -35,26 +35,31 @@ class DnDStateImpl implements DnDStateInternal {
 
   static currentInstance: DnDStateImpl | null = null 
 
-  piece: Piece | null = null
+  private _piece: Piece | null = null
   from: Position | null = null
   offset: Point | null = null
   squareOver: Position | null = null
 
   constructor() {
     makeObservable(this, {
-      piece: observable,
       from: observable,
       offset: observable,
       setPiece: action,
       setFrom: action,
       setOffset: action,
       clear: action,
+      piece: computed
     }) 
+      // https://mobx.js.org/observable-state.html#limitations
+    makeObservable<DnDStateImpl, '_piece'>(this, {
+      _piece: observable
+    })
   }
 
   setPiece(piece: Piece) {
-    this.piece = piece
+    this._piece = piece
   } 
+
   setFrom(from: Position) {
     this.from = from
   } 
@@ -67,9 +72,12 @@ class DnDStateImpl implements DnDStateInternal {
     this.squareOver = p
   }
   
+  get piece(): Piece | null {
+    return this._piece
+  }
 
   clear(): void {
-    this.piece = null
+    this._piece = null
     this.from = null
     this.offset = null
     this.squareOver = null

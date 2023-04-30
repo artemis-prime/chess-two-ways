@@ -32,8 +32,8 @@ const INITIAL_HOME_RANK = {
 
   // Call only for Squares that contains a piece
 const trackAsReset = (tr: Tracking, sq: Square): void => {
-  const side = sq.piece!.color
-  tr[side].trackAsReset(sq.piece!, sq)
+  const side = sq.occupant!.color
+  tr[side].trackAsReset(sq.occupant!, sq)
 }
 
 type RankSquares = {
@@ -85,24 +85,24 @@ class BoardSquares {
 
   static visitAsNewGame(sq: Square, tr: Tracking, assignState = true): void {
     if (sq.rank === 1) {
-      sq.setPiece({ type: INITIAL_HOME_RANK[sq.file], color: 'white' })
+      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], color: 'white' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 2) {
-      sq.setPiece({ type: 'pawn', color: 'white' })
+      sq.setOccupant({ type: 'pawn', color: 'white' })
     }
     else if (sq.rank === 8) {
-      sq.setPiece({ type: INITIAL_HOME_RANK[sq.file], color: 'black' })
+      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], color: 'black' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 7) {
-      sq.setPiece({ type: 'pawn', color: 'black' })
+      sq.setOccupant({ type: 'pawn', color: 'black' })
     }
     else {
-      sq.setPiece(null)
+      sq.setOccupant(null)
     }
     if (assignState) {
-      sq.setPositionState('none')
+      sq.setSquareState('none')
     }
   }
 
@@ -113,12 +113,12 @@ class BoardSquares {
     const keyToTry = positionToString(sq) as PositionCode
     if (snapshot[keyToTry]) {
         // If pieceFromCodeString is undefined, default to null
-      sq.setPiece(pieceFromCodeString(snapshot[keyToTry]!) ?? null) 
+      sq.setOccupant(pieceFromCodeString(snapshot[keyToTry]!) ?? null) 
     }
     else {
-      sq.setPiece(null)
+      sq.setOccupant(null)
     }
-    sq.setPositionState('none')
+    sq.setSquareState('none')
   }
 
   constructor (tr: Tracking, observePieces? : boolean) {
@@ -145,8 +145,8 @@ class BoardSquares {
     const snapshot: SquaresSnapshot = {}
     for (const rank of RANKS) {
       for (const file of FILES) {
-        if (this[rank][file].piece) {
-          snapshot[`${file}${rank}`] = pieceToString(this[rank][file].piece!) as PieceCode
+        if (this[rank][file].occupant) {
+          snapshot[`${file}${rank}`] = pieceToString(this[rank][file].occupant!) as PieceCode
         }
       }
     }
