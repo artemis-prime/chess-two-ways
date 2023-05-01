@@ -40,7 +40,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     //console.log(`drag ended: ${!taken ? 'NO ' : ''}action taken`)
   }
 
-  const onDragMove = (event: DragMoveEvent) => {
+  const onDragUpdate = (event: DragMoveEvent) => {
 
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
     if (pos && stateRef.current.piece) {
@@ -65,7 +65,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
     <ChessDnDContext.Provider value={stateRef.current}>
     <DndContext
       onDragStart={onDragStart}
-      onDragMove={onDragMove}
+      onDragMove={onDragUpdate}
       onDragEnd={onDragEnd}
       onDragCancel={onDragCancel}
     >
