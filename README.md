@@ -18,13 +18,13 @@ They are named and organized this way to further re-enforce the separation of co
 Is about having self contained domain code that is agnostic toward display and app implementation, that could basically be unit tested via CLI, and is therefore unpoluted by UI Library quirks and sligns and arrows.  Please find the [longer discussion and links](./DDD.md).
 
 ## Core architecture
-The core domain functionality of the game of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
+The core functionality of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
 
 ## React Web app
-This React (web) app runs using the most excellent [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and is [documented here](./apps/chess-web/README.md).
+This React app runs using the most excellent [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and is [documented here](./apps/chess-web/README.md).
 
 ## React Native app (Android)
-This React Native app runs using the standard tooling using the Metro bundler and dev server.  It lives in `apps/chess-rn` and is [documented here](./apps/chess-rn/README.md).
+This React Native app runs using the Metro bundler and dev server.  It lives in `apps/chess-rn` and is [documented here](./apps/chess-rn/README.md).
 
 ## Repo scripts
 
