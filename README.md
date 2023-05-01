@@ -22,6 +22,9 @@ This is about valuing a self-contained domain that is agnostic toward how it's d
 ## Core architecture
 The core functionality of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
 
+## Common UI architecture
+The main functionality of both the Web and React Native versions is intentially very similar.  The approach [is discussed here](./UI-COMMON-ARCH.md). 
+
 ## React Web app
 This React app runs using the most excellent [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and is [documented here](./apps/chess-web/README.md).
 
@@ -31,4 +34,5 @@ This React Native app runs using the Metro bundler and dev server.  It lives in 
 ## Repo scripts
 
 (coming soon)
+
 
