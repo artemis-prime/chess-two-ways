@@ -1,23 +1,32 @@
-# Chess (web)
-## To run (first time): 
+# Chess two ways
+## A demonstration of React, React Native, and Domain Driven Design (and chess)
 
-`yarn build:first-time` 
+This is a yarn (classic) monorepo with three packages...
+```  
+"workspaces": {
+  "packages": [
+    "just-the-chess",
+    "apps/chess-web",
+    "apps/chess-rn"
+  ]
+}
+```
 
-`yarn serve:web`
+They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
 
-## To see changes made to `packages/chess`, 
+## Domain Driven Design 
+Is about having self contained domain code that is agnostic toward display and app implementation, that could basically be unit tested via CLI, and is therefore unpoluted by UI Library quirks and sligns and arrows.  Please find the [longer discussion and links](./DDD.md).
 
-`build:domain` is tsc build (to just check types and compile errors)
+## Core architecture
+The core domain functionality of the game of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
 
-`update-dep:web` refreshes the local dependencies of `web` to prepare the dev server
+## React Web app
+This React (web) app runs using the most excellent [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and is [documented here](./apps/chess-web/README.md).
 
-`prepare:serve` combines the above two
+## React Native app (Android)
+This React Native app runs using the standard tooling using the Metro bundler and dev server.  It lives in `apps/chess-rn` and is [documented here](./apps/chess-rn/README.md).
 
-`yarn serve:web` compiles `web` as needed and runs the dev server
+## Repo scripts
 
-## To run (and see any changes made to `web`)
+(coming soon)
 
-`yarn serve:web` Just let this run and let HMR reload your changes as needed
-
-
-## To see stuff, visit [`localhost:8080`](http://localhost:8080/)
