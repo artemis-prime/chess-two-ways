@@ -56,10 +56,11 @@ interface Game {
     // the move attempted. (This could be used during drag'n'drop 
     // canDropOnMe() type functions.)
     // 
-    // Resolved Action will cached for same move until:
+    // Resolution resulting from resolveAction() for the
+    // same move *will be cached* internally until:
     //  1) takeResolvedAction() is called 
     //  2) endResolution() is called 
-    // (Note that this is from of debouncing)
+    // Note that this is a form of debouncing
   resolveAction(m: Move): Action | null
   takeResolvedAction(): boolean // action was taken
   endResolution(): void
