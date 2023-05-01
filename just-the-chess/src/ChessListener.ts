@@ -15,7 +15,7 @@ interface ChessListener {
   actionsRestored(recs: readonly ActionRecord[]): void
 
     // if user tries to take and action, there might be a message issued,
-    // eg, "You can't castle because your king has move"
+    // eg, "You can't castle because your king has moved!"
   message(s: string, type?: string): void 
 
   inCheck(c: Check): void
