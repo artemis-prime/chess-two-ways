@@ -107,16 +107,16 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const onDragUpdate = (e: PanGestureHandlerEventPayload) => {
     if (stateRef.current.piece) {
       const { x, y } = e 
-      stateRef.current.setOffset({x, y})
-      const p = squareFromTouchOffset({x, y})
-      if (p) {
-        if (!positionsEqual(p, stateRef.current.squareOver!)) {
+      const pos = squareFromTouchOffset({x, y})
+      stateRef.current.setOffset({x, y}) // needed for dragging piece component 
+      if (pos) {
+        if (!positionsEqual(pos, stateRef.current.squareOver!)) {
           game.resolveAction({
             piece: stateRef.current.piece, 
             from: stateRef.current.from!,  // from is there if piece is
-            to: p
+            to: pos
           })
-          stateRef.current.setSquareOver(p)
+          stateRef.current.setSquareOver(pos)
         }
       }
     }
