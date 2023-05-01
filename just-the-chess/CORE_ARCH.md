@@ -96,18 +96,18 @@ The behavioral architecture centers arount the notion of `Move`s and resolvable 
   }
 
 ```
-  And `applyResolution` eventually results in `squareState` changing for this square (and possibly others. eg, if Action is `'castle'`, it involves 4 squares changing state: king from and to, and rook from and to)
+  Then, `applyResolution` has the effect of setting `squareState`  for this square (and possibly others. eg, if Action is `'castle'`, it involves 4 squares changing state: king from and to, and rook from and to)
 
-  So based on `squareState`, the UI can, for example, draw a green circle for legal squares, or make an opponent piece in a target square change color if it can be captured, etc. 
+  Based on a `Square`'s `squareState`, the UI can say, draw a green circle in it's center while it's being dragged over if it's a  legal move destination, or make an opponent piece change it's drop shadow to show it can be captured, etc. 
 
 
 ### **Reactive UI via Mobx**
 
-We use the fantastic  [`mobx`](https://mobx.js.org/) library for state management.  It is, among many other great qualities, much more conducive to Domain Driven Design. Since it doesn't impose itself on the architecture in the manner of Redux, the entire function of state management becomes much simpler and transparent. There is not notion of a 'Store': any individual objects or even fields across the whole domain can be tracked as observable state.  
+To implement such effects, and rerender state changes in general, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's so much more condusive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike in say Redux, the entire function of state management becomes much simpler and transparent to the whole domain. For example, there is not notion of a 'Store' per se: any objects or even individual field can be tracked as observable state. Just implement the domain and make things the UI will be directly reacting to as `observable` 
 
-For example, `Square` above has two observable fields, `occupant` and `squareState`.  When either of those changes, any observer that dereferences them gets fired. React components that refer to them get rerendered.
+For example, `Square` above has two observable fields, `occupant` and `squareState`.  When either of those changes, any observer (ie, React component) that merely dereferences them gets rerendered.
 
-We just wrap our component in `observer`, dereference our `observable`s, and everything just works.
+We just wrap our component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...yes actions, but they're much simpler and more transparent)
 
 
 ```
@@ -128,15 +128,15 @@ const SquareComponent: React.FC<{ square: Square }> = observer(({ square }) =>
 
 ````
 
-We can now see the core sturctural and behavioral patterns in the core work and effect the UI.
+We have discussed enought to show how the core structural and behavioral patterns in the domain work, and how the UI responds to them.
 
-## **Notable Implementation Specifics**
+## **Notable Features and Implementation Details**
 
 ### **Undo / Redo support**
 There is a stack of `ActionRecord`'s that can be traversed back and forth. An `ActionRecord` can be "applied" to the Game in three modes: `'do' | 'undo' | 'redo'`.  This contains and encapsulates state transitions simply and intuitively.
 
-### **Action methods**
-With Drag and Drop in mind, a move is conceived as follows:
+### **Action Resolution System**
+This has been partially discussed above. With Drag and Drop in mind, a move is conceived as follows:
 
   ```
   // Resolution resulting from resolveAction() for the

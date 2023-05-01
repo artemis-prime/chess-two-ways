@@ -1,15 +1,13 @@
 # Chess two ways
-## A demonstration of React, React Native, and Domain Driven Design (and chess)
+## A demonstration of React, React Native, and Domain Driven Design (...and chess)
 
-This is a yarn (classic) monorepo with three packages...
+This is a `yarn` monorepo with three packages...
 ```  
-"workspaces": {
-  "packages": [
-    "just-the-chess",
-    "apps/chess-web",
-    "apps/chess-rn"
-  ]
-}
+"packages": [
+  "just-the-chess",
+  "apps/chess-web",
+  "apps/chess-rn"
+]
 ```
 
 They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
