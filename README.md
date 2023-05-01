@@ -1,7 +1,10 @@
 # Chess two ways
-## A demonstration of React, React Native, and Domain Driven Design (...and chess)
+## A demonstration of React, React Native, and Domain Driven Design 
+### (...and chess)
+<br>
+<br>
+This `yarn` monorepo has three packages:
 
-This is a `yarn` monorepo with three packages...
 ```  
 "packages": [
   "just-the-chess",
@@ -13,7 +16,7 @@ This is a `yarn` monorepo with three packages...
 They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
 
 ## Domain Driven Design 
-Is about having self contained domain code that is agnostic toward display and app implementation, that could basically be unit tested via CLI, and is therefore unpoluted by UI Library quirks and sligns and arrows.  Please find the [longer discussion and links](./DDD.md).
+This is about valuing a self-contained domain that is agnostic toward how it's displayed or how and applications that use it are implementated.  The result can basically be unit tested via CLI if desired, because it's unpoluted by UI platform quirks and the slings and arrows of moving pixels.  Please enjoy the [longer discussion and links](./DDD.md).
 
 ## Core architecture
 The core functionality of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
