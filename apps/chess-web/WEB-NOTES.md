@@ -1,4 +1,4 @@
-# Chess (web)
+# Platform notes for web
 ## To run (first time): 
 
 `yarn build:first-time` 

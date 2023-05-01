@@ -1,9 +1,15 @@
 # Chess two ways
-## A demonstration of React, React Native, and Domain Driven Design 
-### (...and chess)
-<br>
-<br>
 
+<image src='./web-shot.png' width='40%' align='right' style='margin-left: 10px;'/>
+
+## A demonstration of React, React Native, and Domain Driven Design
+(...and chess)
+<br/>
+<br/>
+
+<br clear="both"/>
+
+### Workspace structure
 This `yarn` monorepo has three packages:
 
 ```  
@@ -14,25 +20,40 @@ This `yarn` monorepo has three packages:
 ]
 ```
 
+
+
 They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
 
+### Getting Started
+Please run all scripts from the monorepo root (where the root `package.json` lives), as the individual package scripts are not meant to be used by the unitiated.
+
+* First, run `yarn install` to install all dependencies for all targets.
+
+* Then run either `yarn prepare:web` or `yarn prepare:rn` depending on your desired version.
+
+* To see the React web version, run `yarn serve:web`.  This will start a [vite](https://vitejs.dev/) dev server at `localhost:8080`.  The first time you may need to open a tab manually.  
+
+* To see the React Native version (running in an Android emulator), run `yarn deploy:rn`.  This will take a few minutes to launch your emulator and build an Android pkg and install it there. 
+
+React Native: The above assumes you have Java 11, and the Android SDK correctly installed and configured.  In practice you also need Android Studio to create key files and emulator profiles.  [Instructions are here](https://reactnative.dev/docs/environment-setup).  Select 'React Native CLI Quickstart' (not Expo), and then whatever Development OS you are on, and 'Android' for the Target OS. 
+
+
+<image src='./rn-shot.png' width='20%' align='right' style='margin-left: 20px;'/>
+
 ## Domain Driven Design 
-This is about valuing a self-contained domain that is agnostic toward how it's displayed or how any applications that use it are implementated.  The result can very nearly be driven (and unit tested) via CLI if desired, because it's unpoluted by UI platform quirks and the slings and arrows of outrageous pixels. It's "just the domain!" Please enjoy the [longer discussion and links](./DDD.md).
 
-## Core architecture
-The core functionality of Chess is implemented in `just-the-chess/` and [extensively discussed here](./just-the-chess/CORE_ARCH.md). 
+We value a self-contained, cleanly written domain that is agnostic about how it's displayed or how apps that use it are implementated.  It's easy to unit test, and easy to create a CLI for. It is delightfully unburdened and unpoluted by knowledge of UI stack quirks, or any slings and srrows of outrageous pixels. It's "just the domain!" Please find the [longer discussion and links here](./DDD.md).
 
-## Common UI architecture
-The main functionality of both the Web and React Native versions is intentially very similar.  The approach [is discussed here](./UI-COMMON-ARCH.md). 
+## Domain architecture
+The core functionality of Chess is implemented in `just-the-chess/` and [discussed here](./just-the-chess/CORE_ARCH.md). 
 
-## React Web app
-This React app runs using the most excellent [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and is [documented here](./apps/chess-web/README.md).
 
-## React Native app (Android)
-This React Native app runs using the Metro bundler and dev server.  It lives in `apps/chess-rn` and is [documented here](./apps/chess-rn/README.md).
 
-## Repo scripts
+## UI architecture
+Both the React Web and React Native apps are conceived in the same way. This is deliberate and has many advantages. The approach is [discussed here](./UI-COMMON-ARCH.md). 
 
-(coming soon)
+<br clear="both"/>
 
+## Platform notes
+The React web app uses the very cool [Vite](https://vitejs.dev/) dev server and bundler.  It lives in `apps/chess-web` and specific notes [are here](./apps/chess-web/WEB-NOTES.md). The React Native app has been developed and tested on Linux using Android emulation with the Metro bundler and dev server.  It lives in `apps/chess-rn` and is [discussed here](./apps/chess-rn/RN-NOTES.md).
 

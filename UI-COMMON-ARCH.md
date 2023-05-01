@@ -98,23 +98,25 @@ As mentioned in the [core architecture doc](./just-the-chess/CORE_ARCH.md), the 
 This allows for a `SquareComponent` component to provide feedback based on `squareState`, by translating it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
 
 ```
+// edited for clarity
+
 const SquareComponent: React.FC<{
   square: Square 
 }> = observer(({
   square
 }) => {
 
-  const pulses = usePulses() // alternating slow ticks from a setInterval() for pulsing effects
+  const pulse = usePulse() // alternating ticks from a setInterval() for pulsing effects
 
   const getEffectFromState = (state: SquareState): EffectVariant  => {
     if (state === 'castleRookFrom') {
-      return pulses.slow ? state : 'castleRookFromPulse' 
+      return pulse.on ? state : 'castleRookFromPulse' 
     }
     else if (state === 'castleRookTo') {
-      return !pulses.slow ? state : 'castleRookToPulse' 
+      return !pulse.on ? state : 'castleRookToPulse' 
     }
     else if (state.includes('romote')) {
-      if (pulses.fast) {
+      if (pulse.on) {
         return undefined
       }
     }
@@ -128,6 +130,7 @@ const SquareComponent: React.FC<{
     ].includes(state as string)) {
       return undefined
     }
+      // pass others through as they are
     return state as EffectVariant 
   }
 
@@ -140,7 +143,7 @@ const SquareComponent: React.FC<{
 
 ```
 
-The inner EffectsView that implements the squares state effects looks like this:
+SquareEffectsView implements the square's state effects:
 
 ```
 const SquareEffectsView = styled('div', {
@@ -182,6 +185,7 @@ const SquareEffectsView = styled('div', {
 `PieceComponent` follows a similar pattern:
 
 ```
+// edited for clarity
 const PieceComponent: React.FC<{
   square: Square 
 }> = observer(({
@@ -189,30 +193,31 @@ const PieceComponent: React.FC<{
 }) => {
 
   const game = useGame()
-  const pulses = usePulses()
+  const pulse = usePulse()
 
-  const canDrag = square.piece && game.currentTurn === square.piece.color
+  const canDrag = square.occupant && game.currentTurn === square.occupant.color
 
   const getEffectFromState = (state: SquareState): EffectVariant => {
     if (state.includes('capture')) {
-      return pulses.fast ? 'capture' : 'capturePulse' 
+      return pulse.on ? 'capture' : 'capturePulse' 
     }
+      // These next two should alternate their pulse effect 
     else if (state === 'kingInCheck') {
-      return pulses.slow ? 'kingInCheck' : 'kingInCheckPulse' 
+      return pulse.on ? 'kingInCheck' : 'kingInCheckPulse' 
     }
     else if (state === 'inCheckFrom') {
-      return !pulses.slow ? 'inCheckFrom' : 'inCheckFromPulse' 
+      return !pulse.on ? 'inCheckFrom' : 'inCheckFromPulse' 
     }
     return undefined 
   }
 
     // get specific renderer by piece type
-  const SpecificPiece = registry.get(square.piece.type) 
+  const SpecificPiece = registry.get(square.occupant.type) 
 
   return (
     <PieceEffectsView 
       // other styles
-      color={square.piece.color}
+      color={square.occupant.color}
       effect={getEffectFromState(square.squareState)}
       css={{
           // dim me if I'm the origin of the drag
@@ -261,7 +266,7 @@ normalish <--> slightly larger with a bigger reddish drop shadow
 
 Because of how we have [architected the core](./just-the-chess/CORE_ARCH.md), the DnD code's only job is to ask to resolve `Action`s as a square is hovered over, and take the `Action` on drop.
 
-![](./ui-core-interaction-dnd.png)
+<image src='./ui-core-interaction-dnd.png' width='70%'/>
 
 There is a very similar module called `ChessDnDShell` that wraps the `Board` component **on both the web and React Native**, each with a corresponding `Context` / `Provider`, `useDragState` hook, etc.  On web, it's implemented using [dnd-kit](https://dndkit.com/), whereas on RN, it uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler/). But the implementations present an **almost identical** structure and interface to the rest of the system.  
 
@@ -276,6 +281,7 @@ Web:
 
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
     if (pos && stateRef.current.piece) {
+          // We've entered a new square
       if (!positionsEqual(pos, stateRef.current.squareOver!)) {
         game.resolveAction({
           piece: stateRef.current.piece, 
@@ -298,6 +304,7 @@ RN:
       const { x, y } = e 
       const pos = squareFromTouchOffset({x, y})
       if (pos) {
+          // We've entered a new square
         if (!positionsEqual(pos, stateRef.current.squareOver!)) {
           game.resolveAction({
             piece: stateRef.current.piece, 

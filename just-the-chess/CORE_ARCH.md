@@ -1,8 +1,7 @@
 # The Game of Chess
 
-## **Ontology**
 
-### **Structural domain of Chess**
+## **Structural domain:** Board, Squares, and Pieces
 
 
 * The `Game` (the interface to client code) owns a `Board` which wraps a `BoardSquares`. 
@@ -49,15 +48,17 @@ class Square implements Position {
 
 ```
 
-UI-wise, this enough to render the state of the Chess game at any time
+This should be enough for a UI to render the state of the Chess game at any time
 
-### **Behavior: Moves, Actions, and Resolutions**
+## **Behavior Domain:** Moves, Actions, and Resolutions
 
-The behavioral architecture centers arount the notion of `Move`s and resolvable `Action`s.  If a pawn moves forward a row (or two if from it's home row) into an empty square , its "Resolved Action" `'move'`.  If it moves forward diagonally into a square that has an opponent piece, it's resolved Action is `'capture'`.  If it does something else, there is no resolution.
+The architecture centers around the notion of `Move`s and resolvable `Action`s.  If a pawn moves forward a row (or sometimes two) into an empty square, its "resolved action" is `'move'`.  If it moves forward diagonally into a square occupied by an opponent, it's resolved action is `'capture'`. If it does something else, there is no resolution.
 
-`Resolution` refers to the process of determining an allowable action for a give move by a given piece.  In practice, this might would be determined as a piece is dragged over a new square.  So during a drag operation, we're constantly asking,
+`Resolution` refers to the process of determining an allowable action for a give move by a given piece.  In practice, this might would be determined as a piece is dragged over a new square.  During a drag operation, we're constantly asking,
 
-"Is there an allowable move for this piece to this square?", so something like...
+"Is there an allowable move for this piece to this square?" 
+
+codewise...
 
 ```
   // in app code
@@ -96,22 +97,25 @@ The behavioral architecture centers arount the notion of `Move`s and resolvable 
   }
 
 ```
-  Then, `applyResolution` has the effect of setting `squareState`  for this square (and possibly others. eg, if Action is `'castle'`, it involves 4 squares changing state: king from and to, and rook from and to)
 
-  Based on a `Square`'s `squareState`, the UI can say, draw a green circle in it's center while it's being dragged over if it's a  legal move destination, or make an opponent piece change it's drop shadow to show it can be captured, etc. 
+`applyResolution` eventually sets `squareState` for this square and other internal state. (And possibly not only for this square. If `Action` is `'castle'`, it involves 4 squares changing state: King's `from` and `to`, and Rook's `from` and `to`!)
+
+Based on `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece thicken and color its drop shadow indicating the possible capture, etc. 
 
 
-### **Reactive UI via Mobx**
+## **Reactive UI**
 
-To implement such effects, and rerender state changes in general, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's so much more condusive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike in say Redux, the entire function of state management becomes much simpler and transparent to the whole domain. For example, there is not notion of a 'Store' per se: any objects or even individual field can be tracked as observable state. Just implement the domain and make things the UI will be directly reacting to as `observable` 
+To implement such responses, and render state changes generally, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's very conducive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike with other state management solutions, the thing is handled simply and transparently. For example, there is not notion of a 'Store' per se: any objects or even individual fields of objects can be tracked as `observable`. Just implement the domain, making relevant things `observable`, and the UI will rerender properly. 
 
-For example, `Square` above has two observable fields, `occupant` and `squareState`.  When either of those changes, any observer (ie, React component) that merely dereferences them gets rerendered.
+This involves beautifully little code. We just wrap a component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...well, yes actions, but they're simpler and make more sense)
+  
 
-We just wrap our component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...yes actions, but they're much simpler and more transparent)
+For example, a `Square` above has two `observable` fields, `occupant` and `squareState`. When either of them is changed by the Core, any `SquareComponent` that dereferences them gets rerendered.
+
 
 
 ```
-// Square.tsx
+// in UI's Square.tsx
 import { observer } from 'mobx-react'
 
 const SquareComponent: React.FC<{ square: Square }> = observer(({ square }) => 
@@ -121,16 +125,16 @@ const SquareComponent: React.FC<{ square: Square }> = observer(({ square }) =>
       border: (square.squareState === 'move' ? '1px solid green' : 'none') 
       // other styles
     }}>
-      {square.piece && (<PieceComponent piece={square.piece} state={square.squareState})} />)}
+      {square.occupant && (<PieceComponent piece={square.occupant} state={square.squareState})} />)}
     </div>
   )
 })
 
 ````
 
-We have discussed enought to show how the core structural and behavioral patterns in the domain work, and how the UI responds to them.
+Hopefully this has illustrated the core structural and behavioral patterns in the domain, and how the UI responds to and renders them. For more info, see the [UI Architecture doc here](../UI-COMMON-ARCH.md)
 
-## **Notable Features and Implementation Details**
+## **Notable Features and Implementation Notes**
 
 ### **Undo / Redo support**
 There is a stack of `ActionRecord`'s that can be traversed back and forth. An `ActionRecord` can be "applied" to the Game in three modes: `'do' | 'undo' | 'redo'`.  This contains and encapsulates state transitions simply and intuitively.
@@ -161,7 +165,8 @@ Since a given resolvable action may result in the current player putting themsel
   
   This way, game state is kept pure, and the logic are not contaminated with convoluted "if this move..." code.  This seems to be the best way to reuse the same the behavioral mechanisms to determine "would this put / keep you in check?". 
 
-### **Resolver Registry**: There is a registry of `ActionResolver`'s based on piece type.  They live in `game/resolvers`  And are initialized to a `Map` in `game/resolverRegistry.ts`....
+### **Resolver Registry**
+There is a registry of `ActionResolver`'s based on piece type.  They live in `game/resolvers`  And are initialized to a `Map` in `game/resolverRegistry.ts`....
 
 ```
 import pawn from './resolvers/pawn'
@@ -209,11 +214,14 @@ This is a clean way to encapsulate the behavioral pattern per piece type.
 
 (There are actually two methods in the interface: `resolve(board: Board, m: Move): Action | null` and also `resolvableMoves(board: Board, piece: Piece, from: Position): Position[]`. The latter is used internally to check for checkmate, stalemate, etc.
 
-### **Tracking of Primaries**: In order to optimize checks for "in check", "checkmate", and "stalemate" the positions of Primary Types (all except 'pawn' and 'king'), are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
+### **Tracking of Primaries**
+ In order to optimize checks for "in check", "checkmate", and "stalemate" the positions of Primary Types (all except 'pawn' and 'king'), are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
 
-### **Persistence**: The entire Game, including pieces on the board, tracking, undo / redo stack, etc can be stored in a compressed representation, and easily written to / read from JSON files. Each type involved, from `Game` on down, has a pair of `takeSnapshot(): FooSnapshot` and `restoreFromSnapshot(s: FooSnapshot)` funtions that constitute the persistence system.  The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc.
+### **Persistence**
+ The entire Game, including pieces on the board, tracking, undo / redo stack, etc can be stored in a compressed representation, and easily written to / read from JSON files. Each type involved, from `Game` on down, has a pair of `takeSnapshot(): FooSnapshot` and `restoreFromSnapshot(s: FooSnapshot)` funtions that constitute the persistence system.  The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc.
 
-### **Notification System** In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing running output of move strings, "you can't do that because you'd be in check" type messages, etc. in the UI.  It looks like this:
+### **Notification System** 
+In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing running output of move strings, "you can't do that because you'd be in check" type messages, etc. in the UI.  It looks like this:
 
 ```
 interface ChessListener {

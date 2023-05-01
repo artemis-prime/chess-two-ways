@@ -1,4 +1,4 @@
-# React Native Chess
+# Platform notes for React Native (android)
 
 (coming soon)
 
