@@ -22,7 +22,7 @@ It has many features, but truly shines in two areas:
 ### **theming**
  Stitches theming provides a way to create *any set of desired design tokens* **and** a simple way to apply them to any styled component (via the '$' notation below)
 
-```
+```typescript
 const { styled } = createStitches({
   theme: {
     colors: {
@@ -54,13 +54,12 @@ const MyComponent = styled('div', {
   padding: '$sm'
 })
 
-
 ```
 
 ### **style / prop variants**
 This is a unique and powerful way of specifying component level props right from within a style block. 
 
-```
+```typescript
 const Button = styled('button', {
 
   // other common styles
@@ -97,7 +96,7 @@ As mentioned in the [core architecture doc](./just-the-chess/CORE_ARCH.md), the 
 
 This allows for a `SquareComponent` component to provide feedback based on `squareState`, by translating it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
 
-```
+```typescript
 // edited for clarity
 
 const SquareComponent: React.FC<{
@@ -145,7 +144,7 @@ const SquareComponent: React.FC<{
 
 SquareEffectsView implements the square's state effects:
 
-```
+```typescript
 const SquareEffectsView = styled('div', {
     // common styles
   variants: {
@@ -184,7 +183,7 @@ const SquareEffectsView = styled('div', {
 
 `PieceComponent` follows a similar pattern:
 
-```
+```typescript
 // edited for clarity
 const PieceComponent: React.FC<{
   square: Square 
@@ -214,15 +213,14 @@ const PieceComponent: React.FC<{
     // get specific renderer by piece type
   const SpecificPiece = registry.get(square.occupant.type) 
 
+    // dim me if I'm the origin of the drag
+    // set cursor based on dragability and state
   return (
     <PieceEffectsView 
-      // other styles
       side={square.occupant.side}
       effect={getEffectFromState(square.squareState)}
       css={{
-          // dim me if I'm the origin of the drag
         opacity: (square.squareState === 'origin' ? 0.5 : 1), 
-          // set cursor based on dragability and state
         cursor: canDrag ? (square.squareState === 'origin' ? 'move' : 'pointer') : 'default',
       }}
     >
@@ -239,7 +237,7 @@ Pulsing between:
 normalish <--> slightly larger with a bigger reddish drop shadow
 
 
-```
+```typescript
     {
       side: 'black', 
       effect: 'kingInCheck',
@@ -272,9 +270,8 @@ There is a very similar module called `ChessDnDShell` that wraps the `Board` com
 In fact, one of the only real differences is the RN version has to do it's own hit testing to determine what square is being dragged over. Otherwise, the logic is intentionally kept the same.
 
 Web: 
-```
+```typescript
   const stateRef = useRef<DnDState>(getDnDState())
-
 
   const onDragUpdate = (event: DragMoveEvent) => {
 
@@ -294,9 +291,8 @@ Web:
 ```
 
 RN:
-```
+```typescript
   const stateRef = useRef<DnDState>(getDnDState())
-
 
   const onDragUpdate = (e: PanGestureHandlerEventPayload) => {
     if (stateRef.current.piece) {

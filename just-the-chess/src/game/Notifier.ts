@@ -28,15 +28,15 @@ class Notifier implements ChessListener {
     })
   }
 
-  actionUndon(r: ActionRecord): void {
+  actionUndone(r: ActionRecord): void {
     this._listeners.forEach((l) => {
-      l.actionUndon(r)
+      l.actionUndone(r)
     })
   }
 
-  actionRedon(r: ActionRecord): void {
+  actionRedone(r: ActionRecord): void {
     this._listeners.forEach((l) => {
-      l.actionRedon(r)
+      l.actionRedone(r)
     })
   }
 

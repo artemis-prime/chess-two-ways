@@ -105,10 +105,10 @@ class MessageStore implements ChessListener {
     })
   }
 
-  actionUndon(r: ActionRecord): void {
+  actionUndone(r: ActionRecord): void {
     this._pushMessage({message: actionRecordToLAN(r), type: 'undo', actionRecord: r}) 
   }
-  actionRedon (r: ActionRecord): void {
+  actionRedone (r: ActionRecord): void {
     this._pushMessage({message: actionRecordToLAN(r), type: 'redo', actionRecord: r}) 
   }
 }

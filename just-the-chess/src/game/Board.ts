@@ -23,6 +23,7 @@ import {
   type Rank,
 } from '../Position'
 
+import type Snapshotable from '../Snapshotable'
 import Square from './Square'
 import type ObsSquare from '../ObsSquare'
 
@@ -62,7 +63,7 @@ interface BoardSnapshot {
 }
 
   // This interface is visable to GameImpl, but not to any UI
-interface BoardInternal extends Board {
+interface BoardInternal extends Board, Snapshotable<BoardSnapshot> {
 
   applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
 
