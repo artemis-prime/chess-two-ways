@@ -14,8 +14,13 @@
 
 So, something like this...
 
+<<<<<<< Updated upstream
 ```
 type Color =
+=======
+```typescript
+type Side =
+>>>>>>> Stashed changes
   'black' | 
   'white'
 
@@ -60,7 +65,7 @@ The architecture centers around the notion of `Move`s and resolvable `Action`s. 
 
 codewise...
 
-```
+```typescript
   // in app code
 
   onDrag({x, y, payload: {draggingPiece, originSquare}}) {
@@ -72,7 +77,7 @@ codewise...
   }
 ```
 
-```
+```typescript
   // in core
 
   interface Move {
@@ -114,7 +119,7 @@ For example, a `Square` above has two `observable` fields, `occupant` and `squar
 
 
 
-```
+```typescript
 // in UI's Square.tsx
 import { observer } from 'mobx-react'
 
@@ -168,7 +173,7 @@ Since a given resolvable action may result in the current player putting themsel
 ### **Resolver Registry**
 There is a registry of `ActionResolver`'s based on piece type.  They live in `game/resolvers`  And are initialized to a `Map` in `game/resolverRegistry.ts`....
 
-```
+```typescript
 import pawn from './resolvers/pawn'
 import queen from './resolvers/queen' 
 import bishop from './resolvers/bishop'
@@ -188,7 +193,7 @@ export default new Map<PieceType, ActionResolver>([
 
 For example, Bishop's resolver looks like this:
 
-```
+```typescript
 // game/resolvers/bishop.ts
 
 const resolve = (
@@ -223,7 +228,19 @@ This is a clean way to encapsulate the behavioral pattern per piece type.
 ### **Notification System** 
 In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing running output of move strings, "you can't do that because you'd be in check" type messages, etc. in the UI.  It looks like this:
 
-```
+```typescript
+interface Check {
+  side: Side,
+  from: Position[],
+  kingPosition: Position 
+}
+
+interface ActionRecord extends Move {
+  action: Action
+}
+
+~~~~~~~~~
+
 interface ChessListener {
 
   actionResolved(move: Move, action: Action | null): void
@@ -232,11 +249,10 @@ interface ChessListener {
   actionRedon(r: ActionRecord): void
 
     // eg, "You can't castle because your king has moved!"
-  message(s: string, type?: string): void 
+  message(s: string): void 
 
   inCheck(c: Check): void
   notInCheck(side: Side): void
-
 }
 ```
 
