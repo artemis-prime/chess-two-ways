@@ -220,17 +220,6 @@ This is a clean way to encapsulate the behavioral pattern per type of piece.
 In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing a visual history of standard chess move strings (like "wPh2h3"), or outputing messages from the core, like "That's not possible because you'd be in check". 
 
 ```typescript
-interface Check {
-  side: Side,
-  from: Position[],
-  kingPosition: Position 
-}
-
-interface ActionRecord extends Move {
-  action: Action
-}
-
-~~~~~~~~~
 
 interface ChessListener {
 
@@ -242,7 +231,7 @@ interface ChessListener {
     // eg, "You can't castle because your king has moved!"
   message(s: string): void 
 
-  inCheck(c: Check): void
+  inCheck(c: CheckInfo): void
   notInCheck(side: Side): void
 }
 ```
