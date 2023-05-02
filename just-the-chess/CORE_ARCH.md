@@ -98,16 +98,16 @@ codewise...
 
 ```
 
-`applyResolution` eventually sets `squareState` for this square and other internal state. (And possibly not only for this square. If `Action` is `'castle'`, it involves 4 squares changing state: King's `from` and `to`, and Rook's `from` and `to`!)
+`applyResolution` effects internal state, including `squareState` for this square. (And possibly others. If `Action` is say, `'castle'`, it involves 4 squares: King's `from` and `to`, and Rook's `from` and `to`!)
 
-Based on `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece thicken and color its drop shadow indicating the possible capture, etc. 
+Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse slightly larged with a colored drop shadow indicating the possible capture. 
 
 
 ## **Reactive UI**
 
-To implement such responses, and render state changes generally, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's very conducive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike with other state management solutions, the thing is handled simply and transparently. For example, there is not notion of a 'Store' per se: any objects or even individual fields of objects can be tracked as `observable`. Just implement the domain, making relevant things `observable`, and the UI will rerender properly. 
+To implement such responses, as well render state generally, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's very conducive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike with other state management solutions, its whole approach is simplyemphasizes simplicity and transparency. There is not notion of a 'Store' per se: any objects or even individual fields of objects can be tracked as `observable`. Just implement the domain, making relevant things `observable`, and the UI will render properly. 
 
-This involves beautifully little code. We just wrap a component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...well, yes actions, but they're simpler and make more sense)
+And this involves wonderfully little code. We just wrap a component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...well, yes 'actions', but they're simpler and make more sense)
   
 
 For example, a `Square` above has two `observable` fields, `occupant` and `squareState`. When either of them is changed by the Core, any `SquareComponent` that dereferences them gets rerendered.
