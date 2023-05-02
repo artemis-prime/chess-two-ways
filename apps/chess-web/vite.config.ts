@@ -13,6 +13,8 @@ export default defineConfig({
   },
   server: {
     port: 8080,
-  }
+  },
+    // https://github.com/sitek94/vite-deploy-demo
+  base: '/chess-two-ways/' // for Github pages
 })
 
