@@ -230,7 +230,7 @@ interface GameSnapshot {
 
   board: BoardSnapshot
   actions: string[]
-  currentTurn: ColorCode
+  currentTurn: SideCode
 }
 
 interface Game extends Snapshotable<GameSnapshot> {
