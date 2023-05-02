@@ -1,4 +1,4 @@
-type Color =
+type Side =
   'black' | 
   'white'
 
@@ -12,16 +12,16 @@ type PieceType =
 
 interface Piece {
   readonly type: PieceType
-  readonly color: Color
+  readonly side: Side
 } 
   
-type ColorCode = 'w' | 'b'
+type SideCode = 'w' | 'b'
 
-const COLOR_FROM_CODE = {
+const SIDE_FROM_CODE = {
   w: 'white',
   b: 'black'
 } as {
-  [key in ColorCode] : Color
+  [key in SideCode] : Side
 }
 
 //  https://stackoverflow.com/questions/44480644/string-union-to-string-array
@@ -74,13 +74,13 @@ const PIECETYPE_FROM_CODE = {
 }
 type PieceTypeCode = keyof typeof PIECETYPE_FROM_CODE 
 
-type PieceCode = `${ColorCode}${PieceTypeCode}`
+type PieceCode = `${SideCode}${PieceTypeCode}`
 
 
   // opponent of side, and if supplied
   // equal to type or one of the types
 const isOpponent = (p: Piece | null, side: Side, type?: PieceType | PieceType[]): boolean => {
-  const oppositeSide = (!!p && (p!.color !== side))
+  const oppositeSide = (!!p && (p!.side !== side))
   if (!type) {
     return oppositeSide 
   }
@@ -90,39 +90,37 @@ const isOpponent = (p: Piece | null, side: Side, type?: PieceType | PieceType[])
   return oppositeSide && (p!.type === type!)  
 }
 
-type Side = Color
-
   // Equal if both null,
   // otherwise, not equal if only one is,
   // otherwise, according to fields' equality
 const piecesEqual = (p1: Piece | null, p2: Piece | null): boolean => (
-  (!p1 && !p2) ? true : (p1?.type === p2?.type) && (p1?.color === p2?.color)
+  (!p1 && !p2) ? true : (p1?.type === p2?.type) && (p1?.side === p2?.side)
 )
 
-type PieceFormat = 'T' | 'Type' | 'cT' | 'c-Type' | 'color Type'
+type PieceFormat = 'T' | 'Type' | 'sT' | 's-Type' | 'side Type'
 
-  // 'cT' is the format parsed by pieceFromCodeString() below
+  // 'sT' is the format parsed by pieceFromCodeString() below
 const pieceToString = (p: Piece, format?: PieceFormat): string => {
-  const form: PieceFormat = format ?? 'cT'
+  const form: PieceFormat = format ?? 'sT'
   switch (form) {
     case 'T': return PIECETYPE_NAMES[p.type].short
     case 'Type': return PIECETYPE_NAMES[p.type].long
-    case 'cT': return p.color.charAt(0) + PIECETYPE_NAMES[p.type].short
-    case 'c-Type': return `${p.color.charAt(0)}-${PIECETYPE_NAMES[p.type].long}`
-    case 'color Type': return `${p.color} ${PIECETYPE_NAMES[p.type].long}`
+    case 'sT': return p.side.charAt(0) + PIECETYPE_NAMES[p.type].short
+    case 's-Type': return `${p.side.charAt(0)}-${PIECETYPE_NAMES[p.type].long}`
+    case 'side Type': return `${p.side} ${PIECETYPE_NAMES[p.type].long}`
   }
 }
 
 const pieceFromCodeString = (s: string): Piece | undefined => {
   if (s.length === 2) {
-    const colorCode = s.slice(0, 1)
+    const sideCode = s.slice(0, 1)
     const typeCode = s.slice(1, 2)
 
-    if (!(colorCode === 'w' || colorCode === 'b') || !Object.keys(PIECETYPE_FROM_CODE).includes(typeCode)) {
+    if (!(sideCode === 'w' || sideCode === 'b') || !Object.keys(PIECETYPE_FROM_CODE).includes(typeCode)) {
       return undefined
     }
     return {
-      color: (colorCode === 'w') ? 'white' : 'black',
+      side: (sideCode === 'w') ? 'white' : 'black',
       type: PIECETYPE_FROM_CODE[typeCode as PieceTypeCode] as PieceType
     }
   }
@@ -130,28 +128,27 @@ const pieceFromCodeString = (s: string): Piece | undefined => {
 }
 
 
-const opponent = (side: Side): Side => (
+const otherSide = (side: Side): Side => (
   (side === 'white') ? 'black' : 'white'
 )
 
 export { 
   type Piece as default, 
-  type Color,
+  type Side,
   type PieceType,
   type PrimaryPieceType,
-  type Side,
   type PieceFormat,
   type PieceTypeCode,
   type PieceCode,
-  type ColorCode,
+  type SideCode,
   PRIMARY_PIECETYPES,
   isPrimaryType,
-  COLOR_FROM_CODE,
+  SIDE_FROM_CODE,
   PIECETYPE_NAMES,
   PIECETYPE_FROM_CODE,
   piecesEqual,
   pieceToString,
   isOpponent,
-  opponent,
+  otherSide,
   pieceFromCodeString 
 }

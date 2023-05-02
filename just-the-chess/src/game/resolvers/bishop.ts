@@ -24,12 +24,12 @@ const resolve = (
 ): Action | null => {
   
   if (board.isClearAlongDiagonal(move.from, move.to)) {
-    const fromColor = board.colorAt(move.from)
-    const toColor = board.colorAt(move.to)
-    if (!toColor) {
+    const fromSide = board.getOccupantSide(move.from)
+    const toSide = board.getOccupantSide(move.to)
+    if (!toSide) {
       return 'move'
     }
-    else if (fromColor && toColor && (fromColor !== toColor)) {
+    else if (fromSide && toSide && (fromSide !== toSide)) {
       return 'capture'
     }
   }

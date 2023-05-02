@@ -6,7 +6,7 @@ import {
   PIECETYPE_FROM_CODE, 
   type PieceTypeCode,
   type PieceType,
-  opponent
+  otherSide
 } from './Piece'
 import type Move from './Move'
 import type Action from './Action'
@@ -27,15 +27,15 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
 
   if (r.action === 'castle') {
     return verbose ? 
-      `${r.piece.color} castles ${r.to.file === 'g' ? 'kingside' : 'queenside'}`
+      `${r.piece.side} castles ${r.to.file === 'g' ? 'kingside' : 'queenside'}`
       :
-      `${r.piece.color === 'white' ? 'w' : 'b'}${r.to.file === 'g' ? '0-0' : '0-0-0'}`
+      `${r.piece.side === 'white' ? 'w' : 'b'}${r.to.file === 'g' ? '0-0' : '0-0-0'}`
   }
 
   let str = verbose ? 
-    `${pieceToString(r.piece, 'color Type')} (${positionToString(r.to)}) `
+    `${pieceToString(r.piece, 'side Type')} (${positionToString(r.to)}) `
     :
-    pieceToString(r.piece, 'cT') + positionToString(r.from)
+    pieceToString(r.piece, 'sT') + positionToString(r.from)
 
   switch (r.action) {
     case 'capture':
@@ -72,10 +72,10 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
     if (!lan.includes('0-0')) return undefined
 
     const toFile = lan.includes('0-0-0') ? 'c' : 'g'
-    const color = (lan.charAt(0) === 'w') ? 'white' : 'black'
-    const rank = (color === 'white') ? 1 : 8
+    const side = (lan.charAt(0) === 'w') ? 'white' : 'black'
+    const rank = (side === 'white') ? 1 : 8
     return {
-      piece: {type: 'king', color},
+      piece: {type: 'king', side},
       to: {rank, file: toFile},  
       from: {rank, file: 'e'},
       action: 'castle'
@@ -88,7 +88,7 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const piece = pieceFromCodeString(lan.slice(0,2))
   const from = positionFromString(lan.slice(2,4))
   const isCapture = lan.charAt(4) === 'x'
-  const captured = isCapture ? {type: PIECETYPE_FROM_CODE[lan.charAt(5) as PieceTypeCode] as PieceType, color: opponent(piece!.color)} : undefined
+  const captured = isCapture ? {type: PIECETYPE_FROM_CODE[lan.charAt(5) as PieceTypeCode] as PieceType, side: otherSide(piece!.side)} : undefined
   const toPositionIndex = (isCapture) ? 6 : 4
   const to = positionFromString(lan.slice(toPositionIndex,toPositionIndex + 2))
   const isPromote = lan.charAt(toPositionIndex + 2) === '='

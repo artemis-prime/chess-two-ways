@@ -54,11 +54,11 @@ const Messages: React.FC<{
     }
     else if (m.type.includes('capture')) {
       const pieceType = m.actionRecord!.captured!.type
-      const colorCaptured = m.actionRecord!.captured!.color
+      const sideCaptured = m.actionRecord!.captured!.side
       return (
         <span className='postfix'>
-          <span className={`side-indicator ${colorCaptured}`} />
-          <span>(<span className={`unicode-chess-piece ${colorCaptured}`}>{PIECETYPE_TO_UNICODE[pieceType]}</span>
+          <span className={`side-indicator ${sideCaptured}`} />
+          <span>(<span className={`unicode-chess-piece ${sideCaptured}`}>{PIECETYPE_TO_UNICODE[pieceType]}</span>
             - {pieceType !== 'pawn' ? `${EMOJIS.ouch} ouch!` : `${EMOJIS.shrug} meh`})</span>
         </span>
       ) 
@@ -71,9 +71,9 @@ const Messages: React.FC<{
 
   const getMessageElement = (m: ConsoleMessage): React.ReactNode | null => {
     if (isMove(m) && (m.message.startsWith('w') || m.message.startsWith('b'))) {
-      const colorCode = m.message.slice(0, 1)  
+      const sideCode = m.message.slice(0, 1)  
       const rest = m.message.substring(1)
-      return (<span className='message'><span className={`side-indicator ${colorCode === 'w' ? 'white' : 'black'}`} />{rest}</span>)
+      return (<span className='message'><span className={`side-indicator ${sideCode === 'w' ? 'white' : 'black'}`} />{rest}</span>)
     }
   
     return <span className='message'>{m.message}</span>

@@ -10,12 +10,12 @@
     * `SquareState`: More on this in the "behavioral" section, but basically the current role of the Square in a move. eg, if its `origin`, the UI can show it slighly dimmed during a drag operation.
 
 * A `Position` is a location on the board (a Rank and a File), whereas a `Square` is the actual holder of state of that slot in `BoardSquares`.
-* A `Piece` is a `Color` and a `PieceType`
+* A `Piece` is a `Side` and a `PieceType`
 
 So, something like this...
 
 ```
-type Color =
+type Side =
   'black' | 
   'white'
 
@@ -29,7 +29,7 @@ type PieceType =
 
 interface Piece {
   type: PieceType
-  color: Color
+  side: Side
 } 
 
 
@@ -100,7 +100,7 @@ codewise...
 
 `applyResolution` eventually sets `squareState` for this square and other internal state. (And possibly not only for this square. If `Action` is `'castle'`, it involves 4 squares changing state: King's `from` and `to`, and Rook's `from` and `to`!)
 
-Based on `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece thicken and color its drop shadow indicating the possible capture, etc. 
+Based on `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece thicken and tint its drop shadow, indicating the possible capture. 
 
 
 ## **Reactive UI**
@@ -197,12 +197,12 @@ const resolve = (
 ): Action | null => {
   
   if (board.isClearAlongDiagonal(move.from, move.to)) {
-    const fromColor = board.colorAt(move.from)
-    const toColor = board.colorAt(move.to)
-    if (!toColor) {
+    const fromSide = board.getOccupantSide(move.from)
+    const toSide = board.getOccupantSide(move.to)
+    if (!toSide) {
       return 'move'
     }
-    else if (fromColor && toColor && (fromColor !== toColor)) {
+    else if (fromSide && toSide && (fromSide !== toSide)) {
       return 'capture'
     }
   }
@@ -224,6 +224,13 @@ This is a clean way to encapsulate the behavioral pattern per piece type.
 In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing running output of move strings, "you can't do that because you'd be in check" type messages, etc. in the UI.  It looks like this:
 
 ```
+interface Check {
+  side: Side,
+  from: Position[],
+  kingPosition: Position 
+}
+
+
 interface ChessListener {
 
   actionResolved(move: Move, action: Action | null): void
@@ -234,7 +241,7 @@ interface ChessListener {
     // eg, "You can't castle because your king has moved!"
   message(s: string, type?: string): void 
 
-  inCheck(c: Check): void
+  inCheck(c: Check): void       
   notInCheck(side: Side): void
 
 }

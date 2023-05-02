@@ -27,7 +27,7 @@ const PieceEffectsView = styled(Flex, {
   },
 
   variants: {
-    color: {
+    side: {
       white: {
         '& svg': {
           fill: '$pieceWhite',
@@ -58,7 +58,7 @@ const PieceEffectsView = styled(Flex, {
   },
   compoundVariants: [
     {
-      color: 'black',
+      side: 'black',
       effect: 'capture',
       css: {
         '& svg': {
@@ -67,7 +67,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'capturePulse',
       css: {
         '& svg': {
@@ -77,7 +77,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'kingInCheck',
       css: {
         '& svg': {
@@ -86,7 +86,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'kingInCheckPulse',
       css: {
         '& svg': {
@@ -96,7 +96,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'inCheckFrom',
       css: {
         '& svg': {
@@ -105,7 +105,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'inCheckFromPulse',
       css: {
         '& svg': {
@@ -115,7 +115,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'capture',
       css: {
         '& svg': {
@@ -124,7 +124,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'capturePulse',
       css: {
         '& svg': {
@@ -134,7 +134,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'kingInCheck',
       css: {
         '& svg': {
@@ -143,7 +143,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'kingInCheckPulse',
       css: {
         '& svg': {
@@ -153,7 +153,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'inCheckFrom',
       css: {
         '& svg': {
@@ -162,7 +162,7 @@ const PieceEffectsView = styled(Flex, {
       }
     },
     {
-      color: 'white',
+      side: 'white',
       effect: 'inCheckFromPulse',
       css: {
         '& svg': {
@@ -190,7 +190,7 @@ const PieceComponent: React.FC<{
     return null
   }
 
-  const canDrag = square.piece && game.currentTurn === square.piece.color
+  const canDrag = square.piece && game.currentTurn === square.piece.side
 
   const getEffectFromState = (state: SquareState): EffectVariant => {
     if (state.includes('capture')) {
@@ -212,7 +212,7 @@ const PieceComponent: React.FC<{
       justify='center'
       direction='row'
       align='center'
-      color={square.piece.color}
+      side={square.piece.side}
       effect={getEffectFromState(square.squareState)}
       css={{
         opacity: (square.squareState === 'origin' ? 0.5 : 1), 
@@ -233,7 +233,7 @@ const PieceDnDWrapper: React.FC<{
 }) => {
 
   const game = useGame()
-  const canDrag = square.piece && game.currentTurn === square.piece.color
+  const canDrag = square.piece && game.currentTurn === square.piece.side
   
   const {listeners, setNodeRef: draggableRef} = useDraggable({
     id: positionToString(square) + (square.piece ? pieceToString(square.piece) : ''), 

@@ -15,7 +15,7 @@ const StyledText = styled(Text, {
   position: 'absolute',
   opacity: 0.8,
   variants: {
-    color: {
+    side: {
       white: {
         color: '$pieceWhite'
       },
@@ -33,7 +33,7 @@ const DraggingPiece: React.FC<{ sizeInLayout: number | undefined }> = observer((
   const ds = useDragState()
 
   return (sizeInLayout && ds.piece && ds.offset) ? (
-    <StyledText color={ds.piece.color} style={{
+    <StyledText side={ds.piece.side} style={{
       left: ds.offset.x - sizeInLayout / 2, 
       top: ds.offset.y - sizeInLayout / 2,
       fontSize: sizeInLayout * .8,

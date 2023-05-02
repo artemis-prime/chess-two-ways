@@ -31,7 +31,7 @@ const TurnIndicator: React.FC<{
 
   return (
     <OuterView style={style}>
-      <SideSwatch color={game.currentTurn} />
+      <SideSwatch side={game.currentTurn} />
       <StyledText>'s turn</StyledText>
     </OuterView>
   )

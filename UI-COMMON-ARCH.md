@@ -195,7 +195,7 @@ const PieceComponent: React.FC<{
   const game = useGame()
   const pulse = usePulse()
 
-  const canDrag = square.occupant && game.currentTurn === square.occupant.color
+  const canDrag = square.occupant && game.currentTurn === square.occupant.side
 
   const getEffectFromState = (state: SquareState): EffectVariant => {
     if (state.includes('capture')) {
@@ -217,7 +217,7 @@ const PieceComponent: React.FC<{
   return (
     <PieceEffectsView 
       // other styles
-      color={square.occupant.color}
+      side={square.occupant.side}
       effect={getEffectFromState(square.squareState)}
       css={{
           // dim me if I'm the origin of the drag
@@ -238,11 +238,10 @@ Pulsing between:
 
 normalish <--> slightly larger with a bigger reddish drop shadow
 
-(Note that here, `color: 'black'` means the `Piece`'s color, not a css color value)
 
 ```
     {
-      color: 'black', 
+      side: 'black', 
       effect: 'kingInCheck',
       css: {
         '& svg': {
@@ -251,7 +250,7 @@ normalish <--> slightly larger with a bigger reddish drop shadow
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'kingInCheckPulse',
       css: {
         '& svg': {

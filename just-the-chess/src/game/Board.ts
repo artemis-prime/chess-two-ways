@@ -9,10 +9,9 @@ import type Check from '../Check'
 import type GameStatus from '../GameStatus'
 import { 
   type default as Piece, 
-  type Color, 
   type PrimaryPieceType, 
   type Side, 
-  opponent,
+  otherSide,
   isOpponent,
 } from '../Piece'
 
@@ -45,12 +44,12 @@ import BoardSquares, { type SquaresSnapshot } from './board/BoardSquares'
 
 interface Board {
 
-  pieceAt(pos: Position): Piece | null
-  colorAt(pos: Position): Color | null 
+  getOccupant(pos: Position): Piece | null
+  getOccupantSide(pos: Position): Side | null 
   positionCanBeCaptured(pos: Position, asSide: Side): boolean 
   
-  eligableToCastle(color: Side, side: 'kingside' | 'queenside'): boolean   
-  cannotCastleBecause(color: Side, side: 'kingside' | 'queenside'): string | null // returns reason or null if ok 
+  eligableToCastle(side: Side, castleSide: 'kingside' | 'queenside'): boolean   
+  cannotCastleBecause(side: Side, castleSide: 'kingside' | 'queenside'): string | null // returns reason or null if ok 
 
   isClearAlongRank(from: Position, to: Position): boolean
   isClearAlongFile(from: Position, to: Position): boolean
@@ -144,13 +143,13 @@ class BoardImpl implements BoardInternal {
     this._tracking.syncTo(theOther._tracking) 
   }
 
-  pieceAt(pos: Position): Piece | null {
+  getOccupant(pos: Position): Piece | null {
     return this._sq(pos).occupant
   }
  
-  colorAt(pos: Position): Color | null {
+  getOccupantSide(pos: Position): Side | null {
     if (this._sq(pos).occupant) {
-      return this._sq(pos).occupant!.color
+      return this._sq(pos).occupant!.side
     }
     return null
   }
@@ -163,7 +162,7 @@ class BoardImpl implements BoardInternal {
     
     const result = [] as Position[]
     const visit = (sq: Square): void => {
-      if (sq.occupant && sq.occupant.color === side ) {
+      if (sq.occupant && sq.occupant.side === side ) {
         result.push(sq)
       } 
     }
@@ -291,12 +290,12 @@ class BoardImpl implements BoardInternal {
     return true
   }
 
-  cannotCastleBecause = (color: Color, rookSide: 'kingside' | 'queenside'): string | null => {
-    const { inCheckFrom, castling: {hasCastled, kingMoveCount, rookMoveCounts} } = this._tracking[color]
-    const rookTracking = this._tracking[color].getRookTracking(rookSide)
+  cannotCastleBecause = (side: Side, castleSide: 'kingside' | 'queenside'): string | null => {
+    const { inCheckFrom, castling: {hasCastled, kingMoveCount, rookMoveCounts} } = this._tracking[side]
+    const rookTracking = this._tracking[side].getRookTracking(castleSide)
     const inCheck = inCheckFrom.length > 0
       // has been captured or has moved 
-    const rookHasMoved = rookMoveCounts[rookSide] > 0 
+    const rookHasMoved = rookMoveCounts[castleSide] > 0 
     const rookHasBeenCaptured = rookTracking.position === null
     const kingHasMoved = kingMoveCount > 0
     
@@ -304,9 +303,9 @@ class BoardImpl implements BoardInternal {
 
     if (!eligable) {
       return (inCheck ? 
-        `${color} cannot castle out of check!` 
+        `${side} cannot castle out of check!` 
         : 
-        `${color} is not eligable to castle ${((kingHasMoved || hasCastled) ?  '' : rookSide + ' ')}because ` + 
+        `${side} is not eligable to castle ${((kingHasMoved || hasCastled) ?  '' : castleSide + ' ')}because ` + 
         ((hasCastled) ? 'it has already castled!' : 
           (kingHasMoved ? 'the king has already moved!' : 
             (rookHasBeenCaptured ? 'that rook has been captured!' : 'that rook has already moved!')))) 
@@ -314,8 +313,8 @@ class BoardImpl implements BoardInternal {
     return null
   }
 
-  eligableToCastle = (color: Color, side: 'kingside' | 'queenside'): boolean => {
-    return !(!!this.cannotCastleBecause(color, side))
+  eligableToCastle = (side: Side, castleSide: 'kingside' | 'queenside'): boolean => {
+    return !(!!this.cannotCastleBecause(side, castleSide))
   }
 
   positionCanBeCaptured(pos: Position, asSide: Side): boolean {
@@ -335,7 +334,7 @@ class BoardImpl implements BoardInternal {
       if (r.action.includes('romote')) {
           // the _move above just returned the piece to 'from'
         const self = this._sq(r.from).occupant!
-        this._sq(r.from).occupant = {color: self.color, type: 'pawn'}
+        this._sq(r.from).occupant = {side: self.side, type: 'pawn'}
       }
     }
     else {
@@ -343,7 +342,7 @@ class BoardImpl implements BoardInternal {
       this._move(r.from, r.to)
       if (r.action.includes('romote')) {
         const self = this._sq(r.to).occupant!
-        this._sq(r.to).occupant = {color: self.color, type: 'queen'}
+        this._sq(r.to).occupant = {side: self.side, type: 'queen'}
       }
     }
 
@@ -422,7 +421,7 @@ class BoardImpl implements BoardInternal {
 
   private _track(r: ActionRecord, mode: 'do' | 'undo' | 'redo'): void {
 
-    const side = r.piece.color
+    const side = r.piece.side
       // fall through, for rooks
     if (r.action === 'castle') {
       this._tracking[side].trackCastle(r, mode)
@@ -516,10 +515,10 @@ class BoardImpl implements BoardInternal {
     }
 
     for (let pieceType of typesToCheck) {
-      const positionsWithOpponentOfThisType = this._tracking[opponent(asSide)].getPrimaryTypePositions(pieceType) 
+      const positionsWithOpponentOfThisType = this._tracking[otherSide(asSide)].getPrimaryTypePositions(pieceType) 
       for (let posToCaptureFrom of positionsWithOpponentOfThisType) {
         if (this._isCapture(this, {
-          piece: {type: pieceType, color: asSide}, 
+          piece: {type: pieceType, side: asSide}, 
           from: posToCaptureFrom, 
           to: pos
         })) {
