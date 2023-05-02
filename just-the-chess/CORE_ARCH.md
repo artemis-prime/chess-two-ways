@@ -14,13 +14,8 @@
 
 So, something like this...
 
-<<<<<<< Updated upstream
-```
-type Color =
-=======
 ```typescript
 type Side =
->>>>>>> Stashed changes
   'black' | 
   'white'
 
