@@ -25,16 +25,17 @@ interface UIServices extends BoardOrientation {
 
 class UIStateImpl implements UIState {
   
-  menuVisible: boolean = false
+  menuVisible: boolean = true
   
   constructor() {
     makeObservable(this, {
       menuVisible: observable,
       _setMenuVisible: action,
-      setMenuVisible: action // needed for string mode, since this is a new function pointer!
+      setMenuVisible: action 
     })
   }
 
+  // needed for strict mode, since the bind creates a new function pointer!
   _setMenuVisible(b: boolean) { this.menuVisible = b }
   setMenuVisible = this._setMenuVisible.bind(this)
 }

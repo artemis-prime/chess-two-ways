@@ -25,7 +25,7 @@ This `yarn` monorepo has three packages:
 They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
 
 ### Getting Started
-Please run all scripts from the monorepo root (where the root `package.json` lives), as the individual package scripts are not meant to be used by the unitiated.
+Please run all scripts from the monorepo root (where the root `package.json` lives), as the individual package scripts are not meant to be used by the uninitiated.
 
 * First, run `yarn install` to install all dependencies for all targets.
 
@@ -42,7 +42,7 @@ React Native: The above assumes you have Java 11, and the Android SDK correctly 
 
 ## Domain Driven Design 
 
-We value a self-contained, cleanly written domain that is agnostic about how it's displayed or how apps that use it are implementated.  It's easy to unit test, and easy to create a CLI for. It is delightfully unburdened and unpoluted by knowledge of UI stack quirks, or any slings and srrows of outrageous pixels. It's "just the domain!" Please find the [longer discussion and links here](./DDD.md).
+We value a self-contained, cleanly written domain that is agnostic about how it's displayed or how apps that use it are implementated.  It's easy to unit test, and easy to create a CLI for. It is delightfully unburdened and unpoluted by knowledge of UI stack quirks, or any slings and arrows of outrageous pixels. It's "just the domain!" Please find the [longer discussion and links here](./DDD.md).
 
 ## Domain architecture
 The core functionality of Chess is implemented in `just-the-chess/` and [discussed here](./just-the-chess/CORE_ARCH.md). 

@@ -56,7 +56,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   }
 
   const onDragCancel = (event: DragCancelEvent) => {
-    game.endResolution()
+    game.abandonResolution()
     stateRef.current.clear()
     //console.log('drag cancelled, NO action taken')
   }

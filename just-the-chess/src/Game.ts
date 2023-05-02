@@ -38,7 +38,9 @@ import { getResolutionStateForPosition, getCheckStateForPosition } from './game/
 import type { default as ActionResolver } from './game/ActionResolver'
 import Notifier from './game/Notifier'
 import registry from './game/resolverRegistry'
+import type Snapshotable from './Snapshotable'
 import type Square from './game/Square'
+
 
   // These would be persisted to and read from a file
   // by implementing apps. (see chess-web)
@@ -50,7 +52,7 @@ interface GameSnapshot {
   currentTurn: SideCode
 }
 
-interface Game {
+interface Game extends Snapshotable<GameSnapshot> {
 
     // Determine which valid action is intended by / possible with
     // the move attempted. (This could be used during drag'n'drop 
@@ -59,11 +61,11 @@ interface Game {
     // Resolution resulting from resolveAction() for the
     // same move *will be cached* internally until:
     //  1) takeResolvedAction() is called 
-    //  2) endResolution() is called 
+    //  2) abandonResolution() is called 
     // Note that this is a form of debouncing
   resolveAction(m: Move): Action | null
   takeResolvedAction(): boolean // action was taken
-  endResolution(): void
+  abandonResolution(): void
   
   get canUndo(): boolean
   get canRedo(): boolean
@@ -315,7 +317,7 @@ class GameImpl implements Game {
     return this._resolution!.action
   }
 
-  endResolution(): void {
+  abandonResolution(): void {
     this._applyResolution(null)
   }
 
@@ -325,7 +327,7 @@ class GameImpl implements Game {
       return false
     }
     if (!this._resolution?.action) {
-      this.endResolution()
+      this.abandonResolution()
       return false
     }
 
@@ -366,7 +368,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'undo')
-      this._notifier.actionUndon(r)
+      this._notifier.actionUndone(r)
       this._notifyCheck(previousCheck)
       this._stateIndex--
       this._toggleTurn()
@@ -383,7 +385,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'redo')
-      this._notifier.actionRedon(r)
+      this._notifier.actionRedone(r)
       this._notifyCheck(previousCheck)
       this._toggleTurn()
     }
