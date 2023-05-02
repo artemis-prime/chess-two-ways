@@ -23,9 +23,9 @@ import {
   type PieceType, 
   type PrimaryPieceType, 
   type Side, 
-  COLOR_FROM_CODE,
-  opponent,
-  type ColorCode,
+  SIDE_FROM_CODE,
+  otherSide,
+  type SideCode,
   PRIMARY_PIECETYPES
 } from './Piece'
 
@@ -49,7 +49,7 @@ interface GameSnapshot {
   artemisPrimeChessGame: any
   board: BoardSnapshot
   actions: string[]
-  currentTurn: ColorCode
+  currentTurn: SideCode
 }
 
 interface Game extends Snapshotable<GameSnapshot> {
@@ -83,7 +83,7 @@ interface Game extends Snapshotable<GameSnapshot> {
   takeSnapshot() : GameSnapshot
   restoreFromSnapshot(g: GameSnapshot) : void
 
-  pieceAt(p: Position): Piece | null
+  getOccupant(p: Position): Piece | null
 
   get gameStatus(): GameStatus // observable
   get playing(): boolean // observable
@@ -168,8 +168,8 @@ class GameImpl implements Game {
     return STATUS_CAN_UNDO.includes(this._board.gameStatus.state) 
   }
 
-  pieceAt(p: Position): Piece | null {
-    return this._board.pieceAt(p)
+  getOccupant(p: Position): Piece | null {
+    return this._board.getOccupant(p)
   }
 
   getBoardAsArray = (whiteOnBottom: boolean): ObsSquare[] => (
@@ -187,7 +187,7 @@ class GameImpl implements Game {
   concede(): void {
     this._board.setGameStatus({
       state: 'conceded',
-      victor: opponent(this._currentTurn)
+      victor: otherSide(this._currentTurn)
     })
   }
 
@@ -208,7 +208,7 @@ class GameImpl implements Game {
     if (!g.artemisPrimeChessGame) throw new Error('restoreFromSnapshot() invalid Game Object!')
 
     this._board.restoreFromSnapshot(g.board)
-    this._currentTurn = COLOR_FROM_CODE[g.currentTurn]
+    this._currentTurn = SIDE_FROM_CODE[g.currentTurn]
     this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
     this._stateIndex = this._actions.length - 1
     this._board.setGameStatus({
@@ -231,7 +231,7 @@ class GameImpl implements Game {
       artemisPrimeChessGame: true,
       board: this._board.takeSnapshot(),
       actions: actionsToCurrentState.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
-      currentTurn: this._currentTurn.charAt(0) as ColorCode
+      currentTurn: this._currentTurn.charAt(0) as SideCode
     }
   }  
 
@@ -297,10 +297,10 @@ class GameImpl implements Game {
         if (action) {
           const r = this._createActionRecord(move, action)
           const previousCheck = this._scratchBoard.check
-          const wasInCheck = previousCheck && previousCheck.side === r.piece.color
+          const wasInCheck = previousCheck && previousCheck.side === r.piece.side
           this._scratchBoard.applyAction(r, 'do')
           const check = this._scratchBoard.check
-          const isInCheck = check && check.side === r.piece.color
+          const isInCheck = check && check.side === r.piece.side
           if (isInCheck) {
             this._notifier.message(`${actionRecordToLAN(r)} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
@@ -403,7 +403,7 @@ class GameImpl implements Game {
     return {
       ...move,
       action,
-      captured: (action.includes('capture')) ? {...this._board.pieceAt(move.to)!} : undefined
+      captured: (action.includes('capture')) ? {...this._board.getOccupant(move.to)!} : undefined
     }
   }
 
@@ -420,7 +420,7 @@ class GameImpl implements Game {
   private _kingCanMove(side: Side): boolean {
     const pos = this._board.kingPosition(side)
     const resolver = this._resolvers.get('king')!
-    const moves = resolver.resolvableMoves(this._board, {type: 'king', color: side}, pos, true)
+    const moves = resolver.resolvableMoves(this._board, {type: 'king', side}, pos, true)
     return this._resolvableMovesDontAllResultInCheck(moves, side)
   }
 
@@ -429,7 +429,7 @@ class GameImpl implements Game {
       const positions = this._board.primaryPositions(side, type)
       const resolver = this._resolvers.get(type)
       return resolver && positions.some((pos) => {
-        const moves = resolver.resolvableMoves(this._board, {type, color: side}, pos)
+        const moves = resolver.resolvableMoves(this._board, {type, side}, pos)
         return this._resolvableMovesDontAllResultInCheck(moves, side)
       })
     })
@@ -439,7 +439,7 @@ class GameImpl implements Game {
     const pawnPositions = this._board.pawnPositions(side)
     const resolver = this._resolvers.get('pawn')!
     return pawnPositions.some((pos) => {
-      const moves = resolver.resolvableMoves(this._board, {type: 'pawn', color: side}, pos)
+      const moves = resolver.resolvableMoves(this._board, {type: 'pawn', side}, pos)
       return this._resolvableMovesDontAllResultInCheck(moves, side)
     })
   }
@@ -473,7 +473,7 @@ class GameImpl implements Game {
     ) {
       this._board.setGameStatus({
         state: 'checkmate',
-        victor: opponent(side)
+        victor: otherSide(side)
       }) 
     }
   }

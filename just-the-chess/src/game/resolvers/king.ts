@@ -67,7 +67,7 @@ const amCastling = (
   messageFn?: (s: string) => void
 ): boolean => {
 
-  const homeRank = (move.piece.color === 'white') ? 1 : 8
+  const homeRank = (move.piece.side === 'white') ? 1 : 8
 
   const correctSquares = 
     (move.from.rank === move.to.rank) 
@@ -79,7 +79,7 @@ const amCastling = (
   let eligable = false
   if (correctSquares) {
     const reasonDenied = board.cannotCastleBecause(
-      move.piece.color, 
+      move.piece.side, 
       (move.to.file === 'g') ? 'kingside' : 'queenside' 
     )
     if (reasonDenied) {
@@ -102,7 +102,7 @@ const amCastling = (
         board, 
         move.from, 
         {rank: homeRank, file: ((move.to.file === 'g') ? 'h' : 'b')}, 
-        move.piece.color
+        move.piece.side
       )
   ) 
 }
@@ -115,17 +115,17 @@ const castlablePositions = (
 
   const positions = [] as Position[]
 
-  const rank = (piece.color === 'white') ? 1 : 8
+  const rank = (piece.side === 'white') ? 1 : 8
 
   const correctSquare = positionsEqual(from, {rank, file: 'e'})
-  const eligableKingside = correctSquare && board.eligableToCastle(piece.color, 'kingside')
-  const eligableQueenside = correctSquare && board.eligableToCastle(piece.color, 'queenside')
+  const eligableKingside = correctSquare && board.eligableToCastle(piece.side, 'kingside')
+  const eligableQueenside = correctSquare && board.eligableToCastle(piece.side, 'queenside')
 
   if (eligableKingside
     && 
     board.isClearAlongRank(from, {rank, file: 'h'}) 
     &&
-    !canBeCapturedAlongRank(board, from, {rank, file: 'h'}, piece.color)
+    !canBeCapturedAlongRank(board, from, {rank, file: 'h'}, piece.side)
   ) {
     positions.push({file: 'g', rank})
   }
@@ -134,7 +134,7 @@ const castlablePositions = (
     && 
     board.isClearAlongRank(from, {rank, file: 'b'}) 
     &&
-    !canBeCapturedAlongRank(board, from, {rank, file: 'b'}, piece.color)
+    !canBeCapturedAlongRank(board, from, {rank, file: 'b'}, piece.side)
   ) {
     positions.push({file: 'c', rank})
   }
@@ -150,12 +150,12 @@ const resolve = (
 ): Action | null => {
   
   if (legalMove(move)) {
-    const fromColor = board.colorAt(move.from)
-    const toColor = board.colorAt(move.to)
-    if (!toColor) {
+    const fromSide = board.getOccupantSide(move.from)
+    const toSide = board.getOccupantSide(move.to)
+    if (!toSide) {
       return 'move'
     }
-    else if (fromColor && toColor && (fromColor !== toColor)) {
+    else if (fromSide && toSide && (fromSide !== toSide)) {
       return 'capture'
     }
   }
@@ -227,7 +227,7 @@ const resolvableMoves = (
 
   const resolvable = [] as Resolution[]
   positions.forEach((pos) => {
-    const toPiece = board.pieceAt(pos)
+    const toPiece = board.getOccupant(pos)
     if (!toPiece) {
       resolvable.push({
         move: {
@@ -238,7 +238,7 @@ const resolvableMoves = (
         action: 'move'
       })
     }
-    else if (isOpponent(toPiece, piece.color)) {
+    else if (isOpponent(toPiece, piece.side)) {
       resolvable.push({
         move: {
           piece,

@@ -92,9 +92,9 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
       return 
     }
 
-    const piece = game.pieceAt(p)
+    const piece = game.getOccupant(p)
     if (piece) {
-      if (game.currentTurn === piece.color) {
+      if (game.currentTurn === piece.side) {
         stateRef.current.setPiece(piece)
         stateRef.current.setFrom(p)
       }

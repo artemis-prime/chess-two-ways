@@ -11,7 +11,7 @@ const SideSwatch = styled(View, {
   borderColor: '#777',
 
   variants: {
-    color: {
+    side: {
       white: {
         backgroundColor: '$pieceWhite'
       },

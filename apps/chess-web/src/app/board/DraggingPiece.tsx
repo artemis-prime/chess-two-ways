@@ -15,7 +15,7 @@ const PieceEffectsView = styled(Flex, {
   },
 
   variants: {
-    color: {
+    side: {
       white: {
         '& svg': {
           fill: '$pieceWhite',
@@ -46,7 +46,7 @@ const DraggingPiece: React.FC<{
         justify='center'
         direction='row'
         align='center'
-        color={pieceRef.piece.color}
+        side={pieceRef.piece.side}
       >
         <SpecificPiece size={pieceSize} />
       </PieceEffectsView>

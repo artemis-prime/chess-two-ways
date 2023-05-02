@@ -10,7 +10,7 @@
     * `SquareState`: More on this in the "behavioral" section, but basically the current role of the Square in a move. eg, if its `origin`, the UI can show it slighly dimmed during a drag operation.
 
 * A `Position` is a location on the board (a Rank and a File), whereas a `Square` is the actual holder of state of that slot in `BoardSquares`.
-* A `Piece` is a `Color` and a `PieceType`
+* A `Piece` is a `Side` and a `PieceType`
 
 So, something like this...
 
@@ -29,7 +29,7 @@ type PieceType =
 
 interface Piece {
   type: PieceType
-  color: Color
+  side: Side
 } 
 
 
@@ -100,7 +100,7 @@ codewise...
 
 `applyResolution` changes `observable` state, likely including `squareState` for this square. (And possibly others, if `Action` is say, `'castle'`. This involves four squares changing: King's `from` and `to`, and Rook's `from` and `to`!)
 
-Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse larger with a thicker drop shadow indicating a possible `capture`. 
+Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse larger with a thicker drop shadow indicating a possible `'capture'`. 
 
 
 ## **Reactive UI**
@@ -191,12 +191,12 @@ const resolve = (
 ): Action | null => {
   
   if (board.isClearAlongDiagonal(move.from, move.to)) {
-    const fromColor = board.colorAt(move.from)
-    const toColor = board.colorAt(move.to)
-    if (!toColor) {
+    const fromSide = board.getOccupantSide(move.from)
+    const toSide = board.getOccupantSide(move.to)
+    if (!toSide) {
       return 'move'
     }
-    else if (fromColor && toColor && (fromColor !== toColor)) {
+    else if (fromSide && toSide && (fromSide !== toSide)) {
       return 'capture'
     }
   }

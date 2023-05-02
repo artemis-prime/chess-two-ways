@@ -13,27 +13,27 @@ import type Board from '../Board'
 import { isOpponent } from '../../Piece'
 import { FILES } from '../../Position'
 
-const pawnOnHomeRow = (pos: Position, color: Side): boolean => (
-  pos.rank === 2 && color === 'white'
+const pawnOnHomeRow = (pos: Position, side: Side): boolean => (
+  pos.rank === 2 && side === 'white'
   ||
-  pos.rank === 7 && color === 'black'
+  pos.rank === 7 && side === 'black'
 )
 
 const isMovingOneFileOver = (move: Move) => (
   Math.abs(FILES.indexOf(move.to.file) - FILES.indexOf(move.from.file)) === 1
 )
 
-const isGettingPromoted = (to: Position, color: Side): boolean => (
-  (color === 'black' && to.rank  === 1) 
+const isGettingPromoted = (to: Position, side: Side): boolean => (
+  (side === 'black' && to.rank  === 1) 
   || 
-  (color === 'white' && to.rank  === 8)
+  (side === 'white' && to.rank  === 8)
 )
 
 const correctDistanceAndDirection = (
   move: Move,
   distanceToCheck: 1 | 2 = 1
 ) => {
-  const distance = (move.piece.color === 'white') ? distanceToCheck : -distanceToCheck
+  const distance = (move.piece.side === 'white') ? distanceToCheck : -distanceToCheck
   return (move.to.rank - move.from.rank) === distance
 }
 
@@ -42,7 +42,7 @@ const isCapturing = (
   toPiece: Piece | null 
 ): boolean => (
 
-  isOpponent(toPiece, move.piece.color)
+  isOpponent(toPiece, move.piece.side)
   &&
     // moving diagonally
   isMovingOneFileOver(move)
@@ -60,13 +60,13 @@ const isInitialTwoRankMove = (
   &&
   (move.from.file === move.to.file) 
   &&
-  pawnOnHomeRow(move.from, move.piece.color)
+  pawnOnHomeRow(move.from, move.piece.side)
   && 
   correctDistanceAndDirection(move, 2)    
   &&
-  !board.pieceAt({
+  !board.getOccupant({
     file: move.from.file,
-    rank: ((move.piece.color === 'white') ? move.from.rank + 1 : move.from.rank - 1) as Rank
+    rank: ((move.piece.side === 'white') ? move.from.rank + 1 : move.from.rank - 1) as Rank
   })
 ) 
 
@@ -87,16 +87,16 @@ const resolve = (
   messageFn?: (s: string) => void
 ): Action | null => {
   
-  const toPiece = board.pieceAt(move.to)
+  const toPiece = board.getOccupant(move.to)
 
   if (isOneRankMove(move, toPiece)) {
-    return isGettingPromoted(move.to, move.piece.color) ? 'promote' : 'move'
+    return isGettingPromoted(move.to, move.piece.side) ? 'promote' : 'move'
   }
   else if (isInitialTwoRankMove(board, move, toPiece)) {
     return 'move'
   }
   else if (isCapturing(move, toPiece)) {
-    return isGettingPromoted(move.to, move.piece.color) ? 'capturePromote' : 'capture'
+    return isGettingPromoted(move.to, move.piece.side) ? 'capturePromote' : 'capture'
   }
   return null
 }
@@ -118,7 +118,7 @@ const resolvableMoves = (
     const result = [] as Position[] 
       // No need to check edge since that would force a promotion and 
       // this pawn's code would never get called.
-    const forwardRank = from.rank + ((piece.color === 'white') ? 1 : -1) as Rank
+    const forwardRank = from.rank + ((piece.side === 'white') ? 1 : -1) as Rank
     if (!onFileAtEdge('E')) {
       result.push({file: FILES[FILES.indexOf(from.file) - 1], rank: forwardRank})
     }
@@ -130,24 +130,24 @@ const resolvableMoves = (
 
   const squareInFront = {
     file: from.file,
-    rank: from.rank + ((piece.color === 'white') ? 1 : -1) as Rank
+    rank: from.rank + ((piece.side === 'white') ? 1 : -1) as Rank
   }
 
-  if (!board.pieceAt(squareInFront)) {
+  if (!board.getOccupant(squareInFront)) {
     resolvable.push({
       move: {
         piece,
         from,
         to: squareInFront
       },
-      action: isGettingPromoted(squareInFront, piece.color) ? 'promote' : 'move'
+      action: isGettingPromoted(squareInFront, piece.side) ? 'promote' : 'move'
     })
-    if (pawnOnHomeRow(from, piece.color)) {
+    if (pawnOnHomeRow(from, piece.side)) {
       const squareTwoInFront = {
         file: from.file,
-        rank: from.rank + ((piece.color === 'white') ? 2 : -2) as Rank
+        rank: from.rank + ((piece.side === 'white') ? 2 : -2) as Rank
       }
-      if (!board.pieceAt(squareTwoInFront)) {
+      if (!board.getOccupant(squareTwoInFront)) {
         resolvable.push({
           move: {
             piece,
@@ -160,14 +160,14 @@ const resolvableMoves = (
     }
   }
   attackableSquares().forEach((pos) => {
-    if (isOpponent(board.pieceAt(pos), piece.color)) {
+    if (isOpponent(board.getOccupant(pos), piece.side)) {
       resolvable.push({
         move: {
           piece,
           from,
           to: pos
         },
-        action:  isGettingPromoted(squareInFront, piece.color) ? 'capturePromote' : 'capture'
+        action:  isGettingPromoted(squareInFront, piece.side) ? 'capturePromote' : 'capture'
       })
     }
   })

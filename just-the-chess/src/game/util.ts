@@ -93,7 +93,7 @@ const resolvableMovesAndCapture = (
   const resolvable = [] as Resolution[]
   let pos = getNext(from)
   while (pos) {
-    const pieceEncountered = board.pieceAt(pos)
+    const pieceEncountered = board.getOccupant(pos)
     if (!pieceEncountered) {
       resolvable.push({
         move: {
@@ -106,7 +106,7 @@ const resolvableMovesAndCapture = (
       pos = getNext(pos)
     }
     else {
-      if (isOpponent(pieceEncountered, piece.color)) {
+      if (isOpponent(pieceEncountered, piece.side)) {
         resolvable.push({
           move: {
             piece,

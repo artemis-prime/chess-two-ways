@@ -194,7 +194,7 @@ const PieceComponent: React.FC<{
   const game = useGame()
   const pulse = usePulse()
 
-  const canDrag = square.occupant && game.currentTurn === square.occupant.color
+  const canDrag = square.occupant && game.currentTurn === square.occupant.side
 
   const getEffectFromState = (state: SquareState): EffectVariant => {
     if (state.includes('capture')) {
@@ -236,11 +236,10 @@ Pulsing between:
 
 normalish <--> slightly larger with a bigger reddish drop shadow
 
-(Note that here, `color: 'black'` means the `Piece`'s color, not a css color value)
 
 ```typescript
     {
-      color: 'black', 
+      side: 'black', 
       effect: 'kingInCheck',
       css: {
         '& svg': {
@@ -249,7 +248,7 @@ normalish <--> slightly larger with a bigger reddish drop shadow
       }
     },
     {
-      color: 'black',
+      side: 'black',
       effect: 'kingInCheckPulse',
       css: {
         '& svg': {
@@ -274,7 +273,6 @@ Web:
 ```typescript
   const stateRef = useRef<DnDState>(getDnDState())
 
-
   const onDragUpdate = (event: DragMoveEvent) => {
 
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
@@ -295,7 +293,6 @@ Web:
 RN:
 ```typescript
   const stateRef = useRef<DnDState>(getDnDState())
-
 
   const onDragUpdate = (e: PanGestureHandlerEventPayload) => {
     if (stateRef.current.piece) {

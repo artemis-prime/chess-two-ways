@@ -32,7 +32,7 @@ const INITIAL_HOME_RANK = {
 
   // Call only for Squares that contains a piece
 const trackAsReset = (tr: Tracking, sq: Square): void => {
-  const side = sq.occupant!.color
+  const side = sq.occupant!.side
   tr[side].trackAsReset(sq.occupant!, sq)
 }
 
@@ -85,18 +85,18 @@ class BoardSquares implements Snapshotable<SquaresSnapshot>{
 
   static visitAsNewGame(sq: Square, tr: Tracking, assignState = true): void {
     if (sq.rank === 1) {
-      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], color: 'white' })
+      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], side: 'white' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 2) {
-      sq.setOccupant({ type: 'pawn', color: 'white' })
+      sq.setOccupant({ type: 'pawn', side: 'white' })
     }
     else if (sq.rank === 8) {
-      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], color: 'black' })
+      sq.setOccupant({ type: INITIAL_HOME_RANK[sq.file], side: 'black' })
       trackAsReset(tr, sq)
     }
     else if (sq.rank === 7) {
-      sq.setOccupant({ type: 'pawn', color: 'black' })
+      sq.setOccupant({ type: 'pawn', side: 'black' })
     }
     else {
       sq.setOccupant(null)
