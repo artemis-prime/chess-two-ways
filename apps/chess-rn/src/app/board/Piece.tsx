@@ -11,7 +11,7 @@ import { observer } from 'mobx-react'
 
 import { 
   type ObsSquare,
-  type Color,
+  type Side,
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
@@ -48,7 +48,7 @@ const NORMAL_SHADOW_COLOR = {
   white: 'rgba(0, 0, 0, 0.3)',
   black: 'rgba(0, 0, 0, 0.5)'
 } as {
-  [key in Color]: ColorValue
+  [key in Side]: ColorValue
 }
 
 interface Offset {
@@ -192,19 +192,19 @@ const Piece: React.FC<{
       return {
         fontSize: size * .9, 
         figureSize: 'large',
-        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
+        shadows: [ { variant: 'large', color: NORMAL_SHADOW_COLOR[square.piece.side] }]
       }
     }
       // Default size and shadows
     return {
       fontSize: size *.8,
       figureSize: 'normal',
-      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[square.piece.color] }]
+      shadows: [ { variant: 'normal', color: NORMAL_SHADOW_COLOR[square.piece.side] }]
     }
   })()
 
   const height = fontSize * 1.1 // ensure no clipping 
-  const color = (square.piece.color === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
+  const color = (square.piece.side === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
 
     // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
   return (

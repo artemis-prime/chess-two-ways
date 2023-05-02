@@ -42,13 +42,13 @@ const legalMove = (
   messageFn?: (s: string) => void
 ): Action | null => {
   
-  const fromColor = board.colorAt(move.from)
+  const fromSide = board.getOccupantSide(move.from)
   if (legalMove(move.from, move.to)) {
-    const toColor = board.colorAt(move.to)
-    if (!toColor) {
+    const toSide = board.getOccupantSide(move.to)
+    if (!toSide) {
       return 'move'
     }
-    else if (fromColor && toColor && (fromColor !== toColor)) {
+    else if (fromSide && toSide && (fromSide !== toSide)) {
       return 'capture'
     }
   }
@@ -140,7 +140,7 @@ const resolvableMoves = (
 
   const resolvable = [] as Resolution[]
   positions.forEach((pos) => {
-    const toPiece = board.pieceAt(pos)
+    const toPiece = board.getOccupant(pos)
     if (!toPiece) {
       resolvable.push({
         move: {
@@ -151,7 +151,7 @@ const resolvableMoves = (
         action: 'move'
       })
     }
-    else if (isOpponent(toPiece, piece.color)) {
+    else if (isOpponent(toPiece, piece.side)) {
       resolvable.push({
         move: {
           piece,
