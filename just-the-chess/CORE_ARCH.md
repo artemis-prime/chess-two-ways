@@ -149,13 +149,13 @@ takeResolvedAction(): boolean         // true if action was taken
 abandonResolution(): void             // call if drag was abandoned or finished on an invalid drop target 
 ```
 ### **'Put yourself in Check' support via a 'scratch' `Board`** 
-Since a given resolvable `Action` could result in a player putting themselves or staying 'in check', we have to check every desired `Action` for this outcome before it's actually resolved. (The other approach would have been each piece being responsible for this on their own in their `resolve()` function, which would have been needlessly complicated.)
+Since some moves could result in a player putting themselves or staying in check, we have to screen for this outcome for `Action` before it's actually resolved. (The other approach would have been each piece type being responsible for this on their own, which would have been needlessly complicated.)
 
-So we chose to have a 'scratch' `Board` in addition to the 'real' `Board` specifically for this check. On every attempted resolution,
+We chose accomplish this via a 'scratch' `Board` in addition to the 'real' `Board`. On every attempted resolution,
 
   1) The scratch `Board` is quickly synced to the exact state of the main `Board`
-  2) The same `ActionRecord` that would be "applied" when the action is actually taken, is applied to the scratch `Board`.
-  3) Depending on its 'in check' status, the resolution is either allowed or rejected.
+  2) The same `ActionRecord` that would used when the action is actually taken, is 'applied' to the scratch `Board`.
+  3) Depending on whether this results in the current player being in check ont the scratcch `Board`, the resolution is either allow or rejected.
   
 This may seem cumbersome, but it actually ensures that game state is kept pure, and that core logic isn't needlessly complex. It's just simply rerun on the 'scratch' `Board`. 
 
