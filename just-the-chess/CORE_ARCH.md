@@ -211,7 +211,7 @@ This is a clean way to encapsulate the behavioral pattern per type of piece.
 (There are actually two methods in the interface: `resolve(board: Board, m: Move): Action | null` and also `resolvableMoves(board: Board, piece: Piece, from: Position): Position[]`. The latter is used internally to check for checkmate and stalemate.
 
 ### **Tracking of Primaries**
- In order to optimize the "self in check" process discussed above, as well as "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
+ In order to optimize the "self in check" process discussed above, as well as checking for "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
 
 ### **Persistence**
  The entire Game, including pieces on the board, tracking, undo / redo stack, castling eligability, etc., can be converted to a condensed representation, and easily persisted to JSON files. Each type involved, from `Game` on down, has a pair of `takeSnapshot(): FooSnapshot` and `restoreFromSnapshot(s: FooSnapshot)` funtions that constitute the persistence system.  The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc.
