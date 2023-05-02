@@ -1,12 +1,10 @@
-import React from 'react'
 import { styled } from '~/styles/stitches.config'
 
-import c from '~/styles/colors'
 
 const buttonCommon = {
   cursor: 'pointer',
   padding: '5px 12px',
-  border: `1.5px solid ${c.gray[1]}`,
+  border: '1.5px solid $gray1',
   borderRadius: '8px',
 }
 
@@ -24,24 +22,24 @@ const Button = styled('button', {
     variant: {
       contained: {
         ...buttonCommon,
-        color: c.gray[1],
-        backgroundColor: c.gray[11],
+        color: '$gray1',
+        backgroundColor: '$gray11',
         '&:hover': {
-          backgroundColor: c.gray[10],
+          backgroundColor: '$gray10'
         },
           // pressed
         '&:active': {
-          backgroundColor: c.gray[8], 
+          backgroundColor: '$gray8' 
         },
       },
       outlined: {
         ...buttonCommon,
         backgroundColor: 'transparent',
-        color: c.gray[1],
+        color: '$gray1',
         '&:disabled': {
           cursor: 'default',
-          color: c.gray[12],
-          borderColor: c.gray[11],
+          color: '$gray12',
+          borderColor: '$gray11',
           '&:hover': {
             backgroundColor: 'transparent',
             textDecoration: 'none',
@@ -58,14 +56,14 @@ const Button = styled('button', {
       // outlined, but with alert colors
       alert: {
         ...buttonCommon,
-        color: c.gray[1],
-        backgroundColor: c.alert[9],
+        color: '$gray1',
+        backgroundColor: '$alert9',
         '&:hover': {
-          backgroundColor: c.alert[8],
+          backgroundColor: '$alert8',
         },
           // pressed
         '&:active': {
-          backgroundColor: c.alert[7], 
+          backgroundColor: '$alert7' ,
         },
       },
 
@@ -73,14 +71,14 @@ const Button = styled('button', {
         cursor: 'pointer',
         border: 'none',
         backgroundColor: 'transparent',
-        color: c.gray[1],
+        color: '$gray1',
         p: 1,
         '&:hover': {
           textDecoration: 'underline',
         },
         '&:disabled': {
           cursor: 'default',
-          color: c.gray[11],
+          color: '$gray11',
         },
         '&:disabled:hover': {
           textDecoration: 'none',
@@ -103,8 +101,6 @@ const Button = styled('button', {
       },
     },
   },
-  compoundVariants: [
-  ],
   defaultVariants: {
     variant: 'ghost',
     size: 'medium',

@@ -1,5 +1,10 @@
 import Stitches, { createStitches } from '@stitches/react'
 
+// vscode doesn't seem to see the import as possible,
+// Both vite and tsc seem to do just fine. Dunno
+// @ts-ignore 
+import fromSASS from './colors.module.scss' 
+
 const { 
   config: { media }, 
   theme: lightTheme, 
@@ -7,7 +12,7 @@ const {
 } = createStitches({
   theme: {
     colors: {
-      // we use our own :)
+      ...fromSASS    
     },
     space: {
       1: '4px',

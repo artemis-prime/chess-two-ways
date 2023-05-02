@@ -2,7 +2,6 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 import { styled } from '~/styles/stitches.config'
-import c from '~/styles/colors'
 
 import { Flex } from '~/primitives'
 
@@ -19,12 +18,12 @@ const PieceEffectsView = styled(Flex, {
     color: {
       white: {
         '& svg': {
-          fill: c.ui.piece.white,
+          fill: '$pieceWhite',
         },
       },
       black: {
         '& svg': {
-          fill: c.ui.piece.black,
+          fill: '$pieceBlack',
         },
       },
     },
