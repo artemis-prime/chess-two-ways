@@ -128,7 +128,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
       game.takeResolvedAction()
     }
     else {
-      game.endResolution()
+      game.abandonResolution()
     }
     stateRef.current.clear()
   }

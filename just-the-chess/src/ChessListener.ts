@@ -9,8 +9,8 @@ interface ChessListener {
 
   actionResolved(move: Move, action: Action | null): void
   actionTaken(r: ActionRecord): void
-  actionUndon(r: ActionRecord): void
-  actionRedon(r: ActionRecord): void
+  actionUndone(r: ActionRecord): void
+  actionRedone(r: ActionRecord): void
 
   actionsRestored(recs: readonly ActionRecord[]): void
 
