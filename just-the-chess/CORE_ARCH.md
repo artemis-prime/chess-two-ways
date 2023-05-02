@@ -98,9 +98,9 @@ codewise...
 
 ```
 
-`applyResolution` effects internal state, including `squareState` for this square. (And possibly others. If `Action` is say, `'castle'`, it involves 4 squares: King's `from` and `to`, and Rook's `from` and `to`!)
+`applyResolution` changes 'observable' state, likely including `squareState` for this square. (And possibly others, if `Action` is say, `'castle'`, which involves 4 squares: King's `from` and `to`, and Rook's `from` and `to`!)
 
-Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse slightly larged with a colored drop shadow indicating the possible capture. 
+Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse larger with a thicker drop shadow indicating a possible `capture`. 
 
 
 ## **Reactive UI**
