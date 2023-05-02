@@ -211,10 +211,65 @@ This is a clean way to encapsulate the behavioral pattern per type of piece.
 (There are actually two methods in the interface: `resolve(board: Board, m: Move): Action | null` and also `resolvableMoves(board: Board, piece: Piece, from: Position): Position[]`. The latter is used internally to check for checkmate and stalemate.
 
 ### **Tracking of Primaries**
- In order to optimize the "self in check" process discussed above, as well as checking for "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
+In order to optimize the "self in check" process discussed above, as well as checking for "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
 
 ### **Persistence**
- The entire Game, including pieces on the board, tracking, undo / redo stack, castling eligability, etc., can be converted to a condensed representation, and easily persisted to JSON files. Each type involved, from `Game` on down, has a pair of `takeSnapshot(): FooSnapshot` and `restoreFromSnapshot(s: FooSnapshot)` funtions that constitute the persistence system.  The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc.
+The entire Game, including pieces on the board, tracking, undo / redo stack, castling eligability, etc., can be converted to a condensed representation and persisted to JSON files. The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc. Each type involved, from `Game` on down, implements the `Snapshotable<T>` interface. 
+
+```typescript
+interface Snapshotable<T> {
+  takeSnapshot: () => T
+  restoreFromSnapshot: (s: T) => void
+}
+
+export { type Snapshotable as default }
+
+~~~~~~
+
+interface GameSnapshot {
+
+  board: BoardSnapshot
+  actions: string[]
+  currentTurn: ColorCode
+}
+
+interface Game extends Snapshotable<GameSnapshot> {
+
+  // other stuff
+  takeSnapshot() : GameSnapshot
+  restoreFromSnapshot(g: GameSnapshot) : void
+}
+
+~~~~~~
+// UI
+
+const PersistToFileButton: React.FC<React.PropsWithChildren> = ({children}) => {
+
+  const game = useGame()
+  const aRef = useRef<HTMLAnchorElement>(null)
+    
+  const writeFile = () => {
+
+    const gd = game.takeSnapshot()
+    const gdjson = JSON.stringify(gd)
+    const bytes = new TextEncoder().encode(gdjson)
+    const blob = new Blob([bytes], {type: "application/json;charset=utf-8"})
+    const dataURI = URL.createObjectURL(blob)
+    if (aRef.current) {
+      aRef.current.href = dataURI
+      aRef.current.click()
+    }
+  }
+
+  return (
+    <>
+      <Button onClick={writeFile}>{children}</Button>
+      <a ref={aRef} download='game.json' hidden />
+    </>
+  )
+}
+
+```
 
 ### **Notification System** 
 In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing a visual history of standard chess move strings (like "wPh2h3"), or outputing messages from the core, like "That's not possible because you'd be in check". 

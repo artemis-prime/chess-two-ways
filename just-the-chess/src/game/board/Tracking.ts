@@ -1,7 +1,7 @@
 import { makeObservable, observable, action } from 'mobx'
 
-import type GameStatus from '../../GameStatus'
 import type CastlingTracking from '../../CastlingTracking'
+import type GameStatus from '../../GameStatus'
 import type Move from '../../Move'
 import type Position from '../../Position'
 import type Piece from '../../Piece'
@@ -17,6 +17,7 @@ import {
   type Rank, 
   type PositionCode 
 } from '../../Position'
+import type Snapshotable from '../../Snapshotable'
 
 const DEFAULT_GAME_STATUS: GameStatus = {
   state: 'new',
@@ -51,7 +52,10 @@ interface TrackingSnapshot {
 
 
 
-class CastlingTrackingInternal implements CastlingTracking {
+class CastlingTrackingInternal 
+  implements CastlingTracking, 
+  Snapshotable<CastlingTracking> 
+{
 
   hasCastled: boolean = false
   kingMoveCount: number = 0
@@ -104,7 +108,7 @@ type RookTracking = {
   position: Position | null
   capturePos: Position | undefined 
 }
-class TrackingForSide {
+class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
 
   king: Position
 
@@ -456,7 +460,7 @@ class TrackingForSide {
 
 }
 
-class Tracking {
+class Tracking implements Snapshotable<TrackingSnapshot>{
 
   white: TrackingForSide
   black: TrackingForSide

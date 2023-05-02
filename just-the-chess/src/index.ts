@@ -24,6 +24,7 @@ export {
   FILES, 
   RANKS, 
 } from './Position'
+export type { default as Snapshotable } from './Snapshotable'
 export type { default as SquareState } from './SquareState'
 export type { default as Resolution} from './Resolution'
 export type { default as ObsSquare } from './ObsSquare'

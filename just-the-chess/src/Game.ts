@@ -38,7 +38,9 @@ import { getResolutionStateForPosition, getCheckStateForPosition } from './game/
 import type { default as ActionResolver } from './game/ActionResolver'
 import Notifier from './game/Notifier'
 import registry from './game/resolverRegistry'
+import type Snapshotable from './Snapshotable'
 import type Square from './game/Square'
+
 
   // These would be persisted to and read from a file
   // by implementing apps. (see chess-web)
@@ -50,7 +52,7 @@ interface GameSnapshot {
   currentTurn: ColorCode
 }
 
-interface Game {
+interface Game extends Snapshotable<GameSnapshot> {
 
     // Determine which valid action is intended by / possible with
     // the move attempted. (This could be used during drag'n'drop 

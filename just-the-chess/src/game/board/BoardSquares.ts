@@ -14,7 +14,7 @@ import {
   RANKS, 
   FILES 
 } from '../../Position'
-
+import type Snapshotable from '../../Snapshotable'
 import type Tracking from './Tracking'
 
 const INITIAL_HOME_RANK = {
@@ -72,7 +72,7 @@ type SquaresSnapshot = {
   [key in PositionCode]?: PieceCode 
 }
 
-class BoardSquares {
+class BoardSquares implements Snapshotable<SquaresSnapshot>{
 
   1: RankSquares
   2: RankSquares
