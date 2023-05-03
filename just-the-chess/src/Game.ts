@@ -150,7 +150,7 @@ class GameImpl implements Game {
       _currentTurn: observable,
       _toggleTurn: action,
       _stateIndex: observable,
-      _actions: observable,
+      _actions: observable.shallow,
       _applyResolution: action
     })
 

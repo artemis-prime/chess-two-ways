@@ -432,7 +432,7 @@ class BoardImpl implements BoardInternal {
         this._tracking[side].trackPromotion(r.to, mode)
       } 
       if (r.action.includes('capture')) {
-        this._tracking[side].trackCapture(r.captured!, r.to, mode)
+        this._tracking[r.captured!.side].trackCapture(r.captured!, r.to, mode)
       }
       if (r.action === 'move' || r.action.includes('capture')) {
         this._tracking[side].trackPositionChange(r, mode)
@@ -542,7 +542,7 @@ class BoardImpl implements BoardInternal {
 
 
   _dumpTracking(): void {
-    console.log(this._tracking)
+    console.log("TRACKING " + '\n' +  JSON.stringify(this._tracking, null, 2))
   }
   _syncTrackingTest(): void {
     const target = new Tracking()
