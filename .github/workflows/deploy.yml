@@ -3,7 +3,7 @@ name: Deploy Chess Web to Pages
 on:
   push:
     branches:
-      - main
+      - web-prod
 
 jobs:
   build:
