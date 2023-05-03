@@ -1,4 +1,5 @@
 import React from 'react'
+import { observer } from 'mobx-react'
 import type { CSS } from '@stitches/react'
 import { DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
@@ -12,15 +13,15 @@ import { ChessDnDShell } from './board/ChessDnD'
 import Square from './board/Square'
 import DraggingPiece from './board/DraggingPiece'
 
-const Board: React.FC<{ css?: CSS }> = ({css}) => {
+const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
 
   const game = useGame()
-  const { whiteOnBottom } = useBoardOrientation()
+  const bo = useBoardOrientation()
 
   return (
     <ChessDnDShell>
       <Box className={'board'} css={css}>
-      {game.getBoardAsArray(whiteOnBottom).map((s: ObsSquare) => (
+      {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
         <Square square={s} key={`key-${s.rank}-${s.file}`} />
       ))}
       </Box>
@@ -29,6 +30,6 @@ const Board: React.FC<{ css?: CSS }> = ({css}) => {
       </DragOverlay>
     </ChessDnDShell>
   )
-}
+})
 
 export default Board

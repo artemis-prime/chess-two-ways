@@ -9,29 +9,58 @@ const {
   config: { media }, 
   theme: lightTheme, 
   styled, 
+  css
 } = createStitches({
   theme: {
     colors: {
       ...fromSASS    
     },
+    borderStyles: {
+      solid: 'solid',
+    },
+    borderWidths: {
+      hairline: '0.5px',
+      normal: '1px',
+      thicker: '2px',
+      thick: '3px',
+    },
     space: {
       1: '4px',
       2: '8px',
       3: '12px',
-      4: '16px',
-      5: '32px',
-      6: '64px',
+      4: '18px',
+      5: '24px',
+      6: '32px',
+      7: '48px',
+      8: '64px',
     },
-    fontSizes: {},
-    fontWeights: {},
+    fontSizes: {
+      normal: '1rem',
+      dashSmaller: '0.9rem'
+    },
+    fontWeights: {
+      bold: 700,
+      semibold: 500,
+      normal: 400,
+    },
     fonts: {
-      body: 'Source Sans Pro',
+      body: 'chalk',
       button: 'TWK Everett',
     },
     lineHeights: {},
     letterSpacings: {},
-    sizes: {},
-    radii: {},
+
+    sizes: {
+      swatchNormalHeight: '22px',
+      swatchNormalWidth: '42px', 
+    },
+    radii: {
+      none: 0,
+      sm: 3,
+      md: 8,
+      lg: 16,
+      rounded: 999,
+    },
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
@@ -140,5 +169,6 @@ const {
 export {
   media,
   lightTheme,
-  styled
+  styled,
+  css,
 }

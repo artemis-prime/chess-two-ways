@@ -28,49 +28,32 @@ body {
 }
 
 
-.dash {
-  background-image: url('assets/img/slate_bg.jpg'); 
-  background-size: cover;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 500px;
-  height: 100%;
-  //margin-right: 6%;
-  border: 4px c.$dash-border solid;
-  border-radius: 5px;
-  padding: 16px 24px;
-  color: c.$dash-text;
 
-  display: flex;
-  flex-direction: column;
+.messages-list {
 
-  .messages-list {
+  //overflow-y: scroll;
+  margin-right: -15px;
+  padding-right: 15px;
+  margin-top: 10px;
 
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #444;
+    border: 1px solid #777;
+    border-radius: 3px;
 
-    //overflow-y: scroll;
-    margin-right: -15px;
-    padding-right: 15px;
-    margin-top: 10px;
-
-    &::-webkit-scrollbar {
-      width: 10px;
-    }
-    &::-webkit-scrollbar-track {
-      background-color: #444;
-      border: 1px solid #777;
-      border-radius: 3px;
-
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 4px;
-      background-color: #777;
-      &:hover {
-        background-color: #aaa;
-      }
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #777;
+    &:hover {
+      background-color: #aaa;
     }
   }
-
 }
+
 
 .board {
 
@@ -224,6 +207,3 @@ main {
 
 }
 
-.in-check-indicator {
-  color: c.$alert9;
-}

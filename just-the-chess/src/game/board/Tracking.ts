@@ -27,7 +27,7 @@ const DEFAULT_GAME_STATUS: GameStatus = {
 interface TrackingForSideSnapshot {
   king: PositionCode,
   primaries: {
-    queen: PositionCode[]
+    queen: PositionCode[] // there may be more than none due to promotion
     bishop: PositionCode[]
     knight: PositionCode[]
     rook: {

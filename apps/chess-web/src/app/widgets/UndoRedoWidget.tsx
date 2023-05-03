@@ -1,27 +1,33 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import type { CSS } from '@stitches/react'
 
 import { useGame } from '~/services'
 
-import { Button, Flex } from '~/primitives'
+import { Button, type ButtonSize, Flex } from '~/primitives'
   
-const UndoRedoWidget: React.FC<{ css?: CSS }> = observer(({css}) => {
+const UndoRedoWidget: React.FC<{ 
+  buttonSize: ButtonSize,
+  css?: CSS
+ }> = observer(({
+  buttonSize,
+  css
+}) => {
 
   const game = useGame()
 
   return (
     <Flex direction='row' justify='start' align='center' css={css}>
       <Button 
-        size='medium'  
+        size={buttonSize}  
         disabled={!game.canUndo}
-        onClick={game.undo.bind(game)}
+        onClick={game.undo}
       >Undo</Button>
-      &nbsp;{!(game.canUndo || game.canRedo) ? (<span style={{paddingRight: '2px'}} />) : 'I'}&nbsp;
+      &nbsp;{!(game.canUndo || game.canRedo) ? (<span style={{paddingRight: '2px'}} />) : '|'}&nbsp;
       <Button 
-        size='medium'  
+        size={buttonSize}   
         disabled={!game.canRedo}
-        onClick={game.redo.bind(game)}
+        onClick={game.redo}
       >Redo</Button>
     </Flex>
   )
