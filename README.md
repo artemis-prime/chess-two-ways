@@ -26,8 +26,8 @@ They are named and organized this way to further re-enforce the separation of co
 
 ### Running the apps
 
-#### The web version is deployed on my Github Pages site for the repo. 
-[View it here](https://artemis-prime.github.io/chess-two-ways/) or proceed as follows to run locally.
+#### The web version is deployed as a [Github Pages site](https://artemis-prime.github.io/chess-two-ways/) for the this repo. 
+[View it here](https://artemis-prime.github.io/chess-two-ways/) or proceed as follows to run it or the React Native version locally.
 
 Please run all scripts from the monorepo root (where the root `package.json` lives), as the individual package scripts are not meant to be used by the uninitiated.
 
@@ -35,7 +35,7 @@ Please run all scripts from the monorepo root (where the root `package.json` liv
 
 * Then run either `yarn prepare:web` or `yarn prepare:rn` depending on your desired version.
 
-* To see the React web version, run `yarn serve:web`.  This will start a [vite](https://vitejs.dev/) dev server at `localhost:8080`.  The first time you may need to open a tab manually.  
+* To see the React web version, run `yarn serve:web`.  This will start a [vite](https://vitejs.dev/) dev server at `localhost:8080/chess-two-ways/`.  The first time you may need to open a tab manually.  
 
 * To see the React Native version (running in an Android emulator), run `yarn deploy:rn`.  This will take a few minutes to launch your emulator and build an Android pkg and install it there. 
 
