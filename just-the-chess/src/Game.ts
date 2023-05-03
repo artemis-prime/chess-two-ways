@@ -124,9 +124,12 @@ class GameImpl implements Game {
   
     makeObservable(this, {
       takeResolvedAction: action,
-      reset: action,
-      undo: action,
-      redo: action,
+      undo: action.bound,
+      redo: action.bound,
+      reset: action.bound, // action.bound makes it easy to call from button's onChange
+      callADraw: action.bound,
+      concede: action.bound,
+      checkStalemate: action.bound,
       restoreFromSnapshot: action,
       canUndo: computed,
       canRedo: computed,

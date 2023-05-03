@@ -1,11 +1,28 @@
 import React, {useState, useEffect } from 'react'
 import { autorun } from 'mobx'
+import type { CSS } from '@stitches/react'
+import { styled } from '~/styles/stitches.config'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
 import { useGame } from '~/services'
 
-const InCheckIndicator: React.FC = () => {
+const StyledView = styled('div', {
+  color: '$alert9',
+  variants: {
+    hidden: {
+      true: {
+        visibility: 'hidden'
+      }
+    }
+  }
+}) 
+
+const InCheckIndicator: React.FC<{
+  css?: CSS
+}> = ({
+  css
+}) => {
 
   const game = useGame()
   const [squaresString, setSquaresString] = useState<string>('')
@@ -24,9 +41,9 @@ const InCheckIndicator: React.FC = () => {
 
     // visibility holds space in the layout, which reduces jumping around.
   return (
-    <p className='in-check-indicator' style={{visibility: (squaresString.length > 0) ? 'visible' : 'hidden'}}>
+    <StyledView hidden={(squaresString.length === 0)} css={css}>
       {`In check from ${squaresString}!`}
-    </p> 
+    </StyledView> 
   )
 }
 

@@ -1,3 +1,4 @@
+import type { VariantProps } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
 
@@ -88,16 +89,16 @@ const Button = styled('button', {
     },
     size: {
       xs: {
-        fontSize: '12px',
+        fontSize: '0.6rem',
       },
       small: {
-        fontSize: '14px',
+        fontSize: '0.8rem',
       },
       medium: {
-        fontSize: '16px',
+        fontSize: '1rem',
       },
       large: {
-        fontSize: '18px',
+        fontSize: '1.2rem',
       },
     },
   },
@@ -106,8 +107,15 @@ const Button = styled('button', {
     size: 'medium',
   },
 })
+type ButtonVariants = VariantProps<typeof Button>
+  // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
+type ButtonVariant = ButtonVariants['variant'] 
+type ButtonSize = ButtonVariants['size'] 
 
 
-export type ButtonVariant = "contained" | "outlined" | "alert" | "ghost" 
 
-export default Button
+export {
+  Button as default,
+  type ButtonVariant,
+  type ButtonSize
+}

@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 
+import type { CSS } from '@stitches/react'
+import { styled } from '~/styles/stitches.config'
+
 import { useGame } from '~/services'
 import { Button, Flex, Switch } from '~/primitives'
 
@@ -15,7 +18,27 @@ import {
   UndoRedoWidget,
 } from '~/app/widgets'
 
-const Dash: React.FC<{}> = observer(() => {
+import bg from 'assets/img/slate_bg.jpg'
+
+const DashView = styled(Flex, {
+  backgroundImage: `url(${bg})`, 
+  backgroundSize: 'cover',
+  boxSizing: 'border-box',
+  width: '100%',
+  maxWidth: '500px',
+  height: '100%',
+  //marginRight: '6%',
+  border: '4px $dashBorder solid',
+  borderRadius: '5px',
+  padding: '16px 24px',
+  color: '$dashText'
+})
+
+const Dash: React.FC<{
+  css?: CSS
+}> = observer((
+  css
+) => {
 
   const game = useGame()
   const [showMoves, setShowMoves] = useState<boolean>(false)
@@ -30,29 +53,31 @@ const Dash: React.FC<{}> = observer(() => {
   }
 
   return (
-    <div className='dash'>
+    <DashView className='dash' direction='column' css={css} >
       <Flex direction='row' justify='between' align='start'>
         <Flex direction='column' justify='start' align='start'>
         {(game.playing) ? (<>
-            <TurnIndicator />
-            <InCheckIndicator />
+            <TurnIndicator css={{mb: '$2'}} />
+            <InCheckIndicator css={{mb: '$2'}} />
           </>) : (
             <GameStatusIndicator />
           )}
         </Flex>
-        <Flex direction='column' justify='start' align='end' >
-          <UndoRedoWidget />
-          <BoardDirectionWidget css={{marginBottom: '18px'}}/>
-          <Flex direction='column' justify='start' align='end' css={{fontSize: '0.9rem', marginBottom: '24px'}}>
-          {(game.playing) && (<>
-            <Button css={buttonCSS} onClick={game.callADraw.bind(game)}>call a draw</Button>
-            <Button css={buttonCSS} onClick={game.concede.bind(game)}>concede</Button>
-            <Button css={buttonCSS} onClick={game.checkStalemate.bind(game)}>check stalemate</Button>
-          </>)}
-            <Button css={buttonCSS} onClick={game.reset.bind(game)}>reset</Button>
-            <PersistToFileButton >save game...</PersistToFileButton>
-            <RestoreFromFileButton >restore game...</RestoreFromFileButton>
-          </Flex>
+        <UndoRedoWidget buttonSize='large' />
+      </Flex>
+      <hr />
+      <Flex direction='column' justify='start' align='end' css={{mt: '$4'}} >
+        <BoardDirectionWidget css={{mb: '$4'}}/>
+        <Flex direction='column' justify='start' align='end' css={{fontSize: '$normal', mb: '$5'}}>
+        {(game.playing) && (<>
+          <Button css={buttonCSS} onClick={game.callADraw}>call a draw</Button>
+          <Button css={buttonCSS} onClick={game.concede}>concede</Button>
+          <Button css={buttonCSS} onClick={game.checkStalemate}>check stalemate</Button>
+        </>)}
+          <Button css={buttonCSS} onClick={game.reset}>reset</Button>
+          <br />
+          <PersistToFileButton >save game...</PersistToFileButton>
+          <RestoreFromFileButton >restore game...</RestoreFromFileButton>
         </Flex>
       </Flex>
       <Flex direction='row' justify='end' align='center'>
@@ -60,7 +85,7 @@ const Dash: React.FC<{}> = observer(() => {
       </Flex>
       <hr />
       <Messages showMoves={showMoves}/>
-    </div>
+    </DashView>
   )
 })
 

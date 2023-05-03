@@ -1,19 +1,29 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
+import type { CSS } from '@stitches/react'
+import { styled } from '~/styles/stitches.config'
+
 import { useGame } from '~/services'
+import SideSwatch from './SideSwatch'
 
-import '~/styles/turnIndicator.scss'
+const InnerView = styled('div', {
 
-const TurnIndicator: React.FC = observer(() => {
+})
+
+const TurnIndicator: React.FC<{
+  css?: CSS
+}> = observer(({
+  css
+}) => {
 
   const game = useGame()
 
   return (
-    <p className='turn-indicator'>
-      <span className={`swatch ${game.currentTurn}`}/>
+    <InnerView className='turn-indicator' css={css}>
+      <SideSwatch side={game.currentTurn}/>
       <span className='label'>'s turn</span> 
-    </p>
+    </InnerView>
   )
 })
 
