@@ -6,7 +6,7 @@ $height-header: 52px;
 body {
   //-webkit-font-smoothing: antialiased;
   //-moz-osx-font-smoothing: grayscale;
-  background-image: url('assets/img/chess_bg_1920.jpg');
+  background-image: url('assets/img/chess_bg_1920_low_res.jpg');
 }
 
 .app-header {
@@ -57,7 +57,7 @@ body {
 
 .board {
 
-  background-image: url('assets/img/wood_grain_bg.jpg'); 
+  background-image: url('assets/img/wood_grain_bg_low_res.jpg'); 
 
   aspect-ratio: 1 / 1;
   display: grid;

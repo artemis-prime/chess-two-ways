@@ -18,7 +18,7 @@ import {
   UndoRedoWidget,
 } from '~/app/widgets'
 
-import bg from 'assets/img/slate_bg.jpg'
+import bg from 'assets/img/slate_bg_low_res.jpg'
 
 const DashView = styled(Flex, {
   backgroundImage: `url(${bg})`, 

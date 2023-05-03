@@ -174,7 +174,7 @@ const Layout: React.FC = () => {
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
         <GameContainer animatedStyle={gameContainerAnimatedStyle}>
-          <GameBGImage imageURI={'chess_bg_1920'} >
+          <GameBGImage imageURI={'chess_bg_1920_low_res'} >
             <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
             <CornerShim animatedStyle={cornerShimAnimatedStyle} />
             <GameArea showBorder={menuFullyVisible}>

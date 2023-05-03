@@ -68,7 +68,7 @@ const Board: React.FC<{
 
   return (
     <BoardInner style={style} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
-      <BGImage imageURI={'wood_grain_bg'}  >
+      <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(whiteOnBottom).map((s: ObsSquare) => (
               // See comments above

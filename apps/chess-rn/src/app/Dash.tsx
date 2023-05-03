@@ -48,7 +48,7 @@ const Dash: React.FC<{
 }) => {
 
   return (
-    <StyledBGImage imageURI={'slate_bg'}  style={style}>
+    <StyledBGImage imageURI={'slate_bg_low_res'}  style={style}>
       <AppBarInDash {...rest} />
       <DashInner pointerEvents={(disableInput ? 'none' : 'auto')}>
         <View style={{
