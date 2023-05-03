@@ -5,11 +5,13 @@ import {
   type ViewStyle,
   type LayoutChangeEvent 
 } from 'react-native'
+import { autorun } from 'mobx'
+import { observer } from 'mobx-react'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled } from '~/styles/stitches.config'
-import { useGame } from '~/services'
+import { useBoardOrientation, useGame } from '~/services'
 import { BGImage } from '~/primatives'
 
 import Square from './board/Square'
@@ -39,15 +41,13 @@ const SquaresOuter = styled(View, {
 const Board: React.FC<{ 
   disableInput: boolean
   style?: StyleProp<ViewStyle> 
-}> = ({
+}> = observer(({
   disableInput,
   style 
 }) => {
-  const whiteOnBottom = true // TODO: will be ui state soon :)
-
-  //console.warn("BOARD: input " + disableInput)
 
   const game = useGame()
+  const bo = useBoardOrientation()
   
     // Squares need to know their size in pt to do internal layout.
     // Instead of forcing each square listen for it's own size changes,
@@ -57,8 +57,10 @@ const Board: React.FC<{
   const { layoutListener: layoutListenerDnd, setWhiteOnBottom } = useDnDConfig()
 
   useEffect(() => {
-    setWhiteOnBottom(whiteOnBottom)
-  }, [whiteOnBottom])
+    return autorun(() => {
+      setWhiteOnBottom(bo.whiteOnBottom)
+    })
+  })
 
   const layoutListener = (e: LayoutChangeEvent): void  => {
     const {nativeEvent: { layout: {width}}} = e;
@@ -70,7 +72,7 @@ const Board: React.FC<{
     <BoardInner style={style} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
-        {game.getBoardAsArray(whiteOnBottom).map((s: ObsSquare) => (
+        {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
               // See comments above
           <Square square={s} sizeInLayout={boardSize && boardSize / 8 } key={`key-${s.rank}-${s.file}`} />
         ))}
@@ -79,7 +81,7 @@ const Board: React.FC<{
       <DraggingPiece sizeInLayout={boardSize && boardSize * .85 / 8} />
     </BoardInner>
   )
-}
+})
 
 
 const BoardWithDnD: React.FC<{ 

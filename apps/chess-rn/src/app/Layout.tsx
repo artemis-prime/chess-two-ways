@@ -31,7 +31,7 @@ import Animated, {
  } from 'react-native-reanimated'
 
 import { useTheme } from '~/styles/stitches.config'
-import { useUI } from '~/services'
+import { useMenu } from '~/services'
 
 import Board from './Board'
 import Dash from './Dash'
@@ -45,20 +45,20 @@ import {
   GameBGImage
 } from './LayoutComponents'
 
-//import Menu, { MenuTitle } from './Menu'
+import Menu from './Menu'
 
 const screenDimensions = Dimensions.get('screen')
 
 const OPEN_MENU_Y_OFFSET = 92
-const OPEN_MENU_X_FRACTION = 0.6
+const OPEN_MENU_X_FRACTION = 0.65
 
-const GameAreaInner: React.FC<{
+const GameAreaInnermost: React.FC<{
   gesture: FlingGesture 
 }> = ({
   gesture
 }) => {
 
-  const ui = useUI()
+  const ui = useMenu()
   const [menuVisible, setMenuVisible] = useState<boolean>(ui.menuVisible)
 
   useEffect(() => {
@@ -73,22 +73,21 @@ const GameAreaInner: React.FC<{
   </>)
 }
 
-const GameAreaInnerOuter: React.FC<{
+const GameAreaInner: React.FC<{
   gesture: FlingGesture 
 }> = ({
   gesture
 }) => (
   <Animated.View collapsable={false} style={{gap: 11}}>
-    <GameAreaInner gesture={gesture}/>
+    <GameAreaInnermost gesture={gesture}/>
   </Animated.View>
 )
-  
 
 const Layout: React.FC = () => {
 
   const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const theme = useTheme()
-  const ui = useUI()
+  const ui = useMenu()
 
     // Can be referenced on both threads.
     // Mobx observables on the other, being proxied, get flagged 
@@ -173,12 +172,13 @@ const Layout: React.FC = () => {
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
+        <Menu visible={menuFullyVisible} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
         <GameContainer animatedStyle={gameContainerAnimatedStyle}>
           <GameBGImage imageURI={'chess_bg_1920_low_res'} >
             <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
             <CornerShim animatedStyle={cornerShimAnimatedStyle} />
             <GameArea showBorder={menuFullyVisible}>
-              <GameAreaInnerOuter gesture={gesture} />
+              <GameAreaInner gesture={gesture} />
             </GameArea>
           </GameBGImage>
         </GameContainer>

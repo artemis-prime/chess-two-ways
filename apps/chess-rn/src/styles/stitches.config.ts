@@ -68,7 +68,8 @@ const {
     fontSizes: {
       common: LINEHEIGHTS.common * 0.6,
       smaller: LINEHEIGHTS.smaller * 0.6,  
-      menu: LINEHEIGHTS.menu * .7
+      menu: LINEHEIGHTS.menu * .5,
+      menuTitle: LINEHEIGHTS.menu * .8
     },
     lineHeights: {
       ...LINEHEIGHTS
@@ -182,6 +183,14 @@ const common = {
     lineHeight: '$menu',
     fontWeight: '$semibold',
     fontSize: '$menu',
+    color: '$dashText',
+    textTransform: 'lowercase'
+  }),
+  menuTextTitle: css({
+    fontFamily: 'sans',
+    lineHeight: '$menu',
+    fontWeight: '$semibold',
+    fontSize: '$menuTitle',
     color: '$dashText'
   }),
   dashTextCommon: css({

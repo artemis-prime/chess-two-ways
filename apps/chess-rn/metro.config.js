@@ -6,11 +6,11 @@ const path = require('path')
 // https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js
 // https://mmazzarolo.com/blog/2021-09-18-running-react-native-everywhere-mobile/
 const config = {
+
+  projectRoot : path.resolve(__dirname),
   watchFolders: [
     ...monorepoMetroTools.watchFolders,
     path.resolve(__dirname, '../../just-the-chess'),
-    path.resolve(__dirname, './src'),
-    path.resolve(__dirname, '../../assets') 
   ],
 
   transformer: {

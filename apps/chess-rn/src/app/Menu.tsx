@@ -1,73 +1,96 @@
-import React, { type PropsWithChildren } from 'react'
+import React from 'react'
 import { 
   View, 
   Text, 
   type ViewStyle, 
   type StyleProp 
 } from 'react-native'
+import { observer } from 'mobx-react'
 
-import { styled, common } from '~/styles/stitches.config'
+import { styled, common, css } from '~/styles/stitches.config'
 
-const MenuTitleText = styled(Text, common.menuTextCommon)
-const MenuTitleOuter = styled(View, {
-//  position: 'absolute',
-  backgroundColor: 'transparent',
+import { MenuButton, MenuCheckbox } from '~/primatives'
+import { useBoardOrientation } from '~/services'
+
+
+const MenuOuter = styled(View, {
+  position: 'absolute',
+  display: 'none',
+  left: 0,
+  top: '$sizes$appBarHeight',
+  width: '100%', 
+  px: '$3',
+  py: '$1',
+  mt: '$1',
+
   flexDirection: 'column',
   justifyContent: 'flex-start',
-  //width: '100%'
+  alignItems: 'flex-start',
+
+  //borderWidth: 1,
+  //borderColor: 'red',
+
+  variants: {
+    visible: {
+      true: {
+        display: 'flex'
+      }
+    }
+  }
 })
-        {/* false && (<>
-          <MenuTitle style={menuStyles.title} >chess both ways</MenuTitle>
-          <Menu style={menuStyles.menu} />
-        </>) */}
 
-  /*
-  const menuStyles = useMemo(() => ({
-    title: {
-      left: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .1,
-      top: theme.sizes.appBarHeight + theme.space[4],
-      right: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .1,
-      height: theme.lineHeights.common
-    },
-    menu: {
-      left: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .1,
-      top: theme.sizes.appBarHeight + theme.space[4] + 
-        theme.lineHeights.common + theme.space[6],
-      width: sizeRef.current.w  * OPEN_MENU_X_FRACTION * .8,
-      height: 300
-    } 
-
-  }), [sizeRef.current])
-  */
-
-
-const MenuTitle: React.FC<{
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren> = ({
-  children,
-  style 
-}) => (
-  <MenuTitleOuter style={[style, {
-    //alignItems: 'flex-start'
-  }]}>
-    <MenuTitleText>{children}</MenuTitleText>
-    <View style={{height: 2, marginTop: 10, alignSelf: 'stretch', backgroundColor: 'white'}} collapsable={false}/>
-  </MenuTitleOuter>
+const MenuTitleText = styled(Text, 
+  common.menuTextTitle,
+  css({
+    borderBottomColor: '$dashText',
+    borderBottomWidth: 1
+  })
 )
+
+const MenuItemsOuter = styled(View, {
+  //borderWidth: 1,
+  //borderColor: 'red',
+  pt: '$3'
+})
 
 
 const Menu: React.FC<{
+  visible: boolean  
+  width: number
   style?: StyleProp<ViewStyle>
-}> = ({
+}> = observer(({
+  visible,
+  width,
   style 
-}) => (
-  <View style={[style, {
-    //position: 'absolute',
-    backgroundColor: 'gray'
-  }]} />
-)
+}) => {
 
-export {
-  Menu as default,
-  MenuTitle
-}
+  const bo = useBoardOrientation()
+  const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+
+  return (
+    <MenuOuter visible={visible} style={style}>
+      <MenuTitleText>Chess two ways - Android</MenuTitleText>
+      <MenuItemsOuter style={{ width: width * .9, /* borderWidth: 0.5,borderColor: 'red', */}}>
+        <MenuButton 
+          onClick={swapDirection} 
+          disabled={bo.autoOrientToCurrentTurn} 
+          icon={{icon: '\u296F', style: {
+            top: -1,
+          }}}
+        >swap view</MenuButton>
+        <MenuCheckbox 
+          //style={{marginLeft: 28}}
+          checked={bo.autoOrientToCurrentTurn} 
+          setChecked={bo.setAutoOrientToCurrentTurn.bind(bo)}
+          icon={'\u27F3'}
+        >auto-sync view</MenuCheckbox>
+      </MenuItemsOuter>
+    </MenuOuter>
+  )
+})
+
+// cycle arrow \u1F5D8
+// double arrow \u296F
+// dobule headed arrow \u2195
+
+export default Menu
