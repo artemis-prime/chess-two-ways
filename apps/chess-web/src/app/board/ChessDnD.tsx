@@ -1,5 +1,6 @@
 import React, { 
   useContext, 
+  useEffect, 
   useRef 
 } from 'react'
 
@@ -9,6 +10,12 @@ import {
   type DragEndEvent,
   type DragCancelEvent,
   type DragMoveEvent,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+
 } from '@dnd-kit/core'
 
 import { positionsEqual, type ObsPieceRef } from '@artemis-prime/chess-core'
@@ -26,44 +33,67 @@ const useDraggingPiece = (): ObsPieceRef => (
 
 const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   
-  const stateRef = useRef<DnDStateInternal>(getDnDStateSingleton())
+  const dragStateRef = useRef<DnDStateInternal>(getDnDStateSingleton())
+  const sensorsSpreadRef = useRef<any>({})
   const game = useGame()
 
+  const pointerSensor = useSensor(PointerSensor)
+  const touchSensor = useSensor(TouchSensor)
+  const keyboardSensor = useSensor(KeyboardSensor)
+
+  const sensors = useSensors(
+    pointerSensor,
+    touchSensor,
+    keyboardSensor
+  )
+
+  useEffect(() => {
+    const isTouchEnabled = () => (
+      ( 'ontouchstart' in window ) || ( navigator.maxTouchPoints > 0 )
+    )
+      // either default (pointer + keyboard), 
+      // or pointer + keyboard + touch
+    if (isTouchEnabled()) {
+      sensorsSpreadRef.current = {sensors}
+    } 
+  }, [])
+
   const onDragStart = (event: DragStartEvent) => {
-    stateRef.current.setPayload(event.active.data.current as DnDPayload)
+    dragStateRef.current.setPayload(event.active.data.current as DnDPayload)
     //console.log('drag started: ' + event.active.data.current?.piece.type)
   }
 
   const onDragEnd = (event: DragEndEvent) => {
     const taken = game.takeResolvedAction()
-    stateRef.current.clear()
+    dragStateRef.current.clear()
     //console.log(`drag ended: ${!taken ? 'NO ' : ''}action taken`)
   }
 
   const onDragUpdate = (event: DragMoveEvent) => {
 
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
-    if (pos && stateRef.current.piece) {
-      if (!positionsEqual(pos, stateRef.current.squareOver!)) {
+    if (pos && dragStateRef.current.piece) {
+      if (!positionsEqual(pos, dragStateRef.current.squareOver!)) {
         game.resolveAction({
-          piece: stateRef.current.piece, 
-          from: stateRef.current.from!, // will be set if piece is
+          piece: dragStateRef.current.piece, 
+          from: dragStateRef.current.from!, // will be set if piece is
           to: pos
         })
-        stateRef.current.setSquareOver(pos)
+        dragStateRef.current.setSquareOver(pos)
       }
     }
   }
 
   const onDragCancel = (event: DragCancelEvent) => {
     game.abandonResolution()
-    stateRef.current.clear()
+    dragStateRef.current.clear()
     //console.log('drag cancelled, NO action taken')
   }
 
   return (
-    <ChessDnDContext.Provider value={stateRef.current}>
+    <ChessDnDContext.Provider value={dragStateRef.current}>
     <DndContext
+      {...sensorsSpreadRef.current}
       onDragStart={onDragStart}
       onDragMove={onDragUpdate}
       onDragEnd={onDragEnd}

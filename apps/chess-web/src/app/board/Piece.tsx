@@ -22,6 +22,10 @@ interface SpecificPieceProps {
 }
 
 const PieceEffectsView = styled(Flex, {
+
+    // https://docs.dndkit.com/api-documentation/sensors/touch
+  touchAction: 'none',
+
   '& svg': {
     display: 'block'
   },
