@@ -74,12 +74,9 @@ const Menu: React.FC<{
         <MenuButton 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
-          icon={{icon: '\u296F', style: {
-            top: -1,
-          }}}
+          icon={{icon: '\u296F', style: {top: -1}}}
         >swap view</MenuButton>
         <MenuCheckbox 
-          //style={{marginLeft: 28}}
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn.bind(bo)}
           icon={'\u27F3'}

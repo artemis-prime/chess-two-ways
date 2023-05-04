@@ -71,6 +71,8 @@ const GameAreaInner: React.FC<{
 }> = ({
   gesture
 }) => (
+    // This must be an animated view due to what seems to be a
+    // r-n-reanimated bug.
   <Animated.View collapsable={false} style={{gap: 11}}>
     <GameAreaInnermost gesture={gesture}/>
   </Animated.View>

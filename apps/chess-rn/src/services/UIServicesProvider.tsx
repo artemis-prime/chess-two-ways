@@ -88,35 +88,35 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
   const game = useGame()
   
   useEffect(() => {
-    const fast = setInterval(() => {
+    const fastID = setInterval(() => {
       pulsesRef.current.setFast(!pulsesRef.current.fast)   
     }, 200)  
-    const slow = setInterval(() => {
+    const slowID = setInterval(() => {
       pulsesRef.current.setSlow(!pulsesRef.current.slow)   
     }, 500)  
-
-    return () => {
-      clearInterval(fast)
-      clearInterval(slow)
-    }
-  }, [])
-
-  useEffect(() => (
-      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
-    autorun(
+      // autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+    const cleanupAutorun = autorun(
       () => {
-        if (boardOrientationRef.current.autoOrientToCurrentTurn) {
+        const b = boardOrientationRef.current
+        if (b.autoOrientToCurrentTurn) {
           if (game.currentTurn === 'white') {
-            boardOrientationRef.current.setWhiteOnBottom(true)
+            b.setWhiteOnBottom(true)
           }
           else {
-            boardOrientationRef.current.setWhiteOnBottom(false)
+            b.setWhiteOnBottom(false)
           }
         }
       }, 
       { scheduler: (run) => (setTimeout(run, 300)) }
     )
-  ), [])
+  
+
+    return () => {
+      clearInterval(fastID)
+      clearInterval(slowID)
+      cleanupAutorun()
+    }
+  }, [])
 
   return (
     <UIServicesContext.Provider value={{
