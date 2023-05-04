@@ -101,12 +101,12 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
         setWhiteOnBottom(false)
       }
     }
-  }, {scheduler: (run) => (setTimeout(run, 300))})))
+  }, {scheduler: (run) => (setTimeout(run, 300))})), [])
 
   /*
   useEffect(() => {
     game.registerListener(messagesRef.current, 'chess-web-messages-store')
-  })
+  }, [])
   */
   return (
     <UIServicesContext.Provider value={{

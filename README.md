@@ -27,7 +27,7 @@ They are named and organized this way to further re-enforce the separation of co
 ### Running the apps
 
 #### The web version is deployed as a [Github Pages site](https://artemis-prime.github.io/chess-two-ways/) for the this repo. 
-[View it here](https://artemis-prime.github.io/chess-two-ways/) or proceed as follows to run it or the React Native version locally.
+If you are looking at the web version on a **mobile device**, it's strongly recommended that you **use Firefox or Safari**, since Chrome turns long presses into a context menu trigger.  This is a known issue for drag 'n drop web apps, that despite our best efforts, we've not yet found a great solution for. [View it here](https://artemis-prime.github.io/chess-two-ways/) or proceed as follows to run it or the React Native version locally.
 
 Please run all scripts from the monorepo root (where the root `package.json` lives), as the individual package scripts are not meant to be used by the uninitiated.
 
