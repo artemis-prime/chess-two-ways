@@ -20,7 +20,7 @@ const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
 
   return (
     <ChessDnDShell>
-      <Box className={'board'} css={css}>
+      <Box className={'board'} css={css} onContextMenu={(e)=> {e.preventDefault()}}>
       {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
         <Square square={s} key={`key-${s.rank}-${s.file}`} />
       ))}
