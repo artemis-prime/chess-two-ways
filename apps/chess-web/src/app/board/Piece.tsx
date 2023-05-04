@@ -22,6 +22,10 @@ interface SpecificPieceProps {
 }
 
 const PieceEffectsView = styled(Flex, {
+
+    // https://docs.dndkit.com/api-documentation/sensors/touch
+  touchAction: 'none',
+
   '& svg': {
     display: 'block'
   },
@@ -209,6 +213,7 @@ const PieceComponent: React.FC<{
 
   return (
     <PieceEffectsView 
+      onContextMenu={(e) => {e.preventDefault()}}
       justify='center'
       direction='row'
       align='center'
