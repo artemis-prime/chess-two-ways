@@ -10,7 +10,7 @@ import {
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
-import { autorun } from 'mobx'
+import { observer } from 'mobx-react'
 
 import {
   Gesture,
@@ -54,24 +54,17 @@ const OPEN_MENU_X_FRACTION = 0.65
 
 const GameAreaInnermost: React.FC<{
   gesture: FlingGesture 
-}> = ({
+}> = observer(({
   gesture
 }) => {
 
   const ui = useMenu()
-  const [menuVisible, setMenuVisible] = useState<boolean>(ui.menuVisible)
-
-  useEffect(() => {
-    return autorun(() => {
-      setMenuVisible(ui.menuVisible)
-    })
-  }, [])
 
   return (<>
-    <Dash disableInput={menuVisible} menuVisible={menuVisible} gesture={gesture} />
-    <Board disableInput={menuVisible} />
+    <Dash disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
+    <Board disableInput={ui.menuVisible} />
   </>)
-}
+})
 
 const GameAreaInner: React.FC<{
   gesture: FlingGesture 

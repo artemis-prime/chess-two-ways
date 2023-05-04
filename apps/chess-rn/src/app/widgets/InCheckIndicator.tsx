@@ -15,17 +15,18 @@ const InCheckIndicator: React.FC = () => {
   const game = useGame()
   const [squaresString, setSquaresString] = useState<string>('')
 
-    // Note that autorun returns a cleanup function that deletes the created listener
-    // This is advised by mobx docs: https://mobx.js.org/reactions.html
-  useEffect(() => (autorun(() => {
-    let str = ''
-    if (game.check) {
-      str = game.check.from.reduce((acc: string, current: Position, i: number) => (
-        ((i > 0) ? ', ' : '') + acc + positionToString(current)
-      ), '')
-    }
-    setSquaresString(str)
-  })), [])
+  useEffect(() => (
+      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+    autorun(() => {
+      let str = ''
+      if (game.check) {
+        str = game.check.from.reduce((acc: string, current: Position, i: number) => (
+          ((i > 0) ? ', ' : '') + acc + positionToString(current)
+        ), '')
+      }
+      setSquaresString(str)
+    })
+  ), [])
 
   return squaresString ? (
     <StyledText>{`In check from ${squaresString}!`}</StyledText> 

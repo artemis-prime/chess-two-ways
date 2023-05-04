@@ -55,12 +55,14 @@ const Board: React.FC<{
     // We are a simple 8x8 grid after all! :)
   const [boardSize, setBoardSize] = useState<number | undefined>(undefined)
   const { layoutListener: layoutListenerDnd, setWhiteOnBottom } = useDnDConfig()
+      
 
-  useEffect(() => {
-    return autorun(() => {
+  useEffect(() => (
+      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+    autorun(() => {
       setWhiteOnBottom(bo.whiteOnBottom)
     })
-  })
+  ),[])
 
   const layoutListener = (e: LayoutChangeEvent): void  => {
     const {nativeEvent: { layout: {width}}} = e;

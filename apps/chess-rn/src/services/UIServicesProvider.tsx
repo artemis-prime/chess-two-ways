@@ -101,8 +101,8 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     }
   }, [])
 
-    // autorun() returns a cleanup function: https://mobx.js.org/reactions.html
   useEffect(() => (
+      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
     autorun(
       () => {
         if (boardOrientationRef.current.autoOrientToCurrentTurn) {
