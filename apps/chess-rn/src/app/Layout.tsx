@@ -65,7 +65,7 @@ const GameAreaInnermost: React.FC<{
     return autorun(() => {
       setMenuVisible(ui.menuVisible)
     })
-  })
+  }, [])
 
   return (<>
     <Dash disableInput={menuVisible} menuVisible={menuVisible} gesture={gesture} />
@@ -107,7 +107,7 @@ const Layout: React.FC = () => {
       ({screen}) => { sizeRef.current = {w: screen.width, h: screen.height }},
     )
     return () => { subscription?.remove() }
-  })
+  }, [])
 
   const onAnimationStarted = (): void => {
     if (menuVisible_sv.value) {

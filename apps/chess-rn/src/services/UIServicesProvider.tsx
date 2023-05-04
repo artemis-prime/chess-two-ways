@@ -101,19 +101,23 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     }
   }, [])
 
-    // Note that autorun returns a cleanup function that deletes the created listener
-    // This is advised by mobx docs: https://mobx.js.org/reactions.html
-    useEffect(() => (autorun(() => {
-      if (boardOrientationRef.current.autoOrientToCurrentTurn) {
-        if (game.currentTurn === 'white') {
-          boardOrientationRef.current.setWhiteOnBottom(true)
+    // autorun() returns a cleanup function: https://mobx.js.org/reactions.html
+  useEffect(() => (
+    autorun(
+      () => {
+        if (boardOrientationRef.current.autoOrientToCurrentTurn) {
+          if (game.currentTurn === 'white') {
+            boardOrientationRef.current.setWhiteOnBottom(true)
+          }
+          else {
+            boardOrientationRef.current.setWhiteOnBottom(false)
+          }
         }
-        else {
-          boardOrientationRef.current.setWhiteOnBottom(false)
-        }
-      }
-    }, {scheduler: (run) => (setTimeout(run, 300))})))
-  
+      }, 
+      { scheduler: (run) => (setTimeout(run, 300)) }
+    )
+  ), [])
+
   return (
     <UIServicesContext.Provider value={{
       menu: menuStateRef.current,
