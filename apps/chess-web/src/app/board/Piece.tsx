@@ -213,6 +213,7 @@ const PieceComponent: React.FC<{
 
   return (
     <PieceEffectsView 
+      onContextMenu={(e) => {e.preventDefault()}}
       justify='center'
       direction='row'
       align='center'
