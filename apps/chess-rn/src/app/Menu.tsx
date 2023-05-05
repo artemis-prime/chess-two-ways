@@ -1,66 +1,80 @@
-import React from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
   View, 
   Text, 
   type ViewStyle, 
   type StyleProp 
 } from 'react-native'
+import Animated, { type AnimateStyle } from 'react-native-reanimated'
 import { observer } from 'mobx-react'
 
-import { styled, common, css } from '~/styles/stitches.config'
+import { styled, common, css, useTheme } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
 
 import { MenuButton, MenuCheckbox } from '~/primatives'
 import { useBoardOrientation } from '~/services'
 
+const MenuOuter: React.FC<{
+  animatedStyle: AnimateStyle<ViewStyle>
+  style?: StyleProp<ViewStyle>
+} & PropsWithChildren> = ({
+  animatedStyle,
+  style,
+  children 
+}) => {
 
-const MenuOuter = styled(View, {
-  position: 'absolute',
-  display: 'none',
-  left: 0,
-  top: '$sizes$appBarHeight',
-  width: '100%', 
-  px: '$3',
-  py: '$1',
-  mt: '$1',
+  const theme = useTheme()
 
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
+  return (
+    <Animated.View 
+      style={[
+        {
+          position: 'absolute',
+          left: 0,
+          top: theme.sizes.appBarHeight,
+          width: '100%', 
+          paddingLeft: theme.space.menuPX,
+          paddingRight: theme.space.menuPX,
+          paddingTop: theme.space[1],
+          paddingBottom: theme.space[1],
+          marginTop: theme.space[1],
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start'
+        }, 
+        style,
+        animatedStyle
+      ]}
+    >
+      {children}
+    </Animated.View>
+  )
+}
 
-  //borderWidth: 1,
-  //borderColor: 'red',
-
-  variants: {
-    visible: {
-      true: {
-        display: 'flex'
-      }
-    }
-  }
-})
 
 const MenuTitleText = styled(Text, 
-  common.menuTextTitle,
+  common.typography.menu.title,
   css({
     borderBottomColor: '$dashText',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    pb: '$menuSeparatorPY',
+    mb: '$menuSeparatorPY',
   })
 )
 
 const MenuItemsOuter = styled(View, {
-  //borderWidth: 1,
-  //borderColor: 'red',
+  ...debugBorder('off'),
   pt: '$3'
 })
 
 
 const Menu: React.FC<{
-  visible: boolean  
   width: number
+  animatedStyle: AnimateStyle<ViewStyle>
   style?: StyleProp<ViewStyle>
 }> = observer(({
-  visible,
   width,
+  animatedStyle,
   style 
 }) => {
 
@@ -68,19 +82,22 @@ const Menu: React.FC<{
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 
   return (
-    <MenuOuter visible={visible} style={style}>
-      <MenuTitleText>Chess two ways - Android</MenuTitleText>
-      <MenuItemsOuter style={{ width: width * .9, /* borderWidth: 0.5,borderColor: 'red', */}}>
+    <MenuOuter animatedStyle={animatedStyle} style={style}>
+      <MenuItemsOuter style={{ 
+        width: width * .9, 
+        ...debugBorder('blue', 'menu')
+      }}>
+        <MenuTitleText>View</MenuTitleText>
         <MenuButton 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
-          icon={{icon: '\u296F', style: {top: -1}}}
+          icon={'\u296F'}
         >swap view</MenuButton>
         <MenuCheckbox 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn.bind(bo)}
           icon={'\u27F3'}
-        >auto-sync view</MenuCheckbox>
+        >auto-swap view</MenuCheckbox>
       </MenuItemsOuter>
     </MenuOuter>
   )

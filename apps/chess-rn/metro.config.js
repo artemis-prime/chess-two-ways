@@ -1,6 +1,6 @@
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-//const { getMetroTools } = require("react-native-monorepo-tools")
-//const monorepoMetroTools = getMetroTools()
+const { getMetroTools } = require("react-native-monorepo-tools")
+const monorepoMetroTools = getMetroTools()
 const path = require('path')
 
 // https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js
@@ -9,6 +9,7 @@ const config = {
 
   projectRoot : path.resolve(__dirname),
   watchFolders: [
+    ...monorepoMetroTools.watchFolders,
     path.resolve(__dirname, '../../just-the-chess'),
   ],
 

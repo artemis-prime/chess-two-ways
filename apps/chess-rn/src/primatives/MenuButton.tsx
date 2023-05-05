@@ -8,17 +8,17 @@ import {
 } from 'react-native'
 
 import { styled, common } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 import type UnicodeIcon from './UnicodeIcon'
 import MenuIcon from './MenuIcon'
 
 const MenuElementInnerView = styled(View,  {
-    
-  height: common.menuTextCommon.lineHeight,
+
+  ...debugBorder('white', 'menu'),
+  height: common.typography.menu.item.lineHeight,
   width: '100%',
-  //borderWidth: 0.5,
-  //borderColor: 'white',
   textAlignVertical: 'center',
   flexDirection: 'row',
   justifyContent: 'flex-start',
@@ -37,8 +37,7 @@ const MenuElementInnerView = styled(View,  {
 })
 
 const TitleWrapper = styled(Text, {
-  ...common.menuTextCommon,
-  fontWeight: '$bold',
+  ...common.typography.menu.item,
   variants: {
     state: {
       disabled: {

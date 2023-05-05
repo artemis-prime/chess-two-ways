@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 
 import { styled, common } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
 
 import { CheckboxShell, type CheckboxViewProps } from '~/primatives'
 import MenuIcon from './MenuIcon'
@@ -15,13 +16,11 @@ import type UnicodeIcon from './UnicodeIcon'
 
 const MenuElementInnerView = styled(View, {
     
-  height: common.menuTextCommon.lineHeight,
+  ...debugBorder('white', 'menu'),
+  height: common.typography.menu.item.lineHeight,
   width: '100%',
-  //borderWidth: 0.5,
-  //borderColor: 'white',
   flexDirection: 'row',
   justifyContent: 'space-between',
-  //alignItems: 'center',
   variants: {
     pressed: {
       true: {
@@ -33,8 +32,7 @@ const MenuElementInnerView = styled(View, {
 })
 
 const TitleWrapper = styled(Text, {
-  ...common.menuTextCommon,
-  fontWeight: '$bold',
+  ...common.typography.menu.item,
   variants: {
     disabled: {
       true: {
@@ -64,10 +62,10 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
     </View>
     <MenuIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
       textAlign: 'right',
-      //borderWidth: 0.5,
-      //borderColor: 'yellow',
-      top: 3,
-      left: 4
+      top: 4,
+      left: 7,
+      opacity: 0.8,
+      fontWeight: '400'
     }}} />
   </MenuElementInnerView>
 )

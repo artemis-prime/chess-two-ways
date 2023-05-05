@@ -49,7 +49,8 @@ const {
       boardSquareBrown: 'rgba(124, 79, 52, 0.60)',
     },
     fonts: {
-      common: 'IDidThis'
+      dash: 'IDidThis',
+      menu: 'Roboto'
     },
     fontWeights: {
       bold: '700',
@@ -85,7 +86,10 @@ const {
       none: 0,
       1: 4,
       2: 7,
+      menuPY: 7,
+      menuSeparatorPY: 7,
       3: 11,
+      menuPX: 11,
       4: 16,
       5: LINEHEIGHTS.smaller,
       6: LINEHEIGHTS.common,
@@ -100,6 +104,7 @@ const {
       appBarHeight: 42,
       swatchNormalHeight: LINEHEIGHTS.common * 0.7,
       swatchNormalWidth: LINEHEIGHTS.common * 1.3, 
+      menuIconSize: 24,
     },
     radii: {
       none: 0,
@@ -177,40 +182,48 @@ const {
   },
 })
 
+const typography = {
+  menu: {
+    item: css({
+      fontFamily: '$menu',
+      lineHeight: '$menu',
+      fontWeight: '$semibold',
+      fontSize: '$menu',
+      color: '$dashText',
+      textTransform: 'lowercase'
+    }),
+    title: css({
+      fontFamily: '$menu',
+      lineHeight: '$menu',
+      fontWeight: '$semibold',
+      fontSize: '$menu',
+      color: '$dashText'
+    })
+  },
+  dash: {
+    normal: css({
+      fontFamily: '$dash',
+      lineHeight: '$common',
+      fontSize: '$common',
+      color: '$dashText'
+    }),
+    smaller: css({
+      fontFamily: '$dash',
+      lineHeight: '$smaller',
+      fontSize: '$smaller',
+      color: '$dashText'
+    }),
+    alertSmaller: css({
+      fontFamily: '$dash',
+      lineHeight: '$smaller',
+      fontSize: '$smaller',
+      color: '$dashAlert'
+    })
+  }
+}
+
 const common = {
-  menuTextCommon: css({
-    fontFamily: 'sans',
-    lineHeight: '$menu',
-    fontWeight: '$semibold',
-    fontSize: '$menu',
-    color: '$dashText',
-    textTransform: 'lowercase'
-  }),
-  menuTextTitle: css({
-    fontFamily: 'sans',
-    lineHeight: '$menu',
-    fontWeight: '$semibold',
-    fontSize: '$menuTitle',
-    color: '$dashText'
-  }),
-  dashTextCommon: css({
-    fontFamily: '$common',
-    lineHeight: '$common',
-    fontSize: '$common',
-    color: '$dashText'
-  }),
-  dashTextSmaller: css({
-    fontFamily: '$common',
-    lineHeight: '$smaller',
-    fontSize: '$smaller',
-    color: '$dashText'
-  }),
-  dashTextAlertSmaller: css({
-    fontFamily: '$common',
-    lineHeight: '$smaller',
-    fontSize: '$smaller',
-    color: '$dashAlert'
-  })
+  typography
 }
 
 export { 

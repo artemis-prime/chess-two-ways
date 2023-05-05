@@ -1,16 +1,19 @@
 import React from 'react'
 import { Text } from 'react-native'
 import { styled, common } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
 
 import type UnicodeIcon from './UnicodeIcon'
 
 const UnicodeWrapper = styled(Text, {
-  ...common.menuTextCommon,
-  fontSize: '$space$6',
+  ...common.typography.menu.item,
+  ...debugBorder('yellow', 'menu'),
+  fontSize: 36,
+  fontWeight: '$bold',
   
-  width: 34,
-  textAlign: 'left',
-  //top: 4,
+  width: 32,
+  textAlign: 'center',
+  left: -5,
   mr: 4,
   variants: {
     state: {
@@ -42,6 +45,7 @@ const MenuIcon: React.FC<{
   let style = (typeof icon === 'string') ? {} : icon.style 
   const stateToSpread = ['disabled', 'pressed'].includes(state) ? {state: state as 'disabled' | 'pressed'} : {}
   return (
+
     <UnicodeWrapper {...stateToSpread} style={style}>{unicode}</UnicodeWrapper>
   )
 }

@@ -49,7 +49,7 @@ import Menu from './Menu'
 
 const screenDimensions = Dimensions.get('screen')
 
-const OPEN_MENU_Y_OFFSET = 92
+const OPEN_MENU_Y_OFFSET = 95
 const OPEN_MENU_X_FRACTION = 0.65
 
 const GameAreaInnermost: React.FC<{
@@ -104,34 +104,35 @@ const Layout: React.FC = () => {
     return () => { subscription?.remove() }
   }, [])
 
-  const onAnimationStarted = (): void => {
+  const onMenuAnimationStarted = (): void => {
     if (menuVisible_sv.value) {
       setMenuFullyVisible(false)   
     }
   }
 
-  const _setMenuVisible = (visible: boolean): void => { 
-     if (visible) {
+  const onMenuAnimationFinished = (openned: boolean): void => { 
+     if (openned) {
       setMenuFullyVisible(true)  
     }
-    menuVisible_sv.value = visible
-    ui.setMenuVisible(visible) 
+    menuVisible_sv.value = openned
+    ui.setMenuVisible(openned) 
   }
   
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
     .onStart((e) => {
-      runOnJS(onAnimationStarted)()
+      runOnJS(onMenuAnimationStarted)()
       menuAnimationBase.value = withTiming(
         menuVisible_sv.value ? 0 : 1, 
         {
           duration: 200,
           easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
         },
+          // on finish
         () => {
           // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
-          // Accessing mobx observables is not allowed on the UI thread.
-          runOnJS(_setMenuVisible)(!menuVisible_sv.value)
+          // mobx observables (and any proxy objects) get clobbered when transfered onto the UI thread.
+          runOnJS(onMenuAnimationFinished)(!menuVisible_sv.value)
         }
       )
     })
@@ -159,7 +160,11 @@ const Layout: React.FC = () => {
     ) 
   }))
 
-  const cornerShimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
+  const shimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
+    opacity: menuAnimationBase.value
+  }))
+
+  const menuAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
     opacity: menuAnimationBase.value
   }))
 
@@ -167,11 +172,11 @@ const Layout: React.FC = () => {
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
-        <Menu visible={menuFullyVisible} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
+        <Menu animatedStyle={menuAnimatedStyle} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
         <GameContainer animatedStyle={gameContainerAnimatedStyle}>
           <GameBGImage imageURI={'chess_bg_1920_low_res'} >
             <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
-            <CornerShim animatedStyle={cornerShimAnimatedStyle} />
+            <CornerShim animatedStyle={shimAnimatedStyle} />
             <GameArea showBorder={menuFullyVisible}>
               <GameAreaInner gesture={gesture} />
             </GameArea>

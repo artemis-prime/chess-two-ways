@@ -19,7 +19,7 @@ const OuterView = styled(View, {
   height: '$common',
 })
 
-const StyledText = styled(Text, common.dashTextCommon)
+const StyledText = styled(Text, common.typography.dash.normal)
 
 const TurnIndicator: React.FC<{
   style?: StyleProp<ViewStyle>

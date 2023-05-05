@@ -7,7 +7,7 @@ import { type Position, positionToString } from '@artemis-prime/chess-core'
 import { styled, common } from '~/styles/stitches.config'
 import { useGame } from '~/services'
 
-const StyledText = styled(Text, common.dashTextAlertSmaller)
+const StyledText = styled(Text, common.typography.dash.alertSmaller)
 
 const InCheckIndicator: React.FC = () => {
 
