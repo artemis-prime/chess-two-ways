@@ -12,7 +12,7 @@ import { useGame } from '~/services'
 import { styled, common } from '~/styles/stitches.config'
 import { GhostButton } from '~/primatives'
 
-const PipeSymbolText = styled(Text, common.dashTextCommon)
+const PipeSymbolText = styled(Text, common.typography.dash.normal)
 
 const UndoRedoWidget: React.FC<{ 
   style?: StyleProp<ViewStyle> 

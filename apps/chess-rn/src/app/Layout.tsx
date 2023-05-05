@@ -10,7 +10,7 @@ import {
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
-import { autorun } from 'mobx'
+import { observer } from 'mobx-react'
 
 import {
   Gesture,
@@ -31,7 +31,7 @@ import Animated, {
  } from 'react-native-reanimated'
 
 import { useTheme } from '~/styles/stitches.config'
-import { useUI } from '~/services'
+import { useMenu } from '~/services'
 
 import Board from './Board'
 import Dash from './Dash'
@@ -45,50 +45,44 @@ import {
   GameBGImage
 } from './LayoutComponents'
 
-//import Menu, { MenuTitle } from './Menu'
+import Menu from './Menu'
 
 const screenDimensions = Dimensions.get('screen')
 
-const OPEN_MENU_Y_OFFSET = 92
-const OPEN_MENU_X_FRACTION = 0.6
+const OPEN_MENU_Y_OFFSET = 95
+const OPEN_MENU_X_FRACTION = 0.65
+
+const GameAreaInnermost: React.FC<{
+  gesture: FlingGesture 
+}> = observer(({
+  gesture
+}) => {
+
+  const ui = useMenu()
+
+  return (<>
+    <Dash disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
+    <Board disableInput={ui.menuVisible} />
+  </>)
+})
 
 const GameAreaInner: React.FC<{
   gesture: FlingGesture 
 }> = ({
   gesture
-}) => {
-
-  const ui = useUI()
-  const [menuVisible, setMenuVisible] = useState<boolean>(ui.menuVisible)
-
-  useEffect(() => {
-    return autorun(() => {
-      setMenuVisible(ui.menuVisible)
-    })
-  }, [])
-
-  return (<>
-    <Dash disableInput={menuVisible} menuVisible={menuVisible} gesture={gesture} />
-    <Board disableInput={menuVisible} />
-  </>)
-}
-
-const GameAreaInnerOuter: React.FC<{
-  gesture: FlingGesture 
-}> = ({
-  gesture
 }) => (
+    // This must be an animated view due to what seems to be a
+    // r-n-reanimated bug.
   <Animated.View collapsable={false} style={{gap: 11}}>
-    <GameAreaInner gesture={gesture}/>
+    <GameAreaInnermost gesture={gesture}/>
   </Animated.View>
 )
-  
 
 const Layout: React.FC = () => {
 
   const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const theme = useTheme()
-  const ui = useUI()
+  const ui = useMenu()
 
     // Can be referenced on both threads.
     // Mobx observables on the other, being proxied, get flagged 
@@ -110,34 +104,35 @@ const Layout: React.FC = () => {
     return () => { subscription?.remove() }
   }, [])
 
-  const onAnimationStarted = (): void => {
+  const onMenuAnimationStarted = (): void => {
     if (menuVisible_sv.value) {
       setMenuFullyVisible(false)   
     }
   }
 
-  const _setMenuVisible = (visible: boolean): void => { 
-     if (visible) {
+  const onMenuAnimationFinished = (openned: boolean): void => { 
+     if (openned) {
       setMenuFullyVisible(true)  
     }
-    menuVisible_sv.value = visible
-    ui.setMenuVisible(visible) 
+    menuVisible_sv.value = openned
+    ui.setMenuVisible(openned) 
   }
   
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
     .onStart((e) => {
-      runOnJS(onAnimationStarted)()
+      runOnJS(onMenuAnimationStarted)()
       menuAnimationBase.value = withTiming(
         menuVisible_sv.value ? 0 : 1, 
         {
           duration: 200,
           easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
         },
+          // on finish
         () => {
           // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
-          // Accessing mobx observables is not allowed on the UI thread.
-          runOnJS(_setMenuVisible)(!menuVisible_sv.value)
+          // mobx observables (and any proxy objects) get clobbered when transfered onto the UI thread.
+          runOnJS(onMenuAnimationFinished)(!menuVisible_sv.value)
         }
       )
     })
@@ -165,7 +160,11 @@ const Layout: React.FC = () => {
     ) 
   }))
 
-  const cornerShimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
+  const shimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
+    opacity: menuAnimationBase.value
+  }))
+
+  const menuAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
     opacity: menuAnimationBase.value
   }))
 
@@ -173,12 +172,13 @@ const Layout: React.FC = () => {
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
+        <Menu animatedStyle={menuAnimatedStyle} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
         <GameContainer animatedStyle={gameContainerAnimatedStyle}>
           <GameBGImage imageURI={'chess_bg_1920_low_res'} >
             <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
-            <CornerShim animatedStyle={cornerShimAnimatedStyle} />
+            <CornerShim animatedStyle={shimAnimatedStyle} />
             <GameArea showBorder={menuFullyVisible}>
-              <GameAreaInnerOuter gesture={gesture} />
+              <GameAreaInner gesture={gesture} />
             </GameArea>
           </GameBGImage>
         </GameContainer>

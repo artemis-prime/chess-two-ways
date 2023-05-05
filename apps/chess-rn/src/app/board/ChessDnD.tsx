@@ -99,9 +99,6 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
         stateRef.current.setFrom(p)
       }
     }
-    else {
-      console.warn('onStartDragging: no piece in ' + positionToString(p))
-    }
   }
 
   const onDragUpdate = (e: PanGestureHandlerEventPayload) => {
