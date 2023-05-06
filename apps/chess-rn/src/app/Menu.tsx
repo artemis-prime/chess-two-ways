@@ -29,13 +29,14 @@ const MenuOuter: React.FC<{
     <Animated.View 
       style={[
         {
+          ...debugBorder('red', 'menuOuter'),
           position: 'absolute',
           left: 0,
           top: theme.sizes.appBarHeight,
           width: '100%', 
           paddingLeft: theme.space.menuPX,
           paddingRight: theme.space.menuPX,
-          paddingTop: theme.space[1],
+          //paddingTop: theme.space[1],
           paddingBottom: theme.space[1],
           marginTop: theme.space[1],
           flexDirection: 'column',

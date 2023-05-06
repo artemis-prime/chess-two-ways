@@ -31,7 +31,7 @@ const MenuElementInnerView = styled(View,  {
         backgroundColor: 'rgba(255, 255, 255, 0.2)', 
         borderRadius: '$sm'
       },
-      default: {}
+      normal: {}
     }
   }
 })
@@ -46,7 +46,7 @@ const TitleWrapper = styled(Text, {
       pressed: {
         color: '$gray3',
       },
-      default: {}
+      normal: {}
     }
   }
 })
