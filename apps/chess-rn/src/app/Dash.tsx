@@ -1,5 +1,6 @@
 import React from 'react'
 import { 
+  Text,
   View,
   type StyleProp,
   type ViewStyle,
@@ -15,6 +16,7 @@ import {
   AppBarInDash,
   type MenuFlingHandleProps
 } from '~/app/widgets'
+import { useGame } from '~/services'
 
 
 const StyledBGImage = styled(BGImage, {
@@ -47,6 +49,8 @@ const Dash: React.FC<{
   ...rest
 }) => {
 
+  const game = useGame()
+
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'}  style={style}>
       <AppBarInDash {...rest} />
@@ -57,10 +61,10 @@ const Dash: React.FC<{
           alignItems: 'center', 
           alignSelf: 'stretch'
         }}>
-          <TurnIndicator />
+        {(game.playing) ?  <TurnIndicator /> : <Text>Game status</Text>}
           <UndoRedoWidget />
         </View>
-        <InCheckIndicator />
+        {(game.playing) && <InCheckIndicator /> }
       </DashInner>
     </StyledBGImage>
   )

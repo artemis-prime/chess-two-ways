@@ -33,6 +33,7 @@ const MenuElementInnerView = styled(View, {
 
 const TitleWrapper = styled(Text, {
   ...common.typography.menu.item,
+  ...debugBorder('orange', 'menu'),
   variants: {
     disabled: {
       true: {
@@ -57,7 +58,7 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
 }) => (
   <MenuElementInnerView {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
     <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-      <MenuIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} />
+      {icon && <MenuIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
       <TitleWrapper {...{pressed: !!pressed, disabled: !!disabled}}>{children}</TitleWrapper>
     </View>
     <MenuIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {

@@ -12,7 +12,11 @@ import debugBorder from '~/styles/debugBorder'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 import type UnicodeIcon from './UnicodeIcon'
-import MenuIcon from './MenuIcon'
+import MenuIcon, {  
+  IconXOffset,
+  IconWidth,
+  IconMargin
+} from './MenuIcon'
 
 const MenuElementInnerView = styled(View,  {
 
@@ -38,6 +42,7 @@ const MenuElementInnerView = styled(View,  {
 
 const TitleWrapper = styled(Text, {
   ...common.typography.menu.item,
+  ...debugBorder('orange', 'menu'),
   variants: {
     state: {
       disabled: {
@@ -47,6 +52,11 @@ const TitleWrapper = styled(Text, {
         color: '$gray3',
       },
       normal: {}
+    },
+    icon: {
+      false: {
+        marginLeft: IconWidth + IconMargin
+      }
     }
   }
 })
@@ -58,14 +68,14 @@ const MenuButtonInner: React.FC<ButtonViewProps> = ({
   style
 }) => (
   <MenuElementInnerView state={state} style={style}>
-    <MenuIcon state={state} icon={icon} />
-    <TitleWrapper state={state} >{children}</TitleWrapper>
+    {icon && <MenuIcon state={state} icon={icon} />}
+    <TitleWrapper state={state} icon={!!icon}>{children}</TitleWrapper>
   </MenuElementInnerView>
 ) 
   
 const MenuButton: React.FC<{
   onClick: () => void
-  icon: UnicodeIcon,
+  icon?: UnicodeIcon,
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   children,

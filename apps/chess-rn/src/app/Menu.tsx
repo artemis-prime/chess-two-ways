@@ -12,7 +12,7 @@ import { styled, common, css, useTheme } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
 import { MenuButton, MenuCheckbox } from '~/primatives'
-import { useBoardOrientation } from '~/services'
+import { useBoardOrientation, useGame } from '~/services'
 
 const MenuOuter: React.FC<{
   animatedStyle: AnimateStyle<ViewStyle>
@@ -58,7 +58,8 @@ const MenuTitleText = styled(Text,
   css({
     borderBottomColor: '$dashText',
     borderBottomWidth: 1,
-    pb: '$menuSeparatorPY',
+    //pb: '$menuSeparatorPY',
+    pt: '$menuSeparatorPY',
     mb: '$menuSeparatorPY',
   })
 )
@@ -80,7 +81,10 @@ const Menu: React.FC<{
 }) => {
 
   const bo = useBoardOrientation()
+  const game = useGame()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+
+  const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
     <MenuOuter animatedStyle={animatedStyle} style={style}>
@@ -88,17 +92,24 @@ const Menu: React.FC<{
         width: width * .9, 
         ...debugBorder('blue', 'menu')
       }}>
-        <MenuTitleText>View</MenuTitleText>
+        <MenuTitleText>Direction</MenuTitleText>
         <MenuButton 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
           icon={'\u296F'}
-        >swap view</MenuButton>
+        >swap</MenuButton>
         <MenuCheckbox 
           checked={bo.autoOrientToCurrentTurn} 
-          setChecked={bo.setAutoOrientToCurrentTurn.bind(bo)}
-          icon={'\u27F3'}
-        >auto-swap view</MenuCheckbox>
+          setChecked={bo.setAutoOrientToCurrentTurn}
+          icon={'\u27F3'}//'\u27F3'
+        >auto-swap</MenuCheckbox>
+        <MenuTitleText>Game</MenuTitleText>
+        {(game.playing) && (<>
+          <MenuButton onClick={game.callADraw} icon={{icon: '=', style: {fontSize: 30}}}>call a draw</MenuButton>
+          <MenuButton onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17}}}>{game.currentTurn} concedes</MenuButton>
+          <MenuButton onClick={game.checkStalemate} icon={{icon: '\u0024', style: {fontSize: 22}}}>check stalemate</MenuButton>
+        </>)}
+        <MenuButton onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuButton>
       </MenuItemsOuter>
     </MenuOuter>
   )
