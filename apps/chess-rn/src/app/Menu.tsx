@@ -92,7 +92,7 @@ const Menu: React.FC<{
         width: width * .9, 
         ...debugBorder('blue', 'menu')
       }}>
-        <MenuTitleText>Direction</MenuTitleText>
+        <MenuTitleText>Board Direction</MenuTitleText>
         <MenuButton 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
@@ -105,9 +105,9 @@ const Menu: React.FC<{
         >auto-swap</MenuCheckbox>
         <MenuTitleText>Game</MenuTitleText>
         {(game.playing) && (<>
-          <MenuButton onClick={game.callADraw} icon={{icon: '=', style: {fontSize: 30}}}>call a draw</MenuButton>
-          <MenuButton onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17}}}>{game.currentTurn} concedes</MenuButton>
-          <MenuButton onClick={game.checkStalemate} icon={{icon: '\u0024', style: {fontSize: 22}}}>check stalemate</MenuButton>
+          <MenuButton onClick={game.callADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>call a draw</MenuButton>
+          <MenuButton onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17, fontWeight: '300'}}}>{game.currentTurn} concedes</MenuButton>
+          <MenuButton onClick={game.checkStalemate} icon={{icon: '\u0024?', style: {fontSize: 22, fontWeight: '300'}}}>check for stalemate</MenuButton>
         </>)}
         <MenuButton onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuButton>
       </MenuItemsOuter>

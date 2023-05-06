@@ -10,15 +10,24 @@ const GameStatusIndicator: React.FC<{}> = observer(() => {
   const game = useGame()
 
   return game.gameStatus.victor ? (
-    <p className='game-status-indicator'>
-      {game.gameStatus.victor !== 'none' ? (<>
-        <span className='won'><span className={`swatch ${game.gameStatus.victor}`}/>won!</span>
-        <span className='status'>(by {game.gameStatus.state === 'checkmate' ? 'checkmate' : 'concession'})</span> 
+    <div className={`game-status-indicator ${game.gameStatus.state}`}>
+      {game.gameStatus.victor === 'none' ? (<>
+        <span className='status'>
+          <span className='main-status'>It's a draw!</span>
+          <span className='substatus'>{game.gameStatus.state === 'stalemate' ? ' (stalemate)' : ' (agreement)'}</span>
+        </span> 
+        <span className='symbols'>
+          <span className='swatch small white'/>{' = '}<span className='swatch small black'/>
+          {game.gameStatus.state === 'stalemate' ? ', $' : ''}
+        </span> 
       </>) : (<>
-        <span className='draw'>It's a draw!</span> 
-        <span className='state'>{game.gameStatus.state === 'stalemate' ? '(by stalemate)' : '(by agreement)'}</span> 
+        <span className='victor'>
+          <span className='main-status'><span className={`swatch ${game.gameStatus.victor}`}/>won!</span>
+          <span className='substatus'>{game.gameStatus.state === 'checkmate' ? ' (checkmate)' : ' (concession)'}</span>
+        </span>
+        <span className='symbols'>{game.gameStatus.victor === 'white' ? '1-0' : '0-1'}{game.gameStatus.state === 'checkmate' ? ', #' : ', con.'}</span> 
       </>)}
-    </p>
+    </div>
   ) : null
 })
 
