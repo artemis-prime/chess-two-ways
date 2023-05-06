@@ -5,7 +5,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/styles/stitches.config'
 import type MenuFlingHandleProps from './MenuFlingHandleProps'
 import MenuFlingHandle from './MenuFlingHandle'
 
@@ -22,14 +22,16 @@ const AppBarView = styled(View, {
 
 const AppBarInDash: React.FC<{
   style?: StyleProp<ViewStyle>
+  css?: CSS
 } & MenuFlingHandleProps> = ({
   menuVisible,
   gesture,
-  style
+  style,
+  css
 }) => {
   
   return (
-    <AppBarView style={style}>
+    <AppBarView style={style} css={css}>
       <MenuFlingHandle {...{menuVisible, gesture}}/>
     </AppBarView>
   )

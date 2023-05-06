@@ -34,9 +34,9 @@ const GameArea: React.FC<{
       justifyContent: 'flex-start',
       alignItems: 'stretch',
       height: '100%',
-      paddingLeft: theme.space[2],
-      paddingRight: theme.space[2],
-      paddingTop: theme.space[2],
+      paddingLeft: theme.space.single,
+      paddingRight: theme.space.single,
+      paddingTop: theme.space.single,
       paddingBottom: 0,
       gap: 11, // bug? Doesn't seem to recognize size token values.
       backgroundColor: 'rgba(0, 0, 0, 0.2)',

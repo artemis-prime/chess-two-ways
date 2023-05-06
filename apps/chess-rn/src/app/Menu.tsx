@@ -36,9 +36,8 @@ const MenuOuter: React.FC<{
           width: '100%', 
           paddingLeft: theme.space.menuPX,
           paddingRight: theme.space.menuPX,
-          //paddingTop: theme.space[1],
-          paddingBottom: theme.space[1],
-          marginTop: theme.space[1],
+          paddingBottom: theme.space.half,
+          marginTop: theme.space.half,
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'flex-start'
@@ -58,7 +57,6 @@ const MenuTitleText = styled(Text,
   css({
     borderBottomColor: '$dashText',
     borderBottomWidth: 1,
-    //pb: '$menuSeparatorPY',
     pt: '$menuSeparatorPY',
     mb: '$menuSeparatorPY',
   })
@@ -66,7 +64,7 @@ const MenuTitleText = styled(Text,
 
 const MenuItemsOuter = styled(View, {
   ...debugBorder('off'),
-  pt: '$3'
+  pt: '$singleAndHalf'
 })
 
 

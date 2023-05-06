@@ -47,7 +47,7 @@ class BoardOrientationImpl implements BoardOrientation {
 
 class MenuStateImpl implements MenuState {
   
-  menuVisible: boolean = true
+  menuVisible: boolean = false
   
   constructor() {
     makeObservable(this, {

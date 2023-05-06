@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import type * as Stitches from 'stitches-native'
-import { createStitches } from 'stitches-native'
+import { createStitches, type CSS } from 'stitches-native'
 import DeviceInfo from 'react-native-device-info'
 import { gray, orange } from '@radix-ui/colors'
 
@@ -69,6 +69,7 @@ const {
     fontSizes: {
       common: LINEHEIGHTS.common * 0.6,
       smaller: LINEHEIGHTS.smaller * 0.6,  
+      larger: LINEHEIGHTS.common * 0.7,
       menu: LINEHEIGHTS.menu * .5,
       menuTitle: LINEHEIGHTS.menu * .8
     },
@@ -84,26 +85,28 @@ const {
     },
     space: {
       none: 0,
-      1: 4,
-      2: 7,
-      menuPY: 7,
+      half: 4,
+      single: 7,
+      singleAndHalf: 11,
+      double: 16,
+      triple: 23,
       menuSeparatorPY: 7,
-      3: 11,
+      menuPY: 7,
       menuPX: 11,
-      4: 16,
-      5: LINEHEIGHTS.smaller,
-      6: LINEHEIGHTS.common,
-      7: LINEHEIGHTS.menu,
-      8: 52,
-      9: 64,
-      max: '$9' as const,
+      smallerLine: LINEHEIGHTS.smaller,
+      normalLine: LINEHEIGHTS.common,
+      menuLine: LINEHEIGHTS.menu,
+      appBar: 42,
+      big: 64,
     },
     sizes: {
       hairlineWidth: StyleSheet.hairlineWidth,
       ...LINEHEIGHTS,
       appBarHeight: 42,
-      swatchNormalHeight: LINEHEIGHTS.common * 0.7,
-      swatchNormalWidth: LINEHEIGHTS.common * 1.3, 
+      swatchHNormal: LINEHEIGHTS.common * 0.7,
+      swatchWNormal: LINEHEIGHTS.common * 1.3, 
+      swatchHSmall: LINEHEIGHTS.common * 0.6,
+      swatchWSmall: LINEHEIGHTS.common * 0.6,
       menuIconSize: 24,
     },
     radii: {
@@ -233,5 +236,6 @@ export {
   useTheme, 
   theme,
   ThemeProvider,  
-  common
+  common,
+  type CSS
 } 

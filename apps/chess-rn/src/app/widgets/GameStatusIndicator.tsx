@@ -2,23 +2,39 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 import { useGame } from '~/services'
+import { useTheme } from '~/styles/stitches.config'
+import { Row, Column, DashText } from '~/primatives'
 
-import '~/styles/gameStatusIndicator.scss'
+import SideSwatch from './SideSwatch'
 
-const GameStatusIndicator: React.FC<{}> = observer(() => {
+const GameStatusIndicator: React.FC = observer(() => {
 
   const game = useGame()
+  const theme = useTheme() 
+  const fontSize = theme.fontSizes.common
 
   return game.gameStatus.victor ? (
-    <p className='game-status-indicator'>
-      {game.gameStatus.victor !== 'none' ? (<>
-        <span className='won'><span className={`swatch ${game.gameStatus.victor}`}/>won!</span>
-        <span className='status'>(by {game.gameStatus.state === 'checkmate' ? 'checkmate' : 'concession'})</span> 
+    <Column css={{ mb: '$single'}}>
+      {game.gameStatus.victor === 'none' ? (<>
+        <DashText css={{mb: '$half'}}>
+          It's a draw!
+          <DashText size='smaller' css={{pl: '$single'}}>{game.gameStatus.state === 'stalemate' ? ' (stalemate)' : ' (agreement)'}</DashText>
+        </DashText> 
+        <Row align='center'>
+          <SideSwatch small side='white' />
+          <DashText size='larger' css={{px: '$singleAndHalf'}}>=</DashText>
+          <SideSwatch small side='black' />
+          {game.gameStatus.state === 'stalemate' && <DashText css={{px: '$singleAndHalf'}}>, $</DashText>}
+        </Row> 
       </>) : (<>
-        <span className='draw'>It's a draw!{game.gameStatus.state === 'stalemate' ? ' (stalemate)' : '(agreement)'}</span> 
-        <span className='state'><span className='white'/>=<span className='black'/>{game.gameStatus.state === 'stalemate' ? ', $' : ''}</span> 
+        <Row align='center'>
+          <SideSwatch small side={game.gameStatus.victor}/>
+          <DashText css={{ml: '$single'}}>won!</DashText>
+          <DashText size='smaller' css={{pl: '$single'}}>{game.gameStatus.state === 'checkmate' ? '(checkmate)' : '(concession)'}</DashText>
+        </Row>
+        <DashText size='smaller'>{game.gameStatus.victor === 'white' ? '1-0' : '0-1'}{game.gameStatus.state === 'checkmate' ? ', #' : ', con.'}</DashText> 
       </>)}
-    </p>
+    </Column>
   ) : null
 })
 
