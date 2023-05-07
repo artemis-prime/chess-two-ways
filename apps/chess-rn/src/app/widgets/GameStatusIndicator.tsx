@@ -2,7 +2,6 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 import { useGame } from '~/services'
-import { useTheme } from '~/styles/stitches.config'
 import { Row, Column, DashText } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
@@ -10,8 +9,6 @@ import SideSwatch from './SideSwatch'
 const GameStatusIndicator: React.FC = observer(() => {
 
   const game = useGame()
-  const theme = useTheme() 
-  const fontSize = theme.fontSizes.common
 
   return game.gameStatus.victor ? (
     <Column css={{ mb: '$single'}}>
