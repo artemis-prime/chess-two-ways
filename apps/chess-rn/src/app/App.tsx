@@ -13,13 +13,13 @@ import Layout from './Layout'
     // https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/events
 const App: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <UIServicesProvider>
-      <GameProvider >
+    <GameProvider >
+      <UIServicesProvider>
         <GestureHandlerRootView >
           <Layout />
         </GestureHandlerRootView >
-      </GameProvider>
-    </UIServicesProvider>
+      </UIServicesProvider>
+    </GameProvider>
   </ThemeProvider>
 )
 

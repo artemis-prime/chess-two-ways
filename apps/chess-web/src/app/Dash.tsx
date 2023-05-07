@@ -34,6 +34,23 @@ const DashView = styled(Flex, {
   color: '$dashText'
 })
 
+const CloseButton = styled(Button, {
+  fontSize: '1.3rem', 
+  alignSelf: 'flex-start', 
+  marginLeft: '-13px', 
+  marginTop: '-10px', 
+  paddingBottom: '3px', 
+  height: '36px', 
+  lineHeight: '36px'
+})
+
+const CloseButtonHR = styled('hr', {
+  opacity: 0.5,
+  marginLeft: '-14px', 
+  marginRight: '-14px', 
+  marginBottom: '18px'
+})
+
 const Dash: React.FC<{
   onClose?: () => void
   css?: CSS
@@ -57,8 +74,8 @@ const Dash: React.FC<{
   return (
     <DashView className='dash' direction='column' css={css} >
       {onClose && (<>
-        <Button css={{fontSize: '1.3rem', alignSelf: 'flex-start', marginLeft: '-13px', marginTop: '-10px', paddingBottom: '3px', height: '36px', lineHeight: '36px'}} onClick={onClose!}>x</Button> 
-        <hr style={{opacity: 0.5, marginLeft: '-14px', marginRight: '-14px', marginBottom: '18px'}}/>
+        <CloseButton onClick={onClose}>x</CloseButton> 
+        <CloseButtonHR />
       </>)}
       <Flex direction='row' justify='between' align='start'>
         <Flex direction='column' justify='start' align='start'>

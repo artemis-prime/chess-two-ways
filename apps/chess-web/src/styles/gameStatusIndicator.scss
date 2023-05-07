@@ -1,18 +1,36 @@
 @use 'colors.module' as c;
 
 .game-status-indicator {
+
+  display: 'flex';
+  flex-direction: column;
+  justify-content: 'flex-start';
   
   margin-bottom: 8px;
 
-  .won {
+  .status, .victor {
     display: block;
+    margin-bottom: 0.25rem;
+
+    .substatus {
+      padding-left: 0.5rem;
+      font-size: 80%;
+    }
   }
 
-  .draw {
+  &.checkmate .symbols,
+  &.conceded .symbols {
+
+    margin-top: 0.25rem;
     display: block;
+    font-size: 90%;
   }
-  .status {
-    font-size: 80%;
+
+  &.draw .symbols {
+    
+    font-family: sans;
+    display: block;
+    font-size: 120%;
   }
 
   .swatch {
@@ -27,6 +45,13 @@
     background-color: c.$color-piece-white;
     &.black {
       background-color: c.$color-piece-black;
+    }
+
+    &.small {
+      width: 22px;
+      height: 22px;
+      margin-right: initial;
+      border-width: 1px;
     }
   }
 }

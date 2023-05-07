@@ -11,7 +11,7 @@ import { styled, common } from '~/styles/stitches.config'
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
 const GhostStyledText = styled(Text, 
-  common.dashTextCommon,  
+  common.typography.dash.normal,  
   {
     variants: {
       state: {
@@ -22,7 +22,7 @@ const GhostStyledText = styled(Text,
           color: '$gray3',
           textDecorationLine: 'underline',
         },
-        default: {}
+        normal: {}
       }
     }
   }

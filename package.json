@@ -16,6 +16,7 @@
     "serve:web": "yarn workspace @artemis-prime/chess-web start",
     "serve:rn": "yarn workspace @artemis-prime/chess-react-native start",
     "deploy:rn": "yarn workspace @artemis-prime/chess-react-native deploy",
+    "link-assets:rn": "yarn workspace @artemis-prime/chess-react-native link-assets",
     "clean:domain": "yarn workspace @artemis-prime/chess-core clean",
     "clean:web": "yarn workspace @artemis-prime/chess-web clean",
     "clean:rn": "yarn workspace @artemis-prime/chess-react-native clean",

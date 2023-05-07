@@ -1,21 +1,19 @@
 import React from 'react'
-import { 
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
+import type { StyleProp, ViewStyle } from 'react-native'
+import { observer } from 'mobx-react'
 
-import { styled } from '~/styles/stitches.config'
-import { BGImage } from '~/primatives'
+import { styled, type CSS } from '~/styles/stitches.config'
+import { useGame } from '~/services'
+import { BGImage, Column, Row } from '~/primatives'
 
 import {
   UndoRedoWidget,
+  GameStatusIndicator,
   TurnIndicator,
   InCheckIndicator,
   AppBarInDash,
   type MenuFlingHandleProps
 } from '~/app/widgets'
-
 
 const StyledBGImage = styled(BGImage, {
 
@@ -31,39 +29,29 @@ const StyledBGImage = styled(BGImage, {
   borderColor: '$pieceBlack',
 })
 
-const DashInner = styled(View, {
-  p: '$3', 
-  flexDirection: 'column', 
-  justifyContent: 'flex-start', 
-  alignItems: 'flex-start'
-})
-
 const Dash: React.FC<{
   disableInput: boolean,
-  style?: StyleProp<ViewStyle>
-} & MenuFlingHandleProps> = ({
+  style?: StyleProp<ViewStyle>,
+  css?: CSS
+} & MenuFlingHandleProps> = observer(({
   disableInput,
   style,
+  css,
   ...rest
 }) => {
-
+  const game = useGame()
   return (
-    <StyledBGImage imageURI={'slate_bg_low_res'}  style={style}>
+    <StyledBGImage imageURI={'slate_bg_low_res'} css={css} style={style}>
       <AppBarInDash {...rest} />
-      <DashInner pointerEvents={(disableInput ? 'none' : 'auto')}>
-        <View style={{
-          flexDirection: 'row', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          alignSelf: 'stretch'
-        }}>
-          <TurnIndicator />
+      <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$single', px: '$singleAndHalf'}}>
+        <Row justify='between' style={{ alignSelf: 'stretch' }}>
+        {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
           <UndoRedoWidget />
-        </View>
-        <InCheckIndicator />
-      </DashInner>
+        </Row>
+        {(game.playing) && <InCheckIndicator /> }
+      </Column>
     </StyledBGImage>
   )
-}
+})
 
 export default Dash

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import type * as Stitches from 'stitches-native'
-import { createStitches } from 'stitches-native'
+import { createStitches, type CSS } from 'stitches-native'
 import DeviceInfo from 'react-native-device-info'
 import { gray, orange } from '@radix-ui/colors'
 
@@ -49,7 +49,8 @@ const {
       boardSquareBrown: 'rgba(124, 79, 52, 0.60)',
     },
     fonts: {
-      common: 'IDidThis'
+      dash: 'IDidThis',
+      menu: 'Roboto'
     },
     fontWeights: {
       bold: '700',
@@ -68,7 +69,9 @@ const {
     fontSizes: {
       common: LINEHEIGHTS.common * 0.6,
       smaller: LINEHEIGHTS.smaller * 0.6,  
-      menu: LINEHEIGHTS.menu * .7
+      larger: LINEHEIGHTS.common * 0.7,
+      menu: LINEHEIGHTS.menu * .5,
+      menuTitle: LINEHEIGHTS.menu * .8
     },
     lineHeights: {
       ...LINEHEIGHTS
@@ -82,23 +85,29 @@ const {
     },
     space: {
       none: 0,
-      1: 4,
-      2: 7,
-      3: 11,
-      4: 16,
-      5: LINEHEIGHTS.smaller,
-      6: LINEHEIGHTS.common,
-      7: LINEHEIGHTS.menu,
-      8: 52,
-      9: 64,
-      max: '$9' as const,
+      half: 4,
+      single: 7,
+      singleAndHalf: 11,
+      double: 16,
+      triple: 23,
+      menuSeparatorPY: 7,
+      menuPY: 7,
+      menuPX: 11,
+      smallerLine: LINEHEIGHTS.smaller,
+      normalLine: LINEHEIGHTS.common,
+      menuLine: LINEHEIGHTS.menu,
+      appBar: 42,
+      big: 64,
     },
     sizes: {
       hairlineWidth: StyleSheet.hairlineWidth,
       ...LINEHEIGHTS,
       appBarHeight: 42,
-      swatchNormalHeight: LINEHEIGHTS.common * 0.7,
-      swatchNormalWidth: LINEHEIGHTS.common * 1.3, 
+      swatchHNormal: LINEHEIGHTS.common * 0.7,
+      swatchWNormal: LINEHEIGHTS.common * 1.3, 
+      swatchHSmall: LINEHEIGHTS.common * 0.6,
+      swatchWSmall: LINEHEIGHTS.common * 0.6,
+      menuIconSize: 24,
     },
     radii: {
       none: 0,
@@ -176,32 +185,48 @@ const {
   },
 })
 
+const typography = {
+  menu: {
+    item: css({
+      fontFamily: '$menu',
+      lineHeight: '$menu',
+      fontWeight: '$semibold',
+      fontSize: '$menu',
+      color: '$dashText',
+      textTransform: 'lowercase'
+    }),
+    title: css({
+      fontFamily: '$menu',
+      lineHeight: '$menu',
+      fontWeight: '$semibold',
+      fontSize: '$menu',
+      color: '$dashText'
+    })
+  },
+  dash: {
+    normal: css({
+      fontFamily: '$dash',
+      lineHeight: '$common',
+      fontSize: '$common',
+      color: '$dashText'
+    }),
+    smaller: css({
+      fontFamily: '$dash',
+      lineHeight: '$smaller',
+      fontSize: '$smaller',
+      color: '$dashText'
+    }),
+    alertSmaller: css({
+      fontFamily: '$dash',
+      lineHeight: '$smaller',
+      fontSize: '$smaller',
+      color: '$dashAlert'
+    })
+  }
+}
+
 const common = {
-  menuTextCommon: css({
-    fontFamily: 'sans',
-    lineHeight: '$menu',
-    fontWeight: '$semibold',
-    fontSize: '$menu',
-    color: '$dashText'
-  }),
-  dashTextCommon: css({
-    fontFamily: '$common',
-    lineHeight: '$common',
-    fontSize: '$common',
-    color: '$dashText'
-  }),
-  dashTextSmaller: css({
-    fontFamily: '$common',
-    lineHeight: '$smaller',
-    fontSize: '$smaller',
-    color: '$dashText'
-  }),
-  dashTextAlertSmaller: css({
-    fontFamily: '$common',
-    lineHeight: '$smaller',
-    fontSize: '$smaller',
-    color: '$dashAlert'
-  })
+  typography
 }
 
 export { 
@@ -211,5 +236,6 @@ export {
   useTheme, 
   theme,
   ThemeProvider,  
-  common
+  common,
+  type CSS
 } 

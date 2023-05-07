@@ -1,39 +1,26 @@
 import React from 'react'
 import { observer } from 'mobx-react'
-import { 
-  View, 
-  Text, 
-  type StyleProp, 
-  type ViewStyle 
-} from 'react-native'
-
-import { styled, common } from '~/styles/stitches.config'
+import type { StyleProp, ViewStyle } from 'react-native'
+import type { CSS } from 'stitches-native'
 
 import { useGame } from '~/services'
+import { Row, DashText } from '~/primatives'
+
 import SideSwatch from './SideSwatch'
 
-const OuterView = styled(View, {
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  height: '$common',
-})
-
-const StyledText = styled(Text, common.dashTextCommon)
-
 const TurnIndicator: React.FC<{
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>,
+  css?: CSS
 }> = observer(({
-  style
+  style,
+  css
 }) => {
-
   const game = useGame()
-
   return (
-    <OuterView style={style}>
+    <Row style={style} css={css}>
       <SideSwatch side={game.currentTurn} />
-      <StyledText>'s turn</StyledText>
-    </OuterView>
+      <DashText>'s turn</DashText>
+    </Row>
   )
 })
 

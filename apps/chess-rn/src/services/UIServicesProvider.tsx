@@ -1,43 +1,62 @@
 import React, {
   type PropsWithChildren,
   useEffect,
-  useState,
   useRef
 } from 'react'
 
-import { autorun, makeObservable, observable, action, makeAutoObservable } from 'mobx'
-import { useLocalObservable } from 'mobx-react'
+import { 
+  autorun, 
+  makeObservable, 
+  observable, 
+  action, 
+} from 'mobx'
 
 import useGame from './useGame'
 import type BoardOrientation from './BoardOrientation'
-//import type ConsoleMessage from './ConsoleMessage'
 import type Pulses from './Pulses'
-import type UIState from './UIState'
+import type MenuState from './MenuState'
 
-//import MessagesStore from './MessagesStore'
-
-interface UIServices extends BoardOrientation {
-  pulses: Pulses,
-  ui: UIState
-//  messages: ConsoleMessage[]
+interface UIServices  {
+  pulses: Pulses
+  menu: MenuState
+  boardOrientation: BoardOrientation
 }
 
+class BoardOrientationImpl implements BoardOrientation {
 
-class UIStateImpl implements UIState {
+  whiteOnBottom = true
+  autoOrientToCurrentTurn = false
+
+  constructor() {
+    makeObservable(this,{
+      whiteOnBottom: observable,
+      autoOrientToCurrentTurn: observable,
+      setWhiteOnBottom: action.bound,
+      setAutoOrientToCurrentTurn: action.bound,   
+    }) 
+  }
   
-  menuVisible: boolean = true
+  setWhiteOnBottom(b: boolean) {
+    this.whiteOnBottom = b
+  }
+
+  setAutoOrientToCurrentTurn(b: boolean) {
+    this.autoOrientToCurrentTurn = b
+  }
+}
+
+class MenuStateImpl implements MenuState {
+  
+  menuVisible: boolean = false
   
   constructor() {
     makeObservable(this, {
       menuVisible: observable,
-      _setMenuVisible: action,
-      setMenuVisible: action 
+      setMenuVisible: action.bound 
     })
   }
 
-  // needed for strict mode, since the bind creates a new function pointer!
-  _setMenuVisible(b: boolean) { this.menuVisible = b }
-  setMenuVisible = this._setMenuVisible.bind(this)
+  setMenuVisible(b: boolean) { this.menuVisible = b }
 }
 
 class PulsesImpl implements Pulses {
@@ -46,7 +65,12 @@ class PulsesImpl implements Pulses {
   fast: boolean = false
   
   constructor() {
-    makeAutoObservable(this)
+    makeObservable(this, {
+      slow: observable,
+      fast: observable,
+      setFast: action,
+      setSlow: action
+    })
   }
 
   setFast(b: boolean) { this.fast = b }
@@ -57,66 +81,48 @@ const UIServicesContext = React.createContext<UIServices | undefined>(undefined)
 
 const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
-  const [whiteOnBottom, setWhiteOnBottom] = useState<boolean>(true)
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const uiStateRef = useRef<UIStateImpl>(new UIStateImpl())
+  const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl())
+  const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
 
-  //const messagesRef = useRef<MessagesStore>(new MessagesStore())
   const game = useGame()
-
-    // This allows us to keep all the listening in the single autorun below,
-    // rather than combining react state and mobx state within an autorun / useEffect
-    // combination where the useEffect fires dependant on other variables. This
-    // needlessly creates / destroys many autorun instances. Better to just create it once
-    // and listen for everything together :)
-  const autoOrienter = useLocalObservable(() => ({
-    autoOrientToCurrentTurn: false,
-    setAutoOrientToCurrentTurn(b: boolean) {
-      this.autoOrientToCurrentTurn = b
-    }, 
-  })) 
   
   useEffect(() => {
-    const fast = setInterval(() => {
+    const fastID = setInterval(() => {
       pulsesRef.current.setFast(!pulsesRef.current.fast)   
     }, 200)  
-    const slow = setInterval(() => {
+    const slowID = setInterval(() => {
       pulsesRef.current.setSlow(!pulsesRef.current.slow)   
     }, 500)  
+      // autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+    const cleanupAutorun = autorun(
+      () => {
+        const b = boardOrientationRef.current
+        if (b.autoOrientToCurrentTurn) {
+          if (game.currentTurn === 'white') {
+            b.setWhiteOnBottom(true)
+          }
+          else {
+            b.setWhiteOnBottom(false)
+          }
+        }
+      }, 
+      { scheduler: (run) => (setTimeout(run, 300)) }
+    )
+  
 
     return () => {
-      clearInterval(fast)
-      clearInterval(slow)
+      clearInterval(fastID)
+      clearInterval(slowID)
+      cleanupAutorun()
     }
   }, [])
 
-    // Note that autorun returns a cleanup function that deletes the created listener
-    // This is advised by mobx docs: https://mobx.js.org/reactions.html
-  useEffect(() => (autorun(() => {
-    if (autoOrienter.autoOrientToCurrentTurn) {
-      if (game.currentTurn === 'white') {
-        setWhiteOnBottom(true)
-      }
-      else {
-        setWhiteOnBottom(false)
-      }
-    }
-  }, {scheduler: (run) => (setTimeout(run, 300))})), [])
-
-  /*
-  useEffect(() => {
-    game.registerListener(messagesRef.current, 'chess-web-messages-store')
-  }, [])
-  */
   return (
     <UIServicesContext.Provider value={{
-      ui: uiStateRef.current,
+      menu: menuStateRef.current,
       pulses: pulsesRef.current,
-      //messages: messagesRef.current.messages,
-      whiteOnBottom,
-      setWhiteOnBottom,
-      autoOrientToCurrentTurn: autoOrienter.autoOrientToCurrentTurn, 
-      setAutoOrientToCurrentTurn: autoOrienter.setAutoOrientToCurrentTurn.bind(autoOrienter)
+      boardOrientation: boardOrientationRef.current
     }}>
       {children}
     </UIServicesContext.Provider>

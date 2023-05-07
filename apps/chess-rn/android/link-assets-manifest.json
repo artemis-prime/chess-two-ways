@@ -10,6 +10,18 @@
       "sha1": "38a1a5ead89eb960be3e003d7d81e7ed27aa2d1d"
     },
     {
+      "path": "../../assets/rn/img/knight_logo_80_disabled.png",
+      "sha1": "7bd0eb74c208623d0a9c36c82d7cb027f907cd8f"
+    },
+    {
+      "path": "../../assets/rn/img/knight_logo_80_normal.png",
+      "sha1": "f970b54b151a29878b7a32aa29ba53e986a17904"
+    },
+    {
+      "path": "../../assets/rn/img/knight_logo_80_pressed.png",
+      "sha1": "e645270282876e956f18e6fefd9deb613db50a3a"
+    },
+    {
       "path": "../../assets/rn/img/menu_corner_shim_14x14.png",
       "sha1": "7dc1c10ffae7ca96092b2d1b31bdb00d271b97fc"
     },

@@ -17,34 +17,6 @@ const OuterContainer = styled(View, {
   backgroundColor: '$headerBG'
 })
 
-/*
-const GameAreaView = styled(View, {
-
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'stretch',
-
-  h: '100%',
-  pl: '$2',
-  pr: '$2',
-  pt: '$2',
-  pb: 0,
-  gap: 11, // bug? Doesn't seem to recognize size token values.
-  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  
-  variants: {
-    showBorder: {
-      false: {},
-      true: {
-        borderColor: '#444',
-        borderTopLeftRadius: '$md',
-        borderWidth: 2,
-      }
-    }
-  }
-})
-*/
-
 const GameArea: React.FC<{
   showBorder: boolean
   style?: StyleProp<ViewStyle>
@@ -62,9 +34,9 @@ const GameArea: React.FC<{
       justifyContent: 'flex-start',
       alignItems: 'stretch',
       height: '100%',
-      paddingLeft: theme.space[2],
-      paddingRight: theme.space[2],
-      paddingTop: theme.space[2],
+      paddingLeft: theme.space.single,
+      paddingRight: theme.space.single,
+      paddingTop: theme.space.single,
       paddingBottom: 0,
       gap: 11, // bug? Doesn't seem to recognize size token values.
       backgroundColor: 'rgba(0, 0, 0, 0.2)',

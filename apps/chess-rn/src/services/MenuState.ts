@@ -1,6 +1,6 @@
-interface UIState {
+interface MenuState {
   menuVisible: boolean,
   setMenuVisible: (b: boolean) => void
 }
 
-export { type UIState as default}
+export { type MenuState as default}

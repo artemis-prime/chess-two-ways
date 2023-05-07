@@ -154,6 +154,8 @@ class GameImpl implements Game {
       _applyResolution: action
     })
 
+      // safe to to not dispose... when GameImpl get's gc'ed
+      // it's "game over" anyway ;)
     autorun(() => {
       this._notifier.gameStatusChanged(this.gameStatus)  
     })
@@ -219,9 +221,11 @@ class GameImpl implements Game {
       victor: undefined
     })
     
-      // await the state change. We effectively create a new listerner, 
-      // which by definition is after the autorun() in GameImpl's constructor.
-      // The actionsRestored() notification should be after the game state change.
+      // The actionsRestored() notification should received *after* 
+      // the gameStatusChanged() notification.
+      // If we just await the state change via when(), 
+      // we effectively create a new listerner,  which by order of creation
+      // will run *after* the listener created by autorun() in GameImpl's constructor.
     await when(() => this._board.gameStatus.state === 'restored');
     this._notifier.actionsRestored([...this._actions])
     this._notifyCheck(null)
