@@ -9,7 +9,7 @@ import {
 
 import type UnicodeIcon from './UnicodeIcon'
 
-type  ButtonState = 'default' | 'pressed' | 'disabled'
+type ButtonState = 'normal' | 'pressed' | 'disabled'
 
 interface ButtonViewProps extends PropsWithChildren {
   state: ButtonState
@@ -17,22 +17,26 @@ interface ButtonViewProps extends PropsWithChildren {
   style?: StyleProp<ViewStyle>
 }
 
-const ButtonShell: React.FC<{
-  view: React.ComponentType<ButtonViewProps>
+interface ButtonShellProps extends Omit<PressableProps, 'children'>, PropsWithChildren {
+  view: React.FC<ButtonViewProps>,
   onClick: () => void
+  viewProps?: {[key in string]: any}
   icon?: UnicodeIcon,
   style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+} 
+
+const ButtonShell: React.FC<ButtonShellProps> = ({
   view,
   onClick,
   style,
   icon, 
+  viewProps,
   disabled = false,
   children,
   ...rest
 }) => {
 
-  const [buttonState, setButtonState] = useState<ButtonState>('default')
+  const [buttonState, setButtonState] = useState<ButtonState>('normal')
 
   const ButtonView = view // must convert the referenced variable to uppercase
 
@@ -41,7 +45,7 @@ const ButtonShell: React.FC<{
   }
 
   const onPressOut = (e: GestureResponderEvent): void => {
-    setButtonState('default')
+    setButtonState('normal')
   }
 
   const onPress = (e: GestureResponderEvent): void => {
@@ -50,7 +54,7 @@ const ButtonShell: React.FC<{
 
   return (
     <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled}} >
-      <ButtonView state={(disabled) ? 'disabled' : buttonState} style={style} icon={icon}>
+      <ButtonView state={(disabled) ? 'disabled' : buttonState} style={style} icon={icon} {...rest} {...viewProps}>
         {children}
       </ButtonView>
     </Pressable>

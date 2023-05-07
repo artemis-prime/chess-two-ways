@@ -5,16 +5,20 @@ import debugBorder from '~/styles/debugBorder'
 
 import type UnicodeIcon from './UnicodeIcon'
 
+const IconXOffset = -5
+const IconWidth = 32
+const IconMargin = 4
+
 const UnicodeWrapper = styled(Text, {
   ...common.typography.menu.item,
   ...debugBorder('yellow', 'menu'),
   fontSize: 36,
   fontWeight: '$bold',
   
-  width: 32,
+  width: IconWidth,
   textAlign: 'center',
-  left: -5,
-  mr: 4,
+  left: IconXOffset,
+  mr: IconMargin,
   variants: {
     state: {
       disabled: {
@@ -50,4 +54,9 @@ const MenuIcon: React.FC<{
   )
 }
 
-export default MenuIcon
+export {
+  MenuIcon as default,
+  IconXOffset,
+  IconWidth,
+  IconMargin
+}

@@ -73,6 +73,8 @@ body {
   background-image: url('assets/img/wood_grain_bg_low_res.jpg'); 
 
   aspect-ratio: 1 / 1;
+  width: initial; 
+  height: 100%; 
   display: grid;
   grid-template-columns: repeat(8, 1fr); 
   grid-template-rows:  repeat(8, 1fr); 
@@ -84,18 +86,22 @@ body {
   */
   @include m.landscape-phone {
     height: 100%; 
+    width: initial; 
   }
 
   @include m.portrait-phone {
     width: 100%; 
+    height: initial; 
   }
 
   @include m.landscape-tablet {
     height: 100%; 
+    width: initial; 
   }
 
   @include m.portrait-tablet {
     width: 100%; 
+    height: initial; 
   }
  
 
@@ -164,6 +170,7 @@ main {
   display: none;
 }
 
+/*
 @media (max-width: 1476px) { 
 
   main {
@@ -189,7 +196,7 @@ main {
     max-width: 450px;
   }
   .board-outer {
-    flex: 1.5 0 0;
+    //flex: 1.5 0 0;
   }
   
   .side.left {
@@ -217,7 +224,7 @@ main {
     flex: 1 0 0; 
   }
 }
-
+*/
 @media (max-width: 1000px) {
   .side.right {
     display: none;

@@ -7,6 +7,7 @@ import {
   Dimensions,
   SafeAreaView,
   StatusBar,
+  type StyleProp,
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
@@ -16,6 +17,8 @@ import {
   Gesture,
   Directions,
   type FlingGesture,
+  type GestureStateChangeEvent,
+  type FlingGestureHandlerEventPayload,
 } from 'react-native-gesture-handler'
 
 import Animated, { 
@@ -28,11 +31,15 @@ import Animated, {
   runOnJS,
   type AnimateStyle,
   interpolateColor,
+  runOnUI,
  } from 'react-native-reanimated'
 
 import { useTheme } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
+
 import { useMenu } from '~/services'
 
+import { ImageButton } from '~/primatives'
 import Board from './Board'
 import Dash from './Dash'
 
@@ -78,6 +85,41 @@ const GameAreaInner: React.FC<{
   </Animated.View>
 )
 
+const LogoButton: React.FC<{
+  onClick: () => void
+  animatedStyle: AnimateStyle<ViewStyle>
+  style?: StyleProp<ViewStyle>
+  disabled?: boolean
+}> = ({
+  onClick,
+  animatedStyle,
+  style,
+  disabled = false
+}) => (
+  <Animated.View 
+    style={[animatedStyle, {
+      position: 'absolute',
+      width: 40,
+      height: 40,
+      right: 12,
+      top: 48 + 12
+    }]}
+  >
+    <ImageButton disabled={disabled} onClick={onClick} 
+      style={[style, {
+        width: '100%',
+        height: '100%'
+      }]} 
+      stateImages={{
+        normal: 'knight_logo_80_normal',
+        pressed: 'knight_logo_80_pressed',
+        disabled: 'knight_logo_80_disabled'
+      }} 
+    />
+  </Animated.View>
+)
+
+
 const Layout: React.FC = () => {
 
   const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
@@ -118,24 +160,31 @@ const Layout: React.FC = () => {
     ui.setMenuVisible(openned) 
   }
   
+  const triggerAnimation = (e: GestureStateChangeEvent<FlingGestureHandlerEventPayload> | null) => {
+    'worklet';
+    runOnJS(onMenuAnimationStarted)()
+    menuAnimationBase.value = withTiming(
+      menuVisible_sv.value ? 0 : 1, 
+      {
+        duration: 200,
+        easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
+      },
+        // on finish
+      () => {
+        // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
+        // mobx observables (and any proxy objects) get clobbered when transfered onto the UI thread.
+        runOnJS(onMenuAnimationFinished)(!menuVisible_sv.value)
+      }
+    )
+  }
+
+  const closeMenu = () => {
+    runOnUI(triggerAnimation)(null)
+  }
+
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
-    .onStart((e) => {
-      runOnJS(onMenuAnimationStarted)()
-      menuAnimationBase.value = withTiming(
-        menuVisible_sv.value ? 0 : 1, 
-        {
-          duration: 200,
-          easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
-        },
-          // on finish
-        () => {
-          // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
-          // mobx observables (and any proxy objects) get clobbered when transfered onto the UI thread.
-          runOnJS(onMenuAnimationFinished)(!menuVisible_sv.value)
-        }
-      )
-    })
+    .onStart(triggerAnimation)
 
   const gameContainerAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
     left: interpolate(
@@ -164,15 +213,20 @@ const Layout: React.FC = () => {
     opacity: menuAnimationBase.value
   }))
 
-  const menuAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
+  const animatedOpacity = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
     opacity: menuAnimationBase.value
+  }))
+
+  const animatedLogoButton = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
+    opacity: menuAnimationBase.value,
+    display: menuAnimationBase.value < 0.1 ? 'none' : 'flex'
   }))
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
-        <Menu animatedStyle={menuAnimatedStyle} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
+        <Menu animatedStyle={animatedOpacity} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
         <GameContainer animatedStyle={gameContainerAnimatedStyle}>
           <GameBGImage imageURI={'chess_bg_1920_low_res'} >
             <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
@@ -182,6 +236,7 @@ const Layout: React.FC = () => {
             </GameArea>
           </GameBGImage>
         </GameContainer>
+        <LogoButton animatedStyle={animatedLogoButton} onClick={closeMenu} />
       </OuterContainer>
     </SafeAreaView>
   )

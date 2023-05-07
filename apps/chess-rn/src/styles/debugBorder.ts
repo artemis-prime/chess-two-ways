@@ -1,10 +1,11 @@
 const showForGroup = {
-  menu: false
+  menu: false,
+  menuOuter: false
 }
 
 type GroupsKey = keyof typeof showForGroup
 
-const debugBorders = (color: string, group?: string) => (
+const debugBorder = (color: string, group?: string) => (
   (color === 'off' || (group && group in showForGroup && !showForGroup[group as GroupsKey]) ) 
     ? 
     {} 
@@ -15,4 +16,4 @@ const debugBorders = (color: string, group?: string) => (
     }
 )
 
-export default debugBorders
+export default debugBorder

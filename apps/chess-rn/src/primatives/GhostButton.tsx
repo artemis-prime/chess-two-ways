@@ -22,7 +22,7 @@ const GhostStyledText = styled(Text,
           color: '$gray3',
           textDecorationLine: 'underline',
         },
-        default: {}
+        normal: {}
       }
     }
   }

@@ -31,8 +31,8 @@ class BoardOrientationImpl implements BoardOrientation {
     makeObservable(this,{
       whiteOnBottom: observable,
       autoOrientToCurrentTurn: observable,
-      setWhiteOnBottom: action,
-      setAutoOrientToCurrentTurn: action,   
+      setWhiteOnBottom: action.bound,
+      setAutoOrientToCurrentTurn: action.bound,   
     }) 
   }
   
@@ -47,7 +47,7 @@ class BoardOrientationImpl implements BoardOrientation {
 
 class MenuStateImpl implements MenuState {
   
-  menuVisible: boolean = true
+  menuVisible: boolean = false
   
   constructor() {
     makeObservable(this, {

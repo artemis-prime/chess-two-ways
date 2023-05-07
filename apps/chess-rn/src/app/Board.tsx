@@ -10,7 +10,7 @@ import { observer } from 'mobx-react'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/styles/stitches.config'
 import { useBoardOrientation, useGame } from '~/services'
 import { BGImage } from '~/primatives'
 
@@ -41,9 +41,11 @@ const SquaresOuter = styled(View, {
 const Board: React.FC<{ 
   disableInput: boolean
   style?: StyleProp<ViewStyle> 
+  css?: CSS
 }> = observer(({
   disableInput,
-  style 
+  style,
+  css 
 }) => {
 
   const game = useGame()
@@ -71,7 +73,7 @@ const Board: React.FC<{
   }
 
   return (
-    <BoardInner style={style} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
+    <BoardInner style={style} css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (

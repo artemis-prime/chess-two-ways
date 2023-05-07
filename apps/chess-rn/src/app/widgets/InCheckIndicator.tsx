@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Text } from 'react-native'
 import { autorun } from 'mobx'
 
 import { type Position, positionToString } from '@artemis-prime/chess-core'
 
-import { styled, common } from '~/styles/stitches.config'
 import { useGame } from '~/services'
-
-const StyledText = styled(Text, common.typography.dash.alertSmaller)
+import { DashText } from '~/primatives'
 
 const InCheckIndicator: React.FC = () => {
 
@@ -28,7 +25,7 @@ const InCheckIndicator: React.FC = () => {
   ), [])
 
   return squaresString ? (
-    <StyledText>{`In check from ${squaresString}!`}</StyledText> 
+    <DashText size='smaller' alert>{`In check from ${squaresString}!`}</DashText> 
   ) : null
 }
 
