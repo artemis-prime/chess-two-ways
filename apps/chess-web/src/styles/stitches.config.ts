@@ -1,9 +1,17 @@
-import Stitches, { createStitches } from '@stitches/react'
+import Stitches, { createStitches, type CSS } from '@stitches/react'
 
 // vscode doesn't seem to see the import as possible,
 // Both vite and tsc seem to do just fine. Dunno
 // @ts-ignore 
 import fromSASS from './colors.module.scss' 
+
+const HEADER_HEIGHT = 52
+const HEADER_HEIGHT_SMALLER = 48
+
+const layout = {
+  staging: 1100,
+  menuBreak: 900
+}
 
 const { 
   config: { media }, 
@@ -25,14 +33,14 @@ const {
       thick: '3px',
     },
     space: {
-      1: '4px',
-      2: '8px',
-      3: '12px',
-      4: '18px',
-      5: '24px',
-      6: '32px',
-      7: '48px',
-      8: '64px',
+      half: '4px',
+      1: '8px',
+      oneAndHalf: '12px',
+      2: '16px',
+      3: '24px',
+      4: '32px',
+      subheader: '42px',
+      header: `${HEADER_HEIGHT}px`,
     },
     fontSizes: {
       normal: '1rem',
@@ -53,13 +61,15 @@ const {
     sizes: {
       swatchNormalHeight: '22px',
       swatchNormalWidth: '42px', 
+      header: `${HEADER_HEIGHT}px`,
+      headerSmaller: `${HEADER_HEIGHT_SMALLER}px`
     },
     radii: {
       none: 0,
-      sm: 3,
-      md: 8,
-      lg: 16,
-      rounded: 999,
+      sm: '3px',
+      md: '8px',
+      lg: '16px',
+      rounded: '999px',
     },
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
@@ -166,9 +176,12 @@ const {
   },
 })
 
+
 export {
   media,
   lightTheme,
   styled,
   css,
+  layout,
+  type CSS
 }

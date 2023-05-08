@@ -1,54 +1,57 @@
-import React, { type PropsWithChildren, useState } from 'react'
+import React, { useState } from 'react'
 
-import Board from './Board'
+import { useResizeDetector } from 'react-resize-detector'
 
-import { 
-  BurgerButton, 
-  Drawer, 
-  Flex, 
-  FlexMain 
-} from '~/primitives'
+import { styled } from '~/styles/stitches.config'
+import { Flex } from '~/primatives'
 
 import Dash from './Dash'
+import Header from './Header'
+import Board from './Board'
+import LeftDrawerMenu from './LeftDrawerMenu'
 
 import '~/styles/fonts.scss'
-import '~/styles/main.scss'
+import '~/styles/body.scss'
 
-const Side: React.FC<PropsWithChildren & { className?: string }> = ({children, className}) => (
-  <Flex justify='center' align='center' className={className} >
-    {children}
-  </Flex>
+const Main = styled('main', {
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'stretch',
+  width: '100%',
+  height: '95vh',
+  p: '$2',
+})
+
+const Wing = styled('div', {
+  flex: '1 1 0' 
+})
+
+const menuDrawerWidth = (w: number | undefined) => (
+  w ? Math.min((0.3 * w), 350) : 350
 )
 
 const Layout: React.FC<{}> = () => {
   
   const [drawerOpen, setDrawerOpen] = useState<boolean >(false) 
+  const { width, ref } = useResizeDetector()
 
   const toggleMenu = () => { setDrawerOpen((prev) => (!prev)) }
   
   return (
-    <div className={`app drawer-state-${drawerOpen ? 'open' : 'closed'}`}>
-      <header className="app-header">
-        <div style={{visibility: 'hidden' /* just for symetry */}}>
-          <BurgerButton className='burger-button' onClick={() => {}} />
-        </div>
-        <h1 className="app-header-text">Chess Two Ways - Web</h1>
-        <div>
-          <BurgerButton className='burger-button' onClick={toggleMenu} />
-        </div>
-      </header>
-      <FlexMain direction='row' align='stretch' justify='center'>
-        <Side className='side left'/>
-        <Flex className='board-outer' justify='center' align='start'>
+    <div ref={ref}>
+      <Header menuOpen={drawerOpen} toggleMenu={toggleMenu} />
+      <Main>
+        <Wing className='side left'/>
+        <Flex css={{flex: '2 0 0'}} justify='center' align='start'>
           <Board />
         </Flex>
-        <Side className='side right'>
+        <Wing className='side right'>
           <Dash />
-        </Side>
-        <Drawer open={drawerOpen} className='drawer'>
-          <Dash onClose={toggleMenu}/>
-        </Drawer>
-      </FlexMain>
+        </Wing>
+        <LeftDrawerMenu width={menuDrawerWidth(width)} open={drawerOpen} />
+      </Main>
     </div>
   )
 }

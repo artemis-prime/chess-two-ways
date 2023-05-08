@@ -1,0 +1,35 @@
+@use 'colors.module' as c;
+@use 'mediaQueries' as m;
+
+.board {
+
+
+  /*
+  @include m.desktop {
+    height: 100%; 
+  }
+  */
+  @include m.landscape-phone {
+    height: 100%; 
+    width: initial; 
+  }
+
+  @include m.portrait-phone {
+    width: 100%; 
+    height: initial; 
+  }
+
+  @include m.landscape-tablet {
+    height: 100%; 
+    width: initial; 
+  }
+
+  @include m.portrait-tablet {
+    width: 100%; 
+    height: initial; 
+  }
+ 
+
+  border: 2px c.$brown-darker solid; 
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}

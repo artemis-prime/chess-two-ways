@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 import type { CSS } from '@stitches/react'
-import { Button, Flex, Checkbox } from '~/primitives'
+import { Button, Flex, Checkbox } from '~/primatives'
 import { useBoardOrientation } from '~/services'
 
 const BoardDirectionWidget: React.FC<{css?: CSS}> = observer(({css}) => {

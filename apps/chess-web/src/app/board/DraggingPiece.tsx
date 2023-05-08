@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 
 import { styled } from '~/styles/stitches.config'
 
-import { Flex } from '~/primitives'
+import { Flex } from '~/primatives'
 
 import registry from './pieceRegistry'
 import { useDraggingPiece } from './ChessDnD'

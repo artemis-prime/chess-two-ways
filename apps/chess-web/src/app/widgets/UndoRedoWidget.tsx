@@ -4,7 +4,7 @@ import type { CSS } from '@stitches/react'
 
 import { useGame } from '~/services'
 
-import { Button, type ButtonSize, Flex } from '~/primitives'
+import { Button, type ButtonSize, Flex } from '~/primatives'
   
 const UndoRedoWidget: React.FC<{ 
   buttonSize: ButtonSize,

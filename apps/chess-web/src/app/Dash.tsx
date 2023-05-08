@@ -5,7 +5,7 @@ import type { CSS } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
 import { useGame } from '~/services'
-import { Button, Flex, Switch } from '~/primitives'
+import { Button, Flex, Switch } from '~/primatives'
 
 import {
   BoardDirectionWidget,
@@ -80,8 +80,8 @@ const Dash: React.FC<{
       <Flex direction='row' justify='between' align='start'>
         <Flex direction='column' justify='start' align='start'>
         {(game.playing) ? (<>
-            <TurnIndicator css={{mb: '$2'}} />
-            <InCheckIndicator css={{mb: '$2'}} />
+            <TurnIndicator css={{mb: '$1'}} />
+            <InCheckIndicator css={{mb: '$1'}} />
           </>) : (
             <GameStatusIndicator />
           )}
@@ -89,9 +89,9 @@ const Dash: React.FC<{
         <UndoRedoWidget buttonSize='large' />
       </Flex>
       <hr />
-      <Flex direction='column' justify='start' align='end' css={{mt: '$4'}} >
-        <BoardDirectionWidget css={{mb: '$4'}}/>
-        <Flex direction='column' justify='start' align='end' css={{fontSize: '$normal', mb: '$5'}}>
+      <Flex direction='column' justify='start' align='end' css={{mt: '$2'}} >
+        <BoardDirectionWidget css={{mb: '$2'}}/>
+        <Flex direction='column' justify='start' align='end' css={{fontSize: '$normal', mb: '$3'}}>
         {(game.playing) && (<>
           <Button css={buttonCSS} onClick={game.callADraw}>call a draw</Button>
           <Button css={buttonCSS} onClick={game.concede}>concede</Button>
