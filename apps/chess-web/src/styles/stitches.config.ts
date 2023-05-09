@@ -29,7 +29,8 @@ const {
     colors: {
       ...fromSASS,
       menu: 'hsl(226, 56.0%, 34.5%)',    
-      menuHover: 'hsl(226, 39.2%, 44.3%)',
+      menuHover: 'hsl(226, 39.2%, 42%)',
+      menuSelectedHover: 'hsl(226, 39.2%, 46%)',
       menuPressed: 'hsl(226, 39.2%, 52%)',
     },
     borderStyles: {
@@ -56,7 +57,8 @@ const {
     fontSizes: {
       header: '2rem',
       normal: '1rem',
-      menu: '14px',
+      menuDesktop: '18px',
+      menuMobile: '14px',
       dashSmaller: '0.9rem'
     },
     fontWeights: {
@@ -65,7 +67,8 @@ const {
     fonts: {
       body: 'chalk',
       header: 'TWK Everett',
-      menu: 'Roboto' // linked directly in index.html 
+      //menu: 'Roboto' // linked directly in index.html 
+      menu: "'Source Sans 3'"
     },
     lineHeights: {
       menu: '20px'
@@ -102,7 +105,7 @@ const common = {
     pl: '$menuPL',
     
     lineHeight: '$menu',
-    fontSize: '$menu',
+    fontSize: '$menuDesktop',
     fontFamily: '$menu',
     fontWeight: '$menu',
   }

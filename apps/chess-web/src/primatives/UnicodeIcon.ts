@@ -1,8 +1,8 @@
-import type { StyleProp, TextStyle } from "react-native/types"
+import type { CSSProperties } from "@stitches/react"
 
 interface IconAndStyles {
   icon: string 
-  style: StyleProp<TextStyle>
+  style: CSSProperties
 }
 
 type UnicodeIcon = 'empty' | string | IconAndStyles

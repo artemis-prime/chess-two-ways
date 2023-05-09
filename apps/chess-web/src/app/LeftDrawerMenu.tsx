@@ -41,21 +41,27 @@ const LeftDrawerMenu: React.FC<{
   const bo = useBoardOrientation()
   const game = useGame()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+
   
-  const onClick = () => {
-    console.log("CLICKED")
-  }
+  const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
     <Drawer side='left' width={width} open={open} >
       <MenuRoot >
-      <MenuSectionTitle>Direction</MenuSectionTitle>
-      <MenuItem onClick={swapDirection} icon={ICONS.doubleVerticalArrow} >swap</MenuItem>
-      <MenuCheckboxItem 
-        checked={bo.autoOrientToCurrentTurn} 
-        setChecked={bo.setAutoOrientToCurrentTurn}
-        icon={ICONS.circularArrow}//'\u27F3'
-      >auto-swap</MenuCheckboxItem>
+        <MenuSectionTitle>Direction</MenuSectionTitle>
+        <MenuItem onClick={swapDirection} icon={ICONS.twoVerticalArrows} >swap</MenuItem>
+        <MenuCheckboxItem 
+          checked={bo.autoOrientToCurrentTurn} 
+          setChecked={bo.setAutoOrientToCurrentTurn}
+          icon={ICONS.clockwiseCircleArrow}
+        >auto-swap</MenuCheckboxItem>
+        <MenuSectionTitle>Game</MenuSectionTitle>
+        {(game.playing) && (<>
+          <MenuItem onClick={game.callADraw} icon={{icon: '=', style: {fontSize: '26px', fontWeight: 400}}}>call a draw</MenuItem>
+          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: '17px', fontWeight: 400}}}>{game.currentTurn} concedes</MenuItem>
+          <MenuItem onClick={game.checkStalemate} icon={{icon: '$?', style: {fontSize: '20px', fontWeight: 500}}}>check for stalemate</MenuItem>
+        </>)}
+        <MenuItem onClick={game.reset} icon={{icon: ICONS.counterClockWiseArrow, style: {fontSize: '26px'}}}>reset</MenuItem>
 
       </MenuRoot>
     </Drawer>

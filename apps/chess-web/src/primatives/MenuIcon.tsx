@@ -1,6 +1,6 @@
 import React, { type  CSSProperties } from 'react'
 
-import { styled, css } from '~/styles/stitches.config'
+import { styled, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
 import type UnicodeIcon from './UnicodeIcon'
@@ -10,6 +10,9 @@ const IconMargin = 11 // fudging a bit from MD3 spec
 const ICON_SPACE = 'space' 
 
 const UnicodeWrapper = styled('span', {
+
+  fontFamily: common.menu.fontFamily,
+  whiteSpace: 'nowrap',
   ...debugBorder('yellow', 'menu'),
   fontSize: IconWidth,
   fontWeight: '$bold',
