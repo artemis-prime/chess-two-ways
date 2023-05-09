@@ -1,10 +1,10 @@
+import type { StyleProp, TextStyle } from "react-native/types"
+
 interface IconAndStyles {
   icon: string 
-  style: any
+  style: StyleProp<TextStyle>
 }
 
-  // 'empty' means offset the text as if an icon is there,
-  // (to align with other menu items)
 type UnicodeIcon = 'empty' | string | IconAndStyles
 
 export {

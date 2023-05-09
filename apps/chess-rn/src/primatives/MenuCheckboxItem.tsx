@@ -71,7 +71,7 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
   </MenuElementInnerView>
 )
 
-const MenuCheckbox: React.FC<{
+const MenuCheckboxItem: React.FC<{
   checked: boolean
   setChecked: (b: boolean) => void
   icon?: UnicodeIcon
@@ -91,4 +91,4 @@ const MenuCheckbox: React.FC<{
   />
 )
 
-export default MenuCheckbox
+export default MenuCheckboxItem

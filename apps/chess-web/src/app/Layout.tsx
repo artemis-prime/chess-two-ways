@@ -29,7 +29,7 @@ const Wing = styled('div', {
 })
 
 const menuDrawerWidth = (w: number | undefined) => (
-  w ? Math.min((0.3 * w), 350) : 350
+  w ? Math.min((0.3 * w), 360) : 360
 )
 
 const Layout: React.FC<{}> = () => {

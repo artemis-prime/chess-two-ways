@@ -15,8 +15,7 @@ const Outer = styled('header', {
   alignItems: 'stretch',
 
   color: 'white',
-  backgroundColor: '$headerBG',
-  //padding:  0.5rem 12px;
+  backgroundColor: '$menu',
   height: '$header',
 })
 
@@ -24,6 +23,11 @@ const Title = styled('h1', {
   m: 0,
   p: 0,
   lineHeight:  '$header',
+  fontSize: '$header',
+  fontFamily: '$header',
+  //border: '0.5px red solid',
+  alignSelf: 'center',
+
   /*
     @include m.portrait-phone {
     font-size: 1.4rem; 

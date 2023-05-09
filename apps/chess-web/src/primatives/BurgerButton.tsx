@@ -18,9 +18,17 @@ const StyledButton = styled('button', {
   alignItems: 'center',
   boxSizing: 'border-box',
   color: 'inherit',
-  borderRadius: '$md',
+  borderRadius: '$rounded',
 //  border: '0.5px solid red',
   border: 'none',
+
+  '&:hover': {
+    backgroundColor: '$menuHover'
+  },
+  '&:active': {
+    backgroundColor: '$menuPressed'
+  },
+
 
   'svg': {
     display: 'block',
@@ -33,7 +41,7 @@ const StyledButton = styled('button', {
   variants: {
     toggledOn: {
       true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)'
+        backgroundColor: '$menuHover'
       }
     }
   }

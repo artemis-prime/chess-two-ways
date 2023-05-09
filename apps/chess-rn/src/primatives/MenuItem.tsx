@@ -73,20 +73,18 @@ const MenuButtonInner: React.FC<ButtonViewProps> = ({
   </MenuElementInnerView>
 ) 
   
-const MenuButton: React.FC<{
+const MenuItem: React.FC<{
   onClick: () => void
   icon?: UnicodeIcon,
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   children,
-  onClick,
   icon,
   style,
   ...rest
 }) => (
   <ButtonShell 
     {...rest} 
-    onClick={onClick} 
     view={MenuButtonInner} 
     icon={icon} 
     style={style}  
@@ -95,4 +93,4 @@ const MenuButton: React.FC<{
   </ButtonShell>
 )
 
-export default MenuButton
+export default MenuItem
