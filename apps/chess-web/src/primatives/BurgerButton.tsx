@@ -4,14 +4,12 @@ import { styled, type CSS } from '~/styles/stitches.config'
 
 const StyledButton = styled('button', {
 
+  //  border: '0.5px solid red',
+  border: 'none',
 
   backgroundColor: 'transparent',
-  //border: 'none',
   cursor: 'pointer',
-  //height: '$header',
   width: '$header',
-  //p: 0, 
-  //px: '6px',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
@@ -19,11 +17,8 @@ const StyledButton = styled('button', {
   boxSizing: 'border-box',
   color: 'inherit',
   borderRadius: '$rounded',
-//  border: '0.5px solid red',
-  border: 'none',
 
-
-  fontSize: '22px',
+  fontSize: '24px',
   fontWeight: 700,
 
   '&:hover': {
@@ -31,15 +26,6 @@ const StyledButton = styled('button', {
   },
   '&:active': {
     backgroundColor: '$menuPressed'
-  },
-
-
-  'svg': {
-    display: 'block',
-    fill: 'currentColor',
-    width: 20,
-    height: 20,
-//    border: '0.5px solid white'
   },
 
   variants: {

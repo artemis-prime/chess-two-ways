@@ -1,4 +1,4 @@
-import Stitches, { createStitches, type CSS } from '@stitches/react'
+import { createStitches, type CSS } from '@stitches/react'
 
 // vscode doesn't seem to see the import as possible,
 // Both vite and tsc seem to do just fine. Dunno
@@ -11,8 +11,8 @@ const HEADER_HEIGHT = 52
 const HEADER_HEIGHT_SMALLER = 48
 
 const layout = {
-  staging: 1100,
-  menuBreak: 900
+  staging: 1200,
+  menuBreak: 950
 }
 
 const { 
@@ -55,7 +55,7 @@ const {
       header: `${HEADER_HEIGHT}px`,
     },
     fontSizes: {
-      header: '2rem',
+      header: '1.85rem',
       normal: '1rem',
       menuDesktop: '18px',
       menuMobile: '14px',
@@ -67,8 +67,10 @@ const {
     fonts: {
       body: 'chalk',
       header: 'TWK Everett',
-      //menu: 'Roboto' // linked directly in index.html 
-      menu: "'Source Sans 3'"
+        // linked directly in index.html 
+      //menu: 'Roboto' 
+        // linked directly in index.html 
+      menu: "'Source Sans 3'" // need both sets of quotes
     },
     lineHeights: {
       menu: '20px'

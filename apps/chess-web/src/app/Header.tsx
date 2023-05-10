@@ -2,6 +2,7 @@ import React from 'react'
 
 import { styled, layout } from '~/styles/stitches.config'
 import { BurgerButton, Flex } from '~/primatives'
+import Logo from './widgets/Logo40'
 
 const FakeBurgerButton = styled('div', {
   width: '$header',
@@ -50,11 +51,20 @@ const Header: React.FC<{
   
   return (
     <Outer>
-      <Flex direction='row' justify='between' css={{
+      <Flex direction='row' justify='between' align='center' css={{
         width: layout.staging,
         m: '0 auto',
         //border: '0.5px gray solid'
       }}>
+        <Logo />
+        <Title>Chess Two Ways - Web</Title>
+        <FakeBurgerButton />
+      </Flex>
+    </Outer>
+  )
+}
+
+/*
         <BurgerButton toggledOn={menuOpen} onClick={toggleMenu} css={{
           alignSelf: 'center', 
           width: 'initial', 
@@ -62,11 +72,7 @@ const Header: React.FC<{
           aspectRatio: 1, 
           ml: -6
         }}/>
-        <Title>Chess Two Ways - Web</Title>
-        <FakeBurgerButton />
-      </Flex>
-    </Outer>
-  )
-}
+*/
+
 
 export default Header
