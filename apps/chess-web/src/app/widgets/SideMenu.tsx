@@ -77,8 +77,6 @@ const SideMenu: React.FC<{
           <MenuItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenuItem>
         </>)}
         <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
-        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
-        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
         <MenuItem onClick={saveSnapshot} icon={menuIcons.saveGame} >save game...</MenuItem>
         <MenuItem onClick={restoreSnapshot} icon={menuIcons.restoreGame} >restore game...</MenuItem>
       </MenuRoot>
