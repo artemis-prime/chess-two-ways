@@ -4,7 +4,7 @@ import type { Game, GameSnapshot } from '@artemis-prime/chess-core'
 
 interface SnapshotPersistenceService {
   save: (s: GameSnapshot, defaultFilename: string) => void
-  read: (loaded: (s: GameSnapshot) => void, error: (e: string) => void) => void
+  get: (loaded: (s: GameSnapshot) => void, error: (e: string) => void) => void
 }
 
 const SnapshotPersistenceContext = React.createContext<SnapshotPersistenceService | undefined>(undefined) 
@@ -26,7 +26,7 @@ const SnapshotPersistenceProvider: React.FC<PropsWithChildren> = ({
   }
   
 
-  const read = (loaded: (s: GameSnapshot) => void, error: (e: string) => void): void => {
+  const get = (loaded: (s: GameSnapshot) => void, error: (e: string) => void): void => {
 
     const reader = new FileReader()
     reader.onload = (e: ProgressEvent<FileReader>) => { 
@@ -61,7 +61,7 @@ const SnapshotPersistenceProvider: React.FC<PropsWithChildren> = ({
   }
 
   return (
-    <SnapshotPersistenceContext.Provider value={{save, read}}>
+    <SnapshotPersistenceContext.Provider value={{save, get}}>
       {children}
     </SnapshotPersistenceContext.Provider>
   )

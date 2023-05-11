@@ -51,14 +51,10 @@ const SideMenu: React.FC<{
     sp.save(gs, 'game.json')
   }
   
-  const restoreSnapshot = () => {
-    sp.read(
-      (snapshot: GameSnapshot) => {
-        game.restoreFromSnapshot(snapshot)
-      },
-      (error: string) => {
-        console.warn(error)
-      }
+  const restoreSnapshot = () => { 
+    sp.get(
+      (snapshot: GameSnapshot) => { game.restoreFromSnapshot(snapshot) },
+      (error: string) => { console.warn(error) }
     )
   }
 
