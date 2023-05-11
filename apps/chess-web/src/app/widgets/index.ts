@@ -8,4 +8,3 @@ export { default as SideMenu } from './SideMenu'
 export { default as SideSwatch } from './SideSwatch'
 export { default as TurnIndicator } from './TurnIndicator'
 export { default as UndoRedoWidget } from './UndoRedoWidget'
-
