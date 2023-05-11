@@ -3,15 +3,17 @@ import { observer } from 'mobx-react'
 
 import { styled } from '~/styles/stitches.config'
 
-import { Drawer } from '~/primatives'
+import { Drawer, type IconAndStyles } from '~/primatives'
+
 import {
   MenuItem,
   MenuSectionTitle,
   MenuCheckboxItem
 } from './menu/side'
 
-import ICONS from './UNICODE'
 import { useBoardOrientation, useGame } from '~/services'
+
+import menuIcons from './menu/menuIcons'
 
 // Following this: 
 // https://m3.material.io/components/navigation-drawer/specs
@@ -50,19 +52,19 @@ const SideMenu: React.FC<{
     <Drawer side='left' width={width} open={open} >
       <MenuRoot >
         <MenuSectionTitle>Direction</MenuSectionTitle>
-        <MenuItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={ICONS.twoVerticalArrows} >swap</MenuItem>
+        <MenuItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={menuIcons.swap} >swap</MenuItem>
         <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn}
-          icon={ICONS.clockwiseCircleArrow}
+          icon={menuIcons.autoSwap}
         >auto-swap</MenuCheckboxItem>
         <MenuSectionTitle>Game</MenuSectionTitle>
         {(game.playing) && (<>
-          <MenuItem onClick={game.callADraw} icon={{icon: '=', style: {fontSize: '26px', fontWeight: 400}}}>call a draw</MenuItem>
-          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: '17px', fontWeight: 400}}}>{game.currentTurn} concedes</MenuItem>
-          <MenuItem onClick={game.checkStalemate} icon={{icon: '$?', style: {fontSize: '20px', fontWeight: 500}}}>check for stalemate</MenuItem>
+          <MenuItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenuItem>
+          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenuItem>
+          <MenuItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenuItem>
         </>)}
-        <MenuItem onClick={game.reset} icon={{icon: ICONS.counterClockWiseArrow, style: {fontSize: '26px'}}}>reset</MenuItem>
+        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
 
       </MenuRoot>
     </Drawer>

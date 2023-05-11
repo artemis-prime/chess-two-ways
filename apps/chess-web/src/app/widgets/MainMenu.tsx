@@ -6,22 +6,23 @@ import {
   MenubarMenu,
   MenubarTrigger, 
   MenubarPopup,
-  RightSlot,
   MenubarSeparator,
   MenubarItem,
   MenubarCheckboxItem,
 } from './menu/main'
 
-import { styled, type CSS, common } from '~/styles/stitches.config'
+import type { IconAndStyles } from '~/primatives'
+
+import {type CSS } from '~/styles/stitches.config'
 import { useBoardOrientation, useGame } from '~/services'
-import ICONS from './UNICODE'
+
+import menuIcons from './menu/menuIcons'
 
 const AppMenubar: React.FC<{
   css?: CSS
 }> = observer(({
   css
 }) => {
-
 
   const bo = useBoardOrientation()
   const game = useGame()
@@ -34,23 +35,23 @@ const AppMenubar: React.FC<{
       <MenubarMenu>
         <MenubarTrigger>Game</MenubarTrigger>
         <MenubarPopup>
-          <MenubarItem onClick={game.callADraw} icon={{icon: '=', style: {fontSize: '26px', fontWeight: 400}}}>call a draw</MenubarItem>
-          <MenubarItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: '17px', fontWeight: 400}}}>{game.currentTurn} concedes</MenubarItem>
-          <MenubarItem onClick={game.checkStalemate} icon={{icon: '$?', style: {fontSize: '20px', fontWeight: 500}}}>check for stalemate</MenubarItem>
-          <MenubarItem onClick={game.reset} icon={{icon: ICONS.counterClockWiseArrow, style: {fontSize: '26px'}}}>reset</MenubarItem>
+          <MenubarItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenubarItem>
+          <MenubarItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenubarItem>
+          <MenubarItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenubarItem>
+          <MenubarItem onClick={game.reset} icon={menuIcons.reset}>reset</MenubarItem>
           <MenubarSeparator />
-          <MenubarItem icon={{icon: '\u{1F4E5}\uFE0E', style: {fontSize: '19px'}}} >save game...</MenubarItem>
-          <MenubarItem icon={{icon: '\u{1F4E4}\uFE0E', style: {fontSize: '19px'}}} >restore game...</MenubarItem>
+          <MenubarItem icon={menuIcons.saveGame} >save game...</MenubarItem>
+          <MenubarItem icon={menuIcons.restoreGame} >restore game...</MenubarItem>
         </MenubarPopup>
       </MenubarMenu>
       <MenubarMenu>
         <MenubarTrigger>Direction</MenubarTrigger>
         <MenubarPopup>
-          <MenubarItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={ICONS.twoVerticalArrows} >swap</MenubarItem>
+          <MenubarItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={menuIcons.swap} >swap</MenubarItem>
           <MenubarCheckboxItem
             checked={bo.autoOrientToCurrentTurn} 
             onCheckedChange={bo.setAutoOrientToCurrentTurn}
-            icon={ICONS.clockwiseCircleArrow}
+            icon={menuIcons.autoSwap}
           >auto-swap</MenubarCheckboxItem>
         </MenubarPopup>
       </MenubarMenu>
