@@ -32,6 +32,8 @@ const {
       menuHover: 'hsl(226, 39.2%, 42%)',
       menuSelectedHover: 'hsl(226, 39.2%, 46%)',
       menuPressed: 'hsl(226, 39.2%, 52%)',
+      menuDisabled: '#c8c8c8',
+      menuRightSymbol: '#ddd'
     },
     borderStyles: {
       solid: 'solid',
@@ -82,7 +84,8 @@ const {
       swatchNormalWidth: '42px', 
       header: `${HEADER_HEIGHT}px`,
       headerSmaller: `${HEADER_HEIGHT_SMALLER}px`,
-      menuItemHeight: '56px'
+      sidemenuItemHeight: '52px',
+      popupmenuItemHeight: '42px'
     },
     radii: {
       none: 0,
@@ -90,7 +93,8 @@ const {
       md: '8px',
       lg: '16px',
       rounded: '999px',
-      menu: '999px'
+      menu: '999px',
+      popupMenu: '21px', // popupmenuItemHeight * 0.5
     },
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
@@ -103,14 +107,36 @@ const {
 const common = {
   menu: {
     borderRadius: '$menu',
-    height: '$menuItemHeight',
+    height: '$sidemenuItemHeight',
     pl: '$menuPL',
-    
     lineHeight: '$menu',
     fontSize: '$menuDesktop',
     fontFamily: '$menu',
     fontWeight: '$menu',
+  },
+  menuBarTrigger: {
+    borderRadius: '$menu',
+    height: '$header',
+    px: '$4',
+    color: 'white',
+    lineHeight: '$menu',
+    fontSize: '$menuDesktop',
+    fontFamily: '$header',
+    fontWeight: '$menu',
+    cursor: 'pointer',
+  },
+  menuBarPopupItem: {
+    borderRadius: '$menu',
+    height: '$popupmenuItemHeight',
+    px: '$menuPL',
+    color: 'white',
+    lineHeight: '$popupmenuItemHeight',
+    fontSize: '$menuDesktop',
+    fontFamily: '$menu',
+    fontWeight: '$menu',
+    cursor: 'pointer',
   }
+
 }
 
 

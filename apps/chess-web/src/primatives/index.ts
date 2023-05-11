@@ -4,7 +4,11 @@ export { default as BurgerButton } from './BurgerButton'
 export { default as Checkbox } from './Checkbox'
 export { default as Drawer } from './Drawer'
 export { default as Flex, Row, Column } from './Flex'
-export { default as MenuItem } from './MenuItem'
-export { default as MenuSectionTitle } from './MenuSectionTitle'
-export { default as MenuCheckboxItem } from './MenuCheckboxItem'
 export { default as Switch } from './Switch'
+export {
+  default as WidgetIcon,
+  IconMargin,
+  IconWidth
+} from './WidgetIcon'
+export type { default as WidgetIconDesc, IconAndStyles } from './WidgetIconDesc'
+export { EMPTY_ICON } from './WidgetIconDesc'

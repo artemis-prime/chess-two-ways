@@ -3,11 +3,10 @@ import React, { type  CSSProperties } from 'react'
 import { styled, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import type UnicodeIcon from './UnicodeIcon'
+import type WidgetIconDesc from './WidgetIconDesc'
 
 const IconWidth = 24
 const IconMargin = 11 // fudging a bit from MD3 spec
-const ICON_SPACE = 'space' 
 
 const UnicodeWrapper = styled('span', {
 
@@ -22,8 +21,8 @@ const UnicodeWrapper = styled('span', {
   mr: `${IconMargin}px`,
 })
 
-const MenuIcon: React.FC<{
-  icon: UnicodeIcon | undefined
+const WidgetIcon: React.FC<{
+  icon: WidgetIconDesc | undefined
 }> = ({
   icon,
 }) => {
@@ -39,8 +38,7 @@ const MenuIcon: React.FC<{
 }
 
 export {
-  MenuIcon as default,
-  IconWidth,
+  WidgetIcon as default,
   IconMargin,
-  ICON_SPACE
+  IconWidth,
 }

@@ -7,13 +7,13 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import type UnicodeIcon from './UnicodeIcon'
+import type WidgetIconDesc from './WidgetIconDesc'
 
 type ButtonState = 'normal' | 'pressed' | 'disabled'
 
 interface ButtonViewProps extends PropsWithChildren {
   state: ButtonState
-  icon?: UnicodeIcon, 
+  icon?: WidgetIconDesc, 
   style?: StyleProp<ViewStyle>
 }
 
@@ -21,7 +21,7 @@ interface ButtonShellProps extends Omit<PressableProps, 'children'>, PropsWithCh
   view: React.FC<ButtonViewProps>,
   onClick: () => void
   viewProps?: {[key in string]: any}
-  icon?: UnicodeIcon,
+  icon?: WidgetIconDesc,
   style?: StyleProp<ViewStyle>
 } 
 

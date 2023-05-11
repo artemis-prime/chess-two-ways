@@ -3,12 +3,12 @@ import { observer } from 'mobx-react'
 
 import { styled } from '~/styles/stitches.config'
 
-import { 
-  Drawer, 
+import { Drawer } from '~/primatives'
+import {
   MenuItem,
   MenuSectionTitle,
   MenuCheckboxItem
-} from '~/primatives'
+} from './menu/side'
 
 import ICONS from './UNICODE'
 import { useBoardOrientation, useGame } from '~/services'
@@ -26,11 +26,13 @@ const MenuRoot = styled('div', {
   h: '100%', 
   p: '12px', // Spec: 28 to icon - 16 within button
   backgroundColor: '$menu', 
-  color: 'white'
+  color: 'white',
+
+  '@desktopConstrained': {display: 'none'}
 })
 
 
-const LeftDrawerMenu: React.FC<{
+const SideMenu: React.FC<{
   open: boolean
   width: number
 }> = observer(({
@@ -41,7 +43,6 @@ const LeftDrawerMenu: React.FC<{
   const bo = useBoardOrientation()
   const game = useGame()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
-
   
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
@@ -49,7 +50,7 @@ const LeftDrawerMenu: React.FC<{
     <Drawer side='left' width={width} open={open} >
       <MenuRoot >
         <MenuSectionTitle>Direction</MenuSectionTitle>
-        <MenuItem onClick={swapDirection} icon={ICONS.twoVerticalArrows} >swap</MenuItem>
+        <MenuItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={ICONS.twoVerticalArrows} >swap</MenuItem>
         <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn}
@@ -68,4 +69,4 @@ const LeftDrawerMenu: React.FC<{
   )
 })
 
-export default LeftDrawerMenu
+export default SideMenu

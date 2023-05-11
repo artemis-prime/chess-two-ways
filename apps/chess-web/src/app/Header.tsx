@@ -2,7 +2,7 @@ import React from 'react'
 
 import { styled, layout } from '~/styles/stitches.config'
 import { BurgerButton, Flex } from '~/primatives'
-import Logo from './widgets/Logo40'
+import { Logo, MainMenu } from '~/app/widgets'
 
 const FakeBurgerButton = styled('div', {
   width: '$header',
@@ -41,6 +41,10 @@ const Title = styled('h1', {
 */
 }) 
 
+const LeftContainer = styled(Flex, {
+
+})
+
 const Header: React.FC<{
   menuOpen: boolean
   toggleMenu: () => void
@@ -56,7 +60,17 @@ const Header: React.FC<{
         m: '0 auto',
         //border: '0.5px gray solid'
       }}>
-        <Logo />
+        <BurgerButton toggledOn={menuOpen} onClick={toggleMenu} css={{
+          alignSelf: 'center', 
+          width: 'initial', 
+          height: '90%', 
+          aspectRatio: 1, 
+          '@desktopConstrained': {display: 'none'}
+        }}/>
+        <LeftContainer direction='row' justify='start' align='center' css={{display: 'none', '@desktopConstrained': {display: 'flex'}}} >
+          <Logo css={{mr: '$4'}}/>
+          <MainMenu />
+        </LeftContainer>
         <Title>Chess Two Ways - Web</Title>
         <FakeBurgerButton />
       </Flex>
@@ -64,15 +78,6 @@ const Header: React.FC<{
   )
 }
 
-/*
-        <BurgerButton toggledOn={menuOpen} onClick={toggleMenu} css={{
-          alignSelf: 'center', 
-          width: 'initial', 
-          height: '80%', 
-          aspectRatio: 1, 
-          ml: -6
-        }}/>
-*/
 
 
 export default Header

@@ -5,10 +5,11 @@ import { useResizeDetector } from 'react-resize-detector'
 import { styled } from '~/styles/stitches.config'
 import { Flex } from '~/primatives'
 
+import { SideMenu } from '~/app/widgets'
+
 import Dash from './Dash'
 import Header from './Header'
 import Board from './Board'
-import LeftDrawerMenu from './LeftDrawerMenu'
 
 import '~/styles/fonts.scss'
 import '~/styles/body.scss'
@@ -50,7 +51,7 @@ const Layout: React.FC<{}> = () => {
         <Wing className='side right'>
           <Dash />
         </Wing>
-        <LeftDrawerMenu width={menuDrawerWidth(width)} open={drawerOpen} />
+        <SideMenu width={menuDrawerWidth(width)} open={drawerOpen} />
       </Main>
     </div>
   )

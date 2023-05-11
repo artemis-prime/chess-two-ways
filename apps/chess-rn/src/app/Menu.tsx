@@ -10,9 +10,9 @@ import { observer } from 'mobx-react'
 
 import { styled, common, css, useTheme } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
-
-import { MenuItem, MenuCheckboxItem } from '~/primatives'
 import { useBoardOrientation, useGame } from '~/services'
+
+import { MenuItem, MenuCheckboxItem } from './menu'
 
 const MenuOuter: React.FC<{
   animatedStyle: AnimateStyle<ViewStyle>

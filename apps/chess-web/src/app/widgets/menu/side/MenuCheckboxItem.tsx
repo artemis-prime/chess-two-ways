@@ -1,15 +1,19 @@
 import React, { type PropsWithChildren } from 'react'
 
+import { CheckIcon } from '@radix-ui/react-icons'
+
 import { styled, type CSS, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import type UnicodeIcon from './UnicodeIcon'
-import MenuIcon, {  
-  IconWidth,
+import { Flex } from '~/primatives'
+
+import {  
+  type WidgetIconDesc,
+  WidgetIcon,
+  EMPTY_ICON,
   IconMargin,
-  ICON_SPACE
-} from './MenuIcon'
-import Flex from './Flex'
+  IconWidth,
+} from '~/primatives'
 
 const StyledLabel = styled('label', {
     
@@ -36,14 +40,32 @@ const StyledLabel = styled('label', {
       true: {
         paddingLeft: `${16 + IconWidth + IconMargin}px`
       }
+    },
+    disabled: {
+      true: {
+        color: '$menuDisabled',
+        pointerEvents: 'none'
+      }
     }
+
+  }
+})
+
+const CheckboxOuter = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& svg': {
+    width: 20,
+    height: 20,
   }
 })
 
 const MenuCheckboxItem: React.FC<{
   checked: boolean
   setChecked: (b: boolean) => void
-  icon?: UnicodeIcon
+  icon?: WidgetIconDesc
   css?: CSS
 } & React.HTMLProps<HTMLInputElement>> = ({
   
@@ -59,19 +81,15 @@ const MenuCheckboxItem: React.FC<{
   }
 
   return (
-    <StyledLabel css={css} spaceForIcon={icon === ICON_SPACE}>
+    <StyledLabel css={css} spaceForIcon={icon === EMPTY_ICON}>
       <input type='checkbox' checked={checked} onChange={onChange} hidden/>
       <Flex direction='row' justify='start' css={{fontFamily: 'inherit', fontWeight: 'inherit'}}>
-        {(icon !== ICON_SPACE) ? <MenuIcon icon={icon} /> : null}
+        {(icon !== EMPTY_ICON) ? <WidgetIcon icon={icon} /> : null}
         {children}
       </Flex>
-      <MenuIcon icon={{icon: checked ? '\u2611' : '\u2610', style: {
-        textAlign: 'right',
-        top: 4,
-        left: 7,
-        opacity: 0.8,
-        fontWeight: '400'
-      }}} />
+      <CheckboxOuter>
+        {checked && <CheckIcon /> }
+      </CheckboxOuter>
     </StyledLabel>
   )
 }

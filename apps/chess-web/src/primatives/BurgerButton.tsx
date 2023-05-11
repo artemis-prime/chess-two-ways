@@ -18,8 +18,11 @@ const StyledButton = styled('button', {
   color: 'inherit',
   borderRadius: '$rounded',
 
-  fontSize: '24px',
-  fontWeight: 700,
+    // https://stackoverflow.com/questions/16056591/font-scaling-based-on-size-of-container#comment29460412_19814948
+  containerType: 'size',
+
+  //fontSize: '24px',
+  //fontWeight: 700,
 
   '&:hover': {
     backgroundColor: '$menuHover'
@@ -45,19 +48,26 @@ const StyledButton = styled('button', {
   }
 })
 
+const StyledSpan = styled('span', {
+  fontSize: '63cqh', 
+  fontWeight: 700, 
+  top: '1px', 
+  left: '-1px', 
+  display: 'block', 
+  position: 'relative' 
+})
+
 const BurgerButton: React.FC<{
   onClick: React.MouseEventHandler<HTMLButtonElement>
   toggledOn: boolean,
-  className?: string
   css?: CSS
 }> = ({
   onClick,
   toggledOn,
-  className,
   css
 }) => (
-  <StyledButton onClick={onClick} toggledOn={toggledOn} className={className} css={css}>
-    <span style={{fontSize: 'inherit', fontWeight: 'inherit', top: '1px', left: '-1px', display: 'block', position: 'relative' }}>{'\u2630'}</span>
+  <StyledButton onClick={onClick} toggledOn={toggledOn} css={css}>
+    <StyledSpan>{'\u2630'}</StyledSpan>
   </StyledButton>
 )
 

@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { type HTMLProps } from 'react'
+
 import { styled, type CSS, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import type UnicodeIcon from './UnicodeIcon'
-import type { HTMLProps } from 'react'
-
-import MenuIcon, {  
-  IconWidth,
+import {  
+  type WidgetIconDesc,
+  WidgetIcon,
+  EMPTY_ICON,
   IconMargin,
-  ICON_SPACE
-} from './MenuIcon'
+  IconWidth,
+} from '~/primatives'
 
 // Following this: 
 // https://m3.material.io/components/navigation-drawer/specs
@@ -40,12 +40,18 @@ const StyledButton = styled('button', {
       true: {
         paddingLeft: `${16 + IconWidth + IconMargin}px`
       }
+    },
+    disabled: {
+      true: {
+        color: '$menuDisabled',
+        pointerEvents: 'none'
+      }
     }
   }
 })
 
 const MenuItem: React.FC<{
-  icon?: UnicodeIcon
+  icon?: WidgetIconDesc
   css?: CSS,
 } & HTMLProps<HTMLButtonElement>> = ({
   onClick,
@@ -55,8 +61,8 @@ const MenuItem: React.FC<{
   children,
 }) => (
     // Was getting very odd typescript issues w ...rest / spread 
-  <StyledButton onClick={onClick} disabled={disabled} css={css} spaceForIcon={icon === ICON_SPACE}>
-    {(icon !== ICON_SPACE) ? <MenuIcon icon={icon} /> : null}
+  <StyledButton onClick={onClick} disabled={disabled} css={css} spaceForIcon={icon === EMPTY_ICON}>
+    {(icon !== EMPTY_ICON) ? <WidgetIcon icon={icon} /> : null}
     {children}
   </StyledButton> 
 )

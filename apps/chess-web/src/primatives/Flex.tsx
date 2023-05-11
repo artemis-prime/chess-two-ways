@@ -142,7 +142,7 @@ const Column = styled('div', {
     },
   },
   defaultVariants: {
-    direction: 'row',
+    direction: 'column',
     justify: 'start',
     align: 'start',
     wrap: 'nowrap',

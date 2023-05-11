@@ -1,7 +1,5 @@
-import React from 'react'
+import React, { type HTMLProps } from 'react'
 import { styled, type CSS, common } from '~/styles/stitches.config'
-
-import type { HTMLProps } from 'react'
 
 // Following this: 
 // https://m3.material.io/components/navigation-drawer/specs
