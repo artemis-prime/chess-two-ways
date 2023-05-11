@@ -12,8 +12,6 @@ import { ChessDnDShell } from './board/ChessDnD'
 import Square from './board/Square'
 import DraggingPiece from './board/DraggingPiece'
 
-import '~/styles/board.scss'
-
 import bg from 'assets/img/wood_grain_bg_low_res.jpg'
 
 const BoardInner = styled('div', {

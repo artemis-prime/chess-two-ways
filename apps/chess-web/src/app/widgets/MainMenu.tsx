@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { autorun } from 'mobx'
 import { observer } from 'mobx-react'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
 import {type CSS } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame, useSnapshotPersistence } from '~/services'
+import { useBoardOrientation, useDeviceInfo, useGame, useSnapshotPersistence } from '~/services'
 import type { IconAndStyles } from '~/primatives'
 
 import {
@@ -27,7 +28,27 @@ const AppMenubar: React.FC<{
 
   const bo = useBoardOrientation()
   const sp = useSnapshotPersistence()
+  const deviceInfo = useDeviceInfo()
   const game = useGame()
+
+  useEffect(() => {
+
+    const hideMenu = () => {
+      const el = document.querySelector('[data-radix-popper-content-wrapper]')
+      if (el) {
+          // https://stackoverflow.com/questions/58773652/ts2339-property-style-does-not-exist-on-type-element
+        (el as HTMLElement).style.display = 'none'
+      }
+    }
+
+    return autorun(() => {
+        // If we've just been resized down, manually hide the menu ("feature" of our menu lib)
+      if (deviceInfo.breakpoint !== 'desktopConstrained' && deviceInfo.breakpoint !== 'zero') {
+        hideMenu()
+      }     
+    })
+  }, [])
+
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 
   const saveSnapshot = () => {

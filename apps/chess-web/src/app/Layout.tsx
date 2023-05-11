@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useResizeDetector } from 'react-resize-detector'
 
 import { styled } from '~/styles/stitches.config'
 import { Flex } from '~/primatives'
+import { useDeviceInfo } from '~/services'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -37,6 +38,13 @@ const Layout: React.FC<{}> = () => {
   
   const [drawerOpen, setDrawerOpen] = useState<boolean >(false) 
   const { width, ref } = useResizeDetector()
+  const { updateWidth } = useDeviceInfo()
+
+  useEffect(() => {
+    if (width) {
+      updateWidth(width)
+    }
+  }, [width])
 
   const toggleMenu = () => { setDrawerOpen((prev) => (!prev)) }
   

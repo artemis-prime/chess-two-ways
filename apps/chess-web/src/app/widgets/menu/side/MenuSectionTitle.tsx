@@ -1,5 +1,6 @@
 import React, { type HTMLProps } from 'react'
 import { styled, type CSS, common } from '~/styles/stitches.config'
+import debugBorder from '~/styles/debugBorder'
 
 // Following this: 
 // https://m3.material.io/components/navigation-drawer/specs
@@ -11,9 +12,7 @@ const StyledHeading = styled('h6', {
   ...common.menu,
   borderRadius: 0,
   pl: 0,
-  ml: '$menuPL',
-  mr: '$menuPL',
-  borderBottom: '1px solid currentColor',
+  mx: '$menuPL',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-start',
@@ -22,7 +21,7 @@ const StyledHeading = styled('h6', {
   cursor: 'default',
   outline: 'none',
   color: 'inherit',
-  //...debugBorder('yellow', 'menuitem'),
+  ...debugBorder('yellow', 'menu'),
 })
 
 const MenuSectionTitle: React.FC<{

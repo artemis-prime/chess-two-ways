@@ -29,6 +29,11 @@ const MenuRoot = styled('div', {
   backgroundColor: '$menu', 
   color: 'white',
 
+  '& hr': {
+    mx: '$menuPL',
+    width: 'auto'
+  },
+
   '@desktopConstrained': {display: 'none'}
 })
 
@@ -64,6 +69,7 @@ const SideMenu: React.FC<{
     <Drawer side='left' width={width} open={open} >
       <MenuRoot >
         <MenuSectionTitle>Direction</MenuSectionTitle>
+        <hr />
         <MenuItem onClick={swapDirection} disabled={bo.autoOrientToCurrentTurn} icon={menuIcons.swap} >swap</MenuItem>
         <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
@@ -71,12 +77,14 @@ const SideMenu: React.FC<{
           icon={menuIcons.autoSwap}
         >auto-swap</MenuCheckboxItem>
         <MenuSectionTitle>Game</MenuSectionTitle>
+        <hr />
         {(game.playing) && (<>
           <MenuItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenuItem>
           <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenuItem>
           <MenuItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenuItem>
         </>)}
         <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
+        <hr />
         <MenuItem onClick={saveSnapshot} icon={menuIcons.saveGame} >save game...</MenuItem>
         <MenuItem onClick={restoreSnapshot} icon={menuIcons.restoreGame} >restore game...</MenuItem>
       </MenuRoot>
