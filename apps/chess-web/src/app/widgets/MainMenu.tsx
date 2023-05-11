@@ -1,6 +1,12 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
+import type { GameSnapshot } from '@artemis-prime/chess-core'
+
+import {type CSS } from '~/styles/stitches.config'
+import { useBoardOrientation, useGame, useSnapshotPersistence } from '~/services'
+import type { IconAndStyles } from '~/primatives'
+
 import {
   MenubarRoot,
   MenubarMenu,
@@ -11,11 +17,6 @@ import {
   MenubarCheckboxItem,
 } from './menu/main'
 
-import type { IconAndStyles } from '~/primatives'
-
-import {type CSS } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame } from '~/services'
-
 import menuIcons from './menu/menuIcons'
 
 const AppMenubar: React.FC<{
@@ -25,9 +26,26 @@ const AppMenubar: React.FC<{
 }) => {
 
   const bo = useBoardOrientation()
+  const sp = useSnapshotPersistence()
   const game = useGame()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+
+  const saveSnapshot = () => {
+    const gs = game.takeSnapshot()
+    sp.save(gs, 'game.json')
+  }
   
+  const restoreSnapshot = () => {
+    sp.read(
+      (snapshot: GameSnapshot) => {
+        game.restoreFromSnapshot(snapshot)
+      },
+      (error: string) => {
+        console.warn(error)
+      }
+    )
+  }
+
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
@@ -40,8 +58,8 @@ const AppMenubar: React.FC<{
           <MenubarItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenubarItem>
           <MenubarItem onClick={game.reset} icon={menuIcons.reset}>reset</MenubarItem>
           <MenubarSeparator />
-          <MenubarItem icon={menuIcons.saveGame} >save game...</MenubarItem>
-          <MenubarItem icon={menuIcons.restoreGame} >restore game...</MenubarItem>
+          <MenubarItem onClick={saveSnapshot} icon={menuIcons.saveGame} >save game...</MenubarItem>
+          <MenubarItem onClick={restoreSnapshot} icon={menuIcons.restoreGame} >restore game...</MenubarItem>
         </MenubarPopup>
       </MenubarMenu>
       <MenubarMenu>

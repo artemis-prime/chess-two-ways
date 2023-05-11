@@ -1,8 +1,10 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import { styled } from '~/styles/stitches.config'
+import type { GameSnapshot } from '@artemis-prime/chess-core'
 
+import { styled } from '~/styles/stitches.config'
+import { useBoardOrientation, useGame, useSnapshotPersistence } from '~/services'
 import { Drawer, type IconAndStyles } from '~/primatives'
 
 import {
@@ -11,13 +13,10 @@ import {
   MenuCheckboxItem
 } from './menu/side'
 
-import { useBoardOrientation, useGame } from '~/services'
-
 import menuIcons from './menu/menuIcons'
 
-// Following this: 
-// https://m3.material.io/components/navigation-drawer/specs
-
+  // Following this: 
+  // https://m3.material.io/components/navigation-drawer/specs
 const MenuRoot = styled('div', {
   display: 'flex',
   flexDirection: 'column',
@@ -43,9 +42,26 @@ const SideMenu: React.FC<{
 }) => {
 
   const bo = useBoardOrientation()
+  const sp = useSnapshotPersistence()
   const game = useGame()
+
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+  const saveSnapshot = () => {
+    const gs = game.takeSnapshot()
+    sp.save(gs, 'game.json')
+  }
   
+  const restoreSnapshot = () => {
+    sp.read(
+      (snapshot: GameSnapshot) => {
+        game.restoreFromSnapshot(snapshot)
+      },
+      (error: string) => {
+        console.warn(error)
+      }
+    )
+  }
+
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
@@ -65,7 +81,10 @@ const SideMenu: React.FC<{
           <MenuItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenuItem>
         </>)}
         <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
-
+        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
+        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
+        <MenuItem onClick={saveSnapshot} icon={menuIcons.saveGame} >save game...</MenuItem>
+        <MenuItem onClick={restoreSnapshot} icon={menuIcons.restoreGame} >restore game...</MenuItem>
       </MenuRoot>
     </Drawer>
   )
