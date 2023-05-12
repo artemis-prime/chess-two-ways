@@ -5,15 +5,12 @@ import type { CSS } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
 import { useGame } from '~/services'
-import { Button, Flex, Switch } from '~/primitives'
+import { Flex, Row, Column, Switch } from '~/primatives'
 
 import {
-  BoardDirectionWidget,
   GameStatusIndicator,
   InCheckIndicator,
   Messages,
-  PersistToFileButton,
-  RestoreFromFileButton,
   TurnIndicator,
   UndoRedoWidget,
 } from '~/app/widgets'
@@ -34,28 +31,9 @@ const DashView = styled(Flex, {
   color: '$dashText'
 })
 
-const CloseButton = styled(Button, {
-  fontSize: '1.3rem', 
-  alignSelf: 'flex-start', 
-  marginLeft: '-13px', 
-  marginTop: '-10px', 
-  paddingBottom: '3px', 
-  height: '36px', 
-  lineHeight: '36px'
-})
-
-const CloseButtonHR = styled('hr', {
-  opacity: 0.5,
-  marginLeft: '-14px', 
-  marginRight: '-14px', 
-  marginBottom: '18px'
-})
-
 const Dash: React.FC<{
-  onClose?: () => void
   css?: CSS
 }> = observer(({
-  onClose,
   css
 }) => {
 
@@ -66,46 +44,21 @@ const Dash: React.FC<{
     setShowMoves(checked)
   }
 
-  const buttonCSS = {
-    whiteSpace: 'nowrap',
-    fontSize: 'inherit'  
-  }
-
   return (
     <DashView className='dash' direction='column' css={css} >
-      {onClose && (<>
-        <CloseButton onClick={onClose}>x</CloseButton> 
-        <CloseButtonHR />
-      </>)}
-      <Flex direction='row' justify='between' align='start'>
-        <Flex direction='column' justify='start' align='start'>
+      <Row justify='between' align='start' css={{w: '100%'}}>
+        <Column >
         {(game.playing) ? (<>
-            <TurnIndicator css={{mb: '$2'}} />
-            <InCheckIndicator css={{mb: '$2'}} />
+            <TurnIndicator css={{mb: '$1'}} />
+            <InCheckIndicator css={{mb: '$1'}} />
           </>) : (
             <GameStatusIndicator />
           )}
-        </Flex>
+        </Column>
         <UndoRedoWidget buttonSize='large' />
-      </Flex>
+      </Row>
       <hr />
-      <Flex direction='column' justify='start' align='end' css={{mt: '$4'}} >
-        <BoardDirectionWidget css={{mb: '$4'}}/>
-        <Flex direction='column' justify='start' align='end' css={{fontSize: '$normal', mb: '$5'}}>
-        {(game.playing) && (<>
-          <Button css={buttonCSS} onClick={game.callADraw}>call a draw</Button>
-          <Button css={buttonCSS} onClick={game.concede}>concede</Button>
-          <Button css={buttonCSS} onClick={game.checkStalemate}>check stalemate</Button>
-        </>)}
-          <Button css={buttonCSS} onClick={game.reset}>reset</Button>
-          <br />
-          <PersistToFileButton >save game...</PersistToFileButton>
-          <RestoreFromFileButton >restore game...</RestoreFromFileButton>
-        </Flex>
-      </Flex>
-      <Flex direction='row' justify='end' align='center'>
-        <Switch checked={showMoves} onChange={handleSetShowMoves} >show moves</Switch>
-      </Flex>
+      <Switch css={{alignSelf: 'flex-end', my: '$1'}} checked={showMoves} onChange={handleSetShowMoves} >show moves</Switch>
       <hr />
       <Messages showMoves={showMoves}/>
     </DashView>

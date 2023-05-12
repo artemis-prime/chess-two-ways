@@ -47,7 +47,6 @@ $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
 $dash-border: $brown-light;
 $dash-text: $gray4;
-$color-header-bg: #284d94;
 
 :export {
   brownDarker: $brown-darker;
@@ -83,5 +82,4 @@ $color-header-bg: #284d94;
   pieceWhite: $color-piece-white;
   dashBorder: $dash-border;
   dashText: $dash-text;
-  headerBg: $color-header-bg;
 }

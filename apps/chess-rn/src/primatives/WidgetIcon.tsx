@@ -3,7 +3,7 @@ import { Text } from 'react-native'
 import { styled, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import type UnicodeIcon from './UnicodeIcon'
+import type WidgetIconDesc from './WidgetIconDesc'
 
 const IconXOffset = -5
 const IconWidth = 32
@@ -35,8 +35,8 @@ const UnicodeWrapper = styled(Text, {
   }
 })
 
-const MenuIcon: React.FC<{
-  icon: UnicodeIcon | undefined
+const WidgetIcon: React.FC<{
+  icon: WidgetIconDesc | undefined
   state: 'disabled' | 'pressed' | string
 }> = ({
   icon,
@@ -55,7 +55,7 @@ const MenuIcon: React.FC<{
 }
 
 export {
-  MenuIcon as default,
+  WidgetIcon as default,
   IconXOffset,
   IconWidth,
   IconMargin

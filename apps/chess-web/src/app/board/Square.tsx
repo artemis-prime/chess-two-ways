@@ -15,6 +15,22 @@ import { usePulses } from '~/services'
 
 import PieceComponent from './Piece'
 
+const SquareOuter = styled('div', {
+
+    //border: 0.5px blue solid;
+  position: 'relative',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'stretch',
+  variants: {
+    dark: {
+      true: {
+        backgroundColor: '$brownDarker' 
+      }
+    }
+  }
+})
+
 const EffectsView = styled('div', {
   position: 'absolute', 
   top: 0, 
@@ -56,10 +72,9 @@ const EffectsView = styled('div', {
   }
 })
 
-type EffectsViewVariants = VariantProps<typeof EffectsView>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
+type EffectsViewVariants = VariantProps<typeof EffectsView>
 type EffectVariant = EffectsViewVariants['effect'] // includes undefined
-
 
 const SquareComponent: React.FC<{
   square: ObsSquare 
@@ -112,17 +127,15 @@ const SquareDndWrapper: React.FC<{
     data: { position: square },
   })
 
+  const rankOdd = square.rank % 2
+  const fileOdd = !(FILES.indexOf(square.file) % 2)
+  const dark = (rankOdd && fileOdd) || (!rankOdd && !fileOdd)
+
     // https://github.com/clauderic/dnd-kit/issues/389#issuecomment-1013324147
   return (
-    <div 
-      ref={ref}
-      style={{ position: 'relative' }}
-      className={`square rank-${square.rank} rank-${(square.rank % 2) ? 'odd' : 'even'} ` +
-        `file-${square.file} file-${(FILES.indexOf(square.file) % 2) ? 'even' : 'odd'}` 
-      }
-    >
+    <SquareOuter ref={ref} dark={dark} >
       <SquareComponent square={square} />
-    </div>  
+    </SquareOuter>  
   )
 }
 

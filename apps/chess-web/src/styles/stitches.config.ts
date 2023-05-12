@@ -1,9 +1,19 @@
-import Stitches, { createStitches } from '@stitches/react'
+import { createStitches, type CSS } from '@stitches/react'
 
 // vscode doesn't seem to see the import as possible,
 // Both vite and tsc seem to do just fine. Dunno
 // @ts-ignore 
 import fromSASS from './colors.module.scss' 
+import utils from './utils.stitches'
+import _media from './media.stitches'
+
+const HEADER_HEIGHT = 52
+const HEADER_HEIGHT_SMALLER = 48
+
+const layout = {
+  staging: 1200,
+  menuBreak: 950
+}
 
 const { 
   config: { media }, 
@@ -11,9 +21,19 @@ const {
   styled, 
   css
 } = createStitches({
+
+  utils,
+  media: _media,
+  
   theme: {
     colors: {
-      ...fromSASS    
+      ...fromSASS,
+      menu: 'hsl(226, 56.0%, 34.5%)',    
+      menuHover: 'hsl(226, 39.2%, 42%)',
+      menuSelectedHover: 'hsl(226, 39.2%, 46%)',
+      menuPressed: 'hsl(226, 39.2%, 52%)',
+      menuDisabled: '#c8c8c8',
+      menuRightSymbol: '#ddd'
     },
     borderStyles: {
       solid: 'solid',
@@ -25,150 +45,107 @@ const {
       thick: '3px',
     },
     space: {
-      1: '4px',
-      2: '8px',
-      3: '12px',
-      4: '18px',
-      5: '24px',
-      6: '32px',
-      7: '48px',
-      8: '64px',
+      half: '4px',
+      1: '8px',
+      oneAndHalf: '12px',
+      2: '16px',
+      3: '24px',
+      4: '32px',
+      menuPL: '16px',
+      //menuPR: '24px',
+      subheader: '42px',
+      header: `${HEADER_HEIGHT}px`,
     },
     fontSizes: {
+      header: '1.85rem',
       normal: '1rem',
+      menuDesktop: '18px',
+      menuMobile: '14px',
       dashSmaller: '0.9rem'
     },
     fontWeights: {
-      bold: 700,
-      semibold: 500,
-      normal: 400,
+      menu: 500
     },
     fonts: {
       body: 'chalk',
-      button: 'TWK Everett',
+      header: 'TWK Everett',
+        // linked directly in index.html 
+      //menu: 'Roboto' 
+        // linked directly in index.html 
+      menu: "'Source Sans 3'" // need both sets of quotes
     },
-    lineHeights: {},
+    lineHeights: {
+      menu: '20px'
+    },
     letterSpacings: {},
 
     sizes: {
       swatchNormalHeight: '22px',
       swatchNormalWidth: '42px', 
+      header: `${HEADER_HEIGHT}px`,
+      headerSmaller: `${HEADER_HEIGHT_SMALLER}px`,
+      sidemenuItemHeight: '52px',
+      popupmenuItemHeight: '42px'
     },
     radii: {
       none: 0,
-      sm: 3,
-      md: 8,
-      lg: 16,
-      rounded: 999,
+      sm: '3px',
+      md: '8px',
+      lg: '16px',
+      rounded: '999px',
+      menu: '999px',
+      popupMenu: '21px', // popupmenuItemHeight * 0.5
     },
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
     transitions: {},
-    breakpoints: {
-      sm: 100,
-    },
-  },
-  utils: {
-    // MARGIN
-    m: (value: Stitches.PropertyValue<'margin'>) => ({
-      margin: value,
-    }),
-    mx: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginLeft: value,
-      marginRight: value,
-    }),
-    my: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginTop: value,
-      marginBottom: value,
-    }),
-    mt: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginTop: value,
-    }),
-    mb: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginBottom: value,
-    }),
-    ml: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginLeft: value,
-    }),
-    mr: (value: Stitches.PropertyValue<'margin'>) => ({
-      marginRight: value,
-    }),
-
-    // PADDING
-    p: (value: Stitches.PropertyValue<'padding'>) => ({
-      padding: value,
-    }),
-    px: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingLeft: value,
-      paddingRight: value,
-    }),
-    py: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingTop: value,
-      paddingBottom: value,
-    }),
-    pt: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingTop: value,
-    }),
-    pb: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingBottom: value,
-    }),
-    pl: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingLeft: value,
-    }),
-    pr: (value: Stitches.PropertyValue<'padding'>) => ({
-      paddingRight: value,
-    }),
-    // DIMENSIONS
-    w: (value: Stitches.PropertyValue<'width'>) => ({
-      width: value,
-    }),
-    h: (value: Stitches.PropertyValue<'height'>) => ({
-      height: value,
-    }),
-    size: (value: Stitches.PropertyValue<'width'>) => ({
-      width: value,
-      height: value,
-    }),
-    // GRID
-    colSpan: (value: number | 'full') => {
-      if (value === 'full') {
-        return {
-          gridColumn: '1 / -1',
-        }
-      }
-      return {
-        gridColumn: `span ${value} / span ${value}`,
-      }
-    },
-  },
-  media: {
-    sm: '(min-width: 600px)',
-    md: '(min-width: 900px)',
-    lg: '(min-width: 1200px)',
-    xl: '(min-width: 1400px)',
-    bp300: '(min-width: 300px)',
-    bp400: '(min-width: 400px)',
-    bp500: '(min-width: 500px)',
-    bp600: '(min-width: 600px)',
-    bp700: '(min-width: 700px)',
-    bp800: '(min-width: 800px)',
-    bp900: '(min-width: 900px)',
-    bp1000: '(min-width: 1000px)',
-    bp1100: '(min-width: 1100px)',
-    bp1200: '(min-width: 1200px)',
-    bp1300: '(min-width: 1300px)',
-    bp1400: '(min-width: 1400px)',
-    motion: '(prefers-reduced-motion)',
-    hover: '(any-hover: hover)',
-    dark: '(prefers-color-scheme: dark)',
-    light: '(prefers-color-scheme: light)',
+    breakpoints: {},
   },
 })
+
+const common = {
+  menu: {
+    borderRadius: '$menu',
+    height: '$sidemenuItemHeight',
+    pl: '$menuPL',
+    lineHeight: '$menu',
+    fontSize: '$menuDesktop',
+    fontFamily: '$menu',
+    fontWeight: '$menu',
+  },
+  menuBarTrigger: {
+    borderRadius: '$menu',
+    height: '$header',
+    px: '$3',
+    color: 'white',
+    lineHeight: '$menu',
+    fontSize: '$menuDesktop',
+    fontFamily: '$header',
+    fontWeight: '$menu',
+    cursor: 'pointer',
+  },
+  menuBarPopupItem: {
+    borderRadius: '$menu',
+    height: '$popupmenuItemHeight',
+    px: '$menuPL',
+    color: 'white',
+    lineHeight: '$popupmenuItemHeight',
+    fontSize: '$menuDesktop',
+    fontFamily: '$menu',
+    fontWeight: '$menu',
+    cursor: 'pointer',
+  }
+
+}
+
 
 export {
   media,
   lightTheme,
   styled,
   css,
+  layout,
+  common,
+  type CSS
 }

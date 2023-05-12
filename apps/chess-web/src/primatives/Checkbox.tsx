@@ -2,7 +2,7 @@ import React, { type PropsWithChildren } from 'react'
 
 import type { CSS } from '@stitches/react'
 
-import { Box } from '~/primitives'
+import { Box } from '~/primatives'
 
 const Checkbox: React.FC<{
   checked: boolean,

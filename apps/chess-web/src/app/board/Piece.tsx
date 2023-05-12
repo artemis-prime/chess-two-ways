@@ -12,7 +12,7 @@ import {
 
 import { styled } from '~/styles/stitches.config'
 
-import { Flex } from '~/primitives'
+import { Flex } from '~/primatives'
 import { usePulses, useGame } from '~/services'
 
 import registry from './pieceRegistry'

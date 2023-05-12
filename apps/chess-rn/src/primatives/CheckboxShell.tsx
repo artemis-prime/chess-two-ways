@@ -6,13 +6,14 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import type UnicodeIcon from './UnicodeIcon'
+
+import type WidgetIconDesc from './WidgetIconDesc'
 
 interface CheckboxViewProps extends PropsWithChildren {
   checked: boolean,
   pressed: boolean,
   disabled: boolean | null, // to match type of Pressable prop
-  icon?: UnicodeIcon
+  icon?: WidgetIconDesc
   style?: StyleProp<ViewStyle>
 }
 
@@ -20,7 +21,7 @@ const CheckboxShell: React.FC<{
   view: React.ComponentType<CheckboxViewProps>
   checked: boolean
   setChecked: (b: boolean) => void
-  icon?: UnicodeIcon
+  icon?: WidgetIconDesc
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   view,

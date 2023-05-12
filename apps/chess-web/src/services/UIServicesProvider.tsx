@@ -1,16 +1,26 @@
 import React, {
   type PropsWithChildren,
   useEffect,
-  useState,
   useRef
 } from 'react'
 
-import { autorun, makeAutoObservable, action, makeObservable, observable, observe } from 'mobx'
+import { 
+  autorun, 
+  makeAutoObservable, 
+  action, 
+  makeObservable, 
+  observable, 
+} from 'mobx'
+import { computedFn } from 'mobx-utils'
+
+import { BREAKPOINTS } from '~/styles/media.stitches' 
 
 import useGame from './useGame'
 import type BoardOrientation from './BoardOrientation'
 import type ConsoleMessage from './ConsoleMessage'
 import type Pulses from './Pulses'
+import type DeviceInfo from './DeviceInfo'
+import type { Breakpoint } from './DeviceInfo'
 
 import MessagesStore from './MessagesStore'
 
@@ -18,6 +28,43 @@ interface UIServices  {
   pulses: Pulses
   messages: ConsoleMessage[]
   boardOrientation: BoardOrientation
+  deviceInfo: DeviceInfo
+}
+
+class DeviceInfoImpl implements DeviceInfo {
+  
+  breakpoint: Breakpoint | undefined = undefined
+
+  constructor() {
+    makeObservable(this,{
+      breakpoint: observable,
+      updateWidth: action.bound,
+    }) 
+  }
+
+  isWithin = computedFn((from: Breakpoint | null, to: Breakpoint | null): boolean => {
+    if (!this.breakpoint ) return false
+    const breakpoints = Object.keys(BREAKPOINTS)
+    const toTestIndex = breakpoints.indexOf(this.breakpoint)
+    const fromIndex = (from === null) ? 0 : breakpoints.indexOf(from)
+    const toIndex = (to === null) ? BREAKPOINTS.length - 1 : breakpoints.indexOf(to)
+    return (toTestIndex >= fromIndex && toTestIndex <= toIndex)
+  })
+
+  updateWidth(w: number): void {
+    const breakpoints = Object.keys(BREAKPOINTS)
+    for (const bp of breakpoints) {
+      if (BREAKPOINTS[bp] <= w) {
+        if (this.breakpoint != bp) {
+          this.breakpoint = bp
+          //console.log("BPs curr: " + this.breakpoint + ", prev: " + this.previous)
+        }
+      }
+      else {
+        break
+      }
+    }
+  }
 }
 
 class BoardOrientationImpl implements BoardOrientation {
@@ -29,8 +76,8 @@ class BoardOrientationImpl implements BoardOrientation {
     makeObservable(this,{
       whiteOnBottom: observable,
       autoOrientToCurrentTurn: observable,
-      setWhiteOnBottom: action,
-      setAutoOrientToCurrentTurn: action,   
+      setWhiteOnBottom: action.bound,
+      setAutoOrientToCurrentTurn: action.bound,   
     }) 
   }
   
@@ -63,6 +110,7 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
   const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl())
   const messagesRef = useRef<MessagesStore>(new MessagesStore())
+  const deviceInfoRef = useRef<DeviceInfo>(new DeviceInfoImpl())
   const game = useGame()
   
   useEffect(() => {
@@ -100,7 +148,8 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     <UIServicesContext.Provider value={{
       pulses: pulsesRef.current,
       messages: messagesRef.current.messages,
-      boardOrientation: boardOrientationRef.current
+      boardOrientation: boardOrientationRef.current,
+      deviceInfo: deviceInfoRef.current
     }}>
       {children}
     </UIServicesContext.Provider>
@@ -112,4 +161,3 @@ export {
   UIServicesContext,
   type UIServices
 }
-
