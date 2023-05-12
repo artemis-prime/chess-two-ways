@@ -17,9 +17,9 @@ import bg from 'assets/img/wood_grain_bg_low_res.jpg'
 const BoardInner = styled('div', {
 
   backgroundImage: `url(${bg})`, 
-  aspectRatio: 1,
-  width: 'initial', 
+  aspectRatio: 1 / 1,
   height: '100%', 
+  width: 'initial',
   display: 'grid',
   gridTemplateColumns: 'repeat(8, 1fr)', 
   gridTemplateRows: 'repeat(8, 1fr)', 
@@ -35,14 +35,40 @@ const BoardInner = styled('div', {
 
 })
 
-const Board: React.FC<{ css?: CSS }> = observer(({css}) => {
+const Board: React.FC<{ 
+  width: number
+  height: number,
+  css?: CSS 
+}> = observer(({
+  width,
+  height,
+  css
+}) => {
 
   const game = useGame()
   const bo = useBoardOrientation()
 
+  const spreadMe = (width > height) 
+    ?
+    {
+      height: '100%',
+      width: 'initial',
+    } 
+    :
+    {
+      width: '100%',
+      height: 'initial',
+    }
+
+
   return (
     <ChessDnDShell>
-      <BoardInner css={css} >
+      <BoardInner 
+        css={{
+          ...css,
+          ...spreadMe,
+        }} 
+      >
       {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
         <Square square={s} key={`key-${s.rank}-${s.file}`} />
       ))}

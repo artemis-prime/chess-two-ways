@@ -5,7 +5,14 @@ import React, {
   useRef
 } from 'react'
 
-import { autorun, makeAutoObservable, action, makeObservable, observable, observe } from 'mobx'
+import { 
+  autorun, 
+  makeAutoObservable, 
+  action, 
+  makeObservable, 
+  observable, 
+} from 'mobx'
+import { computedFn } from 'mobx-utils'
 
 import { BREAKPOINTS } from '~/styles/media.stitches' 
 
@@ -28,19 +35,40 @@ interface UIServices  {
 class DeviceInfoImpl implements DeviceInfo {
   
   breakpoint: Breakpoint = 'zero'
+  previous: Breakpoint = 'zero'
 
   constructor() {
     makeObservable(this,{
       breakpoint: observable,
+      previous: observable,
       updateWidth: action.bound,
     }) 
   }
+
+  isWithin = computedFn((from: Breakpoint, to: Breakpoint) => {
+    const breakpoints = Object.keys(BREAKPOINTS)
+    const toTestIndex = breakpoints.indexOf(this.breakpoint)
+    const fromIndex = breakpoints.indexOf(from)
+    const toIndex = breakpoints.indexOf(to)
+    return (toTestIndex >= fromIndex && toTestIndex <= toIndex)
+  })
+
+  wasWithin = computedFn((from: Breakpoint, to: Breakpoint) => {
+    const breakpoints = Object.keys(BREAKPOINTS)
+    const toTestIndex = breakpoints.indexOf(this.previous)
+    const fromIndex = breakpoints.indexOf(from)
+    const toIndex = breakpoints.indexOf(to)
+    return (toTestIndex >= fromIndex && toTestIndex <= toIndex)
+  })
 
   updateWidth(w: number): void {
     const breakpoints = Object.keys(BREAKPOINTS)
     for (const bp of breakpoints) {
       if (BREAKPOINTS[bp] <= w) {
-        this.breakpoint = bp
+        if (this.breakpoint != bp) {
+          this.previous = this.breakpoint
+          this.breakpoint = bp
+        }
       }
       else {
         break

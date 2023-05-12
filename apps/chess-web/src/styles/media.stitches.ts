@@ -9,7 +9,8 @@ const BREAKPOINTS = {
   zero: 0,
   sm: 600,
   menuBreak: 900,
-  desktopConstrained: 1200
+  headerStaging: 1200,
+  xl: 1575
 } as {
   [key in string]: number
 }

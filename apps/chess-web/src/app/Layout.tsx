@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
 import { styled } from '~/styles/stitches.config'
-import { Flex } from '~/primatives'
+import debugBorder from '~/styles/debugBorder'
 import { useDeviceInfo } from '~/services'
 
 import { SideMenu } from '~/app/widgets'
@@ -26,9 +26,45 @@ const Main = styled('main', {
   p: '$2',
 })
 
-const Wing = styled('div', {
-  flex: '1 1 0' 
+const LeftWing = styled('div', {
+  flex: '1 1 0',
+  ...debugBorder('red', 'layout'),
+  minWidth: '420px',
+  display: 'none',
+
+  '@xl': {
+    display: 'block'
+  }
+
 })
+
+const BoardArea = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'start',
+  alignItems: 'center',
+  flex: '2 0 0', 
+  px: '$1',
+  ...debugBorder('yellow', 'layout'),
+})
+
+const BoardOuter: React.FC = () => {
+
+  const { width, height, ref } = useResizeDetector()
+  return (
+    <BoardArea ref={ref} >
+      <Board width={width} height={height} />
+    </BoardArea>
+  )
+}
+
+const RightWing = styled('div', {
+  flex: '1 1 0', 
+  minWidth: '420px',
+  ...debugBorder('red', 'layout'),
+})
+
+
 
 const menuDrawerWidth = (w: number | undefined) => (
   w ? Math.min((0.3 * w), 360) : 360
@@ -52,13 +88,11 @@ const Layout: React.FC<{}> = () => {
     <div ref={ref}>
       <Header menuOpen={drawerOpen} toggleMenu={toggleMenu} />
       <Main>
-        <Wing className='side left'/>
-        <Flex css={{flex: '2 0 0'}} justify='center' align='start'>
-          <Board />
-        </Flex>
-        <Wing className='side right'>
+        <LeftWing />
+        <BoardOuter />
+        <RightWing >
           <Dash />
-        </Wing>
+        </RightWing>
         <SideMenu width={menuDrawerWidth(width)} open={drawerOpen} />
       </Main>
     </div>

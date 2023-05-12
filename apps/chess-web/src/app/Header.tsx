@@ -4,9 +4,13 @@ import { styled, layout } from '~/styles/stitches.config'
 import { BurgerButton, Flex } from '~/primatives'
 import { Logo, MainMenu } from '~/app/widgets'
 
-const FakeBurgerButton = styled('div', {
+const RightSpacer = styled('div', {
   width: '$header',
-  height: '$header'
+  height: '$header',
+
+  '@headerStaging': {
+    width: '285px' // observation
+  }
 })
 
 const Outer = styled('header', {
@@ -65,14 +69,14 @@ const Header: React.FC<{
           width: 'initial', 
           height: '90%', 
           aspectRatio: 1, 
-          '@desktopConstrained': {display: 'none'}
+          '@headerStaging': {display: 'none'}
         }}/>
-        <LeftContainer direction='row' justify='start' align='center' css={{display: 'none', '@desktopConstrained': {display: 'flex'}}} >
-          <Logo css={{mr: '$4'}}/>
+        <LeftContainer direction='row' justify='start' align='center' css={{display: 'none', '@headerStaging': {display: 'flex'}}} >
+          <Logo css={{mr: '$1'}}/>
           <MainMenu />
         </LeftContainer>
         <Title>Chess Two Ways - Web</Title>
-        <FakeBurgerButton />
+        <RightSpacer />
       </Flex>
     </Outer>
   )

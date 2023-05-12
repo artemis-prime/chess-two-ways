@@ -117,7 +117,7 @@ const common = {
   menuBarTrigger: {
     borderRadius: '$menu',
     height: '$header',
-    px: '$4',
+    px: '$3',
     color: 'white',
     lineHeight: '$menu',
     fontSize: '$menuDesktop',

@@ -43,8 +43,10 @@ const AppMenubar: React.FC<{
 
     return autorun(() => {
         // If we've just been resized down, manually hide the menu ("feature" of our menu lib)
-      if (deviceInfo.breakpoint !== 'desktopConstrained' && deviceInfo.breakpoint !== 'zero') {
-        hideMenu()
+      if (deviceInfo.breakpoint !== 'zero') {
+        if (deviceInfo.isWithin('sm', 'menuBreak') && deviceInfo.wasWithin('headerStaging', 'xl')) {
+          hideMenu()
+        }
       }     
     })
   }, [])

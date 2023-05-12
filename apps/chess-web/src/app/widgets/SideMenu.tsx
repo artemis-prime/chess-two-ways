@@ -34,7 +34,7 @@ const MenuRoot = styled('div', {
     width: 'auto'
   },
 
-  '@desktopConstrained': {display: 'none'}
+  '@headerStaging': {display: 'none'}
 })
 
 
