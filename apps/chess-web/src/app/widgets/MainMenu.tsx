@@ -34,20 +34,22 @@ const AppMenubar: React.FC<{
   useEffect(() => {
 
     const hideMenu = () => {
+        // https://stackoverflow.com/questions/58773652/ts2339-property-style-does-not-exist-on-type-element
       const el = document.querySelector('[data-radix-popper-content-wrapper]')
-      if (el) {
-          // https://stackoverflow.com/questions/58773652/ts2339-property-style-does-not-exist-on-type-element
-        (el as HTMLElement).style.display = 'none'
+      if (el) { (el as HTMLElement).style.display = 'none' }
+      const trigger = document.querySelector('button[data-state=open]')
+      if (trigger && trigger.id.includes('radix')) {
+        (trigger as HTMLElement).setAttribute('data-state', 'closed');
+        (trigger as HTMLElement).setAttribute('aria-expanded', 'false');
       }
     }
 
     return autorun(() => {
         // If we've just been resized down, manually hide the menu ("feature" of our menu lib)
-      if (deviceInfo.breakpoint !== 'zero') {
-        if (deviceInfo.isWithin('sm', 'menuBreak') && deviceInfo.wasWithin('headerStaging', 'xl')) {
-          hideMenu()
-        }
-      }     
+      if (!deviceInfo.breakpoint ) return;
+      if (deviceInfo.isWithin(null, 'menuBreak')) {
+        hideMenu()
+      }
     })
   }, [])
 

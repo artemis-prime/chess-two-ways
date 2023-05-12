@@ -21,9 +21,6 @@ const StyledButton = styled('button', {
     // https://stackoverflow.com/questions/16056591/font-scaling-based-on-size-of-container#comment29460412_19814948
   containerType: 'size',
 
-  //fontSize: '24px',
-  //fontWeight: 700,
-
   '&:hover': {
     backgroundColor: '$menuHover'
   },

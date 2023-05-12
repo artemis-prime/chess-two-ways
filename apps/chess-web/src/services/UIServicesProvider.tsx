@@ -1,7 +1,6 @@
 import React, {
   type PropsWithChildren,
   useEffect,
-  useState,
   useRef
 } from 'react'
 
@@ -34,30 +33,21 @@ interface UIServices  {
 
 class DeviceInfoImpl implements DeviceInfo {
   
-  breakpoint: Breakpoint = 'zero'
-  previous: Breakpoint = 'zero'
+  breakpoint: Breakpoint | undefined = undefined
 
   constructor() {
     makeObservable(this,{
       breakpoint: observable,
-      previous: observable,
       updateWidth: action.bound,
     }) 
   }
 
-  isWithin = computedFn((from: Breakpoint, to: Breakpoint) => {
+  isWithin = computedFn((from: Breakpoint | null, to: Breakpoint | null): boolean => {
+    if (!this.breakpoint ) return false
     const breakpoints = Object.keys(BREAKPOINTS)
     const toTestIndex = breakpoints.indexOf(this.breakpoint)
-    const fromIndex = breakpoints.indexOf(from)
-    const toIndex = breakpoints.indexOf(to)
-    return (toTestIndex >= fromIndex && toTestIndex <= toIndex)
-  })
-
-  wasWithin = computedFn((from: Breakpoint, to: Breakpoint) => {
-    const breakpoints = Object.keys(BREAKPOINTS)
-    const toTestIndex = breakpoints.indexOf(this.previous)
-    const fromIndex = breakpoints.indexOf(from)
-    const toIndex = breakpoints.indexOf(to)
+    const fromIndex = (from === null) ? 0 : breakpoints.indexOf(from)
+    const toIndex = (to === null) ? BREAKPOINTS.length - 1 : breakpoints.indexOf(to)
     return (toTestIndex >= fromIndex && toTestIndex <= toIndex)
   })
 
@@ -66,8 +56,8 @@ class DeviceInfoImpl implements DeviceInfo {
     for (const bp of breakpoints) {
       if (BREAKPOINTS[bp] <= w) {
         if (this.breakpoint != bp) {
-          this.previous = this.breakpoint
           this.breakpoint = bp
+          //console.log("BPs curr: " + this.breakpoint + ", prev: " + this.previous)
         }
       }
       else {
@@ -171,4 +161,3 @@ export {
   UIServicesContext,
   type UIServices
 }
-

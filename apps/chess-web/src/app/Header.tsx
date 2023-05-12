@@ -69,7 +69,8 @@ const Header: React.FC<{
           width: 'initial', 
           height: '90%', 
           aspectRatio: 1, 
-          '@headerStaging': {display: 'none'}
+          '@headerStaging': {display: 'none'},
+          '@xl': {display: 'none'}
         }}/>
         <LeftContainer direction='row' justify='start' align='center' css={{display: 'none', '@headerStaging': {display: 'flex'}}} >
           <Logo css={{mr: '$1'}}/>

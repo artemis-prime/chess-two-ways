@@ -6,10 +6,11 @@ const media = {
 }
 
 const BREAKPOINTS = {
-  zero: 0,
-  sm: 600,
-  menuBreak: 900,
-  headerStaging: 1200,
+  phone: 0,
+  tablet: 575,
+  md: 768,
+  menuBreak: 950,
+  headerStaging: 1250,
   xl: 1575
 } as {
   [key in string]: number
