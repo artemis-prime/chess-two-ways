@@ -14,7 +14,6 @@ export default {
   autoSwap: ICONS.clockwiseCircleArrow,
   draw: {icon: '=', style: {fontSize: '26px', fontWeight: 400}},
   concede: {icon: 'ignore', style: {fontSize: '17px', fontWeight: 400}},
-  stalemate: {icon: '$?', style: {fontSize: '20px', fontWeight: 500}},
   reset: {icon: ICONS.counterClockWiseArrow, style: {fontSize: '26px'}},
   saveGame: {icon: ICONS.toInbox, style: {fontSize: '19px'}},
   restoreGame: {icon: ICONS.fromInbox, style: {fontSize: '19px'}}

@@ -5,6 +5,7 @@ import {
   type PieceCode, 
   pieceFromCodeString,
   pieceToString,
+  isPrimaryType,
 } from '../../Piece'
 
 import { 
@@ -109,11 +110,15 @@ class BoardSquares implements Snapshotable<SquaresSnapshot>{
     // Intentionally forgiving. If a key corresponding to a
     // square is found and its value successfully parsed, a piece is placed there. 
     // If not, the square is empty (no Errors are ever thrown)
-  static visitWithSnapshot(sq: Square, snapshot: SquaresSnapshot): void {
+  static visitWithSnapshot(sq: Square, snapshot: SquaresSnapshot, tracking?: Tracking): void {
     const keyToTry = positionToString(sq) as PositionCode
     if (snapshot[keyToTry]) {
         // If pieceFromCodeString is undefined, default to null
-      sq.setOccupant(pieceFromCodeString(snapshot[keyToTry]!) ?? null) 
+      const occupant = pieceFromCodeString(snapshot[keyToTry]!)
+      sq.setOccupant(occupant ?? null) 
+      if (tracking && occupant && (isPrimaryType(occupant.type) || occupant.type === 'king')) {
+        tracking[occupant.side].trackAsRestore(occupant, sq)
+      }
     }
     else {
       sq.setOccupant(null)
@@ -153,10 +158,11 @@ class BoardSquares implements Snapshotable<SquaresSnapshot>{
     return snapshot
   }
 
-  restoreFromSnapshot(snapshot: SquaresSnapshot): void {
+  restoreFromSnapshot(snapshot: SquaresSnapshot, tracking?: Tracking): void {
+
     for (const rank of RANKS) {
       for (const file of FILES) {
-        BoardSquares.visitWithSnapshot(this[rank][file], snapshot)
+        BoardSquares.visitWithSnapshot(this[rank][file], snapshot, tracking)
       }
     }
   }

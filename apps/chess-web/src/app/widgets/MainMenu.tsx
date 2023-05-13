@@ -77,7 +77,6 @@ const AppMenubar: React.FC<{
         {(game.playing) && (<>
           <MenubarItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenubarItem>
           <MenubarItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenubarItem>
-          <MenubarItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenubarItem>
         </>)}
           <MenubarItem onClick={game.reset} icon={menuIcons.reset}>reset</MenubarItem>
           <MenubarSeparator />

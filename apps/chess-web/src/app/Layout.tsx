@@ -49,7 +49,7 @@ const BoardArea = styled('div', {
   ...debugBorder('yellow', 'layout'),
 
   '@tablet': {
-    width: 'calc(100% - 420px)',
+    width: 'calc(100% - 380px)',
     justifyContent: 'flex-end',
   },
 

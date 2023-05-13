@@ -48,7 +48,7 @@ interface GameSnapshot {
 
   artemisPrimeChessGame: any
   board: BoardSnapshot
-  actions: string[]
+  actions?: string[]
   currentTurn: SideCode
 }
 
@@ -71,10 +71,6 @@ interface Game extends Snapshotable<GameSnapshot> {
   get canRedo(): boolean
   undo(): void
   redo(): void
-
-    // check if current turn has any valid moves,
-    // if not, set the state accordingly
-  checkStalemate(): void
 
   reset(): void
   callADraw(): void
@@ -129,7 +125,6 @@ class GameImpl implements Game {
       reset: action.bound, // action.bound makes it easy to call from button's onChange
       callADraw: action.bound,
       concede: action.bound,
-      checkStalemate: action.bound,
       restoreFromSnapshot: action,
       canUndo: computed,
       canRedo: computed,
@@ -145,13 +140,15 @@ class GameImpl implements Game {
       '_toggleTurn' | 
       '_stateIndex' |
       '_actions' |
-      '_applyResolution'
+      '_applyResolution' | 
+      '_checkStalemate'
     >(this, {
       _currentTurn: observable,
       _toggleTurn: action,
       _stateIndex: observable,
       _actions: observable.shallow,
-      _applyResolution: action
+      _applyResolution: action,
+      _checkStalemate: action
     })
 
       // safe to to not dispose... when GameImpl get's gc'ed
@@ -214,7 +211,12 @@ class GameImpl implements Game {
 
     this._board.restoreFromSnapshot(g.board)
     this._currentTurn = SIDE_FROM_CODE[g.currentTurn]
-    this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
+    if (g.actions) {
+      this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
+    }
+    else {
+      this._actions = []  
+    }
     this._stateIndex = this._actions.length - 1
     this._board.setGameStatus({
       state: 'restored',
@@ -241,26 +243,6 @@ class GameImpl implements Game {
       currentTurn: this._currentTurn.charAt(0) as SideCode
     }
   }  
-
-  checkStalemate(): void {
-    if (
-      !(this._board.check && this._board.check.side === this._currentTurn)
-      &&
-      !this._primariesCanMove(this._currentTurn)
-      &&
-      !this._kingCanMove(this._currentTurn)
-      &&
-      !this._pawnsCanMove(this._currentTurn)
-    ) {
-      this._board.setGameStatus({
-        state: 'stalemate',
-        victor: 'none'
-      }) 
-    }
-    else {
-      this._notifier.message('Not in stalemate', 'info-transient')
-    }
-  }
 
   get check(): Check | null {
     return this._board.check
@@ -347,6 +329,16 @@ class GameImpl implements Game {
     this._applyResolution(null)
     this._notifier.actionTaken(r)
     this._notifyCheck(previousCheck)
+    const currentCheck = this._board.check
+    const opponent = otherSide(r.piece.side)
+    if (currentCheck) {
+      r.moveResult = this._checkForCheckmate(opponent) ? 'checkmate' : 'check'
+    }
+    else {
+      if (this._checkStalemate(opponent)) {
+        r.moveResult = 'stalemate'
+      }
+    }
     if (this._stateIndex + 1 < this._actions.length) {
         // If we've undone actions since the most recent 'real' move,
         // truncate the stack since we can no longer meaningfully 
@@ -394,6 +386,13 @@ class GameImpl implements Game {
       this._board.applyAction(r, 'redo')
       this._notifier.actionRedone(r)
       this._notifyCheck(previousCheck)
+      const currentCheck = this._board.check
+      if (currentCheck) {
+        this._checkForCheckmate(otherSide(r.piece.side))
+      }
+      else {
+        this._checkStalemate(otherSide(r.piece.side))
+      }
       this._toggleTurn()
     }
   }
@@ -420,6 +419,7 @@ class GameImpl implements Game {
       const r = this._createActionRecord(rm.move, rm.action!)
       this._scratchBoard.applyAction(r, 'do')
       const check = this._scratchBoard.check
+      this._scratchBoard.applyAction(r, 'undo')
       return !check
     })
   }
@@ -453,9 +453,9 @@ class GameImpl implements Game {
 
   private _notifyCheckForSide(side: Side, previousCheck: Check | null): void {
 
-    const wasInCheck = !!previousCheck
+    const wasInCheck = previousCheck?.side === side
     const check = this._board.check
-    const inCheck = !!check && check.side === side
+    const inCheck = check?.side === side
 
       // We shouldn't clash with action / drag states, 
       // since this code is called after 
@@ -470,19 +470,6 @@ class GameImpl implements Game {
     else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  
     }
-    if (inCheck 
-        && 
-        !this._kingCanMove(side)
-        &&
-        !this._primariesCanMove(side)
-        &&
-        !this._pawnsCanMove(side)
-    ) {
-      this._board.setGameStatus({
-        state: 'checkmate',
-        victor: otherSide(side)
-      }) 
-    }
   }
 
     // We have to check each side after every actions, since 
@@ -491,6 +478,39 @@ class GameImpl implements Game {
   private _notifyCheck(previousCheck: Check | null): void {
     this._notifyCheckForSide('white', previousCheck)
     this._notifyCheckForSide('black', previousCheck)
+  }
+
+  private _checkForCheckmate(side: Side): boolean {
+    if (
+      this._board.check?.side === side 
+      && 
+      !this._kingCanMove(side)
+      &&
+      !this._primariesCanMove(side)
+      &&
+      !this._pawnsCanMove(side)
+    ) {
+      this._board.setGameStatus({
+        state: 'checkmate',
+        victor: otherSide(side)
+      })
+      return true 
+    }
+    return false
+  }
+
+  private _checkStalemate(side: Side): boolean {
+    if (
+      !this._primariesCanMove(side)
+      &&
+      !this._kingCanMove(side)
+      &&
+      !this._pawnsCanMove(side)
+    ) {
+      this._board.setGameStatus({ state: 'stalemate', victor: 'none' }) 
+      return true
+    }
+    return false
   }
 
   private _toggleTurn(): void {
