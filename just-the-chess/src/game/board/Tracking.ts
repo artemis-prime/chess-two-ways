@@ -179,6 +179,13 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     this.castling.reset()
   }
 
+  clearRookTracking(): void {
+    this.primaries.rook.kingside.position = null
+    this.primaries.rook.kingside.capturePos = undefined
+    this.primaries.rook.queenside.position = null
+    this.primaries.rook.queenside.capturePos = undefined
+  }
+
   takeSnapshot(): TrackingForSideSnapshot {
     return {
       king: positionToString(this.king),
@@ -458,6 +465,29 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     }
   }
 
+  trackAsRestore(piece: Piece, pos: Position): void {
+    if (piece.type === 'king') {
+      this.king = pos
+    }
+    else if (piece.type === 'rook') {
+        // This is totally arbitrary, so we loose the actual castle tracking
+        // In practice this is ok, since the "no tracking" persistence files
+        // will only be created by hand, and used for debugging and testing
+        // endgame conditions / features. 
+      if (!this.primaries.rook.kingside.position) {
+        this.primaries.rook.kingside.position = pos
+        this.primaries.rook.kingside.capturePos = undefined  
+      }
+      else {
+        this.primaries.rook.queenside.position = pos
+        this.primaries.rook.queenside.capturePos = undefined  
+      }
+    }
+    else {
+      const positions = this.primaries[piece.type as PrimariesTrackedAsArrays]
+      positions.push(pos)  
+    }
+  }
 }
 
 class Tracking implements Snapshotable<TrackingSnapshot>{

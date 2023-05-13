@@ -1,3 +1,6 @@
+import type Action from './Action'
+import { type MoveResult, MOVERESULT_FROM_SYMBOL, MOVERESULT_SYMBOLS, MOVERESULTS } from './GameStatus'
+import type Move from './Move'
 import type Piece from './Piece'
 import { 
   pieceToString, 
@@ -8,17 +11,17 @@ import {
   type PieceType,
   otherSide
 } from './Piece'
-import type Move from './Move'
-import type Action from './Action'
 import { positionToString, positionFromString } from './Position'
+
 
   // Describes a change of state.
   // Must contain enough info to undo and redo the change 
 interface ActionRecord extends Move {
-  action: Action
+  readonly action: Action
     // Both are needed to 'undo' or 'redo' a 'capturePromote' Action.
     // Required if action is 'capture'. Needed for 'undo' 
-  captured?: Piece
+  readonly captured?: Piece
+  moveResult?: MoveResult
 }
 
 
@@ -63,6 +66,11 @@ const actionRecordToLAN = (r: ActionRecord, verbose?: boolean): string => {
         `x${PIECETYPE_NAMES[r.captured!.type].short}${positionToString(r.to)}=Q`
     break
   } 
+
+  if (r.moveResult) {
+    str += verbose ? ` resulting in ${r.moveResult}` : MOVERESULT_FROM_SYMBOL[r.moveResult]
+  }
+
   return str
 }
 
@@ -90,8 +98,19 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
   const isCapture = lan.charAt(4) === 'x'
   const captured = isCapture ? {type: PIECETYPE_FROM_CODE[lan.charAt(5) as PieceTypeCode] as PieceType, side: otherSide(piece!.side)} : undefined
   const toPositionIndex = (isCapture) ? 6 : 4
-  const to = positionFromString(lan.slice(toPositionIndex,toPositionIndex + 2))
-  const isPromote = lan.charAt(toPositionIndex + 2) === '='
+  const to = positionFromString(lan.slice(toPositionIndex, toPositionIndex + 2))
+  const isPromote = lan.slice(toPositionIndex + 2, 2) === '=Q'
+
+  let index = -1
+  MOVERESULT_SYMBOLS.every((el, i) => {
+    if (lan.endsWith(el)) {
+      index = i
+      return false
+    }  
+    return true
+  })
+  const moveResult = (index === -1) ? undefined : MOVERESULTS[index]
+
 
   if (!piece) throw new Error('lanToActionRecord(): error parsing piece! (note: ' + note.toString() + ')')
   if (!from) throw new Error('lanToActionRecord(): error parsing from poistion! (note: ' + note.toString() + ')')
@@ -105,7 +124,7 @@ const lanToActionRecord = (lan: string, note?: any): ActionRecord => {
     action = isPromote ? 'promote' : 'move'
   }
 
-  return {piece, to, from, action, captured}
+  return {piece, to, from, action, captured, moveResult}
 }
 
 export { type ActionRecord as default, actionRecordToLAN, lanToActionRecord }

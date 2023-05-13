@@ -21,6 +21,7 @@ import {
   RANKS_REVERSED,
   FILES,
   type Rank,
+  type PositionCode,
 } from '../Position'
 
 import type Snapshotable from '../Snapshotable'
@@ -59,7 +60,7 @@ interface Board {
 
 interface BoardSnapshot {
   squares: SquaresSnapshot
-  tracking: TrackingSnapshot
+  tracking: TrackingSnapshot | null
 }
 
   // This interface is visable to GameImpl, but not to any UI
@@ -163,7 +164,7 @@ class BoardImpl implements BoardInternal {
     
     const result = [] as Position[]
     const visit = (sq: Square): void => {
-      if (sq.occupant && sq.occupant.side === side ) {
+      if (sq.occupant && sq.occupant.side === side && sq.occupant.type === 'pawn') {
         result.push(sq)
       } 
     }
@@ -360,9 +361,17 @@ class BoardImpl implements BoardInternal {
   }
 
   restoreFromSnapshot(snapshot: BoardSnapshot): void {
+
     this._tracking.reset()
-    this._squares.restoreFromSnapshot(snapshot.squares)
-    this._tracking.restoreFromSnapshot(snapshot.tracking)
+    if (!snapshot.tracking) {
+      this._tracking['white'].clearRookTracking()
+      this._tracking['black'].clearRookTracking()
+      this._squares.restoreFromSnapshot(snapshot.squares, this._tracking)
+    }
+    else {
+      this._squares.restoreFromSnapshot(snapshot.squares)
+      this._tracking.restoreFromSnapshot(snapshot.tracking)
+    }
   }
 
   takeSnapshot(): BoardSnapshot {

@@ -81,7 +81,6 @@ const SideMenu: React.FC<{
         {(game.playing) && (<>
           <MenuItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenuItem>
           <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenuItem>
-          <MenuItem onClick={game.checkStalemate} icon={menuIcons.stalemate}>check for stalemate</MenuItem>
         </>)}
         <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
         <hr />
