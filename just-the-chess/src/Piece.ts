@@ -10,6 +10,8 @@ type PieceType =
   'knight' | 
   'king'
 
+type RookSide = 'kingside' | 'queenside' 
+
 interface Piece {
   readonly type: PieceType
   readonly side: Side
@@ -141,6 +143,7 @@ export {
   type PieceTypeCode,
   type PieceCode,
   type SideCode,
+  type RookSide,
   PRIMARY_PIECETYPES,
   isPrimaryType,
   SIDE_FROM_CODE,

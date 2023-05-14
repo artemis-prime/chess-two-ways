@@ -4,13 +4,13 @@ import {
   makeObservable, 
 } from 'mobx'
 
-import type ActionRecord from '../ActionRecord'
+import ActionRecord from '../ActionRecord'
 import type Check from '../Check'
-import type GameStatus from '../GameStatus'
 import { 
   type default as Piece, 
   type PrimaryPieceType, 
   type Side, 
+  type RookSide,
   otherSide,
   isOpponent,
 } from '../Piece'
@@ -21,7 +21,6 @@ import {
   RANKS_REVERSED,
   FILES,
   type Rank,
-  type PositionCode,
 } from '../Position'
 
 import type Snapshotable from '../Snapshotable'
@@ -48,10 +47,10 @@ interface Board {
 
   getOccupant(pos: Position): Piece | null
   getOccupantSide(pos: Position): Side | null 
-  positionCanBeCaptured(pos: Position, asSide: Side): boolean 
+  positionCanBeCaptured(pos: Position, captured: Side): boolean 
   
-  eligableToCastle(side: Side, castleSide: 'kingside' | 'queenside'): boolean   
-  cannotCastleBecause(side: Side, castleSide: 'kingside' | 'queenside'): string | null // returns reason or null if ok 
+  eligableToCastle(side: Side, castleSide: RookSide): boolean   
+  cannotCastleBecause(side: Side, castleSide: RookSide): string | null // returns reason or null if ok 
 
   isClearAlongRank(from: Position, to: Position): boolean
   isClearAlongFile(from: Position, to: Position): boolean
@@ -77,8 +76,6 @@ interface BoardInternal extends Board, Snapshotable<BoardSnapshot> {
   pawnPositions(side: Side): Position[] 
 
   get check(): Check | null // observable
-  get gameStatus(): GameStatus // mobx computed
-  setGameStatus(s: GameStatus): void
 
   kingPosition(side: Side): Position
   reset(isObservable? : boolean): void
@@ -105,8 +102,6 @@ class BoardImpl implements BoardInternal {
       makeObservable(this, {
         applyAction: action,
         reset: action,
-        setGameStatus: action,
-        gameStatus: computed,
         check: computed,
       })
     }
@@ -127,16 +122,6 @@ class BoardImpl implements BoardInternal {
 
   get asSquareDescs(): ObsSquare[] {
     return this._asSquareArray as ObsSquare[]
-  }
-
-  get gameStatus(): GameStatus {
-    return this._tracking.gameStatus
-  }
-
-  setGameStatus(s: GameStatus): void {
-    if (this._tracking.gameStatus.state != s.state) {
-      this._tracking.gameStatus = s
-    }
   }
 
   syncTo(other: BoardInternal): void {
@@ -292,7 +277,7 @@ class BoardImpl implements BoardInternal {
     return true
   }
 
-  cannotCastleBecause = (side: Side, castleSide: 'kingside' | 'queenside'): string | null => {
+  cannotCastleBecause = (side: Side, castleSide: RookSide): string | null => {
     const { inCheckFrom, castling: {hasCastled, kingMoveCount, rookMoveCounts} } = this._tracking[side]
     const rookTracking = this._tracking[side].getRookTracking(castleSide)
     const inCheck = inCheckFrom.length > 0
@@ -315,7 +300,7 @@ class BoardImpl implements BoardInternal {
     return null
   }
 
-  eligableToCastle = (side: Side, castleSide: 'kingside' | 'queenside'): boolean => {
+  eligableToCastle = (side: Side, castleSide: RookSide): boolean => {
     return !(!!this.cannotCastleBecause(side, castleSide))
   }
 
@@ -329,22 +314,22 @@ class BoardImpl implements BoardInternal {
       this._castle(r, mode)
     }
     else if (mode === 'undo') {
-      this._move(r.to, r.from)
+      this._move(r.move.to, r.move.from)
       if (r.action.includes('capture')) {
-        this._sq(r.to).occupant = r.captured!
+        this._sq(r.move.to).occupant = r.captured!
       }
       if (r.action.includes('romote')) {
           // the _move above just returned the piece to 'from'
-        const self = this._sq(r.from).occupant!
-        this._sq(r.from).occupant = {side: self.side, type: 'pawn'}
+        const self = this._sq(r.move.from).occupant!
+        this._sq(r.move.from).occupant = {side: self.side, type: 'pawn'}
       }
     }
     else {
         // Note that _move also takes care of capture ;)
-      this._move(r.from, r.to)
+      this._move(r.move.from, r.move.to)
       if (r.action.includes('romote')) {
-        const self = this._sq(r.to).occupant!
-        this._sq(r.to).occupant = {side: self.side, type: 'queen'}
+        const self = this._sq(r.move.to).occupant!
+        this._sq(r.move.to).occupant = {side: self.side, type: 'queen'}
       }
     }
 
@@ -367,6 +352,8 @@ class BoardImpl implements BoardInternal {
       this._tracking['white'].clearRookTracking()
       this._tracking['black'].clearRookTracking()
       this._squares.restoreFromSnapshot(snapshot.squares, this._tracking)
+      this._trackInCheck('black')
+      this._trackInCheck('white')
     }
     else {
       this._squares.restoreFromSnapshot(snapshot.squares)
@@ -408,43 +395,43 @@ class BoardImpl implements BoardInternal {
   private _castle(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void {
 
     if (mode === 'undo') {
-      if (r.to.file === 'g') {
-        this._move({...r.from, file: 'g'}, r.from, true)  
-        this._move({...r.from, file: 'f'}, {...r.from, file: 'h'}, true) 
+      if (r.move.to.file === 'g') {
+        this._move({...r.move.from, file: 'g'}, r.move.from, true)  
+        this._move({...r.move.from, file: 'f'}, {...r.move.from, file: 'h'}, true) 
       }
       else {
-        this._move({...r.from, file: 'c'}, r.from, true)  
-        this._move({...r.from, file: 'd'}, {...r.from, file: 'a'}, true) 
+        this._move({...r.move.from, file: 'c'}, r.move.from, true)  
+        this._move({...r.move.from, file: 'd'}, {...r.move.from, file: 'a'}, true) 
       }
     }
     else {
-      if (r.to.file === 'g') {
-        this._move(r.from, {...r.from, file: 'g'}, true)  
-        this._move({...r.from, file: 'h'}, {...r.from, file: 'f'}, true) 
+      if (r.move.to.file === 'g') {
+        this._move(r.move.from, {...r.move.from, file: 'g'}, true)  
+        this._move({...r.move.from, file: 'h'}, {...r.move.from, file: 'f'}, true) 
       }
       else {
-        this._move(r.from, {...r.from, file: 'c'}, true)  
-        this._move({...r.from, file: 'a'}, {...r.from, file: 'd'}, true) 
+        this._move(r.move.from, {...r.move.from, file: 'c'}, true)  
+        this._move({...r.move.from, file: 'a'}, {...r.move.from, file: 'd'}, true) 
       }
     }
   }
 
   private _track(r: ActionRecord, mode: 'do' | 'undo' | 'redo'): void {
 
-    const side = r.piece.side
+    const side = r.move.piece.side
       // fall through, for rooks
     if (r.action === 'castle') {
-      this._tracking[side].trackCastle(r, mode)
+      this._tracking[side].trackCastle(r.move, mode)
     }
     else {
       if (r.action.includes('romote')) {
-        this._tracking[side].trackPromotion(r.to, mode)
+        this._tracking[side].trackPromotion(r.move.to, mode)
       } 
       if (r.action.includes('capture')) {
-        this._tracking[r.captured!.side].trackCapture(r.captured!, r.to, mode)
+        this._tracking[r.captured!.side].trackCapture(r.captured!, r.move.to, mode)
       }
       if (r.action === 'move' || r.action.includes('capture')) {
-        this._tracking[side].trackPositionChange(r, mode)
+        this._tracking[side].trackPositionChange(r.move, mode)
       }
     }
   }

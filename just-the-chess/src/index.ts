@@ -2,8 +2,7 @@
   // Only export what the apps actually import!
 export type { default as Action } from './Action'
 export { ACTIONS } from './Action'
-export type { default as ActionRecord} from './ActionRecord'
-export { actionRecordToLAN } from './ActionRecord'
+export { default as ActionRecord} from './ActionRecord'
 export type { default as CastlingTracking } from './CastlingTracking'
 export type { default as Check } from './Check'
 export type { default as ChessListener } from './ChessListener'

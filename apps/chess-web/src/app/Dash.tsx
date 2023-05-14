@@ -38,7 +38,7 @@ const Dash: React.FC<{
 }) => {
 
   const game = useGame()
-  const [showMoves, setShowMoves] = useState<boolean>(false)
+  const [showMoves, setShowMoves] = useState<boolean>(true)
 
   const handleSetShowMoves = (checked: boolean) => {
     setShowMoves(checked)

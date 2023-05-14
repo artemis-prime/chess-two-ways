@@ -1,14 +1,14 @@
 import { makeObservable, observable, action } from 'mobx'
 
 import type CastlingTracking from '../../CastlingTracking'
-import type GameStatus from '../../GameStatus'
 import type Move from '../../Move'
 import type Position from '../../Position'
 import type Piece from '../../Piece'
 import { 
   isPrimaryType, 
   type PrimaryPieceType, 
-  type Side 
+  type Side, 
+  type RookSide
 } from '../../Piece'
 import { 
   positionFromString, 
@@ -18,11 +18,6 @@ import {
   type PositionCode 
 } from '../../Position'
 import type Snapshotable from '../../Snapshotable'
-
-const DEFAULT_GAME_STATUS: GameStatus = {
-  state: 'new',
-  victor: undefined
-}
 
 interface TrackingForSideSnapshot {
   king: PositionCode,
@@ -49,8 +44,6 @@ interface TrackingSnapshot {
   white: TrackingForSideSnapshot
   black: TrackingForSideSnapshot
 }
-
-
 
 class CastlingTrackingInternal 
   implements CastlingTracking, 
@@ -262,7 +255,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     this.castling.syncTo(source.castling)
   }
     // called when pos contains a rook
-  private _rookSideFromPosition(pos: Position): 'kingside' | 'queenside' {
+  private _rookSideFromPosition(pos: Position): RookSide {
     const { kingside, queenside } = this.primaries.rook
     if (kingside.position && positionsEqual(pos, kingside.position)) {
       return 'kingside'
@@ -273,7 +266,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     throw new Error( "Tracking._rookSideFromPosition(): could not determin rook side from position!")
   }
 
-  private _rookSideFromCapturePos(pos: Position): 'kingside' | 'queenside' {
+  private _rookSideFromCapturePos(pos: Position): RookSide {
     const { kingside, queenside } = this.primaries.rook
     if (kingside.capturePos && positionsEqual(pos, kingside.capturePos)) {
       return 'kingside'
@@ -299,7 +292,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     return [...this.primaries[t]]
   }
 
-  getRookTracking(rookSide: 'kingside' | 'queenside'): RookTracking {
+  getRookTracking(rookSide: RookSide): RookTracking {
     return this.primaries.rook[rookSide]
   }
 
@@ -431,7 +424,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
       ****/
     const rank = m.from.rank
     let rook: {
-      rookSide: 'kingside' | 'queenside'
+      rookSide: RookSide
       from: Position
       to: Position
     } 
@@ -495,31 +488,20 @@ class Tracking implements Snapshotable<TrackingSnapshot>{
   white: TrackingForSide
   black: TrackingForSide
 
-    // Need to initialize for babel : https://github.com/mobxjs/mobx/issues/2486
-  gameStatus: GameStatus = DEFAULT_GAME_STATUS
 
   constructor(observeMe?: boolean) {
     this.white = new TrackingForSide('white', observeMe)
     this.black = new TrackingForSide('black', observeMe)
-    if (observeMe) {
-      makeObservable(this, {
-        gameStatus: observable.shallow,
-      })
-    }
   }
 
   reset() {
     this.white.reset('white')
     this.black.reset('black')
-    this.gameStatus = DEFAULT_GAME_STATUS
   }
 
   syncTo (source: Tracking) {
     this.white.syncTo(source.white)
     this.black.syncTo(source.black)
-      // https://mobx.js.org/observable-state.html#converting-observables-back-to-vanilla-javascript-collections
-      // always syncing from observable to non-observable
-    this.gameStatus = {...source.gameStatus}
   }
 
   takeSnapshot(): TrackingSnapshot {
