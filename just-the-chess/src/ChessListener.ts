@@ -1,5 +1,5 @@
 import type Action from './Action'
-import type ActionRecord from './ActionRecord'
+import ActionRecord from './ActionRecord'
 import type Check from './Check'
 import type GameStatus from './GameStatus'
 import type Move from './Move' 

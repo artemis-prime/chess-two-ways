@@ -7,13 +7,12 @@ import {
 
 import { 
   type Action,
-  type ActionRecord,
+  ActionRecord,
   type Move,
   type Check,  
   type Side, 
   type GameStatus,
   type ChessListener,
-  actionRecordToLAN, 
   positionToString,
 } from '@artemis-prime/chess-core'
 
@@ -96,20 +95,20 @@ class MessageStore implements ChessListener {
   actionResolved(m: Move, action: Action | null): void { }
 
   actionTaken(r: ActionRecord): void {
-    this._pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
+    this._pushMessage({message: r.toLANString(), type: r.action, actionRecord: r}) 
   }
 
   actionsRestored(recs: readonly ActionRecord[]): void {
     recs.forEach((r) => {
-      this._pushMessage({message: actionRecordToLAN(r), type: r.action, actionRecord: r}) 
+      this._pushMessage({message: r.toLANString(), type: r.action, actionRecord: r}) 
     })
   }
 
   actionUndone(r: ActionRecord): void {
-    this._pushMessage({message: actionRecordToLAN(r), type: 'undo', actionRecord: r}) 
+    this._pushMessage({message: r.toLANString(), type: 'undo', actionRecord: r}) 
   }
   actionRedone (r: ActionRecord): void {
-    this._pushMessage({message: actionRecordToLAN(r), type: 'redo', actionRecord: r}) 
+    this._pushMessage({message: r.toLANString(), type: 'redo', actionRecord: r}) 
   }
 }
 

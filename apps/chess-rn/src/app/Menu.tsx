@@ -103,9 +103,8 @@ const Menu: React.FC<{
         >auto-swap</MenuCheckboxItem>
         <MenuSectionTitle>Game</MenuSectionTitle>
         {(game.playing) && (<>
-          <MenuItem onClick={game.callADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>call a draw</MenuItem>
+          <MenuItem onClick={game.offerADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>offer a draw</MenuItem>
           <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17, fontWeight: '300'}}}>{game.currentTurn} concedes</MenuItem>
-          <MenuItem onClick={game.checkStalemate} icon={{icon: '\u0024?', style: {fontSize: 22, fontWeight: '300'}}}>check for stalemate</MenuItem>
         </>)}
         <MenuItem onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuItem>
       </MenuItemsOuter>

@@ -75,7 +75,7 @@ const AppMenubar: React.FC<{
         <MenubarTrigger>Game</MenubarTrigger>
         <MenubarPopup>
         {(game.playing) && (<>
-          <MenubarItem onClick={game.callADraw} icon={menuIcons.draw}>call a draw</MenubarItem>
+          <MenubarItem onClick={game.offerADraw} icon={menuIcons.draw}>offer a draw</MenubarItem>
           <MenubarItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenubarItem>
         </>)}
           <MenubarItem onClick={game.reset} icon={menuIcons.reset}>reset</MenubarItem>
