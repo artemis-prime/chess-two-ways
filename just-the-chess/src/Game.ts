@@ -90,18 +90,17 @@ interface Game extends Snapshotable<GameSnapshot> {
 
   getOccupant(p: Position): Piece | null
 
-  get gameStatus(): GameStatus // observable
-  get playing(): boolean // observable
-  get currentTurn(): Side
-  get check(): Check | null // observable
-  get actions(): ActionRecord[]
+  get gameStatus(): GameStatus  // observable
+  get playing(): boolean        // observable
+  get currentTurn(): Side       // observable
+  get check(): Check | null     // observable
+  get actions(): ActionRecord[] // observable
 
     // id should be the same across multiple registrations for the 
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
 
   getBoardAsArray(reverse: boolean): ObsSquare[]
-  
 }
 
 class GameImpl implements Game {
