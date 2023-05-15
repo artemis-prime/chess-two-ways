@@ -27,16 +27,18 @@ const Emoji = styled('span', {
 })
 
 const Text = styled('span', {
-  fontSize: '0.8rem',
+  fontSize: 'inherit',
   color: 'inherit'
 })
 
 const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): ReactNode => {
 
   const result: ReactNode[] = [] 
+  let check = false
   if (rec.annotatedResult === 'check') {
+    check = true
     result.push(
-      <Outer css={{color: '$alert9'}} key='one'>
+      <Outer css={{color: '$alert9'}} key={rec.move.piece.side + 'one'}>
         <SideSwatch smaller side={rec.move.piece.side}/>
         <Text>:&nbsp;</Text>
         <Emoji>{EMOJIS.fist}</Emoji>
@@ -46,7 +48,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
   }
   if (previous?.annotatedResult === 'check') {
     result.push(
-      <Outer key='two'>
+      <Outer key={rec.move.piece.side + 'two'}>
         <SideSwatch smaller side={rec.move.piece.side}/>
         <Text>{': phew! '}</Text>
         <Emoji larger lighter>{EMOJIS.ninja}</Emoji>
@@ -54,27 +56,34 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
     )
   }
   if (rec.action.includes('capture')) {
-    result.push(
-      <Outer css={{color: rec.captured!.type === 'pawn' ? 'white' : '$alert8'}} key='three'>
-        <SideSwatch smaller side={rec.captured!.side}/>
-        <Text>
-          :&nbsp;
-          {rec.captured!.type === 'pawn' ? 
-            `${EMOJIS.shrug} meh` 
-            : 
-            `${PIECETYPE_TO_UNICODE[rec.captured!.type]} ouch!`
-          }
-        </Text>
-      </Outer>
-    )
+      // Even though its technically in response to the pawn
+      // capture, 'meh' seems odd after a check!
+    if (!(check && rec.captured!.type === 'pawn')) {
+      result.push(
+        <Outer css={{color: rec.captured!.type === 'pawn' ? 'white' : '$alert8'}} key={rec.move.piece.side + 'three'}>
+          <SideSwatch smaller side={rec.captured!.side}/>
+          {rec.captured!.type === 'pawn' ? (<>
+            <Text>{': '}</Text>
+            <Emoji larger>{EMOJIS.shrug}</Emoji>
+            <Text>{' meh'}</Text>
+          </>) : (<>
+            <Text>{': '}</Text>
+            <Emoji larger >{PIECETYPE_TO_UNICODE[rec.captured!.type]}</Emoji>
+            <Text>{' ouch!'}</Text>
+          </>)}
+        </Outer>
+      )
+    }
   }
   if (result.length === 1) {
     return result[0]
   }
   else if (result.length > 1) {
-    return <>{result}</>
+    return <>{result.map((el, i) => (
+      (i === 0) ? el : <><Text>{', '}</Text>{el}</> 
+    ))}</>
   }
-  return ''
+  return null
 }
 
 export default getMoveComment
