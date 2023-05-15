@@ -11,6 +11,7 @@ import {
   GameStatusIndicator,
   InCheckIndicator,
   Messages,
+  MovesTable,
   TurnIndicator,
   UndoRedoWidget,
 } from '~/app/widgets'
@@ -60,9 +61,10 @@ const Dash: React.FC<{
       <hr />
       <Switch css={{alignSelf: 'flex-end', my: '$1'}} checked={showMoves} onChange={handleSetShowMoves} >show moves</Switch>
       <hr />
-      <Messages showMoves={showMoves}/>
+      <MovesTable />
     </DashView>
   )
 })
+//       <Messages showMoves={showMoves}/>
 
 export default Dash

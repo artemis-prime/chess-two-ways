@@ -94,12 +94,14 @@ interface Game extends Snapshotable<GameSnapshot> {
   get playing(): boolean // observable
   get currentTurn(): Side
   get check(): Check | null // observable
+  get actions(): ActionRecord[]
 
     // id should be the same across multiple registrations for the 
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
 
   getBoardAsArray(reverse: boolean): ObsSquare[]
+  
 }
 
 class GameImpl implements Game {
@@ -142,7 +144,8 @@ class GameImpl implements Game {
       gameStatus: computed,
       currentTurn: computed,
       check: computed,
-      playing: computed
+      playing: computed,
+      actions: computed
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -173,6 +176,10 @@ class GameImpl implements Game {
 
   get gameStatus(): GameStatus {
     return this._gameStatus
+  }
+
+  get actions(): ActionRecord[] {
+    return [...this._actions]
   }
 
   get playing(): boolean {
