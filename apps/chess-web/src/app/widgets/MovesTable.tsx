@@ -14,6 +14,7 @@ import { ActionRecord } from '@artemis-prime/chess-core'
 import { useGame } from '~/services'
 import { Row, Box } from '~/primatives'
 import SideSwatch from './SideSwatch'
+import getMoveComment from './getMoveComment'
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
@@ -22,12 +23,13 @@ interface MoveRow {
   w: {
     str: string
     rec: ActionRecord
+    note: ReactNode
   }
   b: {
     str: string
     rec: ActionRecord
+    note: ReactNode
   } | null
-  note: ReactNode
 }
 
 class Rows {
@@ -53,16 +55,13 @@ const MovesTable: React.FC = observer(() => {
 
   useEffect(() => {
 
-    const getNotesForRecord = (r: ActionRecord, existing?: ReactNode): ReactNode => (
-      (existing) ? 'both' : 'white'
-    )
-
     return reaction(
       () => (game.actions.slice(rowsRef.current.lastIndex - (game.actions.length - 1))),
       (recs: ActionRecord[]) => {
         const currentRows = [...rowsRef.current.rows]
         let index = rowsRef.current.lastIndex + 1
         recs.forEach((rec) => {
+          const previousAction = game.actions[index - 1] // reference original since it might now be in our slice (recs)
           if (index % 2) {
             const row = currentRows[currentRows.length - 1]
             let lan = rec.toLANString()
@@ -71,9 +70,9 @@ const MovesTable: React.FC = observer(() => {
               w: {...row.w},
               b: {
                 str: lan, 
-                rec: rec
+                rec: rec,
+                note: getMoveComment(rec, previousAction)
               },
-              note: getNotesForRecord(rec, row.note)
             }
             currentRows[currentRows.length - 1] = newRow // must mutate the array
           } 
@@ -83,10 +82,11 @@ const MovesTable: React.FC = observer(() => {
             currentRows.push({
               w: {
                 str: lan,
-                rec: rec
+                rec: rec,
+                note: getMoveComment(rec, previousAction)
               },
               b: null,
-              note: getNotesForRecord(rec)
+              
             }) 
           }
           index++
@@ -98,21 +98,26 @@ const MovesTable: React.FC = observer(() => {
 
 
   return (
-    <Box css={{mt: '$oneAndHalf'}}>
-    {rowsRef.current.rows.length > 0 && (
+    <Box css={{w: '100%', mt: '$oneAndHalf'}}>
+    {rowsRef.current.rows.length > 0 && (<>
       <Row css={{w: '100%', mb: '$half'}} key='title-row'>
         <Box css={{w: '1.5rem', mr: '$1'}}>&nbsp;</Box>
         <Box css={{w: '6rem', pr: '$oneAndHalf'}}><SideSwatch side='white' css={{width: '100%', height: '16px', borderWidth: '$normal'}}/></Box>
         <Box css={{w: '6rem', pr: '$oneAndHalf'}}><SideSwatch side='black' css={{width: '100%', height: '16px', borderWidth: '$normal'}}/></Box>
         <Box css={{w: 'auto'}}>&nbsp;</Box>
       </Row>
-    )}
+      <hr />
+    </>)}
     {rowsRef.current.rows.map((row: MoveRow, i) => (
       <Row css={{w: '100%', mb: '$half'}} key={row.w.str + row.b?.str}>
         <Box css={{w: '1.5rem', mr: '$1'}}>{`${i + 1})`}</Box>
-        <Box css={{w: '6rem', color: (row.w.rec.annotatedResult) ? '$alert8' : 'white'}}>{row.w.str}</Box>
-        <Box css={{w: '6rem', color: (row.b?.rec.annotatedResult) ? '$alert8' : 'white'}}>{row.b ? row.b.str : ''}</Box>
-        <Box css={{w: 'auto'}}>{row.note}</Box>
+        <Box css={{w: '6rem', color: (row.w.rec.annotatedResult || row.w.rec.action.includes('capture')) ? '$alert8' : 'white'}}>{row.w.str}</Box>
+        <Box css={{w: '6rem', color: (row.b?.rec.annotatedResult || row.w.rec.action.includes('capture')) ? '$alert8' : 'white'}}>{row.b ? row.b.str : ''}</Box>
+        <Row justify='end' align='end' css={{w: 'auto', flexWrap: 'wrap', flexGrow: 3, whiteSpace: 'nowrap'}}>
+          {row.w.note}
+          {row.b?.note && <span style={{fontSize: '0.8rem', marginRight: '0.3rem'}}>,</span>}
+          {row.b?.note}
+        </Row>
       </Row>
     ))}
     </Box>

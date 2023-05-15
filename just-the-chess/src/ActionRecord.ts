@@ -29,14 +29,14 @@ class ActionRecord {
 
   readonly move: Move
   readonly action: Action
-  readonly captured?: Piece         // needed to undo a 'capture'
-  annotatedResult?: AnnotatedResult // stored here to follow notation conventions
+  readonly captured: Piece | undefined                     // needed to undo a 'capture'
+  annotatedResult: AnnotatedResult | null  // stored here to follow notation conventions
 
   constructor(move: Move, action: Action, captured?: Piece, annotatedResult?: AnnotatedResult) {
     this.move = move
     this.action = action
     this.captured = captured
-    this.annotatedResult = annotatedResult
+    this.annotatedResult = annotatedResult ?? null
   }
 
   toLANString(): string {

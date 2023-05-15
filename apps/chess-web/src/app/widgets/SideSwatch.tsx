@@ -5,8 +5,8 @@ const SideSwatch = styled('span', {
   display: 'inline-block',
   verticalAlign: 'middle',
 
-  height: '$swatchNormalHeight', 
-  width: '$swatchNormalWidth',
+  h: '$swatchNormalHeight', 
+  w: '$swatchNormalWidth',
   borderRadius: '$sm',
   borderWidth: '$thicker',
   borderColor: '#777',
@@ -20,6 +20,13 @@ const SideSwatch = styled('span', {
       black: {
         backgroundColor: '$pieceBlack'
       },
+    },
+    smaller: {
+      true: {
+        h: '0.8rem', 
+        w: '0.8rem',
+        borderWidth: '$normal',
+      }
     }
   }
 })

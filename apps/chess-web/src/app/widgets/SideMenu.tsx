@@ -31,7 +31,8 @@ const MenuRoot = styled('div', {
 
   '& hr': {
     mx: '$menuPL',
-    width: 'auto'
+    width: 'auto',
+    opacity: 0.5,
   },
 
   '@headerStaging': {display: 'none'}
