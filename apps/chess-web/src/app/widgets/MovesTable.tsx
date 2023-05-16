@@ -6,10 +6,11 @@ import React, {
 } from 'react'
 import { autorun, makeObservable, observable, action, reaction } from 'mobx'
 import { observer } from 'mobx-react'
+import { computedFn } from 'mobx-utils'
 
 import ScrollableFeed from 'react-scrollable-feed' 
 
-import { ActionRecord } from '@artemis-prime/chess-core'
+import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
 import { useGame } from '~/services'
 import { Row, Box } from '~/primatives'
@@ -22,30 +23,40 @@ const Scrollable = ScrollableFeed as any
 const COL_WIDTHS = ['1.5rem', '6rem', '6rem', 'auto']
 
 interface MoveRow {
-  w: {
+  white: {
     str: string
     rec: ActionRecord
     note: ReactNode
   }
-  b: {
+  black: {
     str: string
     rec: ActionRecord
     note: ReactNode
   } | null
-}
+} 
 
 class Rows {
+
   rows: MoveRow[] = []
-  lastIndex = -1
+  lastActionIndex = -1
+
+  hilightedMoveRow: number | null = null
+  hilightedSide: Side = 'white' // arbitrary.  only dereferenced after being set  
 
   constructor() {
     makeObservable(this, {
       rows: observable.shallow,
-      setRows: action
+      hilightedMoveRow: observable,
+      hilightedSide: observable,
+      setRows: action,
+      setHilightedMoveRow: action,
+      setHilightedSide: action,
     })
   }
 
-  setRows(r: MoveRow[]) {this.rows = r}
+  setRows(rows: MoveRow[]) {this.rows = rows}
+  setHilightedMoveRow(r: number | null) {this.hilightedMoveRow = r}
+  setHilightedSide(s: Side) {this.hilightedSide = s}
 }
 
 
@@ -55,25 +66,72 @@ const MovesTable: React.FC = observer(() => {
 
   const game = useGame()
 
+  const getHilight = computedFn((moveRow: number, side: Side): any => {
+    if (rowsRef.current.hilightedMoveRow !== null) {
+      if (rowsRef.current.hilightedMoveRow === moveRow && rowsRef.current.hilightedSide === side) {
+        return {
+          p: '3px',
+          border: '1px dashed $alert7',
+          borderRadius: '3px'
+        }
+      }
+    }
+    return {p: '4px'}
+  })
+
+  const getMoveColor = computedFn((moveRow: number, side: Side): string => {
+
+    if (rowsRef.current.hilightedMoveRow !== null) {
+      if (moveRow > rowsRef.current.hilightedMoveRow) {
+        return '$gray11'
+      }
+      else if (moveRow === rowsRef.current.hilightedMoveRow) {
+        if (side === 'black' && rowsRef.current.hilightedSide === 'white') {
+          return '$gray11' 
+        }
+      }
+    }
+    const half = rowsRef.current.rows[moveRow][side]
+    return half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : 'white')  : 'white'
+  })
+
+  const disableRow = computedFn((moveRow: number): boolean => {
+    if (rowsRef.current.hilightedMoveRow !== null) {
+      if (moveRow > rowsRef.current.hilightedMoveRow) {
+        return true
+      }
+    }
+    return false
+  })
+
   useEffect(() => {
 
-    return reaction(
-      () => (game.actions.slice(rowsRef.current.lastIndex - (game.actions.length - 1))),
+    const r = rowsRef.current
+    const cleanupReaction = reaction(
+      () => {
+        /*
+        if (game.actions.length <= r.lastActionIndex) {
+
+        }
+        */
+
+        return (game.actions.slice(r.lastActionIndex - (game.actions.length - 1)))
+      },
       (recs: ActionRecord[]) => {
-        const currentRows = [...rowsRef.current.rows]
-        let index = rowsRef.current.lastIndex + 1
+        const currentRows = [...r.rows]
+        let index = r.lastActionIndex + 1
         recs.forEach((rec) => {
             // Must get it from the original array, since
             // it might not be in the slice taken. (recs)
           const previousAction = game.actions[index - 1] 
           if (index % 2) {
-            const row = rowsRef.current.rows[rowsRef.current.rows.length - 1]
+            const row = r.rows[r.rows.length - 1]
             let lan = rec.toLANString()
             lan = lan.slice(-(lan.length - 1)) // trim first char
               // Must mutate the actual array
             currentRows[currentRows.length - 1] = {
-              w: {...row.w},
-              b: {
+              white: {...row.white},
+              black: {
                 str: lan, 
                 rec: rec,
                 note: getMoveComment(rec, previousAction)
@@ -84,21 +142,37 @@ const MovesTable: React.FC = observer(() => {
             let lan = rec.toLANString()
             lan = lan.slice(-(lan.length - 1)) // trim first char
             currentRows.push({
-              w: {
+              white: {
                 str: lan,
                 rec: rec,
                 note: getMoveComment(rec, previousAction)
               },
-              b: null,
+              black: null,
             }) 
           }
           index++
         })
-        rowsRef.current.lastIndex = --index
-        rowsRef.current.setRows(currentRows)
+        r.lastActionIndex = --index
+        r.setRows(currentRows)
     })
-  }, [])
 
+    const cleanupAutorun = autorun(() => {
+      if (game.actions.length - 1 > game.actionIndex) {
+        if (game.actionIndex === -1) {
+          rowsRef.current.setHilightedMoveRow(-1)
+        }
+        else {
+          rowsRef.current.setHilightedMoveRow((game.actionIndex % 2) ? ((game.actionIndex - 1) / 2) : (game.actionIndex / 2))
+          rowsRef.current.setHilightedSide((game.actionIndex % 2) ? 'black' : 'white') 
+        }
+      }
+      else {
+        rowsRef.current.setHilightedMoveRow(null)
+      }
+    })
+
+    return () => {cleanupReaction(); cleanupAutorun()}
+  }, [])
 
   return (
     <Box css={{w: '100%', mt: '$oneAndHalf'}}>
@@ -111,31 +185,30 @@ const MovesTable: React.FC = observer(() => {
       </Row>
       <hr />
     </>)}
-    {rowsRef.current.rows.map((row: MoveRow, i) => {
-
-      const wColor = (row.w.rec.annotatedResult || row.w.rec.action.includes('capture')) ? '$alert8' : 'white'
-      const bColor = (row.b?.rec.annotatedResult || row.b?.rec.action.includes('capture')) ? '$alert8' : 'white'
-      
-      return (
-        <Row css={{w: '100%', mb: '$half'}} key={row.w.str + (row.b?.str ?? '')}>
-          <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1'}}>{`${i + 1})`}</Box>
-          <Box css={{w: COL_WIDTHS[1], flex: 'none', color: wColor}}>{row.w.str}</Box>
-          <Box css={{w: COL_WIDTHS[2], flex: 'none', color: bColor}}>{row.b?.str ?? ''}</Box>
-          <Row justify='start' align='end' css={{
-            w: COL_WIDTHS[3], 
-            flexGrow: 3, 
-            flexWrap: 'wrap', 
-            whiteSpace: 'nowrap', 
-            fontSize: '0.8rem',
-            textAlign: 'right'
-          }}>
-            {row.w.note}
-            {(row.w.note && row.b?.note) && <span style={{fontSize: 'inherit', marginRight: '0.3rem'}}>,</span>}
-            {row.b?.note}
-          </Row>
+    {rowsRef.current.rows.map((row: MoveRow, i) => (
+      <Row css={{w: '100%', mb: '$half'}} key={row.white.str + (row.black?.str ?? '')}>
+        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color: disableRow(i) ? '$gray11' : 'white' }}>{`${i + 1})`}</Box>
+        <Box css={{w: COL_WIDTHS[1], flex: 'none', color: getMoveColor(i, 'white'), ...getHilight(i, 'white')}}>{row.white.str}</Box>
+        <Box css={{w: COL_WIDTHS[2], flex: 'none', color: getMoveColor(i, 'black'), ...getHilight(i, 'black')}}>{row.black?.str ?? ''}</Box>
+        <Row justify='start' align='end' css={{
+          w: COL_WIDTHS[3], 
+          flexGrow: 3, 
+          flexWrap: 'wrap', 
+          whiteSpace: 'nowrap', 
+          fontSize: '0.8rem',
+          lineHeight: '1rem',
+          textAlign: 'right',
+        }}>
+          {disableRow(i) ? (
+            (row.white.note && row.black?.note) ?  <span style={{color: 'gray', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</span> : ''
+          ) : (<>
+            {row.white.note}
+            {(row.white.note && row.black?.note) && <span style={{fontSize: 'inherit', marginRight: '0.3rem'}}>,</span>}
+            {row.black?.note}
+          </>)}
         </Row>
-      )
-    })}
+      </Row>
+    ))}
     </Box>
   )
 })

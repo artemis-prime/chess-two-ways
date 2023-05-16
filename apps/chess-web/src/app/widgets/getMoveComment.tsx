@@ -22,6 +22,11 @@ const Emoji = styled('span', {
       true: {
         fontSize: '0.9rem',
       }
+    },
+    large: {
+      true: {
+        fontSize: '1.0rem',
+      }
     }
   }
 })
@@ -68,7 +73,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
             <Text>{' meh'}</Text>
           </>) : (<>
             <Text>{': '}</Text>
-            <Emoji larger >{PIECETYPE_TO_UNICODE[rec.captured!.type]}</Emoji>
+            <Emoji large>{PIECETYPE_TO_UNICODE[rec.captured!.type]}</Emoji>
             <Text>{' ouch!'}</Text>
           </>)}
         </Outer>
