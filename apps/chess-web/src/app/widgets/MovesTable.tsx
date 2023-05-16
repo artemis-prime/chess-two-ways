@@ -12,6 +12,8 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
+import { styled } from '~/styles/stitches.config'
+
 import { useGame } from '~/services'
 import { Row, Box } from '~/primatives'
 import SideSwatch from './SideSwatch'
@@ -21,6 +23,16 @@ import getMoveComment from './getMoveComment'
 const Scrollable = ScrollableFeed as any
 
 const COL_WIDTHS = ['1.5rem', '6rem', '6rem', 'auto']
+
+const StyledSpan = styled('span', {})
+
+const Ellipses: React.FC = () => (
+  <StyledSpan css={{color: '$dashTextDisabled', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</StyledSpan>
+)
+
+const Comma: React.FC = () => (
+  <StyledSpan css={{fontSize: 'inherit', mr: '0.3rem'}}>,</StyledSpan>
+)
 
 interface MoveRow {
   white: {
@@ -79,18 +91,26 @@ const MovesTable: React.FC = observer(() => {
 
   const getMoveColor = computedFn((moveRow: number, side: Side): string => {
 
-    if (rowsRef.current.hilightedMoveRow !== null) {
-      if (moveRow > rowsRef.current.hilightedMoveRow) {
-        return '$dashTextDisabled'
-      }
-      else if (moveRow === rowsRef.current.hilightedMoveRow) {
-        if (side === 'black' && rowsRef.current.hilightedSide === 'white') {
-          return '$dashTextDisabled' 
-        }
-      }
+    if (disableHalf(moveRow, side)) {
+      return '$dashTextDisabled'
     }
     const half = rowsRef.current.rows[moveRow][side]
     return half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashText')  : '$dashText'
+  })
+
+  const disableHalf = computedFn((moveRow: number, side: Side): boolean => {
+
+    if (rowsRef.current.hilightedMoveRow !== null) {
+      if (moveRow > rowsRef.current.hilightedMoveRow) {
+        return true
+      }
+      else if (moveRow === rowsRef.current.hilightedMoveRow) {
+        if (side === 'black' && rowsRef.current.hilightedSide === 'white') {
+          return true 
+        }
+      }
+    }
+    return false
   })
 
   const disableRow = computedFn((moveRow: number): boolean => {
@@ -107,49 +127,60 @@ const MovesTable: React.FC = observer(() => {
     const r = rowsRef.current
     const cleanupReaction = reaction(
       () => {
-        /*
-        if (game.actions.length <= r.lastActionIndex) {
-
+          // Reaction firing as the result of an action after an undo
+          // So must rewind lastActionIndex to exactly the second to last
+          // element (since that is the last index handled that is still valid) 
+        if (r.lastActionIndex >= 0 && game.actions.length - 1 <= r.lastActionIndex) {
+          r.lastActionIndex = game.actions.length - 2
         }
-        */
-
-        return (game.actions.slice(r.lastActionIndex - (game.actions.length - 1)))
+        
+        return ({
+          first: r.lastActionIndex, 
+          last: game.actions.length - 1
+        })
       },
-      (recs: ActionRecord[]) => {
-        const currentRows = [...r.rows]
-        let index = r.lastActionIndex + 1
-        recs.forEach((rec) => {
-            // Must get it from the original array, since
-            // it might not be in the slice taken. (recs)
+      ({first, last}) => {
+        const lastRow = first % 2 ? (first - 1) / 2 : first / 2
+          // If there have been undo's...
+        const currentRows = (lastRow < r.rows.length - 1) ? 
+            // ...truncate the array 
+          r.rows.slice(0, lastRow + 1) 
+          : 
+          [...r.rows]
+
+        let index = first + 1
+        for ( ; index <= last; index++) {
+          const currentAction = game.actions[index] 
           const previousAction = game.actions[index - 1] 
+            // black
           if (index % 2) {
             const row = r.rows[r.rows.length - 1]
-            let lan = rec.toLANString()
+            let lan = currentAction.toLANString()
             lan = lan.slice(-(lan.length - 1)) // trim first char
               // Must mutate the actual array
             currentRows[currentRows.length - 1] = {
               white: {...row.white},
               black: {
                 str: lan, 
-                rec: rec,
-                note: getMoveComment(rec, previousAction)
+                rec: currentAction,
+                note: getMoveComment(currentAction, previousAction)
               },
             }
           } 
+            // white
           else {
-            let lan = rec.toLANString()
+            let lan = currentAction.toLANString()
             lan = lan.slice(-(lan.length - 1)) // trim first char
             currentRows.push({
               white: {
                 str: lan,
-                rec: rec,
-                note: getMoveComment(rec, previousAction)
+                rec: currentAction,
+                note: getMoveComment(currentAction, previousAction)
               },
               black: null,
             }) 
           }
-          index++
-        })
+        }
         r.lastActionIndex = --index
         r.setRows(currentRows)
     })
@@ -198,11 +229,11 @@ const MovesTable: React.FC = observer(() => {
           textAlign: 'right',
         }}>
           {disableRow(i) ? (
-            (row.white.note && row.black?.note) ?  <span style={{color: 'gray', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</span> : ''
+            (row.white.note || row.black?.note) ? <Ellipses /> : ''
           ) : (<>
-            {row.white.note}
-            {(row.white.note && row.black?.note) && <span style={{fontSize: 'inherit', marginRight: '0.3rem'}}>,</span>}
-            {row.black?.note}
+            { row.white.note }
+            {(row.white.note && row.black?.note) && <Comma />}
+            { row.black?.note ? ((disableHalf(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
           </>)}
         </Row>
       </Row>
