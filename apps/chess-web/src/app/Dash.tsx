@@ -63,14 +63,13 @@ const Dash: React.FC<{
         </Column>
         <UndoRedoWidget buttonSize='large' />
       </Row>
-      <hr />
       <Switch 
         css={{alignSelf: 'flex-end', my: '$half'}} 
         checked={showMoves} 
         onChange={handleSetShowMoves} 
       >show moves</Switch>
       <hr />
-      <MovesTable />
+      <MovesTable show={showMoves} />
     </DashView>
   )
 })

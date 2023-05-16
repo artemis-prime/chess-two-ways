@@ -71,7 +71,11 @@ class Rows {
   setHilightedSide(s: Side) {this.hilightedSide = s}
 }
 
-const MovesTable: React.FC = observer(() => {
+const MovesTable: React.FC<{
+  show: boolean
+}> = observer(({
+  show
+}) => {
 
   const rowsRef = useRef<Rows>(new Rows())
   const game = useGame()
@@ -203,7 +207,7 @@ const MovesTable: React.FC = observer(() => {
     return () => {cleanupReaction(); cleanupAutorun()}
   }, [])
 
-  return (
+  return show ? (
     <Box css={{w: '100%', mt: '$oneAndHalf'}}>
     {rowsRef.current.rows.length > 0 && (<>
       <Row css={{w: '100%', mb: '$half'}} key='title-row'>
@@ -239,7 +243,7 @@ const MovesTable: React.FC = observer(() => {
       </Row>
     ))}
     </Box>
-  )
+  ) : null
 })
 
 export default MovesTable
