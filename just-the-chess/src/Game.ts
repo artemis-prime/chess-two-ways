@@ -90,10 +90,12 @@ interface Game extends Snapshotable<GameSnapshot> {
 
   getOccupant(p: Position): Piece | null
 
-  get gameStatus(): GameStatus // observable
-  get playing(): boolean // observable
-  get currentTurn(): Side
-  get check(): Check | null // observable
+  get gameStatus(): GameStatus  // observable
+  get playing(): boolean        // observable
+  get currentTurn(): Side       // observable
+  get check(): Check | null     // observable
+  get actions(): ActionRecord[] // observable
+  get actionIndex(): number     // observable
 
     // id should be the same across multiple registrations for the 
     // same listener.
@@ -116,9 +118,11 @@ class GameImpl implements Game {
   private _actions = [] as ActionRecord[] 
     // For managing undo / redo.  
     // The index within _actions of the Action that reflects
-    // the current state. -1 is *in fact* 
-    // the original state of the board, so _action[0] is conveniently 
-    // the first move.  So its easy to go back and forth via undo / redo
+    // the current state. Note that -1 is *correctly* 
+    // the original state of the board. 
+    // So _action[0] is conveniently the first move, and that stateIndex
+    // reflects the state after that Action has been applied. 
+    // (This fascilitates impl of undo / redo)
   private _stateIndex = -1 
   private _resolution: Resolution | null = null 
 
@@ -142,7 +146,9 @@ class GameImpl implements Game {
       gameStatus: computed,
       currentTurn: computed,
       check: computed,
-      playing: computed
+      playing: computed,
+      actions: computed,
+      actionIndex: computed
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -173,6 +179,14 @@ class GameImpl implements Game {
 
   get gameStatus(): GameStatus {
     return this._gameStatus
+  }
+
+  get actions(): ActionRecord[] {
+    return [...this._actions]
+  }
+
+  get actionIndex(): number {
+    return this._stateIndex
   }
 
   get playing(): boolean {

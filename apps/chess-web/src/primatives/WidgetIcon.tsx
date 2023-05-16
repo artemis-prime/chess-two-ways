@@ -1,7 +1,6 @@
 import React, { type  CSSProperties } from 'react'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { styled, common, deborder } from '~/styles/stitches.config'
 
 import type WidgetIconDesc from './WidgetIconDesc'
 
@@ -12,7 +11,7 @@ const UnicodeWrapper = styled('span', {
 
   fontFamily: common.menu.fontFamily,
   whiteSpace: 'nowrap',
-  ...debugBorder('yellow', 'menu'),
+  ...deborder('yellow', 'menu'),
   fontSize: IconWidth,
   fontWeight: '$bold',
   

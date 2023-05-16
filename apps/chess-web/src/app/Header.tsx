@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { styled, layout } from '~/styles/stitches.config'
+import { styled, layout, deborder } from '~/styles/stitches.config'
 import { BurgerButton, Flex } from '~/primatives'
 import { Logo, MainMenu } from '~/app/widgets'
 
@@ -19,8 +19,8 @@ const Outer = styled('header', {
   justifyContent: 'space-between',
   alignItems: 'stretch',
 
-  color: 'white',
-  backgroundColor: '$menu',
+  color: '$menuText',
+  backgroundColor: '$menuBG',
   height: '$header',
 })
 
@@ -30,19 +30,18 @@ const Title = styled('h1', {
   lineHeight:  '$header',
   fontSize: '$header',
   fontFamily: '$header',
-  //border: '0.5px red solid',
   alignSelf: 'center',
+  ...deborder('red', 'header')
 
   /*
-    @include m.portrait-phone {
+  @include m.portrait-phone {
     font-size: 1.4rem; 
   }
 
   @include m.portrait-tablet {
     font-size: 1.9rem; 
   }
-
-*/
+  */
 }) 
 
 const LeftContainer = styled(Flex, {
@@ -62,7 +61,7 @@ const Header: React.FC<{
       <Flex direction='row' justify='between' align='center' css={{
         width: layout.staging,
         m: '0 auto',
-        //border: '0.5px gray solid'
+        ...deborder('gray', 'header')
       }}>
         <BurgerButton toggledOn={menuOpen} onClick={toggleMenu} css={{
           alignSelf: 'center', 
@@ -72,7 +71,15 @@ const Header: React.FC<{
           '@headerStaging': {display: 'none'},
           '@xl': {display: 'none'}
         }}/>
-        <LeftContainer direction='row' justify='start' align='center' css={{display: 'none', '@headerStaging': {display: 'flex'}}} >
+        <LeftContainer 
+          direction='row' 
+          justify='start' 
+          align='center' 
+          css={{
+            display: 'none', 
+            '@headerStaging': {display: 'flex'}
+          }} 
+        >
           <Logo css={{mr: '$1'}}/>
           <MainMenu />
         </LeftContainer>
@@ -82,7 +89,5 @@ const Header: React.FC<{
     </Outer>
   )
 }
-
-
 
 export default Header

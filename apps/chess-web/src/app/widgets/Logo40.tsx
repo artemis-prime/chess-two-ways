@@ -2,7 +2,6 @@ import React from 'react'
 
 import { styled, type CSS } from '~/styles/stitches.config'
 
-
 const StyledBGDiv = styled('div', {
   w: '40px',
   h: '40px',

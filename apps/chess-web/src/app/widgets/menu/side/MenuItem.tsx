@@ -1,7 +1,6 @@
 import React, { type HTMLProps } from 'react'
 
-import { styled, type CSS, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
 
 import {  
   type WidgetIconDesc,
@@ -19,7 +18,7 @@ const StyledButton = styled('button', {
 
   all: 'unset',
   ...common.menu,
-  ...debugBorder('yellow', 'menu'),
+  ...deborder('yellow', 'menu'),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-start',
@@ -29,10 +28,10 @@ const StyledButton = styled('button', {
   outline: 'none',
 
   '&:hover': {
-    backgroundColor: '$menuHover'
+    backgroundColor: '$menuBGHover'
   },
   '&:active': {
-    backgroundColor: '$menuPressed'
+    backgroundColor: '$menuBGPressed'
   },
 
   variants: {
@@ -43,7 +42,7 @@ const StyledButton = styled('button', {
     },
     disabled: {
       true: {
-        color: '$menuDisabled',
+        color: '$menuTextDisabled',
         pointerEvents: 'none'
       }
     }

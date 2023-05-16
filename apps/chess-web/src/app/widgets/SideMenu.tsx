@@ -26,12 +26,13 @@ const MenuRoot = styled('div', {
   w: '100%', 
   h: '100%', 
   p: '12px', // Spec: 28 to icon - 16 within button
-  backgroundColor: '$menu', 
-  color: 'white',
+  backgroundColor: '$menuBG', 
+  color: '$menuText',
 
   '& hr': {
     mx: '$menuPL',
-    width: 'auto'
+    width: 'auto',
+    opacity: 0.5,
   },
 
   '@headerStaging': {display: 'none'}

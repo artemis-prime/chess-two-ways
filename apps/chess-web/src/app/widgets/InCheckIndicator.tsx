@@ -1,10 +1,10 @@
 import React, {useState, useEffect } from 'react'
 import { autorun } from 'mobx'
 import type { CSS } from '@stitches/react'
-import { styled } from '~/styles/stitches.config'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
+import { styled } from '~/styles/stitches.config'
 import { useGame } from '~/services'
 
 const StyledView = styled('div', {

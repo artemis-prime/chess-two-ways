@@ -2,8 +2,7 @@ import React, { type PropsWithChildren } from 'react'
 
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
 
 import { Flex } from '~/primatives'
 
@@ -19,7 +18,7 @@ const StyledLabel = styled('label', {
     
   all: 'unset',
   ...common.menu,
-  ...debugBorder('white', 'menu'),
+  ...deborder('white', 'menu'),
   cursor: 'pointer',
   display: 'flex', 
   flexDirection: 'row',

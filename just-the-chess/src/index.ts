@@ -2,7 +2,14 @@
   // Only export what the apps actually import!
 export type { default as Action } from './Action'
 export { ACTIONS } from './Action'
-export { default as ActionRecord} from './ActionRecord'
+export { 
+  default as ActionRecord,
+  type AnnotatedResult,
+  ANNOTATION_FROM_RESULT,
+  ANNOTATIONS,
+  ANNOTATEDRESULTS,
+} from './ActionRecord'
+
 export type { default as CastlingTracking } from './CastlingTracking'
 export type { default as Check } from './Check'
 export type { default as ChessListener } from './ChessListener'

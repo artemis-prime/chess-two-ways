@@ -11,6 +11,7 @@ import {
   GameStatusIndicator,
   InCheckIndicator,
   Messages,
+  MovesTable,
   TurnIndicator,
   UndoRedoWidget,
 } from '~/app/widgets'
@@ -24,11 +25,16 @@ const DashView = styled(Flex, {
   width: '100%',
   maxWidth: '500px',
   height: '100%',
-  //marginRight: '6%',
   border: '4px $dashBorder solid',
   borderRadius: '5px',
   padding: '16px 24px',
-  color: '$dashText'
+  color: '$dashText',
+
+  '& hr': {
+    w: '100%',
+    opacity: 0.5,
+    my: '0.33rem',
+  }
 })
 
 const Dash: React.FC<{
@@ -58,11 +64,16 @@ const Dash: React.FC<{
         <UndoRedoWidget buttonSize='large' />
       </Row>
       <hr />
-      <Switch css={{alignSelf: 'flex-end', my: '$1'}} checked={showMoves} onChange={handleSetShowMoves} >show moves</Switch>
+      <Switch 
+        css={{alignSelf: 'flex-end', my: '$half'}} 
+        checked={showMoves} 
+        onChange={handleSetShowMoves} 
+      >show moves</Switch>
       <hr />
-      <Messages showMoves={showMoves}/>
+      <MovesTable />
     </DashView>
   )
 })
+//       <Messages showMoves={showMoves}/>
 
 export default Dash

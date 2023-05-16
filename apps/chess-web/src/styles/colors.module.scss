@@ -46,7 +46,17 @@ $brown-light: rgba(167, 107, 55, 0.761);
 $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
 $dash-border: $brown-light;
-$dash-text: $gray4;
+
+$dash-text: rgba(255, 255, 255, 0.9);
+$dash-text-disabled: $gray11;
+
+$menu-text: rgba(255, 255, 255, 0.9);
+$menu-bg: hsl(226, 56.0%, 34.5%);    
+$menu-bg-hover: hsl(226, 39.2%, 42%);
+$menu-bg-selected-hover: hsl(226, 39.2%, 46%);
+$menu-bg-pressed: hsl(226, 39.2%, 52%);
+$menu-text-disabled: #c8c8c8;
+$menu-text-right-symbol: #ddd;
 
 :export {
   brownDarker: $brown-darker;
@@ -78,8 +88,19 @@ $dash-text: $gray4;
   alert11: $alert11;
   alert12: $alert12;
   
+
+
   pieceBlack: $color-piece-black;
   pieceWhite: $color-piece-white;
   dashBorder: $dash-border;
   dashText: $dash-text;
+  dashTextDisabled: $dash-text-disabled;
+
+  menuText: $menu-text;
+  menuBG: $menu-bg;    
+  menuBGHover: $menu-bg-hover;
+  menuBGSelectedHover: $menu-bg-selected-hover;
+  menuBGPressed: $menu-bg-pressed;
+  menuTextDisabled: $menu-text-disabled;
+  menuTextRightSymbol: $menu-text-right-symbol;
 }
