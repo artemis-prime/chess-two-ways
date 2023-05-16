@@ -70,8 +70,8 @@ const MovesTable: React.FC = observer(() => {
     if (rowsRef.current.hilightedMoveRow !== null) {
       if (rowsRef.current.hilightedMoveRow === moveRow && rowsRef.current.hilightedSide === side) {
         return {
-          p: '3px',
-          border: '1px dashed $alert7',
+          p: '2px',
+          border: '2px dashed $alert8',
           borderRadius: '3px'
         }
       }
@@ -83,16 +83,16 @@ const MovesTable: React.FC = observer(() => {
 
     if (rowsRef.current.hilightedMoveRow !== null) {
       if (moveRow > rowsRef.current.hilightedMoveRow) {
-        return '$gray11'
+        return '$dashTextDisabled'
       }
       else if (moveRow === rowsRef.current.hilightedMoveRow) {
         if (side === 'black' && rowsRef.current.hilightedSide === 'white') {
-          return '$gray11' 
+          return '$dashTextDisabled' 
         }
       }
     }
     const half = rowsRef.current.rows[moveRow][side]
-    return half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : 'white')  : 'white'
+    return half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashText')  : '$dashText'
   })
 
   const disableRow = computedFn((moveRow: number): boolean => {
@@ -179,15 +179,15 @@ const MovesTable: React.FC = observer(() => {
     {rowsRef.current.rows.length > 0 && (<>
       <Row css={{w: '100%', mb: '$half'}} key='title-row'>
         <Box css={{w: COL_WIDTHS[0], mr: '$1'}}>&nbsp;</Box>
-        <Box css={{w: COL_WIDTHS[1], pr: '$oneAndHalf'}}><SideSwatch side='white' css={{width: '100%', height: '16px', borderWidth: '$normal'}}/></Box>
-        <Box css={{w: COL_WIDTHS[2], pr: '$oneAndHalf'}}><SideSwatch side='black' css={{width: '100%', height: '16px', borderWidth: '$normal'}}/></Box>
+        <Box css={{w: COL_WIDTHS[1], pr: '$oneAndHalf'}}><SideSwatch side='white' css={{width: '100%', height: '16px', borderWidth: '$normal', opacity: 0.8}}/></Box>
+        <Box css={{w: COL_WIDTHS[2], pr: '$oneAndHalf'}}><SideSwatch side='black' css={{width: '100%', height: '16px', borderWidth: '$normal', opacity: 0.8}}/></Box>
         <Row justify='center' css={{w: COL_WIDTHS[3]}}>notes:</Row>
       </Row>
       <hr />
     </>)}
     {rowsRef.current.rows.map((row: MoveRow, i) => (
       <Row css={{w: '100%', mb: '$half'}} key={row.white.str + (row.black?.str ?? '')}>
-        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color: disableRow(i) ? '$gray11' : 'white' }}>{`${i + 1})`}</Box>
+        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color: disableRow(i) ? '$dashTextDisabled' : '$dashText' }}>{`${i + 1})`}</Box>
         <Box css={{w: COL_WIDTHS[1], flex: 'none', color: getMoveColor(i, 'white'), ...getHilight(i, 'white')}}>{row.white.str}</Box>
         <Box css={{w: COL_WIDTHS[2], flex: 'none', color: getMoveColor(i, 'black'), ...getHilight(i, 'black')}}>{row.black?.str ?? ''}</Box>
         <Row justify='start' align='end' css={{

@@ -46,7 +46,8 @@ $brown-light: rgba(167, 107, 55, 0.761);
 $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
 $dash-border: $brown-light;
-$dash-text: $gray4;
+$dash-text: rgba(255, 255, 255, 0.9);
+$dash-text-disabled: $gray11;
 
 :export {
   brownDarker: $brown-darker;
@@ -82,4 +83,6 @@ $dash-text: $gray4;
   pieceWhite: $color-piece-white;
   dashBorder: $dash-border;
   dashText: $dash-text;
+  dashTextDisabled: $dash-text-disabled;
+
 }
