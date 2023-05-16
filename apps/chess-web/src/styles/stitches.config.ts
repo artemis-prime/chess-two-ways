@@ -6,6 +6,7 @@ import { createStitches, type CSS } from '@stitches/react'
 import fromSASS from './colors.module.scss' 
 import utils from './utils.stitches'
 import _media from './media.stitches'
+import deborder from './debugBorder'
 
 const HEADER_HEIGHT = 52
 const HEADER_HEIGHT_SMALLER = 48
@@ -28,12 +29,6 @@ const {
   theme: {
     colors: {
       ...fromSASS,
-      menu: 'hsl(226, 56.0%, 34.5%)',    
-      menuHover: 'hsl(226, 39.2%, 42%)',
-      menuSelectedHover: 'hsl(226, 39.2%, 46%)',
-      menuPressed: 'hsl(226, 39.2%, 52%)',
-      menuDisabled: '#c8c8c8',
-      menuRightSymbol: '#ddd'
     },
     borderStyles: {
       solid: 'solid',
@@ -118,7 +113,7 @@ const common = {
     borderRadius: '$menu',
     height: '$header',
     px: '$3',
-    color: 'white',
+    color: '$menuText',
     lineHeight: '$menu',
     fontSize: '$menuDesktop',
     fontFamily: '$header',
@@ -129,7 +124,7 @@ const common = {
     borderRadius: '$menu',
     height: '$popupmenuItemHeight',
     px: '$menuPL',
-    color: 'white',
+    color: '$menuText',
     lineHeight: '$popupmenuItemHeight',
     fontSize: '$menuDesktop',
     fontFamily: '$menu',
@@ -147,5 +142,6 @@ export {
   css,
   layout,
   common,
+  deborder,
   type CSS
 }

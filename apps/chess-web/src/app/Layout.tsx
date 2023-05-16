@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 
 import { useResizeDetector } from 'react-resize-detector'
 
-import { styled } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { styled, deborder } from '~/styles/stitches.config'
 import { useDeviceInfo } from '~/services'
 
 import { SideMenu } from '~/app/widgets'
@@ -24,11 +23,11 @@ const Main = styled('main', {
   width: '100%',
   height: '95vh',
   py: '$2',
-  ...debugBorder('white', 'layout'),
+  ...deborder('white', 'layout'),
 })
 
 const LeftWing = styled('div', {
-  ...debugBorder('red', 'layout'),
+  ...deborder('red', 'layout'),
 
   display: 'none',
 
@@ -46,7 +45,7 @@ const BoardArea = styled('div', {
   justifyContent: 'center',
   alignItems: 'flex-start',
   px: '$1',
-  ...debugBorder('yellow', 'layout'),
+  ...deborder('yellow', 'layout'),
 
   '@tablet': {
     width: 'calc(100% - 380px)',
@@ -79,9 +78,7 @@ const BoardOuter: React.FC = () => {
     onResize: (width, height) => {
       if (!width || !height) return ;
       const current = (height > width)
-      //console.log(`GETTING DIM: ${width}x${height}`)
       if (current != tall) {
-        //console.log("SETTING TALL: " + current)
         setTall(current)  
       } 
     } 
@@ -96,7 +93,7 @@ const BoardOuter: React.FC = () => {
 
 const RightWing = styled('div', {
   
-  ...debugBorder('red', 'layout'),
+  ...deborder('red', 'layout'),
   pr: '$1',
 
   '@tablet': {
@@ -123,7 +120,6 @@ const RightWing = styled('div', {
     flexBasis: '430px'
   }
 })
-
 
 const menuDrawerWidth = (w: number | undefined) => (
   w ? Math.min((0.3 * w), 360) : 360

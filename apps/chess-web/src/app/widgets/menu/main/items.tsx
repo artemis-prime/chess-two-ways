@@ -3,8 +3,7 @@ import React from 'react'
 import * as Menubar from '@radix-ui/react-menubar'
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
 
 import {  
   type WidgetIconDesc,
@@ -21,23 +20,23 @@ const itemstyles = {
   userSelect: 'none',
 
   ...common.menuBarPopupItem,
-  ...debugBorder('white', 'menu'),
+  ...deborder('white', 'menu'),
   
   display: 'flex',
   alignItems: 'center',
   position: 'relative',
 
   '&[data-disabled]': {
-    color: '$menuDisabled',
+    color: '$menuTextDisabled',
     pointerEvents: 'none',
   },
 
   '&[data-highlighted]': {
-    backgroundColor: '$menuHover'
+    backgroundColor: '$menuBGHover'
   },
 
   '&:hover': {
-    backgroundColor: '$menuHover'
+    backgroundColor: '$menuBGHover'
   },
 
   variants: {

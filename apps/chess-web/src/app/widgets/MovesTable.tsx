@@ -59,11 +59,9 @@ class Rows {
   setHilightedSide(s: Side) {this.hilightedSide = s}
 }
 
-
 const MovesTable: React.FC = observer(() => {
 
   const rowsRef = useRef<Rows>(new Rows())
-
   const game = useGame()
 
   const getHilight = computedFn((moveRow: number, side: Side): any => {
