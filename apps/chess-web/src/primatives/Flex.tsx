@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { styled } from '~/styles/stitches.config'
 
 const Flex = styled('div', {

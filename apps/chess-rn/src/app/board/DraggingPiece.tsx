@@ -1,6 +1,6 @@
 import React  from 'react'
 import { Text } from 'react-native'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { styled } from '~/styles/stitches.config'
 

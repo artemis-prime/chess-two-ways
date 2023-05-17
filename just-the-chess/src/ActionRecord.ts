@@ -8,6 +8,7 @@ import {
   PIECETYPE_FROM_CODE, 
   type PieceTypeCode,
   type PieceType,
+  type PieceFormat,
   otherSide
 } from './Piece'
 import { positionToString, positionFromString } from './Position'
@@ -22,6 +23,8 @@ const ANNOTATION_FROM_RESULT = {
 
 const ANNOTATIONS = Object.values(ANNOTATION_FROM_RESULT)
 const ANNOTATEDRESULTS = Object.keys(ANNOTATION_FROM_RESULT) as AnnotatedResult[]
+
+type ActionMode = 'do' | 'undo' | 'redo'
 
   // Use to record a change of state.
   // Must contain enough info to undo and redo said change. 
@@ -39,13 +42,24 @@ class ActionRecord {
     this.annotatedResult = annotatedResult ?? null
   }
 
-  toLANString(): string {
+  toRichLANString() {
+    return this._toLANString('sT')
+  }
+
+  toCommonLANString() {
+    return this._toLANString('T')
+  }
+
+  private _toLANString(pieceFormat: PieceFormat | 'none'): string {
 
     if (this.action === 'castle') {
       return `${this.move.piece.side === 'white' ? 'w' : 'b'}${this.move.to.file === 'g' ? '0-0' : '0-0-0'}`
     }
   
-    let str = pieceToString(this.move.piece, 'sT') + positionToString(this.move.from)
+    let str = (pieceFormat === 'none') ? 
+      positionToString(this.move.from)  
+      :
+      pieceToString(this.move.piece, pieceFormat) + positionToString(this.move.from)
   
     switch (this.action) {
       case 'capture':
@@ -69,7 +83,7 @@ class ActionRecord {
     return str
   }
 
-  static fromLANString = (lan: string): ActionRecord => {
+  static fromRichLANString = (lan: string): ActionRecord => {
 
     if (lan.includes('0-0')) {
       const toFile = lan.includes('0-0-0') ? 'c' : 'g'
@@ -128,6 +142,7 @@ class ActionRecord {
 export { 
   ActionRecord as default,
   type AnnotatedResult,
+  type ActionMode,
   ANNOTATION_FROM_RESULT,
   ANNOTATIONS,
   ANNOTATEDRESULTS,

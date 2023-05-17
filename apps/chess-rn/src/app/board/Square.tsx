@@ -4,7 +4,7 @@ import {
   View,
   type ViewStyle 
 } from 'react-native'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 import type {  VariantProps } from 'stitches-native'
 
 import { 

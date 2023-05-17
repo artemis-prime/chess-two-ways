@@ -12,7 +12,7 @@ const InCheckIndicator: React.FC = () => {
   const [squaresString, setSquaresString] = useState<string>('')
 
   useEffect(() => (
-      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+      // returning autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
     autorun(() => {
       let str = ''
       if (game.check) {

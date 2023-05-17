@@ -1,11 +1,16 @@
 import React, { 
   useEffect,
   useRef,
-  useState, 
   type ReactNode
 } from 'react'
-import { autorun, makeObservable, observable, action, reaction } from 'mobx'
-import { observer } from 'mobx-react'
+import { 
+  makeObservable, 
+  observable, 
+  action, 
+  reaction, 
+  type IReactionDisposer 
+} from 'mobx'
+import { observer } from 'mobx-react-lite'
 import { computedFn } from 'mobx-utils'
 
 import ScrollableFeed from 'react-scrollable-feed' 
@@ -129,7 +134,8 @@ const MovesTable: React.FC<{
   useEffect(() => {
 
     const r = rowsRef.current
-    const cleanupReaction = reaction(
+    const disposers: IReactionDisposer[] = []
+    disposers.push(reaction(
       () => {
           // Reaction firing as the result of an action after an undo
           // So must rewind lastActionIndex to exactly the second to last
@@ -159,13 +165,11 @@ const MovesTable: React.FC<{
             // black
           if (index % 2) {
             const row = r.rows[r.rows.length - 1]
-            let lan = currentAction.toLANString()
-            lan = lan.slice(-(lan.length - 1)) // trim first char
               // Must mutate the actual array
             currentRows[currentRows.length - 1] = {
               white: {...row.white},
               black: {
-                str: lan, 
+                str: currentAction.toCommonLANString(), 
                 rec: currentAction,
                 note: getMoveComment(currentAction, previousAction)
               },
@@ -173,11 +177,9 @@ const MovesTable: React.FC<{
           } 
             // white
           else {
-            let lan = currentAction.toLANString()
-            lan = lan.slice(-(lan.length - 1)) // trim first char
             currentRows.push({
               white: {
-                str: lan,
+                str: currentAction.toCommonLANString(),
                 rec: currentAction,
                 note: getMoveComment(currentAction, previousAction)
               },
@@ -187,24 +189,35 @@ const MovesTable: React.FC<{
         }
         r.lastActionIndex = --index
         r.setRows(currentRows)
-    })
+    }))
 
-    const cleanupAutorun = autorun(() => {
-      if (game.actions.length - 1 > game.actionIndex) {
-        if (game.actionIndex === -1) {
-          rowsRef.current.setHilightedMoveRow(-1)
+    disposers.push(reaction(
+      () => {
+        let hilightedRow: number | null = null // not in undo / redo "state" 
+        let hilightedSide: Side = 'white'  // arbitrary (avoiding null)
+          // in undo / redo "state"
+        if (game.actionIndex < game.actions.length - 1) {
+            // boundary condition
+          if (game.actionIndex === -1) {
+            hilightedRow = -1
+          }
+          else {
+            hilightedRow = (game.actionIndex % 2) ? ((game.actionIndex - 1) / 2) : (game.actionIndex / 2)
+            hilightedSide = (game.actionIndex % 2) ? 'black' : 'white' 
+          }
         }
-        else {
-          rowsRef.current.setHilightedMoveRow((game.actionIndex % 2) ? ((game.actionIndex - 1) / 2) : (game.actionIndex / 2))
-          rowsRef.current.setHilightedSide((game.actionIndex % 2) ? 'black' : 'white') 
+        return {
+          hilightedRow,
+          hilightedSide
         }
+      },
+      ({hilightedRow, hilightedSide}) => {
+        r.setHilightedMoveRow(hilightedRow)
+        r.setHilightedSide(hilightedSide) 
       }
-      else {
-        rowsRef.current.setHilightedMoveRow(null)
-      }
-    })
+    ))
 
-    return () => {cleanupReaction(); cleanupAutorun()}
+    return () => {disposers.forEach((disposer) => { disposer() })}
   }, [])
 
   return show ? (

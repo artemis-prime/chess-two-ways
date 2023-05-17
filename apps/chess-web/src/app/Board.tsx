@@ -1,5 +1,5 @@
 import React from 'react'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 import { DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 

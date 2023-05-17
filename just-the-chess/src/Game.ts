@@ -4,7 +4,8 @@ import {
   makeObservable, 
   observable, 
   autorun,
-  when
+  when,
+  type IReactionDisposer
 } from 'mobx'
 
 import type Action from './Action'
@@ -100,6 +101,7 @@ interface Game extends Snapshotable<GameSnapshot> {
     // id should be the same across multiple registrations for the 
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
+  unregisterListener(uniqueId: string): void
 
   getBoardAsArray(reverse: boolean): ObsSquare[]
 }
@@ -169,13 +171,15 @@ class GameImpl implements Game {
       _applyResolution: action,
       _checkStalemate: action
     })
+  }
 
-      // safe to to not dispose... when GameImpl get's gc'ed
-      // it's "game over" anyway ;)
-    autorun(() => {
+  registerReactions(): IReactionDisposer[] {
+    const cleanupAutorun = autorun(() => {
       this._notifier.gameStatusChanged(this.gameStatus)  
     })
-  }
+    return [cleanupAutorun]
+  } 
+
 
   get gameStatus(): GameStatus {
     return this._gameStatus
@@ -229,7 +233,7 @@ class GameImpl implements Game {
     this._board.restoreFromSnapshot(g.board) 
     this._currentTurn = SIDE_FROM_CODE[g.currentTurn]
     if (g.actions) {
-      this._actions = g.actions.map((lan: string) => (ActionRecord.fromLANString(lan)))
+      this._actions = g.actions.map((lan: string) => (ActionRecord.fromRichLANString(lan)))
     }
     else {
       this._actions = []  
@@ -262,7 +266,7 @@ class GameImpl implements Game {
     return {
       artemisPrimeChessGame: true,
       board: this._board.takeSnapshot(),
-      actions: actionsToCurrentState.map((rec: ActionRecord) => (rec.toLANString())),
+      actions: actionsToCurrentState.map((rec: ActionRecord) => (rec.toRichLANString())),
       currentTurn: this._currentTurn.charAt(0) as SideCode,
       gameEnding: gameEndingToString(this._gameStatus)
     }
@@ -278,6 +282,10 @@ class GameImpl implements Game {
 
   registerListener(l: ChessListener, uniqueId: string): void {
     this._notifier.registerListener(l, uniqueId)
+  }
+
+  unregisterListener(uniqueId: string): void {
+    this._notifier.unregisterListener(uniqueId)
   }
 
     // Do not call directly.  Passed to Board instance to 
@@ -298,16 +306,18 @@ class GameImpl implements Game {
 
     if (!this._resolution || !movesEqual(this._resolution!.move, move)) {
       if (!move.piece) {
-        this._notifier.message(`There's no piece at ${positionToString}!`, 'transient-warning') 
+        this._notifier.messageSent(`There's no piece at ${positionToString}!`, 'transient-warning') 
       }
       const resolver = this._resolvers.get(move.piece?.type)
       let action: Action | null = null
       if (resolver) {
-        this._scratchBoard.syncTo(this._board)
-        action = resolver.resolve(this._scratchBoard, move, (m: string): void => {
-          this._notifier.message(m, 'transient-warning')
-        })
+        action = resolver.resolve(
+          this._board, 
+          move, 
+          (m: string): void => { this._notifier.messageSent(m, 'transient-warning') }
+        )
         if (action) {
+          this._scratchBoard.syncTo(this._board)
           const r = new ActionRecord(move, action, this._getCaptured(move, action))
           const previousCheck = this._scratchBoard.check
           const wasInCheck = previousCheck && previousCheck.side === r.move.piece.side
@@ -315,12 +325,12 @@ class GameImpl implements Game {
           const check = this._scratchBoard.check
           const isInCheck = check && check.side === r.move.piece.side
           if (isInCheck) {
-            this._notifier.message(`${r.toLANString()} isn't possible. It would ` +
+            this._notifier.messageSent(`${r.toCommonLANString()} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
           }
           else if (wasInCheck) {
-            this._notifier.message(`${r.toLANString()} is ok!`, 'transient-info')  
+            this._notifier.messageSent(`(${r.toCommonLANString()} is ok to get out of check.)`, 'transient-info')  
           }
         } 
         this._notifier.actionResolved(move, action)
@@ -349,7 +359,7 @@ class GameImpl implements Game {
     const previousCheck = this._board.check
     this._board.applyAction(r, 'do')
     this._applyResolution(null)
-    this._notifier.actionTaken(r)
+    this._notifier.actionTaken(r, 'do')
     this._applyInCheck()
     this._notifyCheck(previousCheck)
     const currentCheck = this._board.check
@@ -387,7 +397,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'undo')
-      this._notifier.actionUndone(r)
+      this._notifier.actionTaken(r, 'undo')
       this._applyInCheck()      
       this._notifyCheck(previousCheck)
       this._stateIndex--
@@ -405,7 +415,7 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'redo')
-      this._notifier.actionRedone(r)
+      this._notifier.actionTaken(r, 'redo')
       this._applyInCheck()
       this._notifyCheck(previousCheck)
       const currentCheck = this._board.check

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { autorun } from 'mobx'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
@@ -43,7 +43,7 @@ const AppMenubar: React.FC<{
         (trigger as HTMLElement).setAttribute('aria-expanded', 'false');
       }
     }
-
+      // returning autorun's disposer as per mobx docs 
     return autorun(() => {
         // If we've just been resized down, manually hide the menu ("feature" of our menu lib)
       if (!deviceInfo.breakpoint ) return;

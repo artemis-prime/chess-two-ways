@@ -6,7 +6,7 @@ import {
   type StyleProp 
 } from 'react-native'
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { styled, common, css, useTheme } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'

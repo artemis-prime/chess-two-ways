@@ -11,7 +11,7 @@ import {
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import {
   Gesture,
