@@ -6,7 +6,7 @@ import {
   type LayoutChangeEvent 
 } from 'react-native'
 import { autorun } from 'mobx'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
@@ -56,13 +56,13 @@ const Board: React.FC<{
     // we optimize by doing it here and informing them of changes.
     // We are a simple 8x8 grid after all! :)
   const [boardSize, setBoardSize] = useState<number | undefined>(undefined)
-  const { layoutListener: layoutListenerDnd, setWhiteOnBottom } = useDnDConfig()
+  const { layoutListener: layoutListenerDnd, setWhiteOnBottom: notifyDndOrientationChanged } = useDnDConfig()
       
 
   useEffect(() => (
-      // return autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
+      // returning autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
     autorun(() => {
-      setWhiteOnBottom(bo.whiteOnBottom)
+      notifyDndOrientationChanged(bo.whiteOnBottom)
     })
   ),[])
 

@@ -94,7 +94,6 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     const slowID = setInterval(() => {
       pulsesRef.current.setSlow(!pulsesRef.current.slow)   
     }, 500)  
-      // autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
     const cleanupAutorun = autorun(
       () => {
         const b = boardOrientationRef.current
@@ -110,7 +109,6 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
       { scheduler: (run) => (setTimeout(run, 300)) }
     )
   
-
     return () => {
       clearInterval(fastID)
       clearInterval(slowID)

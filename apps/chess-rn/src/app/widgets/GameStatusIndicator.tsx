@@ -1,5 +1,5 @@
 import React from 'react'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { useGame } from '~/services'
 import { Row, Column, DashText } from '~/primatives'

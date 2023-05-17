@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
-import { observer } from 'mobx-react'
+import React, { useState, useEffect } from 'react'
+import { autorun } from 'mobx'
+import { observer } from 'mobx-react-lite'
 
 import type { CSS } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
-import { useGame } from '~/services'
-import { Flex, Row, Column, Switch } from '~/primatives'
+import { useGame, useTransientMessage } from '~/services'
+import { Flex, Row, Column, Switch, Box } from '~/primatives'
 
 import {
   GameStatusIndicator,
   InCheckIndicator,
-  Messages,
   MovesTable,
   TurnIndicator,
   UndoRedoWidget,
@@ -44,11 +44,8 @@ const Dash: React.FC<{
 }) => {
 
   const game = useGame()
+  const tm = useTransientMessage()
   const [showMoves, setShowMoves] = useState<boolean>(true)
-
-  const handleSetShowMoves = (checked: boolean) => {
-    setShowMoves(checked)
-  }
 
   return (
     <DashView className='dash' direction='column' css={css} >
@@ -61,18 +58,20 @@ const Dash: React.FC<{
             <GameStatusIndicator />
           )}
         </Column>
-        <UndoRedoWidget buttonSize='large' />
+        <Column >
+          <UndoRedoWidget buttonSize='large' />
+        </Column>
       </Row>
       <Switch 
         css={{alignSelf: 'flex-end', my: '$half'}} 
         checked={showMoves} 
-        onChange={handleSetShowMoves} 
+        onChange={setShowMoves} 
       >show moves</Switch>
       <hr />
       <MovesTable show={showMoves} />
+      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashText'}}>{tm.message.content}</Box>}
     </DashView>
   )
 })
-//       <Messages showMoves={showMoves}/>
 
 export default Dash

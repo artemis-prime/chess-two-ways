@@ -4,7 +4,7 @@ import {
   makeObservable, 
 } from 'mobx'
 
-import ActionRecord from '../ActionRecord'
+import ActionRecord, { type ActionMode } from '../ActionRecord'
 import type Check from '../Check'
 import { 
   type default as Piece, 
@@ -65,7 +65,7 @@ interface BoardSnapshot {
   // This interface is visable to GameImpl, but not to any UI
 interface BoardInternal extends Board, Snapshotable<BoardSnapshot> {
 
-  applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void 
+  applyAction(r: ActionRecord, mode: ActionMode): void 
 
   takeSnapshot(): BoardSnapshot,
   restoreFromSnapshot(board: BoardSnapshot): void
@@ -308,7 +308,7 @@ class BoardImpl implements BoardInternal {
     return this._positionCanBeCapturedFrom(pos, asSide, 'boolean') as boolean
   }
 
-  applyAction(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void {
+  applyAction(r: ActionRecord, mode: ActionMode): void {
 
     if (r.action === 'castle') {
       this._castle(r, mode)
@@ -392,7 +392,7 @@ class BoardImpl implements BoardInternal {
     this._sq(from).occupant = null 
   }
 
-  private _castle(r: ActionRecord, mode: 'undo' | 'redo' | 'do'): void {
+  private _castle(r: ActionRecord, mode: ActionMode): void {
 
     if (mode === 'undo') {
       if (r.move.to.file === 'g') {
@@ -416,7 +416,7 @@ class BoardImpl implements BoardInternal {
     }
   }
 
-  private _track(r: ActionRecord, mode: 'do' | 'undo' | 'redo'): void {
+  private _track(r: ActionRecord, mode: ActionMode): void {
 
     const side = r.move.piece.side
       // fall through, for rooks
