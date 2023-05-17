@@ -39,7 +39,7 @@ const Button = styled('button', {
         color: '$gray1',
         '&:disabled': {
           cursor: 'default',
-          color: '$gray12',
+          color: '$dashTextDisabled',
           borderColor: '$gray11',
           '&:hover': {
             backgroundColor: 'transparent',
@@ -72,14 +72,14 @@ const Button = styled('button', {
         cursor: 'pointer',
         border: 'none',
         backgroundColor: 'transparent',
-        color: '$gray1',
+        color: '$dashText',
         p: 1,
         '&:hover': {
           textDecoration: 'underline',
         },
         '&:disabled': {
           cursor: 'default',
-          color: '$gray11',
+          color: '$dashTextDisabled',
         },
         '&:disabled:hover': {
           textDecoration: 'none',

@@ -2,7 +2,7 @@ import type ChessListener from '../ChessListener'
 import type Action from '../Action'
 import type { Side }  from '../Piece' 
 import type Move from '../Move' 
-import type ActionRecord from '../ActionRecord'
+import ActionRecord, { type ActionMode } from '../ActionRecord'
 import type GameStatus from '../GameStatus'
 import type Check from '../Check'
 
@@ -16,27 +16,19 @@ class Notifier implements ChessListener {
     this._listeners.set(uniqueId, l)
   }
 
+  unregisterListener(uniqueId: string) {
+    this._listeners.delete(uniqueId)
+  }
+
   actionResolved(move: Move, action: Action | null): void {
     this._listeners.forEach((l) => {
       l.actionResolved(move, action)
     })
   }
 
-  actionTaken(r: ActionRecord): void {
+  actionTaken(r: ActionRecord, mode: ActionMode): void {
     this._listeners.forEach((l) => {
-      l.actionTaken(r)
-    })
-  }
-
-  actionUndone(r: ActionRecord): void {
-    this._listeners.forEach((l) => {
-      l.actionUndone(r)
-    })
-  }
-
-  actionRedone(r: ActionRecord): void {
-    this._listeners.forEach((l) => {
-      l.actionRedone(r)
+      l.actionTaken(r, mode)
     })
   }
 
@@ -46,9 +38,9 @@ class Notifier implements ChessListener {
     })
   }
 
-  message(s: string, type?: string): void {
+  messageSent(s: string, type?: string): void {
     this._listeners.forEach((l) => {
-      l.message(s, type)
+      l.messageSent(s, type)
     })
   }
 

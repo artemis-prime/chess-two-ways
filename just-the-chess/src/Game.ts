@@ -4,18 +4,23 @@ import {
   makeObservable, 
   observable, 
   autorun,
-  when
+  when,
+  type IReactionDisposer
 } from 'mobx'
 
 import type Action from './Action'
-import type ActionRecord from './ActionRecord'
-import { actionRecordToLAN, lanToActionRecord } from './ActionRecord'
+import ActionRecord from './ActionRecord'
 import type { default as Board, BoardInternal, BoardSnapshot } from './game/Board'
 import { createBoard } from './game/Board'
 import type Check from './Check'
 import type ChessListener from './ChessListener'
 import type GameStatus from './GameStatus'
-import { STATUS_IN_PLAY, STATUS_CAN_UNDO } from './GameStatus'
+import { 
+  STATUS_IN_PLAY, 
+  STATUS_CAN_UNDO, 
+  gameEndingToString,
+  gameEndingFromString,
+} from './GameStatus'
 import type Move from './Move'
 import { movesEqual } from './Move'
 import type Piece from './Piece'
@@ -41,6 +46,10 @@ import registry from './game/resolverRegistry'
 import type Snapshotable from './Snapshotable'
 import type Square from './game/Square'
 
+const DEFAULT_GAME_STATUS: GameStatus = {
+  state: 'new',
+  victor: undefined
+}
 
   // These would be persisted to and read from a file
   // by implementing apps. (see chess-web)
@@ -48,8 +57,9 @@ interface GameSnapshot {
 
   artemisPrimeChessGame: any
   board: BoardSnapshot
-  actions: string[]
+  actions?: string[]
   currentTurn: SideCode
+  gameEnding?: string
 }
 
 interface Game extends Snapshotable<GameSnapshot> {
@@ -72,12 +82,8 @@ interface Game extends Snapshotable<GameSnapshot> {
   undo(): void
   redo(): void
 
-    // check if current turn has any valid moves,
-    // if not, set the state accordingly
-  checkStalemate(): void
-
   reset(): void
-  callADraw(): void
+  offerADraw(): void
   concede(): void 
 
   takeSnapshot() : GameSnapshot
@@ -85,14 +91,17 @@ interface Game extends Snapshotable<GameSnapshot> {
 
   getOccupant(p: Position): Piece | null
 
-  get gameStatus(): GameStatus // observable
-  get playing(): boolean // observable
-  get currentTurn(): Side
-  get check(): Check | null // observable
+  get gameStatus(): GameStatus  // observable
+  get playing(): boolean        // observable
+  get currentTurn(): Side       // observable
+  get check(): Check | null     // observable
+  get actions(): ActionRecord[] // observable
+  get actionIndex(): number     // observable
 
     // id should be the same across multiple registrations for the 
     // same listener.
   registerListener(l: ChessListener, uniqueId: string): void
+  unregisterListener(uniqueId: string): void
 
   getBoardAsArray(reverse: boolean): ObsSquare[]
 }
@@ -105,13 +114,17 @@ class GameImpl implements Game {
   private _scratchBoard: BoardInternal
 
   private _currentTurn: Side = 'white' 
+    // Need to initialize for babel : https://github.com/mobxjs/mobx/issues/2486
+  private _gameStatus: GameStatus = DEFAULT_GAME_STATUS
   private _resolvers: Map<PieceType, ActionResolver>  = registry 
   private _actions = [] as ActionRecord[] 
     // For managing undo / redo.  
     // The index within _actions of the Action that reflects
-    // the current state. -1 is *in fact* 
-    // the original state of the board, so _action[0] is conveniently 
-    // the first move.  So its easy to go back and forth via undo / redo
+    // the current state. Note that -1 is *correctly* 
+    // the original state of the board. 
+    // So _action[0] is conveniently the first move, and that stateIndex
+    // reflects the state after that Action has been applied. 
+    // (This fascilitates impl of undo / redo)
   private _stateIndex = -1 
   private _resolution: Resolution | null = null 
 
@@ -127,16 +140,17 @@ class GameImpl implements Game {
       undo: action.bound,
       redo: action.bound,
       reset: action.bound, // action.bound makes it easy to call from button's onChange
-      callADraw: action.bound,
+      offerADraw: action.bound,
       concede: action.bound,
-      checkStalemate: action.bound,
       restoreFromSnapshot: action,
       canUndo: computed,
       canRedo: computed,
       gameStatus: computed,
       currentTurn: computed,
       check: computed,
-      playing: computed
+      playing: computed,
+      actions: computed,
+      actionIndex: computed
     })
 
       // https://mobx.js.org/observable-state.html#limitations
@@ -145,32 +159,46 @@ class GameImpl implements Game {
       '_toggleTurn' | 
       '_stateIndex' |
       '_actions' |
-      '_applyResolution'
+      '_applyResolution' | 
+      '_checkStalemate' |
+      '_gameStatus'
     >(this, {
       _currentTurn: observable,
+      _gameStatus: observable.shallow,
       _toggleTurn: action,
       _stateIndex: observable,
       _actions: observable.shallow,
-      _applyResolution: action
-    })
-
-      // safe to to not dispose... when GameImpl get's gc'ed
-      // it's "game over" anyway ;)
-    autorun(() => {
-      this._notifier.gameStatusChanged(this.gameStatus)  
+      _applyResolution: action,
+      _checkStalemate: action
     })
   }
 
+  registerReactions(): IReactionDisposer[] {
+    const cleanupAutorun = autorun(() => {
+      this._notifier.gameStatusChanged(this.gameStatus)  
+    })
+    return [cleanupAutorun]
+  } 
+
+
   get gameStatus(): GameStatus {
-    return this._board.gameStatus
+    return this._gameStatus
+  }
+
+  get actions(): ActionRecord[] {
+    return [...this._actions]
+  }
+
+  get actionIndex(): number {
+    return this._stateIndex
   }
 
   get playing(): boolean {
-    return STATUS_IN_PLAY.includes(this._board.gameStatus.state) 
+    return STATUS_IN_PLAY.includes(this._gameStatus.state) 
   }
 
   private get statusAllowsUndoRedo(): boolean {
-    return STATUS_CAN_UNDO.includes(this._board.gameStatus.state) 
+    return STATUS_CAN_UNDO.includes(this._gameStatus.state) 
   }
 
   getOccupant(p: Position): Piece | null {
@@ -178,22 +206,15 @@ class GameImpl implements Game {
   }
 
   getBoardAsArray = (whiteOnBottom: boolean): ObsSquare[] => (
-
     (whiteOnBottom) ? this._board.asSquareDescs  : [...this._board.asSquareDescs].reverse()
   )
 
-  callADraw(): void {
-    this._board.setGameStatus({
-      state: 'draw',
-      victor: 'none'
-    })
+  offerADraw(): void {
+    this._gameStatus = { state: 'draw', victor: 'none' }
   }
 
   concede(): void {
-    this._board.setGameStatus({
-      state: 'conceded',
-      victor: otherSide(this._currentTurn)
-    })
+    this._gameStatus = { state: 'conceded', victor: otherSide(this._currentTurn) }
   }
 
   reset() {
@@ -202,65 +223,54 @@ class GameImpl implements Game {
     this._currentTurn = 'white'
     this._actions.length = 0
     this._stateIndex = -1 
-    this._board.setGameStatus({
-      state: 'new',
-      victor: undefined
-    })
+    this._gameStatus = { state: 'new', victor: undefined }
   }
 
   async restoreFromSnapshot(g: GameSnapshot): Promise<void> {
 
     if (!g.artemisPrimeChessGame) throw new Error('restoreFromSnapshot() invalid Game Object!')
 
-    this._board.restoreFromSnapshot(g.board)
+    this._board.restoreFromSnapshot(g.board) 
     this._currentTurn = SIDE_FROM_CODE[g.currentTurn]
-    this._actions = g.actions.map((lan: string) => (lanToActionRecord(lan)))
+    if (g.actions) {
+      this._actions = g.actions.map((lan: string) => (ActionRecord.fromRichLANString(lan)))
+    }
+    else {
+      this._actions = []  
+    }
     this._stateIndex = this._actions.length - 1
-    this._board.setGameStatus({
-      state: 'restored',
-      victor: undefined
-    })
-    
+
+    if (g.gameEnding) {
+      this._gameStatus = gameEndingFromString(g.gameEnding)
+    }
+    else {
+      this._gameStatus = { state: 'restored', victor: undefined }
+    }
+    const stateToWaitFor = this._gameStatus.state
+    this._applyInCheck()
+    this._notifyCheck(null) // was tracked in restoreFromSnapshot() above
+
       // The actionsRestored() notification should received *after* 
       // the gameStatusChanged() notification.
       // If we just await the state change via when(), 
       // we effectively create a new listerner,  which by order of creation
       // will run *after* the listener created by autorun() in GameImpl's constructor.
-    await when(() => this._board.gameStatus.state === 'restored');
+    await when(() => this._gameStatus.state === stateToWaitFor);
     this._notifier.actionsRestored([...this._actions])
-    this._notifyCheck(null)
   }
 
   takeSnapshot(): GameSnapshot {
     const actionsToCurrentState = [...this._actions]
     actionsToCurrentState.length = this._stateIndex + 1 // truncate to current state 
+
     return {
       artemisPrimeChessGame: true,
       board: this._board.takeSnapshot(),
-      actions: actionsToCurrentState.map((rec: ActionRecord) => (actionRecordToLAN(rec))),
-      currentTurn: this._currentTurn.charAt(0) as SideCode
+      actions: actionsToCurrentState.map((rec: ActionRecord) => (rec.toRichLANString())),
+      currentTurn: this._currentTurn.charAt(0) as SideCode,
+      gameEnding: gameEndingToString(this._gameStatus)
     }
   }  
-
-  checkStalemate(): void {
-    if (
-      !(this._board.check && this._board.check.side === this._currentTurn)
-      &&
-      !this._primariesCanMove(this._currentTurn)
-      &&
-      !this._kingCanMove(this._currentTurn)
-      &&
-      !this._pawnsCanMove(this._currentTurn)
-    ) {
-      this._board.setGameStatus({
-        state: 'stalemate',
-        victor: 'none'
-      }) 
-    }
-    else {
-      this._notifier.message('Not in stalemate', 'info-transient')
-    }
-  }
 
   get check(): Check | null {
     return this._board.check
@@ -272,6 +282,10 @@ class GameImpl implements Game {
 
   registerListener(l: ChessListener, uniqueId: string): void {
     this._notifier.registerListener(l, uniqueId)
+  }
+
+  unregisterListener(uniqueId: string): void {
+    this._notifier.unregisterListener(uniqueId)
   }
 
     // Do not call directly.  Passed to Board instance to 
@@ -292,29 +306,31 @@ class GameImpl implements Game {
 
     if (!this._resolution || !movesEqual(this._resolution!.move, move)) {
       if (!move.piece) {
-        this._notifier.message(`There's no piece at ${positionToString}!`, 'transient-warning') 
+        this._notifier.messageSent(`There's no piece at ${positionToString}!`, 'transient-warning') 
       }
       const resolver = this._resolvers.get(move.piece?.type)
       let action: Action | null = null
       if (resolver) {
-        this._scratchBoard.syncTo(this._board)
-        action = resolver.resolve(this._scratchBoard, move, (m: string): void => {
-          this._notifier.message(m, 'transient-warning')
-        })
+        action = resolver.resolve(
+          this._board, 
+          move, 
+          (m: string): void => { this._notifier.messageSent(m, 'transient-warning') }
+        )
         if (action) {
-          const r = this._createActionRecord(move, action)
+          this._scratchBoard.syncTo(this._board)
+          const r = new ActionRecord(move, action, this._getCaptured(move, action))
           const previousCheck = this._scratchBoard.check
-          const wasInCheck = previousCheck && previousCheck.side === r.piece.side
+          const wasInCheck = previousCheck && previousCheck.side === r.move.piece.side
           this._scratchBoard.applyAction(r, 'do')
           const check = this._scratchBoard.check
-          const isInCheck = check && check.side === r.piece.side
+          const isInCheck = check && check.side === r.move.piece.side
           if (isInCheck) {
-            this._notifier.message(`${actionRecordToLAN(r)} isn't possible. It would ` +
+            this._notifier.messageSent(`${r.toCommonLANString()} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  
             action = null
           }
           else if (wasInCheck) {
-            this._notifier.message(`${actionRecordToLAN(r)} is ok!`, 'transient-info')  
+            this._notifier.messageSent(`(${r.toCommonLANString()} is ok to get out of check.)`, 'transient-info')  
           }
         } 
         this._notifier.actionResolved(move, action)
@@ -338,15 +354,24 @@ class GameImpl implements Game {
       return false
     }
 
-    const r = this._createActionRecord(
-      this._resolution!.move, 
-      this._resolution!.action
-    )
+    const { move, action } = this._resolution
+    const r = new ActionRecord(move, action, this._getCaptured(move, action))
     const previousCheck = this._board.check
     this._board.applyAction(r, 'do')
     this._applyResolution(null)
-    this._notifier.actionTaken(r)
+    this._notifier.actionTaken(r, 'do')
+    this._applyInCheck()
     this._notifyCheck(previousCheck)
+    const currentCheck = this._board.check
+    const opponent = otherSide(r.move.piece.side)
+    if (currentCheck) {
+      r.annotatedResult = this._checkForCheckmate(opponent) ? 'checkmate' : 'check'
+    }
+    else {
+      if (this._checkStalemate(opponent)) {
+        r.annotatedResult = 'stalemate'
+      }
+    }
     if (this._stateIndex + 1 < this._actions.length) {
         // If we've undone actions since the most recent 'real' move,
         // truncate the stack since we can no longer meaningfully 
@@ -365,17 +390,15 @@ class GameImpl implements Game {
 
   undo() {
     if (this.canUndo) {
-      const { state } = this._board.gameStatus
+      const { state } = this._gameStatus
       if (state === 'checkmate' || state === 'stalemate') {
-        this._board.setGameStatus({
-          state: 'resumed',
-          victor: undefined
-        })
+        this._gameStatus = { state: 'resumed', victor: undefined }
       }
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'undo')
-      this._notifier.actionUndone(r)
+      this._notifier.actionTaken(r, 'undo')
+      this._applyInCheck()      
       this._notifyCheck(previousCheck)
       this._stateIndex--
       this._toggleTurn()
@@ -392,8 +415,16 @@ class GameImpl implements Game {
       const r = this._actions[this._stateIndex]
       const previousCheck = this._board.check
       this._board.applyAction(r, 'redo')
-      this._notifier.actionRedone(r)
+      this._notifier.actionTaken(r, 'redo')
+      this._applyInCheck()
       this._notifyCheck(previousCheck)
+      const currentCheck = this._board.check
+      if (currentCheck) {
+        this._checkForCheckmate(otherSide(r.move.piece.side))
+      }
+      else {
+        this._checkStalemate(otherSide(r.move.piece.side))
+      }
       this._toggleTurn()
     }
   }
@@ -406,20 +437,28 @@ class GameImpl implements Game {
     });
   }
 
-  private _createActionRecord(move: Move, action: Action): ActionRecord {
-    return {
-      ...move,
-      action,
-      captured: (action.includes('capture')) ? {...this._board.getOccupant(move.to)!} : undefined
-    }
+    // We shouldn't clash with action / drag states, 
+    // since this code is called after 
+    // action statuses are cleared.
+  private _applyInCheck() {
+    const check = this._board.check
+    this._board.asSquares.forEach((sq: Square) => {
+      sq.setSquareState(getCheckStateForPosition(sq, check)) 
+    })
+  
   }
+
+  private _getCaptured = (move: Move, action: Action, ) : Piece | undefined => (
+    (action.includes('capture')) ? {...this._board.getOccupant(move.to)!} : undefined  
+  )
 
   private _resolvableMovesDontAllResultInCheck(moves: Resolution[], side: Side): boolean {
     this._scratchBoard.syncTo(this._board)
     return moves.some((rm: Resolution) => {
-      const r = this._createActionRecord(rm.move, rm.action!)
+      const r = new ActionRecord(rm.move, rm.action!, this._getCaptured(rm.move, rm.action!))
       this._scratchBoard.applyAction(r, 'do')
       const check = this._scratchBoard.check
+      this._scratchBoard.applyAction(r, 'undo')
       return !check
     })
   }
@@ -453,35 +492,16 @@ class GameImpl implements Game {
 
   private _notifyCheckForSide(side: Side, previousCheck: Check | null): void {
 
-    const wasInCheck = !!previousCheck
+    const wasInCheck = previousCheck?.side === side
     const check = this._board.check
-    const inCheck = !!check && check.side === side
+    const inCheck = check?.side === side
 
-      // We shouldn't clash with action / drag states, 
-      // since this code is called after 
-      // action statuses are cleared.
-    this._board.asSquares.forEach((sq: Square) => {
-      sq.setSquareState(getCheckStateForPosition(sq, check)) 
-    })
       // Only notify if in check state changes 
     if (!wasInCheck && inCheck) {
       this._notifier.inCheck(check)
     }
     else if (wasInCheck && !inCheck){
       this._notifier.notInCheck(side)  
-    }
-    if (inCheck 
-        && 
-        !this._kingCanMove(side)
-        &&
-        !this._primariesCanMove(side)
-        &&
-        !this._pawnsCanMove(side)
-    ) {
-      this._board.setGameStatus({
-        state: 'checkmate',
-        victor: otherSide(side)
-      }) 
     }
   }
 
@@ -491,6 +511,36 @@ class GameImpl implements Game {
   private _notifyCheck(previousCheck: Check | null): void {
     this._notifyCheckForSide('white', previousCheck)
     this._notifyCheckForSide('black', previousCheck)
+  }
+
+  private _checkForCheckmate(side: Side): boolean {
+    if (
+      this._board.check?.side === side 
+      && 
+      !this._kingCanMove(side)
+      &&
+      !this._primariesCanMove(side)
+      &&
+      !this._pawnsCanMove(side)
+    ) {
+      this._gameStatus = { state: 'checkmate', victor: otherSide(side) }
+      return true 
+    }
+    return false
+  }
+
+  private _checkStalemate(side: Side): boolean {
+    if (
+      !this._primariesCanMove(side)
+      &&
+      !this._kingCanMove(side)
+      &&
+      !this._pawnsCanMove(side)
+    ) {
+      this._gameStatus = { state: 'stalemate', victor: 'none' }
+      return true
+    }
+    return false
   }
 
   private _toggleTurn(): void {

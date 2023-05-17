@@ -11,7 +11,7 @@ import {
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import {
   Gesture,
@@ -35,7 +35,6 @@ import Animated, {
  } from 'react-native-reanimated'
 
 import { useTheme } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
 
 import { useMenu } from '~/services'
 
@@ -159,7 +158,10 @@ const Layout: React.FC = () => {
     menuVisible_sv.value = openned
     ui.setMenuVisible(openned) 
   }
-  
+    // Sometimes this is called from a click. 
+    // Sometimes as onStart() of a drag gesture, 
+    // which means it's on the UI thread.
+    // We have to designate it as a 'worklet'; 
   const triggerAnimation = (e: GestureStateChangeEvent<FlingGestureHandlerEventPayload> | null) => {
     'worklet';
     runOnJS(onMenuAnimationStarted)()

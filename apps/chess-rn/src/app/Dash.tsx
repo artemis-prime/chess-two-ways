@@ -1,6 +1,6 @@
 import React from 'react'
 import type { StyleProp, ViewStyle } from 'react-native'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { styled, type CSS } from '~/styles/stitches.config'
 import { useGame } from '~/services'

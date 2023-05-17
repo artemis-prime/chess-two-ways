@@ -1,5 +1,30 @@
 @use 'colors.module' as c;
 
+.messages-list {
+
+  //overflow-y: scroll;
+  margin-right: -15px;
+  padding-right: 15px;
+  margin-top: 10px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #444;
+    border: 1px solid #777;
+    border-radius: 3px;
+
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #777;
+    &:hover {
+      background-color: #aaa;
+    }
+  }
+}
+
 
 .message-outer {
   .prefix {

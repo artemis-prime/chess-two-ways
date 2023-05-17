@@ -1,19 +1,17 @@
-import React, { useState } from 'react'
-import { observer } from 'mobx-react'
+import React, { useState, useEffect } from 'react'
+import { autorun } from 'mobx'
+import { observer } from 'mobx-react-lite'
 
 import type { CSS } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
-import { useGame } from '~/services'
-import { Button, Flex, Switch } from '~/primitives'
+import { useGame, useTransientMessage } from '~/services'
+import { Flex, Row, Column, Switch, Box } from '~/primatives'
 
 import {
-  BoardDirectionWidget,
   GameStatusIndicator,
   InCheckIndicator,
-  Messages,
-  PersistToFileButton,
-  RestoreFromFileButton,
+  MovesTable,
   TurnIndicator,
   UndoRedoWidget,
 } from '~/app/widgets'
@@ -27,87 +25,51 @@ const DashView = styled(Flex, {
   width: '100%',
   maxWidth: '500px',
   height: '100%',
-  //marginRight: '6%',
   border: '4px $dashBorder solid',
   borderRadius: '5px',
   padding: '16px 24px',
-  color: '$dashText'
-})
+  color: '$dashText',
 
-const CloseButton = styled(Button, {
-  fontSize: '1.3rem', 
-  alignSelf: 'flex-start', 
-  marginLeft: '-13px', 
-  marginTop: '-10px', 
-  paddingBottom: '3px', 
-  height: '36px', 
-  lineHeight: '36px'
-})
-
-const CloseButtonHR = styled('hr', {
-  opacity: 0.5,
-  marginLeft: '-14px', 
-  marginRight: '-14px', 
-  marginBottom: '18px'
+  '& hr': {
+    w: '100%',
+    opacity: 0.5,
+    my: '0.33rem',
+  }
 })
 
 const Dash: React.FC<{
-  onClose?: () => void
   css?: CSS
 }> = observer(({
-  onClose,
   css
 }) => {
 
   const game = useGame()
-  const [showMoves, setShowMoves] = useState<boolean>(false)
-
-  const handleSetShowMoves = (checked: boolean) => {
-    setShowMoves(checked)
-  }
-
-  const buttonCSS = {
-    whiteSpace: 'nowrap',
-    fontSize: 'inherit'  
-  }
+  const tm = useTransientMessage()
+  const [showMoves, setShowMoves] = useState<boolean>(true)
 
   return (
     <DashView className='dash' direction='column' css={css} >
-      {onClose && (<>
-        <CloseButton onClick={onClose}>x</CloseButton> 
-        <CloseButtonHR />
-      </>)}
-      <Flex direction='row' justify='between' align='start'>
-        <Flex direction='column' justify='start' align='start'>
+      <Row justify='between' align='start' css={{w: '100%'}}>
+        <Column >
         {(game.playing) ? (<>
-            <TurnIndicator css={{mb: '$2'}} />
-            <InCheckIndicator css={{mb: '$2'}} />
+            <TurnIndicator css={{mb: '$1'}} />
+            <InCheckIndicator css={{mb: '$1'}} />
           </>) : (
             <GameStatusIndicator />
           )}
-        </Flex>
-        <UndoRedoWidget buttonSize='large' />
-      </Flex>
+        </Column>
+        <Column >
+          <UndoRedoWidget buttonSize='large' />
+        </Column>
+      </Row>
+      <Switch 
+        css={{alignSelf: 'flex-end', my: '$half'}} 
+        checked={showMoves} 
+        onChange={setShowMoves} 
+      >show moves</Switch>
       <hr />
-      <Flex direction='column' justify='start' align='end' css={{mt: '$4'}} >
-        <BoardDirectionWidget css={{mb: '$4'}}/>
-        <Flex direction='column' justify='start' align='end' css={{fontSize: '$normal', mb: '$5'}}>
-        {(game.playing) && (<>
-          <Button css={buttonCSS} onClick={game.callADraw}>call a draw</Button>
-          <Button css={buttonCSS} onClick={game.concede}>concede</Button>
-          <Button css={buttonCSS} onClick={game.checkStalemate}>check stalemate</Button>
-        </>)}
-          <Button css={buttonCSS} onClick={game.reset}>reset</Button>
-          <br />
-          <PersistToFileButton >save game...</PersistToFileButton>
-          <RestoreFromFileButton >restore game...</RestoreFromFileButton>
-        </Flex>
-      </Flex>
-      <Flex direction='row' justify='end' align='center'>
-        <Switch checked={showMoves} onChange={handleSetShowMoves} >show moves</Switch>
-      </Flex>
-      <hr />
-      <Messages showMoves={showMoves}/>
+      <MovesTable show={showMoves} />
+      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashText'}}>{tm.message.content}</Box>}
     </DashView>
   )
 })

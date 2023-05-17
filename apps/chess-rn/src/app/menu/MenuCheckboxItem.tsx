@@ -10,9 +10,12 @@ import {
 import { styled, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import { CheckboxShell, type CheckboxViewProps } from '~/primatives'
-import MenuIcon from './MenuIcon'
-import type UnicodeIcon from './UnicodeIcon'
+import {  
+  CheckboxShell,
+  type CheckboxViewProps,
+  type WidgetIconDesc,
+  WidgetIcon,
+} from '~/primatives'
 
 const MenuElementInnerView = styled(View, {
     
@@ -58,10 +61,10 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
 }) => (
   <MenuElementInnerView {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
     <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-      {icon && <MenuIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
+      {icon && <WidgetIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
       <TitleWrapper {...{pressed: !!pressed, disabled: !!disabled}}>{children}</TitleWrapper>
     </View>
-    <MenuIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
+    <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
       textAlign: 'right',
       top: 4,
       left: 7,
@@ -71,10 +74,10 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
   </MenuElementInnerView>
 )
 
-const MenuCheckbox: React.FC<{
+const MenuCheckboxItem: React.FC<{
   checked: boolean
   setChecked: (b: boolean) => void
-  icon?: UnicodeIcon
+  icon?: WidgetIconDesc
   style?: StyleProp<ViewStyle>
 } & PressableProps & PropsWithChildren> = ({
   checked,
@@ -91,4 +94,4 @@ const MenuCheckbox: React.FC<{
   />
 )
 
-export default MenuCheckbox
+export default MenuCheckboxItem

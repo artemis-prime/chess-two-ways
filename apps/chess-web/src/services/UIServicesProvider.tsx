@@ -1,106 +1,56 @@
 import React, {
   type PropsWithChildren,
   useEffect,
-  useState,
   useRef
 } from 'react'
 
-import { autorun, makeAutoObservable, action, makeObservable, observable, observe } from 'mobx'
-
 import useGame from './useGame'
 import type BoardOrientation from './BoardOrientation'
-import type ConsoleMessage from './ConsoleMessage'
+import { BoardOrientationImpl } from './BoardOrientation'
 import type Pulses from './Pulses'
+import { PulsesImpl } from './Pulses'
+import type DeviceInfo from './DeviceInfo'
+import { DeviceInfoImpl } from './DeviceInfo'
 
-import MessagesStore from './MessagesStore'
+import type TransientMessage from './TransientMessage'
+import { TransientMessageImpl } from './TransientMessage'
 
 interface UIServices  {
   pulses: Pulses
-  messages: ConsoleMessage[]
   boardOrientation: BoardOrientation
+  deviceInfo: DeviceInfo
+  transientMessage: TransientMessage
 }
-
-class BoardOrientationImpl implements BoardOrientation {
-
-  whiteOnBottom = true
-  autoOrientToCurrentTurn = false
-
-  constructor() {
-    makeObservable(this,{
-      whiteOnBottom: observable,
-      autoOrientToCurrentTurn: observable,
-      setWhiteOnBottom: action,
-      setAutoOrientToCurrentTurn: action,   
-    }) 
-  }
-  
-  setWhiteOnBottom(b: boolean) {
-    this.whiteOnBottom = b
-  }
-
-  setAutoOrientToCurrentTurn(b: boolean) {
-    this.autoOrientToCurrentTurn = b
-  }
-}
-class PulsesImpl implements Pulses {
-
-  slow: boolean = false
-  fast: boolean = false
-  
-  constructor() {
-    makeAutoObservable(this)
-  }
-
-  setFast(b: boolean) { this.fast = b }
-  setSlow(b: boolean) { this.slow = b }
-}
-
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
 
 const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
-  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl())
-  const messagesRef = useRef<MessagesStore>(new MessagesStore())
   const game = useGame()
+  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
+  const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl(game))
+  const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
+  const deviceInfoRef = useRef<DeviceInfo>(new DeviceInfoImpl())
   
   useEffect(() => {
-    const fast = setInterval(() => {
-      pulsesRef.current.setFast(!pulsesRef.current.fast)   
-    }, 200)  
-    const slow = setInterval(() => {
-      pulsesRef.current.setSlow(!pulsesRef.current.slow)   
-    }, 500)  
-
+    game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
+    boardOrientationRef.current.initialize()
+    pulsesRef.current.initialize()
+    transientMessageRef.current.initialize()
     return () => {
-      clearInterval(fast)
-      clearInterval(slow)
+      game.unregisterListener('chess-web-messages-store')
+      boardOrientationRef.current.dispose()
+      pulsesRef.current.dispose()
+      transientMessageRef.current.dispose()
     }
   }, [])
 
-    // Note that autorun returns a cleanup function that deletes the created listener
-    // This is advised by mobx docs: https://mobx.js.org/reactions.html
-  useEffect(() => (autorun(() => {
-    if (boardOrientationRef.current.autoOrientToCurrentTurn) {
-      if (game.currentTurn === 'white') {
-        boardOrientationRef.current.setWhiteOnBottom(true)
-      }
-      else {
-        boardOrientationRef.current.setWhiteOnBottom(false)
-      }
-    }
-  }, {scheduler: (run) => (setTimeout(run, 300))})), [])
-
-  useEffect(() => {
-    game.registerListener(messagesRef.current, 'chess-web-messages-store')
-  }, [])
-  
   return (
     <UIServicesContext.Provider value={{
       pulses: pulsesRef.current,
-      messages: messagesRef.current.messages,
-      boardOrientation: boardOrientationRef.current
+      transientMessage: transientMessageRef.current,
+      boardOrientation: boardOrientationRef.current,
+      deviceInfo: deviceInfoRef.current
     }}>
       {children}
     </UIServicesContext.Provider>
@@ -112,4 +62,3 @@ export {
   UIServicesContext,
   type UIServices
 }
-

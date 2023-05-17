@@ -1,5 +1,5 @@
 import React, { type PropsWithChildren } from 'react'
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/styles/stitches.config'
 
 import SwitchFromLib from 'react-switch'
 
@@ -27,15 +27,17 @@ const SwitchLabel = styled('label', {
 const Switch: React.FC<{
   checked: boolean
   onChange: (checked: boolean) => void,
-  disabled?: boolean
+  disabled?: boolean,
+  css?: CSS
 } & PropsWithChildren> = ({
   checked,
   onChange,
   children,
-  disabled = false
+  disabled = false,
+  css
 }) => (
 
-  <SwitchLabel >
+  <SwitchLabel css={css}>
     <span>{children}</span>
     <SwitchFromLib 
       className='my-switch' 

@@ -10,13 +10,15 @@ import {
 import { styled, common } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
 
-import ButtonShell, {type ButtonViewProps} from './ButtonShell'
-import type UnicodeIcon from './UnicodeIcon'
-import MenuIcon, {  
-  IconXOffset,
+import {  
+  ButtonShell,
+  type ButtonViewProps,
+  type WidgetIconDesc,
+  WidgetIcon,
   IconWidth,
   IconMargin
-} from './MenuIcon'
+} from '~/primatives'
+
 
 const MenuElementInnerView = styled(View,  {
 
@@ -68,25 +70,23 @@ const MenuButtonInner: React.FC<ButtonViewProps> = ({
   style
 }) => (
   <MenuElementInnerView state={state} style={style}>
-    {icon && <MenuIcon state={state} icon={icon} />}
+    {icon && <WidgetIcon state={state} icon={icon} />}
     <TitleWrapper state={state} icon={!!icon}>{children}</TitleWrapper>
   </MenuElementInnerView>
 ) 
   
-const MenuButton: React.FC<{
+const MenuItem: React.FC<{
   onClick: () => void
-  icon?: UnicodeIcon,
+  icon?: WidgetIconDesc,
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren & PressableProps> = ({
   children,
-  onClick,
   icon,
   style,
   ...rest
 }) => (
   <ButtonShell 
     {...rest} 
-    onClick={onClick} 
     view={MenuButtonInner} 
     icon={icon} 
     style={style}  
@@ -95,4 +95,4 @@ const MenuButton: React.FC<{
   </ButtonShell>
 )
 
-export default MenuButton
+export default MenuItem

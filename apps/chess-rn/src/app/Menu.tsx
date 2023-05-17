@@ -6,13 +6,13 @@ import {
   type StyleProp 
 } from 'react-native'
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 
 import { styled, common, css, useTheme } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
-
-import { MenuButton, MenuCheckbox } from '~/primatives'
 import { useBoardOrientation, useGame } from '~/services'
+
+import { MenuItem, MenuCheckboxItem } from './menu'
 
 const MenuOuter: React.FC<{
   animatedStyle: AnimateStyle<ViewStyle>
@@ -52,7 +52,7 @@ const MenuOuter: React.FC<{
 }
 
 
-const MenuTitleText = styled(Text, 
+const MenuSectionTitle = styled(Text, 
   common.typography.menu.title,
   css({
     borderBottomColor: '$dashText',
@@ -90,24 +90,23 @@ const Menu: React.FC<{
         width: width * .9, 
         ...debugBorder('blue', 'menu')
       }}>
-        <MenuTitleText>Board Direction</MenuTitleText>
-        <MenuButton 
+        <MenuSectionTitle>Board Direction</MenuSectionTitle>
+        <MenuItem 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
           icon={'\u296F'}
-        >swap</MenuButton>
-        <MenuCheckbox 
+        >swap</MenuItem>
+        <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn}
           icon={'\u27F3'}//'\u27F3'
-        >auto-swap</MenuCheckbox>
-        <MenuTitleText>Game</MenuTitleText>
+        >auto-swap</MenuCheckboxItem>
+        <MenuSectionTitle>Game</MenuSectionTitle>
         {(game.playing) && (<>
-          <MenuButton onClick={game.callADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>call a draw</MenuButton>
-          <MenuButton onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17, fontWeight: '300'}}}>{game.currentTurn} concedes</MenuButton>
-          <MenuButton onClick={game.checkStalemate} icon={{icon: '\u0024?', style: {fontSize: 22, fontWeight: '300'}}}>check for stalemate</MenuButton>
+          <MenuItem onClick={game.offerADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>offer a draw</MenuItem>
+          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17, fontWeight: '300'}}}>{game.currentTurn} concedes</MenuItem>
         </>)}
-        <MenuButton onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuButton>
+        <MenuItem onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuItem>
       </MenuItemsOuter>
     </MenuOuter>
   )

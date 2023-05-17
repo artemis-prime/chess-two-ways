@@ -1,14 +1,15 @@
 import { makeObservable, observable, action } from 'mobx'
 
+import type { ActionMode } from '../../ActionRecord'
 import type CastlingTracking from '../../CastlingTracking'
-import type GameStatus from '../../GameStatus'
 import type Move from '../../Move'
 import type Position from '../../Position'
 import type Piece from '../../Piece'
 import { 
   isPrimaryType, 
   type PrimaryPieceType, 
-  type Side 
+  type Side, 
+  type RookSide
 } from '../../Piece'
 import { 
   positionFromString, 
@@ -18,11 +19,6 @@ import {
   type PositionCode 
 } from '../../Position'
 import type Snapshotable from '../../Snapshotable'
-
-const DEFAULT_GAME_STATUS: GameStatus = {
-  state: 'new',
-  victor: undefined
-}
 
 interface TrackingForSideSnapshot {
   king: PositionCode,
@@ -49,8 +45,6 @@ interface TrackingSnapshot {
   white: TrackingForSideSnapshot
   black: TrackingForSideSnapshot
 }
-
-
 
 class CastlingTrackingInternal 
   implements CastlingTracking, 
@@ -179,6 +173,13 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     this.castling.reset()
   }
 
+  clearRookTracking(): void {
+    this.primaries.rook.kingside.position = null
+    this.primaries.rook.kingside.capturePos = undefined
+    this.primaries.rook.queenside.position = null
+    this.primaries.rook.queenside.capturePos = undefined
+  }
+
   takeSnapshot(): TrackingForSideSnapshot {
     return {
       king: positionToString(this.king),
@@ -255,7 +256,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     this.castling.syncTo(source.castling)
   }
     // called when pos contains a rook
-  private _rookSideFromPosition(pos: Position): 'kingside' | 'queenside' {
+  private _rookSideFromPosition(pos: Position): RookSide {
     const { kingside, queenside } = this.primaries.rook
     if (kingside.position && positionsEqual(pos, kingside.position)) {
       return 'kingside'
@@ -266,7 +267,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     throw new Error( "Tracking._rookSideFromPosition(): could not determin rook side from position!")
   }
 
-  private _rookSideFromCapturePos(pos: Position): 'kingside' | 'queenside' {
+  private _rookSideFromCapturePos(pos: Position): RookSide {
     const { kingside, queenside } = this.primaries.rook
     if (kingside.capturePos && positionsEqual(pos, kingside.capturePos)) {
       return 'kingside'
@@ -292,11 +293,11 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     return [...this.primaries[t]]
   }
 
-  getRookTracking(rookSide: 'kingside' | 'queenside'): RookTracking {
+  getRookTracking(rookSide: RookSide): RookTracking {
     return this.primaries.rook[rookSide]
   }
 
-  trackPositionChange(m: Move, mode: 'do' | 'undo' | 'redo'): void {
+  trackPositionChange(m: Move, mode: ActionMode): void {
     if (m.piece.type === 'king') {
       if (mode === 'undo') {
         this.king = m.from
@@ -346,7 +347,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     }
   }
 
-  trackCapture(piece: Piece, pos: Position, mode: 'do' | 'undo' | 'redo'): void {
+  trackCapture(piece: Piece, pos: Position, mode: ActionMode): void {
 
     if (!isPrimaryType(piece.type)) return; 
 
@@ -379,7 +380,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     }
   }
 
-  trackPromotion(pos: Position, mode: 'do' | 'undo' | 'redo' ) {
+  trackPromotion(pos: Position, mode: ActionMode ) {
       // Track the new piece of the promoted to type.
       // Either create a new slot of it with the to square,
       // or destroy said slot if undo
@@ -399,7 +400,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
    
   }
 
-  trackCastle(m: Move, mode: 'do' | 'undo' | 'redo'): void {
+  trackCastle(m: Move, mode: ActionMode): void {
       // castling does not effect the move counts for king and rooks
     if (mode === 'undo') {
       this.king = m.from
@@ -424,7 +425,7 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
       ****/
     const rank = m.from.rank
     let rook: {
-      rookSide: 'kingside' | 'queenside'
+      rookSide: RookSide
       from: Position
       to: Position
     } 
@@ -458,6 +459,29 @@ class TrackingForSide implements Snapshotable<TrackingForSideSnapshot> {
     }
   }
 
+  trackAsRestore(piece: Piece, pos: Position): void {
+    if (piece.type === 'king') {
+      this.king = pos
+    }
+    else if (piece.type === 'rook') {
+        // This is totally arbitrary, so we loose the actual castle tracking
+        // In practice this is ok, since the "no tracking" persistence files
+        // will only be created by hand, and used for debugging and testing
+        // endgame conditions / features. 
+      if (!this.primaries.rook.kingside.position) {
+        this.primaries.rook.kingside.position = pos
+        this.primaries.rook.kingside.capturePos = undefined  
+      }
+      else {
+        this.primaries.rook.queenside.position = pos
+        this.primaries.rook.queenside.capturePos = undefined  
+      }
+    }
+    else {
+      const positions = this.primaries[piece.type as PrimariesTrackedAsArrays]
+      positions.push(pos)  
+    }
+  }
 }
 
 class Tracking implements Snapshotable<TrackingSnapshot>{
@@ -465,31 +489,20 @@ class Tracking implements Snapshotable<TrackingSnapshot>{
   white: TrackingForSide
   black: TrackingForSide
 
-    // Need to initialize for babel : https://github.com/mobxjs/mobx/issues/2486
-  gameStatus: GameStatus = DEFAULT_GAME_STATUS
 
   constructor(observeMe?: boolean) {
     this.white = new TrackingForSide('white', observeMe)
     this.black = new TrackingForSide('black', observeMe)
-    if (observeMe) {
-      makeObservable(this, {
-        gameStatus: observable.shallow,
-      })
-    }
   }
 
   reset() {
     this.white.reset('white')
     this.black.reset('black')
-    this.gameStatus = DEFAULT_GAME_STATUS
   }
 
   syncTo (source: Tracking) {
     this.white.syncTo(source.white)
     this.black.syncTo(source.black)
-      // https://mobx.js.org/observable-state.html#converting-observables-back-to-vanilla-javascript-collections
-      // always syncing from observable to non-observable
-    this.gameStatus = {...source.gameStatus}
   }
 
   takeSnapshot(): TrackingSnapshot {

@@ -1,5 +1,7 @@
 import React, { type PropsWithChildren } from 'react'
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/styles/stitches.config'
+
+const ANIM_SPEED = '150ms'
 
 const InnerDrawer = styled('div', {
 
@@ -7,41 +9,48 @@ const InnerDrawer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   zIndex: 100,
-  transition: 'right 300ms', 
-  position: 'fixed',
+  position: 'absolute',
   bottom: 0,
   top: 0,
-  right: -350,
-  width: '325px',
   boxSizing: 'border-box',
   overflow: 'hidden',
 
   variants: {
-    state: {
-      open: {
-        right: 0,
+    side: {
+      left: { 
+        transition: 'left ' + ANIM_SPEED + ' ease-in', 
       },
-      closed: {
+      right: { 
+        transition: 'right ' + ANIM_SPEED + ' ease-in',  
       }
     }
   }
 })
 
 const Drawer: React.FC<{
+  side: 'left' | 'right',
+  width: number,
   open: boolean,
-  className?: string
+  css?: CSS
 } & PropsWithChildren
 > = ({
+  side,
+  width,
   open,
   children,
-  className
+  css
 }) => {
+
+  const style = {
+    width,
+    [side]: open ? 0 : -(width),
+  }
+
   return (
-    <InnerDrawer className={className} state={open ? 'open' : 'closed'}>
+    <InnerDrawer side={side} css={css} style={style}>
       {children}
     </InnerDrawer>
   )
-
 }
 
 export default Drawer

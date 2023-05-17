@@ -1,5 +1,5 @@
 import React from 'react'
-import { observer } from 'mobx-react'
+import { observer } from 'mobx-react-lite'
 import { useDraggable } from '@dnd-kit/core'
 import type { VariantProps } from '@stitches/react'
 
@@ -12,7 +12,7 @@ import {
 
 import { styled } from '~/styles/stitches.config'
 
-import { Flex } from '~/primitives'
+import { Flex } from '~/primatives'
 import { usePulses, useGame } from '~/services'
 
 import registry from './pieceRegistry'
