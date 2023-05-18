@@ -1,7 +1,6 @@
 import { 
   reaction, 
   makeObservable, 
-  makeAutoObservable,
   observable,
   action,
   computed, 
@@ -81,7 +80,6 @@ class TransientMessageImpl implements ChessListener, TransientMessage {
   }
 
   messageSent(m: string, type?: string): void {
-    //console.log("INBOUND: " + this._game.actionIndex)
     this._setMessage({
       content: m, 
       type: (type ?? ''),

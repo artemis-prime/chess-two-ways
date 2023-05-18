@@ -6,7 +6,7 @@ import type { CSS } from '@stitches/react'
 import { styled } from '~/styles/stitches.config'
 
 import { useGame, useTransientMessage } from '~/services'
-import { Flex, Row, Column, Switch, Box } from '~/primatives'
+import { Flex, Row, Column, Switch, Box, Button } from '~/primatives'
 
 import {
   GameStatusIndicator,
@@ -25,9 +25,9 @@ const DashView = styled(Flex, {
   width: '100%',
   maxWidth: '500px',
   height: '100%',
-  border: '4px $dashBorder solid',
+  border: '4px $dashBorderColor solid',
   borderRadius: '5px',
-  padding: '16px 24px',
+  padding: '$1_5 $3',
   color: '$dashText',
 
   '& hr': {
@@ -52,22 +52,21 @@ const Dash: React.FC<{
       <Row justify='between' align='start' css={{w: '100%'}}>
         <Column >
         {(game.playing) ? (<>
-            <TurnIndicator css={{mb: '$1'}} />
+            {!showMoves && (<TurnIndicator css={{mb: '$1'}} />)}
             <InCheckIndicator css={{mb: '$1'}} />
           </>) : (
             <GameStatusIndicator />
           )}
         </Column>
         <Column >
-          <UndoRedoWidget buttonSize='large' />
+          <Switch 
+            css={{alignSelf: 'flex-end'}} 
+            checked={showMoves} 
+            onChange={setShowMoves} 
+          >show moves</Switch>
         </Column>
       </Row>
-      <Switch 
-        css={{alignSelf: 'flex-end', my: '$half'}} 
-        checked={showMoves} 
-        onChange={setShowMoves} 
-      >show moves</Switch>
-      <hr />
+      {!showMoves && <hr />}
       <MovesTable show={showMoves} />
       {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashText'}}>{tm.message.content}</Box>}
     </DashView>

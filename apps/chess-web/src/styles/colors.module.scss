@@ -28,6 +28,12 @@ $orange10: hsl(24, 100%, 46.5%);
 $orange11: hsl(24, 100%, 37.0%);
 $orange12: hsl(15, 60.0%, 17.0%);
 
+$navy3: hsl(226, 56.0%, 34.5%);    
+$navy4: hsl(226, 39.2%, 42%);
+$navy5: hsl(226, 39.2%, 46%);
+$navy6: hsl(226, 39.2%, 52%);
+$navy7: hsl(226, 39.2%, 60%);
+
 $alert1: $orange1; 
 $alert2: $orange2; 
 $alert3: $orange3; 
@@ -51,12 +57,17 @@ $dash-text: rgba(255, 255, 255, 0.9);
 $dash-text-disabled: $gray11;
 
 $menu-text: rgba(255, 255, 255, 0.9);
-$menu-bg: hsl(226, 56.0%, 34.5%);    
-$menu-bg-hover: hsl(226, 39.2%, 42%);
-$menu-bg-selected-hover: hsl(226, 39.2%, 46%);
-$menu-bg-pressed: hsl(226, 39.2%, 52%);
-$menu-text-disabled: #c8c8c8;
+$menu-text-disabled:  rgba(255, 255, 255, 0.6);
 $menu-text-right-symbol: #ddd;
+
+$menu-bg: $navy3;
+$menu-bg-hover: $navy4;
+$menu-bg-selected-hover: $navy5;
+$menu-bg-pressed: $navy6;
+
+$menu-contained-button: $navy5;
+$menu-contained-button-hover: $navy6;
+$menu-contained-button-pressed: $navy7;
 
 :export {
   brownDarker: $brown-darker;
@@ -88,19 +99,22 @@ $menu-text-right-symbol: #ddd;
   alert11: $alert11;
   alert12: $alert12;
   
-
-
   pieceBlack: $color-piece-black;
   pieceWhite: $color-piece-white;
-  dashBorder: $dash-border;
+  dashBorderColor: $dash-border;
   dashText: $dash-text;
   dashTextDisabled: $dash-text-disabled;
 
-  menuText: $menu-text;
   menuBG: $menu-bg;    
   menuBGHover: $menu-bg-hover;
   menuBGSelectedHover: $menu-bg-selected-hover;
   menuBGPressed: $menu-bg-pressed;
+
+  menuText: $menu-text;
   menuTextDisabled: $menu-text-disabled;
   menuTextRightSymbol: $menu-text-right-symbol;
+
+  menuContainedButton: $menu-contained-button;
+  menuContainedButtonHover: $menu-contained-button-hover;
+  menuContainedButtonPressed: $menu-contained-button-pressed;
 }

@@ -30,6 +30,7 @@ const MenubarTrigger = styled(Menubar.Trigger, {
   '&:hover': {
     backgroundColor: '$menuBGHover',
   }
+
 })
 
 const MenubarContent = styled(Menubar.Content, {

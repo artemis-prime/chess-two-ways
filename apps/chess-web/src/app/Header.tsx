@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { styled, layout, deborder } from '~/styles/stitches.config'
-import { BurgerButton, Flex } from '~/primatives'
-import { Logo, MainMenu } from '~/app/widgets'
+import { BurgerButton, Flex, Button } from '~/primatives'
+import { Logo, MainMenu, UndoRedoWidget } from '~/app/widgets'
 
 const RightSpacer = styled('div', {
   width: '$header',
@@ -84,7 +84,7 @@ const Header: React.FC<{
           <MainMenu />
         </LeftContainer>
         <Title>Chess Two Ways - Web</Title>
-        <RightSpacer />
+        <UndoRedoWidget buttonSize='large' menu strings={['Undo', 'Redo', '']}/>
       </Flex>
     </Outer>
   )

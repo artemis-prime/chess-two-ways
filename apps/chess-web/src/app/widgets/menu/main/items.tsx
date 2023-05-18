@@ -39,6 +39,10 @@ const itemstyles = {
     backgroundColor: '$menuBGHover'
   },
 
+  '&:active': {
+    backgroundColor: '$menuBGPressed'
+  },
+
   variants: {
     variant: {
       inset: {

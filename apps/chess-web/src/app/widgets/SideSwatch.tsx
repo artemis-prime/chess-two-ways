@@ -21,11 +21,17 @@ const SideSwatch = styled('span', {
         backgroundColor: '$pieceBlack'
       },
     },
-    smaller: {
+    small: {
       true: {
         h: '0.8rem', 
         w: '0.8rem',
         borderWidth: '$normal',
+      }
+    },
+    narrow: {
+      true: {
+        height: '1rem',
+        borderWidth: '$normal', 
       }
     }
   }

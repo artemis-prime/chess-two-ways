@@ -17,9 +17,9 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS, deborder } from '~/styles/stitches.config'
 
-import { useGame } from '~/services'
+import { useGame, usePulses } from '~/services'
 import { Row, Box } from '~/primatives'
 import SideSwatch from './SideSwatch'
 import getMoveComment from './getMoveComment'
@@ -84,8 +84,9 @@ const MovesTable: React.FC<{
 
   const rowsRef = useRef<Rows>(new Rows())
   const game = useGame()
+  const pulses = usePulses()
 
-  const getHilight = computedFn((moveRow: number, side: Side): any => {
+  const sideHilight = computedFn((moveRow: number, side: Side): any => {
     if (rowsRef.current.hilightedMoveRow !== null) {
       if (rowsRef.current.hilightedMoveRow === moveRow && rowsRef.current.hilightedSide === side) {
         return {
@@ -98,16 +99,16 @@ const MovesTable: React.FC<{
     return {p: '4px'}
   })
 
-  const getMoveColor = computedFn((moveRow: number, side: Side): string => {
+  const sideColor = computedFn((moveRow: number, side: Side): CSS => {
 
-    if (disableHalf(moveRow, side)) {
-      return '$dashTextDisabled'
+    if (disableSide(moveRow, side)) {
+      return { color: '$dashTextDisabled'}
     }
     const half = rowsRef.current.rows[moveRow][side]
-    return half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashText')  : '$dashText'
+    return {color:  half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashText')  : '$dashText'}
   })
 
-  const disableHalf = computedFn((moveRow: number, side: Side): boolean => {
+  const disableSide = computedFn((moveRow: number, side: Side): boolean => {
 
     if (rowsRef.current.hilightedMoveRow !== null) {
       if (moveRow > rowsRef.current.hilightedMoveRow) {
@@ -220,41 +221,86 @@ const MovesTable: React.FC<{
     return () => {disposers.forEach((disposer) => { disposer() })}
   }, [])
 
+  const pulsingOpacity = computedFn((enabled: boolean): CSS => (
+    (enabled) ? { opacity: pulses.slow ? .8 : .7} : {}
+  )) 
+
+  const swatchCss = computedFn((side: Side): CSS =>  ({
+    width: '100%', 
+    borderColor: (game.currentTurn === side && pulses.slow) ? ((side === 'white') ? '#ddd' : '#888') : '#777', 
+    opacity: (game.currentTurn === side) ? 1 : ((side === 'white') ? 0.7 : 0.5)
+  })) 
+
+  const r = rowsRef.current
   return show ? (
-    <Box css={{w: '100%', mt: '$oneAndHalf'}}>
-    {rowsRef.current.rows.length > 0 && (<>
-      <Row css={{w: '100%', mb: '$half'}} key='title-row'>
+    <Box css={{w: '100%', mt: '$1_5'}}>
+    {r.rows.length > 0 && (<>
+      <Row css={{w: '100%', mb: '$_5'}} key='title-row'>
         <Box css={{w: COL_WIDTHS[0], mr: '$1'}}>&nbsp;</Box>
-        <Box css={{w: COL_WIDTHS[1], pr: '$oneAndHalf'}}><SideSwatch side='white' css={{width: '100%', height: '16px', borderWidth: '$normal', opacity: 0.8}}/></Box>
-        <Box css={{w: COL_WIDTHS[2], pr: '$oneAndHalf'}}><SideSwatch side='black' css={{width: '100%', height: '16px', borderWidth: '$normal', opacity: 0.8}}/></Box>
+        <Box css={{w: COL_WIDTHS[1], pr: '$1_5'}}><SideSwatch narrow side='white' css={swatchCss('white')}/></Box>
+        <Box css={{w: COL_WIDTHS[2], pr: '$1_5'}}><SideSwatch narrow side='black' css={swatchCss('black')}/></Box>
         <Row justify='center' css={{w: COL_WIDTHS[3]}}>notes:</Row>
       </Row>
       <hr />
     </>)}
-    {rowsRef.current.rows.map((row: MoveRow, i) => (
-      <Row css={{w: '100%', mb: '$half'}} key={row.white.str + (row.black?.str ?? '')}>
-        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color: disableRow(i) ? '$dashTextDisabled' : '$dashText' }}>{`${i + 1})`}</Box>
-        <Box css={{w: COL_WIDTHS[1], flex: 'none', color: getMoveColor(i, 'white'), ...getHilight(i, 'white')}}>{row.white.str}</Box>
-        <Box css={{w: COL_WIDTHS[2], flex: 'none', color: getMoveColor(i, 'black'), ...getHilight(i, 'black')}}>{row.black?.str ?? ''}</Box>
-        <Row justify='start' align='end' css={{
-          w: COL_WIDTHS[3], 
-          flexGrow: 3, 
-          flexWrap: 'wrap', 
-          whiteSpace: 'nowrap', 
-          fontSize: '0.8rem',
-          lineHeight: '1rem',
-          textAlign: 'right',
-        }}>
+    {r.rows.map((row: MoveRow, i) => (
+      <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')}>
+        <Box 
+          css={{
+            w: COL_WIDTHS[0], 
+            flex: 'none', 
+            mr: '$1', 
+            color: disableRow(i) ? '$dashTextDisabled' : '$dashText' 
+          }}
+        >{`${i + 1})`}</Box>
+        <Box 
+          css={{
+            w: COL_WIDTHS[1], 
+            flex: 'none', 
+            ...sideColor(i, 'white'), 
+            ...sideHilight(i, 'white')
+          }}
+        >{row.white.str}</Box>
+        <Box 
+          css={{
+            w: COL_WIDTHS[2], 
+            flex: 'none', 
+            ...sideColor(i, 'black'), 
+            ...sideHilight(i, 'black'), 
+            ...pulsingOpacity(!row.black)
+          }}
+        >{row.black?.str ?? '?'}</Box>
+        <Row 
+          justify='start' 
+          align='end' 
+          css={{
+            w: COL_WIDTHS[3], 
+            flexGrow: 3, 
+            flexWrap: 'wrap', 
+            whiteSpace: 'nowrap', 
+            fontSize: '0.8rem',
+            lineHeight: '1rem',
+            textAlign: 'right',
+          }}
+        >
           {disableRow(i) ? (
             (row.white.note || row.black?.note) ? <Ellipses /> : ''
           ) : (<>
             { row.white.note }
             {(row.white.note && row.black?.note) && <Comma />}
-            { row.black?.note ? ((disableHalf(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
+            { row.black?.note ? ((disableSide(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
           </>)}
         </Row>
       </Row>
     ))}
+    
+    { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
+    !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
+      <Row css={{w: '100%', mb: '$_5'}} key='last'>
+        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color:'$dashText' }}>{`${r.rows.length + 1})`}</Box>
+        <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$dashText', ...pulsingOpacity(true)}}>?</Box>
+      </Row>
+    )}
     </Box>
   ) : null
 })

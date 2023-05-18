@@ -319,11 +319,9 @@ class GameImpl implements Game {
         if (action) {
           this._scratchBoard.syncTo(this._board)
           const r = new ActionRecord(move, action, this._getCaptured(move, action))
-          const previousCheck = this._scratchBoard.check
-          const wasInCheck = previousCheck && previousCheck.side === r.move.piece.side
+          const wasInCheck = this._scratchBoard.check?.side === r.move.piece.side
           this._scratchBoard.applyAction(r, 'do')
-          const check = this._scratchBoard.check
-          const isInCheck = check && check.side === r.move.piece.side
+          const isInCheck = this._scratchBoard.check?.side === r.move.piece.side
           if (isInCheck) {
             this._notifier.messageSent(`${r.toCommonLANString()} isn't possible. It would ` +
               `${wasInCheck ? 'leave you' : 'put you'} in check!`, 'transient-warning')  

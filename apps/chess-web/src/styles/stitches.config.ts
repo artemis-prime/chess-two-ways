@@ -40,9 +40,9 @@ const {
       thick: '3px',
     },
     space: {
-      half: '4px',
+      '_5': '4px',
       1: '8px',
-      oneAndHalf: '12px',
+      '1_5': '12px',
       2: '16px',
       3: '24px',
       4: '32px',
@@ -62,10 +62,8 @@ const {
       menu: 500
     },
     fonts: {
-      body: 'chalk',
+      dash: 'chalk',
       header: 'TWK Everett',
-        // linked directly in index.html 
-      //menu: 'Roboto' 
         // linked directly in index.html 
       menu: "'Source Sans 3'" // need both sets of quotes
     },

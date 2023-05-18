@@ -2,7 +2,8 @@ const showForGroup = {
   menu: false,
   menuOuter: false,
   layout: false,
-  header: false
+  header: false,
+  foo: false
 }
 
 type GroupsKey = keyof typeof showForGroup
