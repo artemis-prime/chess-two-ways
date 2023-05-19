@@ -29,7 +29,7 @@ const InnerDrawer = styled('div', {
 
 const Drawer: React.FC<{
   side: 'left' | 'right',
-  width: number,
+  width: number | string, // pixels or percentage
   open: boolean,
   css?: CSS
 } & PropsWithChildren
@@ -43,11 +43,11 @@ const Drawer: React.FC<{
 
   const style = {
     width,
-    [side]: open ? 0 : -(width),
+    [side]: (typeof width === 'number') ? (open ? 0 : `-${width}px`) : (open ? '0%' : `-${width}`)
   }
 
   return (
-    <InnerDrawer side={side} css={css} style={style}>
+    <InnerDrawer side={side} css={{...css, ...style}}>
       {children}
     </InnerDrawer>
   )

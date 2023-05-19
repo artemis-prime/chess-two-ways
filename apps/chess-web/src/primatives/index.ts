@@ -4,6 +4,7 @@ export { default as BurgerButton } from './BurgerButton'
 export { default as Checkbox } from './Checkbox'
 export { default as Drawer } from './Drawer'
 export { default as Flex, Row, Column } from './Flex'
+export { default as ResponsiveText } from './ResponsiveText'
 export { default as Switch } from './Switch'
 export {
   default as WidgetIcon,

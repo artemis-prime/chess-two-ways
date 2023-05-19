@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react'
-
+import React, { useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
 import { styled, deborder } from '~/styles/stitches.config'
-import { useDeviceInfo } from '~/services'
+import { BREAKPOINTS } from '~/styles/media.stitches'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -14,6 +13,16 @@ import Board from './Board'
 import '~/styles/fonts.scss'
 import '~/styles/body.scss'
 
+const Outer = styled('div', {
+  boxSizing: 'border-box',
+  width: '100vw',
+  height: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  ...deborder('orange', 'layout'),
+
+})
+
 const Main = styled('main', {
   position: 'relative',
   display: 'flex',
@@ -21,13 +30,20 @@ const Main = styled('main', {
   justifyContent: 'center',
   alignItems: 'stretch',
   width: '100%',
-  height: '95vh',
+  flexGrow: '1',
   py: '$2',
-  ...deborder('white', 'layout'),
+  ...deborder('red', 'layout'),
+
+  '@allMobilePortrait': {
+    flexDirection: 'column',
+    pt: '$1_5',
+    pb: 0,
+    px: '$_5',
+  }
 })
 
-const LeftWing = styled('div', {
-  ...deborder('red', 'layout'),
+const StartDiv = styled('div', {
+  ...deborder('green', 'layout'),
 
   display: 'none',
 
@@ -47,12 +63,12 @@ const BoardArea = styled('div', {
   px: '$1',
   ...deborder('yellow', 'layout'),
 
-  '@tablet': {
-    width: 'calc(100% - 380px)',
-    justifyContent: 'flex-end',
+  '@allMobilePortrait': {
+    px: 0,
+    flexGrow: 0,
   },
 
-  '@md': {
+  '@desktopSmall': {
     width: 'calc(100% - 300px)',
   },
 
@@ -60,7 +76,7 @@ const BoardArea = styled('div', {
     width: 'calc(100% - 320px)',
   },
 
-  '@headerStaging': {
+  '@virtualStaging': {
     width: 'calc(100% - 500px)',
   },
 
@@ -91,18 +107,21 @@ const BoardOuter: React.FC = () => {
   )
 }
 
-const RightWing = styled('div', {
+const EndDiv = styled('div', {
   
-  ...deborder('red', 'layout'),
+  ...deborder('blue', 'layout'),
   pr: '$1',
 
-  '@tablet': {
+  '@allMobilePortrait': {
+    pr: 0,
+    pt: '$1',
     flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: '380px'
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
   },
 
-  '@md': {
+  '@desktopSmall': {
     flexBasis: '300px'
   },
 
@@ -110,7 +129,7 @@ const RightWing = styled('div', {
     flexBasis: '320px'
   },
 
-  '@headerStaging': {
+  '@virtualStaging': {
     flexGrow: 1,
     flexShrink: 0,
     flexBasis: '500px'
@@ -121,36 +140,35 @@ const RightWing = styled('div', {
   }
 })
 
-const menuDrawerWidth = (w: number | undefined) => (
-  w ? Math.min((0.3 * w), 360) : 360
-)
 
 const Layout: React.FC<{}> = () => {
   
   const [drawerOpen, setDrawerOpen] = useState<boolean >(false) 
-  const { width, ref } = useResizeDetector()
-  const { updateWidth } = useDeviceInfo()
+  const [showMoves, setShowMoves] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (width) {
-      updateWidth(width)
+  const { width, height, ref } = useResizeDetector()
+
+  const menuDrawerWidth = (): number | string => {
+    if (width && width < BREAKPOINTS.Tablet) {
+      return '85%'
     }
-  }, [width])
+    return 280
+  }
 
   const toggleMenu = () => { setDrawerOpen((prev) => (!prev)) }
   
   return (
-    <div ref={ref} style={{/* containerType: 'size' */} }>
+    <Outer ref={ref}>
       <Header menuOpen={drawerOpen} toggleMenu={toggleMenu} />
       <Main>
-        <LeftWing />
+        <StartDiv />
         <BoardOuter />
-        <RightWing >
-          <Dash />
-        </RightWing>
-        <SideMenu width={menuDrawerWidth(width)} open={drawerOpen} />
+        <EndDiv >
+          <Dash showMoves={showMoves} setShowMoves={setShowMoves} />
+        </EndDiv>
+        <SideMenu width={menuDrawerWidth()} open={drawerOpen} />
       </Main>
-    </div>
+    </Outer>
   )
 }
 

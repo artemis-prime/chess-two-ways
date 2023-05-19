@@ -4,41 +4,45 @@ import type { CSS } from '@stitches/react'
 
 import { useGame } from '~/services'
 
-import { Button, type ButtonSize, Flex } from '~/primatives'
-  
+import { Button, Flex, ResponsiveText } from '~/primatives'
+import { common } from '~/styles/stitches.config'
+
 const UndoRedoWidget: React.FC<{ 
-  menu?: boolean
-  dash?: boolean
-  strings: string[],
-  buttonSize: ButtonSize,
   css?: CSS
  }> = observer(({
-  menu = false,
-  dash = true,
-  buttonSize,
   css,
-  strings
 }) => {
 
   const game = useGame()
 
   return (
-    <Flex direction='row' justify='start' align='center' css={css}>
+    <Flex direction='row' justify='start' align='stretch' css={css}>
       <Button 
-        menu={menu ?? false}
-        dash={dash ?? false}
-        size={buttonSize}  
+        menu
+        size='large' 
         disabled={!game.canUndo}
         onClick={game.undo}
-      >{strings[0]}</Button>
-      {strings[2] ? ((game.canUndo || game.canRedo) ? strings[2] : <span style={{paddingRight: '0.5rem'}} />) : null}
+        css={{...common.menuBarTrigger, px: '$2'}}
+      >
+        <ResponsiveText 
+          main='Undo' 
+          alt={'\u2039'} 
+          altTriggers={['allMobile', 'desktopSmall']} 
+          css={{ fontFamily: common.menuBarTrigger.fontFamily }}/>
+      </Button>
       <Button 
-        menu={menu ?? false}
-        dash={dash ?? false}
-        size={buttonSize}   
+        menu
+        size='large' 
         disabled={!game.canRedo}
         onClick={game.redo}
-      >{strings[1]}</Button>
+        css={{...common.menuBarTrigger, px: '$2'}}
+      >
+        <ResponsiveText 
+          main='Redo' 
+          alt={'\u203A'} 
+          altTriggers={['allMobile', 'desktopSmall']} 
+        />
+      </Button>
     </Flex>
   )
 })

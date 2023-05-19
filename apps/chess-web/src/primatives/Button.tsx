@@ -86,8 +86,6 @@ const Button = styled('button', {
     },
     menu: {
       true: {
-//        color: '$menuText',
-//        fontFamily: '$menu',
         '&:disabled': {
           color: '$menuTextDisabled',
         },

@@ -6,6 +6,7 @@ const StyledButton = styled('button', {
 
   //  border: '0.5px solid red',
   border: 'none',
+  flex: 'none',
 
   backgroundColor: 'transparent',
   cursor: 'pointer',

@@ -2,14 +2,19 @@
 @use 'colors.module' as c;
 
 html {
-  font-size: 16px
+  font-size: 16px;
+  overflow: hidden;
 }
 
 body {
   //-webkit-font-smoothing: antialiased;
   //-moz-osx-font-smoothing: grayscale;
   background-image: url('assets/img/chess_bg_1920_low_res.jpg');
+  background-size: cover;
+
+  //background-position: left bottom;
+  
+  -webkit-background-size: cover;
+  background-repeat: no-repeat;
   overflow: hidden;
-  width: 100vw;
-  height: 100vh;
 }

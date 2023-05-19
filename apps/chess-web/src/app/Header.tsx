@@ -8,7 +8,7 @@ const RightSpacer = styled('div', {
   width: '$header',
   height: '$header',
 
-  '@headerStaging': {
+  '@virtualStaging': {
     width: '285px' // observation
   }
 })
@@ -22,6 +22,7 @@ const Outer = styled('header', {
   color: '$menuText',
   backgroundColor: '$menuBG',
   height: '$header',
+  flex: 'none',
 })
 
 const Title = styled('h1', {
@@ -31,17 +32,15 @@ const Title = styled('h1', {
   fontSize: '$header',
   fontFamily: '$header',
   alignSelf: 'center',
-  ...deborder('red', 'header')
+  ...deborder('red', 'header'),
+  
+  '@phonePortrait': {
+    fontSize: '1rem', 
+  },
 
-  /*
-  @include m.portrait-phone {
-    font-size: 1.4rem; 
+  '@tabletPortrait': {
+    fontSize: '1.9rem', 
   }
-
-  @include m.portrait-tablet {
-    font-size: 1.9rem; 
-  }
-  */
 }) 
 
 const LeftContainer = styled(Flex, {
@@ -68,8 +67,7 @@ const Header: React.FC<{
           width: 'initial', 
           height: '90%', 
           aspectRatio: 1, 
-          '@headerStaging': {display: 'none'},
-          '@xl': {display: 'none'}
+          '@virtualStaging': {display: 'none'},
         }}/>
         <LeftContainer 
           direction='row' 
@@ -77,14 +75,14 @@ const Header: React.FC<{
           align='center' 
           css={{
             display: 'none', 
-            '@headerStaging': {display: 'flex'}
+            '@virtualStaging': {display: 'flex'}
           }} 
         >
           <Logo css={{mr: '$1'}}/>
           <MainMenu />
         </LeftContainer>
         <Title>Chess Two Ways - Web</Title>
-        <UndoRedoWidget buttonSize='large' menu strings={['Undo', 'Redo', '']}/>
+        <UndoRedoWidget />
       </Flex>
     </Outer>
   )

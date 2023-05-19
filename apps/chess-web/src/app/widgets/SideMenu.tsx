@@ -41,7 +41,7 @@ const MenuRoot = styled('div', {
 
 const SideMenu: React.FC<{
   open: boolean
-  width: number
+  width: number | string
 }> = observer(({
   open,
   width

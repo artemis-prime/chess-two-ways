@@ -84,6 +84,7 @@ const {
       none: 0,
       sm: '3px',
       md: '8px',
+      lgr: '12px',
       lg: '16px',
       rounded: '999px',
       menu: '999px',
@@ -92,7 +93,9 @@ const {
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
-    transitions: {},
+    transitions: {
+      dashInPortrait: 'height 300ms ease'
+    },
     breakpoints: {},
   },
 })
@@ -129,9 +132,7 @@ const common = {
     fontWeight: '$menu',
     cursor: 'pointer',
   }
-
 }
-
 
 export {
   media,

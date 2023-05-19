@@ -26,6 +26,12 @@ const BoardInner = styled('div', {
   border: '2px $brownDarker solid',
   boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
 
+  '@allMobilePortrait': {
+    width: '100%', 
+    height: 'initial',
+  },
+
+
   variants: {
     tall: {
       true: {

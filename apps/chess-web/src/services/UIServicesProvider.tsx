@@ -9,8 +9,6 @@ import type BoardOrientation from './BoardOrientation'
 import { BoardOrientationImpl } from './BoardOrientation'
 import type Pulses from './Pulses'
 import { PulsesImpl } from './Pulses'
-import type DeviceInfo from './DeviceInfo'
-import { DeviceInfoImpl } from './DeviceInfo'
 
 import type TransientMessage from './TransientMessage'
 import { TransientMessageImpl } from './TransientMessage'
@@ -18,7 +16,6 @@ import { TransientMessageImpl } from './TransientMessage'
 interface UIServices  {
   pulses: Pulses
   boardOrientation: BoardOrientation
-  deviceInfo: DeviceInfo
   transientMessage: TransientMessage
 }
 
@@ -30,7 +27,6 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
   const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl(game))
   const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
-  const deviceInfoRef = useRef<DeviceInfo>(new DeviceInfoImpl())
   
   useEffect(() => {
     game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
@@ -50,7 +46,6 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
       pulses: pulsesRef.current,
       transientMessage: transientMessageRef.current,
       boardOrientation: boardOrientationRef.current,
-      deviceInfo: deviceInfoRef.current
     }}>
       {children}
     </UIServicesContext.Provider>
