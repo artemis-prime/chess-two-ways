@@ -26,8 +26,8 @@ const MenuRoot = styled('div', {
   w: '100%', 
   h: '100%', 
   p: '12px', // Spec: 28 to icon - 16 within button
-  backgroundColor: '$menuBG', 
-  color: '$menuText',
+  backgroundColor: '$menuBGColor', 
+  color: '$menuTextColor',
 
   '& hr': {
     mx: '$menuPL',

@@ -16,7 +16,6 @@ const Button = styled('button', {
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
-  lineHeight: '1.1',
 
   variants: {
     
@@ -77,33 +76,21 @@ const Button = styled('button', {
     },
     dash: {
       true: {
-        color: '$dashText',
-        fontFamily: '$dash',
+        color: '$dashTextColor',
+        fontFamily: '$dashFont',
         '&:disabled': {
-          color: '$dashTextDisabled',
+          color: '$dashTextColorDisabled',
         },
       }
     },
     menu: {
       true: {
+        fontSize: 'inherit',
+        lineHeight: 'inherit',
         '&:disabled': {
-          color: '$menuTextDisabled',
+          color: '$menuTextColorDisabled',
         },
       }
-    },
-    size: {
-      xs: {
-        fontSize: '0.6rem',
-      },
-      small: {
-        fontSize: '0.8rem',
-      },
-      medium: {
-        fontSize: '1rem',
-      },
-      large: {
-        fontSize: '1.2rem',
-      },
     },
   },
   compoundVariants: [
@@ -127,13 +114,13 @@ const Button = styled('button', {
       variant: 'contained',
       css: {
         color: '$gray1',
-        backgroundColor: '$menuContainedButton',
+        backgroundColor: '$menuContainedButtonColor',
         '&:hover': {
-          backgroundColor: '$menuContainedButtonHover'
+          backgroundColor: '$menuContainedButtonColorHover'
         },
           // pressed
         '&:active': {
-          backgroundColor: '$menuContainedButtonPressed' 
+          backgroundColor: '$menuContainedButtonColorPressed' 
         },
       }  
     },
@@ -144,25 +131,24 @@ const Button = styled('button', {
         ...common.menuBarTrigger,
         cursor: 'pointer',
         border: 'none',
-        backgroundColor: '$menuBG',
+        backgroundColor: '$menuBGColor',
         px: '$1_5',
         '&:hover': {
           textDecoration: 'none',
-          backgroundColor: '$menuBGHover',
+          backgroundColor: '$menuBGColorHover',
           '&:disabled': {
-            backgroundColor: '$menuBG',
+            backgroundColor: '$menuBGColor',
           } 
         },
         '&:disabled': {
           cursor: 'default',
-          color: '$menuTextDisabled'
+          color: '$menuTextColorDisabled'
         },
       }  
     },
   ],
   defaultVariants: {
     variant: 'ghost',
-    size: 'medium',
     dash: true,
     menu: false
   },
@@ -170,12 +156,10 @@ const Button = styled('button', {
 type ButtonVariants = VariantProps<typeof Button>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type ButtonVariant = ButtonVariants['variant'] 
-type ButtonSize = ButtonVariants['size'] 
 
 
 
 export {
   Button as default,
   type ButtonVariant,
-  type ButtonSize
 }

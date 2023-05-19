@@ -10,11 +10,7 @@ import deborder from './debugBorder'
 
 const HEADER_HEIGHT = 52
 const HEADER_HEIGHT_SMALLER = 48
-
-const layout = {
-  staging: 1200,
-  menuBreak: 950
-}
+const HEADER_HEIGHT_SMALL = 42
 
 const { 
   config: { media }, 
@@ -47,38 +43,39 @@ const {
       3: '24px',
       4: '32px',
       menuPL: '16px',
-      //menuPR: '24px',
-      subheader: '42px',
-      header: `${HEADER_HEIGHT}px`,
     },
     fontSizes: {
-      header: '1.85rem',
+      headerFontSizeSmall: '1rem',
+      headerFontSizeSmaller: '1.1rem',
+      headerFontSize: '1.2rem',
       normal: '1rem',
       menuDesktop: '18px',
       menuMobile: '14px',
       dashSmaller: '0.9rem'
     },
     fontWeights: {
-      menu: 500
+      menuFontWeight: 500
     },
     fonts: {
-      dash: 'chalk',
-      header: 'TWK Everett',
+      dashFont: 'chalk',
+      headerFont: 'TWK Everett',
         // linked directly in index.html 
-      menu: "'Source Sans 3'" // need both sets of quotes
+      menuFont: "'Source Sans 3'" // need both sets of quotes
     },
     lineHeights: {
-      menu: '20px'
+      menuLineHeight: '20px'
     },
-    letterSpacings: {},
+    letterSpacings: {
 
+    },
     sizes: {
       swatchNormalHeight: '22px',
       swatchNormalWidth: '42px', 
-      header: `${HEADER_HEIGHT}px`,
-      headerSmaller: `${HEADER_HEIGHT_SMALLER}px`,
-      sidemenuItemHeight: '52px',
-      popupmenuItemHeight: '42px'
+      headerHeight: `${HEADER_HEIGHT}px`,
+      headerHeightSmaller: `${HEADER_HEIGHT_SMALLER}px`,
+      headerHeightSmall: `${HEADER_HEIGHT_SMALL}px`,
+      sideMenuItemHeight: '52px',
+      popupMenuItemHeight: '42px'
     },
     radii: {
       none: 0,
@@ -87,8 +84,8 @@ const {
       lgr: '12px',
       lg: '16px',
       rounded: '999px',
-      menu: '999px',
-      popupMenu: '21px', // popupmenuItemHeight * 0.5
+      menuRadius: '999px',
+      popupMenuRadius: '21px', // popupMenuItemHeight * 0.5
     },
     shadows: {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
@@ -101,35 +98,34 @@ const {
 })
 
 const common = {
-  menu: {
-    borderRadius: '$menu',
-    height: '$sidemenuItemHeight',
+  sideMenuItem: {
+    borderRadius: '$menuRadius',
+    height: '$sideMenuItemHeight',
     pl: '$menuPL',
-    lineHeight: '$menu',
+    lineHeight: '$menuLineHeight',
     fontSize: '$menuDesktop',
-    fontFamily: '$menu',
-    fontWeight: '$menu',
+    fontFamily: '$menuFont',
+    fontWeight: '$menuFontWeight',
   },
   menuBarTrigger: {
-    borderRadius: '$menu',
-    height: '$header',
+    borderRadius: '$menuRadius',
     px: '$3',
-    color: '$menuText',
-    lineHeight: '$menu',
-    fontSize: '$menuDesktop',
-    fontFamily: '$header',
-    fontWeight: '$menu',
+    color: '$menuTextColor',
+    lineHeight: 'inherit',
+    fontSize: 'inherit',
+    fontFamily: '$headerFont',
+    fontWeight: '$menuFontWeight',
     cursor: 'pointer',
   },
   menuBarPopupItem: {
-    borderRadius: '$menu',
-    height: '$popupmenuItemHeight',
+    borderRadius: '$menuRadius',
+    height: '$popupMenuItemHeight',
     px: '$menuPL',
-    color: '$menuText',
-    lineHeight: '$popupmenuItemHeight',
+    color: '$menuTextColor',
+    lineHeight: '$popupMenuItemHeight',
     fontSize: '$menuDesktop',
-    fontFamily: '$menu',
-    fontWeight: '$menu',
+    fontFamily: '$menuFont',
+    fontWeight: '$menuFontWeight',
     cursor: 'pointer',
   }
 }
@@ -139,7 +135,6 @@ export {
   lightTheme,
   styled,
   css,
-  layout,
   common,
   deborder,
   type CSS

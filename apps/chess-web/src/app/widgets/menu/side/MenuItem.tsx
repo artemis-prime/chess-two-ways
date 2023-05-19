@@ -17,7 +17,7 @@ import {
 const StyledButton = styled('button', {
 
   all: 'unset',
-  ...common.menu,
+  ...common.sideMenuItem,
   ...deborder('yellow', 'menu'),
   display: 'flex',
   flexDirection: 'row',
@@ -28,10 +28,10 @@ const StyledButton = styled('button', {
   outline: 'none',
 
   '&:hover': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
   },
   '&:active': {
-    backgroundColor: '$menuBGPressed'
+    backgroundColor: '$menuBGColorPressed'
   },
 
   variants: {
@@ -42,7 +42,7 @@ const StyledButton = styled('button', {
     },
     disabled: {
       true: {
-        color: '$menuTextDisabled',
+        color: '$menuTextColorDisabled',
         pointerEvents: 'none'
       }
     }

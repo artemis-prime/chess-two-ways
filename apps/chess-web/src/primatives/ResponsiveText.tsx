@@ -12,11 +12,13 @@ const ResponsiveText: React.FC<{
   main: string
   alt: string
   altTriggers: MediaQueries[],
+  mainTriggers: MediaQueries[],
   css? : CSS
 }> = ({
   main,
   alt,
   altTriggers,
+  mainTriggers,
   css
 }) => {
 
@@ -34,6 +36,15 @@ const ResponsiveText: React.FC<{
     altCss[`@${query}`] = {
       display: 'inline-flex',
       fontSize: '1.5rem',
+    }  
+  })
+
+  mainTriggers.forEach((query) => {
+    mainCss[`@${query}`] = {
+      display: 'inline-flex',
+    },  
+    altCss[`@${query}`] = {
+      display: 'none'
     }  
   })
 

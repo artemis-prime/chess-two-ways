@@ -32,7 +32,7 @@ const COL_WIDTHS = ['1.5rem', '6rem', '6rem', 'auto']
 const StyledSpan = styled('span', {})
 
 const Ellipses: React.FC = () => (
-  <StyledSpan css={{color: '$dashTextDisabled', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</StyledSpan>
+  <StyledSpan css={{color: '$dashTextColorDisabled', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</StyledSpan>
 )
 
 const Comma: React.FC = () => (
@@ -102,10 +102,10 @@ const MovesTable: React.FC<{
   const sideColor = computedFn((moveRow: number, side: Side): CSS => {
 
     if (disableSide(moveRow, side)) {
-      return { color: '$dashTextDisabled'}
+      return { color: '$dashTextColorDisabled'}
     }
     const half = rowsRef.current.rows[moveRow][side]
-    return {color:  half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashText')  : '$dashText'}
+    return {color:  half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$dashTextColor')  : '$dashTextColor'}
   })
 
   const disableSide = computedFn((moveRow: number, side: Side): boolean => {
@@ -250,7 +250,7 @@ const MovesTable: React.FC<{
             w: COL_WIDTHS[0], 
             flex: 'none', 
             mr: '$1', 
-            color: disableRow(i) ? '$dashTextDisabled' : '$dashText' 
+            color: disableRow(i) ? '$dashTextColorDisabled' : '$dashTextColor' 
           }}
         >{`${i + 1})`}</Box>
         <Box 
@@ -297,8 +297,8 @@ const MovesTable: React.FC<{
     { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
     !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
       <Row css={{w: '100%', mb: '$_5'}} key='last'>
-        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color:'$dashText' }}>{`${r.rows.length + 1})`}</Box>
-        <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$dashText', ...pulsingOpacity(true)}}>?</Box>
+        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color:'$dashTextColor' }}>{`${r.rows.length + 1})`}</Box>
+        <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$dashTextColor', ...pulsingOpacity(true)}}>?</Box>
       </Row>
     )}
     </Box>

@@ -23,7 +23,7 @@ const BoardInner = styled('div', {
   display: 'grid',
   gridTemplateColumns: 'repeat(8, 1fr)', 
   gridTemplateRows: 'repeat(8, 1fr)', 
-  border: '2px $brownDarker solid',
+  border: '2px $chessBoardBrown solid',
   boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
 
   '@allMobilePortrait': {

@@ -17,7 +17,7 @@ import {
 const StyledLabel = styled('label', {
     
   all: 'unset',
-  ...common.menu,
+  ...common.sideMenuItem,
   ...deborder('white', 'menu'),
   cursor: 'pointer',
   display: 'flex', 

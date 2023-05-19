@@ -13,6 +13,15 @@ import Board from './Board'
 import '~/styles/fonts.scss'
 import '~/styles/body.scss'
 
+const SIDEBAR_BY_BP = {
+  desktopTiny: 260,
+  desktopSmall: 300,
+  virtualStaging: 500,
+  xl: 430,
+  xxl: 520,
+}
+
+
 const Outer = styled('div', {
   boxSizing: 'border-box',
   width: '100vw',
@@ -39,19 +48,57 @@ const Main = styled('main', {
     pt: '$1_5',
     pb: 0,
     px: '$_5',
-  }
+  },
+  '@desktopTiny': {
+    py: '$1'
+  },
 })
 
 const StartDiv = styled('div', {
   ...deborder('green', 'layout'),
-
   display: 'none',
 
   '@xl': {
     display: 'block',
     flexGrow: 1,
     flexShrink: 0,
-    flexBasis: '430px',
+    flexBasis: `${SIDEBAR_BY_BP.xl}px`,
+  }
+})
+
+const EndDiv = styled('div', {
+  
+  ...deborder('blue', 'layout'),
+  pr: '$1',
+
+  '@allMobilePortrait': {
+    pr: 0,
+    pt: '$1',
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  '@desktopTiny': {
+    flexBasis:  `${SIDEBAR_BY_BP.desktopTiny}px)`,
+    flexGrow: 0
+  },
+  '@desktopSmall': {
+    flexBasis:  `${SIDEBAR_BY_BP.desktopSmall}px)`,
+  },
+  '@menuBreak': {
+    flexBasis: '320px'
+  },
+  '@virtualStaging': {
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: `${SIDEBAR_BY_BP.virtualStaging}px`,
+  },
+  '@xl': {
+    flexBasis: `${SIDEBAR_BY_BP.xl}px`,
+  },
+  '@xxl': {
+    flexBasis: `${SIDEBAR_BY_BP.xxl}px`,
   }
 })
 
@@ -68,8 +115,14 @@ const BoardArea = styled('div', {
     flexGrow: 0,
   },
 
+  '@desktopTiny': {
+    width: `calc(100% - ${SIDEBAR_BY_BP.desktopTiny}px)`,
+    justifyContent: 'flex-end',
+  },
+
+
   '@desktopSmall': {
-    width: 'calc(100% - 300px)',
+    width: `calc(100% - ${SIDEBAR_BY_BP.desktopSmall}px)`,
   },
 
   '@menuBreak': {
@@ -77,13 +130,15 @@ const BoardArea = styled('div', {
   },
 
   '@virtualStaging': {
-    width: 'calc(100% - 500px)',
+    width: `calc(100% - ${SIDEBAR_BY_BP.virtualStaging}px)`,
   },
 
   '@xl': {
-    width: 'calc(100% - 860px)', // 2 * 430
+    width: `calc(100% - ${SIDEBAR_BY_BP.xl * 2}px)`, 
     justifyContent: 'center',
-
+  },
+  '@xxl': {
+    width: `calc(100% - ${SIDEBAR_BY_BP.xxl * 2}px)`, 
   }
 })
 
@@ -107,38 +162,7 @@ const BoardOuter: React.FC = () => {
   )
 }
 
-const EndDiv = styled('div', {
-  
-  ...deborder('blue', 'layout'),
-  pr: '$1',
 
-  '@allMobilePortrait': {
-    pr: 0,
-    pt: '$1',
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-  },
-
-  '@desktopSmall': {
-    flexBasis: '300px'
-  },
-
-  '@menuBreak': {
-    flexBasis: '320px'
-  },
-
-  '@virtualStaging': {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: '500px'
-  },
-
-  '@xl': {
-    flexBasis: '430px'
-  }
-})
 
 
 const Layout: React.FC<{}> = () => {
@@ -149,7 +173,7 @@ const Layout: React.FC<{}> = () => {
   const { width, height, ref } = useResizeDetector()
 
   const menuDrawerWidth = (): number | string => {
-    if (width && width < BREAKPOINTS.Tablet) {
+    if (width && width < BREAKPOINTS.tablet) {
       return '85%'
     }
     return 280

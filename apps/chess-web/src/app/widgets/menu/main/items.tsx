@@ -27,20 +27,20 @@ const itemstyles = {
   position: 'relative',
 
   '&[data-disabled]': {
-    color: '$menuTextDisabled',
+    color: '$menuTextColorDisabled',
     pointerEvents: 'none',
   },
 
   '&[data-highlighted]': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
   },
 
   '&:hover': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
   },
 
   '&:active': {
-    backgroundColor: '$menuBGPressed'
+    backgroundColor: '$menuBGColorPressed'
   },
 
   variants: {

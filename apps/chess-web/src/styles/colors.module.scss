@@ -1,4 +1,4 @@
-// This module has to be named this way and imported as it is::after
+// This module has to be named this way and imported as it is:
 // https://github.com/vitejs/vite/discussions/9601
 
 // https://www.radix-ui.com/docs/colors/palette-composition/the-scales#gray
@@ -15,6 +15,7 @@ $gray10: hsl(0, 0%, 52.3%);
 $gray11: hsl(0, 0%, 43.5%);
 $gray12: hsl(0, 0%, 9.0%);
 
+// https://www.radix-ui.com/docs/colors/palette-composition/the-scales#orange
 $orange1: hsl(24, 70.0%, 99.0%);
 $orange2: hsl(24, 83.3%, 97.6%);
 $orange3: hsl(24, 100%, 95.3%);
@@ -51,28 +52,14 @@ $brown-darker: rgba(105, 49, 49, 0.75);
 $brown-light: rgba(167, 107, 55, 0.761);
 $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
-$dash-border: $brown-light;
 
 $dash-text: rgba(255, 255, 255, 0.9);
 $dash-text-disabled: $gray11;
 
 $menu-text: rgba(255, 255, 255, 0.9);
-$menu-text-disabled:  rgba(255, 255, 255, 0.6);
-$menu-text-right-symbol: #ddd;
-
-$menu-bg: $navy3;
-$menu-bg-hover: $navy4;
-$menu-bg-selected-hover: $navy5;
-$menu-bg-pressed: $navy6;
-
-$menu-contained-button: $navy5;
-$menu-contained-button-hover: $navy6;
-$menu-contained-button-pressed: $navy7;
+$menu-text-disabled:  rgba(255, 255, 255, 0.45);
 
 :export {
-  brownDarker: $brown-darker;
-  brownLight: $brown-light;
-  
   gray1: $gray1;
   gray2: $gray2;
   gray3: $gray3;
@@ -99,22 +86,22 @@ $menu-contained-button-pressed: $navy7;
   alert11: $alert11;
   alert12: $alert12;
   
-  pieceBlack: $color-piece-black;
-  pieceWhite: $color-piece-white;
-  dashBorderColor: $dash-border;
-  dashText: $dash-text;
-  dashTextDisabled: $dash-text-disabled;
+  pieceColorBlack: $color-piece-black;
+  pieceColorWhite: $color-piece-white;
+  dashBorderColor: $brown-light;
+  chessBoardBrown: $brown-darker;
+  dashTextColor: $dash-text;
+  dashTextColorDisabled: $dash-text-disabled;
 
-  menuBG: $menu-bg;    
-  menuBGHover: $menu-bg-hover;
-  menuBGSelectedHover: $menu-bg-selected-hover;
-  menuBGPressed: $menu-bg-pressed;
+  menuBGColor: $navy3;    
+  menuBGColorHover: $navy4; 
+  menuBGColorSelectedHover: $navy5; 
+  menuBGColorPressed: $navy6; 
 
-  menuText: $menu-text;
-  menuTextDisabled: $menu-text-disabled;
-  menuTextRightSymbol: $menu-text-right-symbol;
-
-  menuContainedButton: $menu-contained-button;
-  menuContainedButtonHover: $menu-contained-button-hover;
-  menuContainedButtonPressed: $menu-contained-button-pressed;
+  menuTextColor: $menu-text;
+  menuTextColorDisabled: $menu-text-disabled;
+  
+  menuContainedButtonColor: $navy5;
+  menuContainedButtonColorHover: $navy6;
+  menuContainedButtonColorPressed: $navy7;
 }

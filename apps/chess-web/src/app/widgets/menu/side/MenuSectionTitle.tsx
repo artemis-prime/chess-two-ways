@@ -8,7 +8,7 @@ import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
 const StyledHeading = styled('h6', {
 
   all: 'unset',
-  ...common.menu,
+  ...common.sideMenuItem,
   borderRadius: 0,
   pl: 0,
   mx: '$menuPL',

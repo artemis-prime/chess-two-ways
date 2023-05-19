@@ -6,16 +6,16 @@ const StyledBGDiv = styled('div', {
   w: '40px',
   h: '40px',
   borderRadius: '$rounded',
-  backgroundColor: '$pieceWhite',
+  backgroundColor: '$pieceColorWhite',
 
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
-  border: '2px solid $pieceBlack',
+  border: '2px solid $pieceColorBlack',
 
   '& svg': {
-    fill: '$pieceBlack'
+    fill: '$pieceColorBlack'
   }
 })
 

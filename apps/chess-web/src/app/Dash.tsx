@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { styled, type CSS } from '~/styles/stitches.config'
 
 import { useGame, useTransientMessage } from '~/services'
-import { Flex, Row, Column, Switch, Box, Button } from '~/primatives'
+import { Flex, Row, Column, Switch, Box } from '~/primatives'
 
 import {
   GameStatusIndicator,
@@ -26,7 +26,7 @@ const DashView = styled(Flex, {
   border: '4px $dashBorderColor solid',
   borderRadius: '5px',
   padding: '$1_5 $3',
-  color: '$dashText',
+  color: '$dashTextColor',
 
   '@allMobilePortrait': {
     maxWidth: 'initial',
@@ -95,7 +95,7 @@ const Dash: React.FC<{
       </Row>
       {!showMoves && <Hr />}
       <MovesTable show={showMoves} />
-      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashText'}}>{tm.message.content}</Box>}
+      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashTextColor'}}>{tm.message.content}</Box>}
     </DashView>
   )
 })

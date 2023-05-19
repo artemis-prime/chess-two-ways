@@ -18,12 +18,12 @@ const PieceEffectsView = styled(Flex, {
     side: {
       white: {
         '& svg': {
-          fill: '$pieceWhite',
+          fill: '$pieceColorWhite',
         },
       },
       black: {
         '& svg': {
-          fill: '$pieceBlack',
+          fill: '$pieceColorBlack',
         },
       },
     },

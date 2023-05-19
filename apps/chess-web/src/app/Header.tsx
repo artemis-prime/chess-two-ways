@@ -1,51 +1,125 @@
 import React from 'react'
 
-import { styled, layout, deborder } from '~/styles/stitches.config'
-import { BurgerButton, Flex, Button } from '~/primatives'
+import { styled, deborder } from '~/styles/stitches.config'
+import { BREAKPOINTS } from '~/styles/media.stitches'
+import { BurgerButton, Flex } from '~/primatives'
 import { Logo, MainMenu, UndoRedoWidget } from '~/app/widgets'
 
-const RightSpacer = styled('div', {
-  width: '$header',
-  height: '$header',
-
-  '@virtualStaging': {
-    width: '285px' // observation
-  }
-})
-
-const Outer = styled('header', {
+const HeaderOuter = styled('header', {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'stretch',
 
-  color: '$menuText',
-  backgroundColor: '$menuBG',
-  height: '$header',
+  color: '$menuTextColor',
+  backgroundColor: '$menuBGColor',
+  height: '$headerHeightSmall',
+  lineHeight: '$headerHeightSmall',
+  fontSize: '$headerFontSizeSmall',
   flex: 'none',
+
+  '@desktopSmall': {
+    height: '$headerHeightSmaller',
+    lineHeight: '$headerHeightSmaller',
+  },
+
+  '@menuBreak': {
+    height: '$headerHeight',
+    lineHeight: '$headerHeight',
+    fontSize: '$headerFontSize',
+  }
 })
+
+const Stage = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'stretch',
+  lineHeight: 'inherit',
+  fontSize: 'inherit',
+
+  width: '100%',
+  ...deborder('white', 'header'),
+
+
+  '@virtualStaging': {
+    width: `${BREAKPOINTS.virtualStaging}px`,
+    m: '0 auto',
+  }
+})
+
 
 const Title = styled('h1', {
   m: 0,
   p: 0,
-  lineHeight:  '$header',
-  fontSize: '$header',
-  fontFamily: '$header',
+  fontFamily: '$headerFont',
+  lineHeight: 'inherit',
+  fontSize: 'inherit',
+
   alignSelf: 'center',
   ...deborder('red', 'header'),
-  
-  '@phonePortrait': {
-    fontSize: '1rem', 
+
+  '@desktopTiny': {
+    fontSize: 'inherit',
+  },
+  '@desktopSmall': {
+    fontSize: '1.2em',
+  },
+  '@menuBreak': {
+    fontSize: '1.4em',
+  },
+  '@virtualStaging': {
+    fontSize: '1.6em',
   },
 
+  '@phonePortrait': {
+    //fontSize: '1rem', 
+  },
   '@tabletPortrait': {
-    fontSize: '1.9rem', 
+    //fontSize: '1.9rem', 
   }
 }) 
 
-const LeftContainer = styled(Flex, {
+const Left = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'flex-start', 
+  alignItems: 'center',
+  lineHeight: 'inherit',
+  fontSize: 'inherit',
+
+  ...deborder('yellow', 'header'),
+
+  '@desktopTiny': {
+    width: '85px' // undo / redo chevron version 
+  },
+  '@menuBreak': {
+    width: '160px'  // undo / redo word version 
+  },
+  '@virtualStaging': {
+    width: 'initial'   
+  }
+})
+
+
+
+const Right = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'flex-end', 
+  alignItems: 'center',
+  lineHeight: 'inherit',
+  fontSize: 'inherit',
+
+  ...deborder('yellow', 'header'),
+
+//    '@virtualStaging': {display: 'flex'}
+  '@virtualStaging': {
+    width: '280px' // roughly Logo + MainMenu
+  }
 
 })
+
 
 const Header: React.FC<{
   menuOpen: boolean
@@ -53,39 +127,26 @@ const Header: React.FC<{
 }> = ({
   menuOpen,
   toggleMenu
-}) => {
-  
-  return (
-    <Outer>
-      <Flex direction='row' justify='between' align='center' css={{
-        width: layout.staging,
-        m: '0 auto',
-        ...deborder('gray', 'header')
-      }}>
+}) => (
+  <HeaderOuter>
+    <Stage>
+      <Left>
         <BurgerButton toggledOn={menuOpen} onClick={toggleMenu} css={{
-          alignSelf: 'center', 
+          alignSelf: 'stretch', 
           width: 'initial', 
-          height: '90%', 
+          lineHeight: '80%', 
           aspectRatio: 1, 
           '@virtualStaging': {display: 'none'},
         }}/>
-        <LeftContainer 
-          direction='row' 
-          justify='start' 
-          align='center' 
-          css={{
-            display: 'none', 
-            '@virtualStaging': {display: 'flex'}
-          }} 
-        >
-          <Logo css={{mr: '$1'}}/>
-          <MainMenu />
-        </LeftContainer>
-        <Title>Chess Two Ways - Web</Title>
-        <UndoRedoWidget />
-      </Flex>
-    </Outer>
-  )
-}
+        <Logo css={{mr: '$1', display: 'none', '@virtualStaging': {display: 'flex'} }}/>
+        <MainMenu css={{display: 'none', '@virtualStaging': {display: 'flex'} }}/>
+      </Left>
+      <Title>Chess Two Ways - Web</Title>
+      <Right>
+        <UndoRedoWidget css={{alignSelf: 'stretch', fontSize: 'inherit'}}/>
+      </Right>
+    </Stage>
+  </HeaderOuter>
+)
 
 export default Header
