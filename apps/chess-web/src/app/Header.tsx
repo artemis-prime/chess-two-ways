@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { styled, deborder } from '~/styles/stitches.config'
-import { BREAKPOINTS } from '~/styles/media.stitches'
-import { BurgerButton, Flex } from '~/primatives'
+import { styled, deborder, BREAKPOINTS } from '~/styles/stitches.config'
+import { BurgerButton } from '~/primatives'
 import { Logo, MainMenu, UndoRedoWidget } from '~/app/widgets'
 
 const HeaderOuter = styled('header', {

@@ -1,8 +1,6 @@
 import React, { type PropsWithChildren } from 'react'
 import { styled, type CSS } from '~/styles/stitches.config'
 
-const ANIM_SPEED = '150ms'
-
 const InnerDrawer = styled('div', {
 
   outline: 'none',
@@ -15,39 +13,64 @@ const InnerDrawer = styled('div', {
   boxSizing: 'border-box',
   overflow: 'hidden',
 
+  '$$drawerWidth': '80%',
+  width: '$$drawerWidth',
+
   variants: {
     side: {
       left: { 
-        transition: 'left ' + ANIM_SPEED + ' ease-in', 
+        transition: '$drawerLeftOpenTransition', 
       },
       right: { 
-        transition: 'right ' + ANIM_SPEED + ' ease-in',  
+        transition: '$drawerRightOpenTransition', 
       }
-    }
-  }
+    },
+    open: {
+      true: {},
+      false: {}
+    },
+  },
+  compoundVariants: [
+    {
+      side: 'left',
+      open: true,
+      css: { left: '0px', }
+    },
+    {
+      side: 'left',
+      open: false,
+      css: { left: '-$$drawerWidth'}
+    },
+    {
+      side: 'right',
+      open: true,
+      css: { right: '0px' }
+    },
+    {
+      side: 'right',
+      open: false,
+      css: { right: '-$$drawerWidth' }
+    },
+  ]
+
 })
 
+// $$drawerWidth ('Foopx' or 'Foo%') can be passed in
+// via css to alter the size 
 const Drawer: React.FC<{
   side: 'left' | 'right',
-  width: number | string, // pixels or percentage
   open: boolean,
   css?: CSS
 } & PropsWithChildren
 > = ({
   side,
-  width,
   open,
   children,
   css
 }) => {
 
-  const style = {
-    width,
-    [side]: (typeof width === 'number') ? (open ? 0 : `-${width}px`) : (open ? '0%' : `-${width}`)
-  }
-
   return (
-    <InnerDrawer side={side} css={{...css, ...style}}>
+    <InnerDrawer side={side} open={open} css={{...css}}>
       {children}
     </InnerDrawer>
   )

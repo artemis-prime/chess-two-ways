@@ -4,17 +4,16 @@ import { observer } from 'mobx-react-lite'
 import { useGame } from '~/services'
 
 import { Button, Flex, ResponsiveText } from '~/primatives'
-import { common, type CSS } from '~/styles/stitches.config'
-import type { MediaQueries } from '~/styles/media.stitches'
+import { common, type CSS, type MediaQuery } from '~/styles/stitches.config'
 
 const ALT_TRIGGERS = [
   'allMobile', 
   'desktopTiny',  
-] as MediaQueries[]
+] as MediaQuery[]
 
 const MAIN_TRIGGERS = [
   'menuBreak', 
-] as MediaQueries[]
+] as MediaQuery[]
 
 
 const UndoRedoWidget: React.FC<{ 

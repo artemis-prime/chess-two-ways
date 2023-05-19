@@ -31,7 +31,7 @@ const ChalkboardOuter = styled(Flex, {
   '@allMobilePortrait': {
     maxWidth: 'initial',
     height: '22%',
-    transition: '$chalkboardInPortrait',
+    transition: '$chalkboardInPortraitOpenTransition',
     borderTopLeftRadius: '$lgr',
     borderTopRightRadius: '$lgr',
     borderBottomLeftRadius: '$none',
@@ -44,7 +44,7 @@ const ChalkboardOuter = styled(Flex, {
       true: {
         '@allMobilePortrait': {
           height: '100%',
-          transition: '$chalkboardInPortrait',
+          transition: '$chalkboardInPortraitOpenTransition',
         },
       }
     }

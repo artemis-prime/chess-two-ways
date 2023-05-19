@@ -41,11 +41,9 @@ const MenuRoot = styled('div', {
 
 const SideMenu: React.FC<{
   open: boolean
-  width: number | string
   css?: CSS
 }> = observer(({
   open,
-  width,
   css
 }) => {
 
@@ -69,7 +67,7 @@ const SideMenu: React.FC<{
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
-    <Drawer side='left' width={width} open={open} css={css}>
+    <Drawer side='left' open={open} css={css}>
       <MenuRoot >
         <MenuSectionTitle>Direction</MenuSectionTitle>
         <hr />

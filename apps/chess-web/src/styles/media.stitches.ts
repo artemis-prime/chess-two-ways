@@ -27,10 +27,10 @@ const media = {
   xxl: `(min-width: ${BREAKPOINTS.xxl}px) and (pointer: fine)` 
 } 
 
-type MediaQueries = keyof typeof media
+type MediaQuery = keyof typeof media
 
 export {
   media as default,
-  type MediaQueries,
+  type MediaQuery,
   BREAKPOINTS,
 }

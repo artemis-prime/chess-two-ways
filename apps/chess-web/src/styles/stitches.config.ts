@@ -6,11 +6,12 @@ import { createStitches, type CSS } from '@stitches/react'
 import fromSASS from './colors.module.scss' 
 import utils from './utils.stitches'
 import _media from './media.stitches'
+import { BREAKPOINTS, type MediaQuery} from './media.stitches'
 import deborder from './debugBorder'
 
 const HEADER_HEIGHT = 52
 const HEADER_HEIGHT_SMALLER = 48
-const HEADER_HEIGHT_SMALL = 42
+const HEADER_HEIGHT_SMALL = 42 
 
 const { 
   config: { media }, 
@@ -90,7 +91,9 @@ const {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
     transitions: {
-      chalkboardInPortrait: 'height 300ms ease'
+      chalkboardInPortraitOpenTransition: 'height 300ms ease-in',
+      drawerLeftOpenTransition: 'left 150ms ease-in',
+      drawerRightOpenTransition: 'right 150ms ease-in'
     },
     breakpoints: {},
   },
@@ -134,5 +137,7 @@ export {
   css,
   common,
   deborder,
-  type CSS
+  type CSS,
+  BREAKPOINTS, 
+  type MediaQuery
 }

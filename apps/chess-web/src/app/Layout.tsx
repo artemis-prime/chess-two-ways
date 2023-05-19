@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
-import { styled, deborder } from '~/styles/stitches.config'
-import { BREAKPOINTS } from '~/styles/media.stitches'
+import { styled, deborder, BREAKPOINTS,  } from '~/styles/stitches.config'
+import useQueryCallback from '~/styles/useQueryCallback'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -21,7 +21,6 @@ const SIDEBAR_BY_BP = {
   xxl: 520,
 }
 
-
 const Outer = styled('div', {
   boxSizing: 'border-box',
   width: '100vw',
@@ -29,7 +28,6 @@ const Outer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   ...deborder('orange', 'layout'),
-
 })
 
 const Main = styled('main', {
@@ -164,30 +162,27 @@ const ChessboardArea: React.FC = () => {
 
 const Layout: React.FC<{}> = () => {
   
-  const [drawerOpen, setDrawerOpen] = useState<boolean >(false) 
+  const [sideMenuOpen, setSideMenuOpen] = useState<boolean >(false) 
   const [showMoves, setShowMoves] = useState<boolean>(false)
 
-  const { width, height, ref } = useResizeDetector()
-
-  const menuDrawerWidth = (): number | string => {
-    if (width && width < BREAKPOINTS.tablet) {
-      return '85%'
-    }
-    return 280
-  }
-
-  const toggleMenu = () => { setDrawerOpen((prev) => (!prev)) }
+  useQueryCallback('virtualStaging', () => {setSideMenuOpen(false)})
+  const toggleMenu = () => { setSideMenuOpen((prev) => (!prev)) }
   
   return (
-    <Outer ref={ref}>
-      <Header menuOpen={drawerOpen} toggleMenu={toggleMenu} />
+    <Outer>
+      <Header menuOpen={sideMenuOpen} toggleMenu={toggleMenu} />
       <Main>
         <StartDiv />
         <ChessboardArea />
         <EndDiv >
           <Chalkboard showMoves={showMoves} setShowMoves={setShowMoves} />
         </EndDiv>
-        <SideMenu width={menuDrawerWidth()} open={drawerOpen} css={{ '@virtualStaging': { display: 'none'}}} />
+        <SideMenu open={sideMenuOpen} css={{ 
+          '@virtualStaging': { display: 'none'},
+          '$$drawerWidth': '85%',
+          '@tabletPortrait': { '$$drawerWidth': '280px' },
+          '@desktopTiny': { '$$drawerWidth': '280px' }
+        }} />
       </Main>
     </Outer>
   )

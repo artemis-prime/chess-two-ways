@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { styled, type CSS } from '~/styles/stitches.config'
-import { type MediaQueries } from '~/styles/media.stitches'
+import { type MediaQuery } from '~/styles/media.stitches'
 
 const Span = styled('span', {
   justifyContent: 'center',
@@ -11,8 +11,8 @@ const Span = styled('span', {
 const ResponsiveText: React.FC<{
   main: string
   alt: string
-  altTriggers: MediaQueries[],
-  mainTriggers: MediaQueries[],
+  altTriggers: MediaQuery[],
+  mainTriggers: MediaQuery[],
   css? : CSS
 }> = ({
   main,
