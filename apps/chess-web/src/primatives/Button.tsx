@@ -1,5 +1,5 @@
 import type { VariantProps } from '@stitches/react'
-import { styled, common } from '~/styles/stitches.config'
+import { styled, common } from '~/style'
 
 const buttonCommon = {
   cursor: 'pointer',

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 import { useChessboardOrientation, useGame, useSnapshotPersistence } from '~/services'
 import { Drawer, type IconAndStyles } from '~/primatives'
 

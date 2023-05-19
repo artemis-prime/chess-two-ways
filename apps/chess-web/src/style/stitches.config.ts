@@ -1,4 +1,4 @@
-import { createStitches, type CSS } from '@stitches/react'
+import { createStitches } from '@stitches/react'
 
 // vscode doesn't seem to see the import as possible,
 // Both vite and tsc seem to do just fine. Dunno
@@ -6,8 +6,6 @@ import { createStitches, type CSS } from '@stitches/react'
 import fromSASS from './colors.module.scss' 
 import utils from './utils.stitches'
 import _media from './media.stitches'
-import { BREAKPOINTS, type MediaQuery} from './media.stitches'
-import deborder from './debugBorder'
 
 const HEADER_HEIGHT = 52
 const HEADER_HEIGHT_SMALLER = 48
@@ -99,45 +97,9 @@ const {
   },
 })
 
-const common = {
-  sideMenuItem: {
-    borderRadius: '$menuRadius',
-    pl: '$menuPL',
-    fontSize: '$menuDesktop',
-    fontFamily: '$menuFont',
-    fontWeight: '$menuFontWeight',
-  },
-  menuBarTrigger: {
-    borderRadius: '$menuRadius',
-    px: '$3',
-    color: '$menuTextColor',
-    lineHeight: 'inherit',
-    fontSize: 'inherit',
-    fontFamily: '$headerFont',
-    fontWeight: '$menuFontWeight',
-    cursor: 'pointer',
-  },
-  menuBarPopupItem: {
-    borderRadius: '$menuRadius',
-    height: '$popupMenuItemHeight',
-    px: '$menuPL',
-    color: '$menuTextColor',
-    lineHeight: '$popupMenuItemHeight',
-    fontSize: '$menuDesktop',
-    fontFamily: '$menuFont',
-    fontWeight: '$menuFontWeight',
-    cursor: 'pointer',
-  }
-}
-
 export {
   media,
   lightTheme,
   styled,
   css,
-  common,
-  deborder,
-  type CSS,
-  BREAKPOINTS, 
-  type MediaQuery
 }

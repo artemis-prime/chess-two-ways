@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from 'react'
-import { autorun } from 'mobx'
+import React, { useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
-import {type CSS } from '~/styles/stitches.config'
+import {type CSS } from '~/style'
 import { 
   useChessboardOrientation, 
-//  useDeviceInfo, 
   useGame, 
   useSnapshotPersistence 
 } from '~/services'

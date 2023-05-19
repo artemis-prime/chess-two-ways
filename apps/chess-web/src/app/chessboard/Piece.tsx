@@ -10,8 +10,7 @@ import {
   pieceToString
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
-
+import { styled } from '~/style'
 import { Flex } from '~/primatives'
 import { usePulses, useGame } from '~/services'
 

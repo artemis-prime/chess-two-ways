@@ -1,7 +1,7 @@
-import * as Menubar from '@radix-ui/react-menubar'
 import type { PropsWithChildren } from 'react'
+import * as Menubar from '@radix-ui/react-menubar'
 
-import { styled, common } from '~/styles/stitches.config'
+import { styled, common } from '~/style'
 
 const MenubarRoot = styled(Menubar.Root, {
   display: 'flex',

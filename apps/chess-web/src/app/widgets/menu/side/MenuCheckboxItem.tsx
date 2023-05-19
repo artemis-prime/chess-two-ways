@@ -1,9 +1,8 @@
-import React, { type PropsWithChildren } from 'react'
+import React from 'react'
 
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
-
+import { styled, type CSS, common, deborder } from '~/style'
 import { Flex } from '~/primatives'
 
 import {  
@@ -42,7 +41,6 @@ const StyledLabel = styled('label', {
     fontSize: '$headerFontSize',
   },
 
-
   '&:hover': {
     backgroundColor: '$menuHover'
   },
@@ -62,15 +60,14 @@ const StyledLabel = styled('label', {
         pointerEvents: 'none'
       }
     }
-
   }
 })
 
 const CheckboxOuter = styled('div', {
+
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-
   '& svg': {
     width: 20,
     height: 20,
@@ -83,7 +80,6 @@ const MenuCheckboxItem: React.FC<{
   icon?: WidgetIconDesc
   css?: CSS
 } & React.HTMLProps<HTMLInputElement>> = ({
-  
   checked,
   setChecked, 
   icon,

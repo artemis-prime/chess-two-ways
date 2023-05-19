@@ -1,15 +1,12 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import type { CSS } from '@stitches/react'
-import { styled } from '~/styles/stitches.config'
-
+import { styled, type CSS } from '~/style'
 import { useGame } from '~/services'
+
 import SideSwatch from './SideSwatch'
 
-const InnerView = styled('div', {
-
-})
+const InnerView = styled('div', {})
 
 const TurnIndicator: React.FC<{
   css?: CSS

@@ -1,7 +1,8 @@
 import React, { type PropsWithChildren } from 'react'
-import { styled, type CSS } from '~/styles/stitches.config'
 
 import SwitchFromLib from 'react-switch'
+
+import { styled, type CSS } from '~/style'
 
 const SwitchLabel = styled('label', {
   display: 'flex',

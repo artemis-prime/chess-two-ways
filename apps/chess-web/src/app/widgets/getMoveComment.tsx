@@ -1,8 +1,8 @@
 import React, { type ReactNode } from 'react'
 
-import { ActionRecord, type AnnotatedResult, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
+import { ActionRecord, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 import SideSwatch from './SideSwatch'
 import EMOJIS from './emojis'

@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { styled, type CSS } from '~/styles/stitches.config'
-import { type MediaQuery } from '~/styles/media.stitches'
+import { styled, type CSS, type MediaQuery } from '~/style'
 
 const Span = styled('span', {
   justifyContent: 'center',

@@ -17,10 +17,10 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
-import { styled, type CSS, deborder } from '~/styles/stitches.config'
-
+import { styled, type CSS } from '~/style'
 import { useGame, usePulses } from '~/services'
 import { Row, Box } from '~/primatives'
+
 import SideSwatch from './SideSwatch'
 import getMoveComment from './getMoveComment'
 

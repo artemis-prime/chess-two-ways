@@ -1,10 +1,9 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
+import { common, type CSS, type MediaQuery } from '~/style'
 import { useGame } from '~/services'
-
 import { Button, Flex, ResponsiveText } from '~/primatives'
-import { common, type CSS, type MediaQuery } from '~/styles/stitches.config'
 
 const ALT_TRIGGERS = [
   'allMobile', 

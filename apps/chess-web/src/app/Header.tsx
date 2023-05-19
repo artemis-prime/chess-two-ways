@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { styled, deborder, BREAKPOINTS } from '~/styles/stitches.config'
+import { styled, deborder, BREAKPOINTS } from '~/style'
 import { BurgerButton } from '~/primatives'
 import { Logo, MainMenu, UndoRedoWidget } from '~/app/widgets'
 
@@ -100,8 +100,6 @@ const Left = styled('div', {
   }
 })
 
-
-
 const Right = styled('div', {
   display: 'flex',
   flexDirection: 'row',
@@ -109,16 +107,12 @@ const Right = styled('div', {
   alignItems: 'center',
   lineHeight: 'inherit',
   fontSize: 'inherit',
-
   ...deborder('yellow', 'header'),
 
-//    '@virtualStaging': {display: 'flex'}
   '@virtualStaging': {
     width: '280px' // roughly Logo + MainMenu
   }
-
 })
-
 
 const Header: React.FC<{
   menuOpen: boolean

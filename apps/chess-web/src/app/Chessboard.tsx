@@ -5,7 +5,7 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers'
 
 import type { ObsSquare } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 import { useChessboardOrientation, useGame } from '~/services'
 
 import { ChessDnDShell } from './chessboard/ChessDnD'

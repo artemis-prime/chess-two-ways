@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
-import { type MediaQuery, media } from './stitches.config'
+import { type MediaQuery } from './media.stitches'
+import { media } from './stitches.config'
 
 const useQueryCallback = (
   query: MediaQuery,

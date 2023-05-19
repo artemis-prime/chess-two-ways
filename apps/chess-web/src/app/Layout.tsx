@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
-import { styled, deborder, BREAKPOINTS,  } from '~/styles/stitches.config'
-import useQueryCallback from '~/styles/useQueryCallback'
+import { styled, deborder, useQueryCallback } from '~/style'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -10,12 +9,13 @@ import Chalkboard from './Chalkboard'
 import Header from './Header'
 import Chessboard from './Chessboard'
 
-import '~/styles/fonts.scss'
-import '~/styles/body.scss'
+import '~/style/fonts.scss'
+import '~/style/body.scss'
 
 const SIDEBAR_BY_BP = {
   desktopTiny: 260,
   desktopSmall: 300,
+  menuBreak: 320,
   virtualStaging: 500,
   xl: 430,
   xxl: 520,
@@ -85,7 +85,7 @@ const EndDiv = styled('div', {
     flexBasis:  `${SIDEBAR_BY_BP.desktopSmall}px)`,
   },
   '@menuBreak': {
-    flexBasis: '320px'
+    flexBasis: `${SIDEBAR_BY_BP.menuBreak}px)`,
   },
   '@virtualStaging': {
     flexGrow: 1,
@@ -124,7 +124,7 @@ const ChessboardOuter = styled('div', {
   },
 
   '@menuBreak': {
-    width: 'calc(100% - 320px)',
+    width: `calc(100% - ${SIDEBAR_BY_BP.menuBreak}px)`,
   },
 
   '@virtualStaging': {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 
 import { useGame, useTransientMessage } from '~/services'
 import { Flex, Row, Column, Switch, Box } from '~/primatives'

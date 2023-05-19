@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 
 const StyledButton = styled('button', {
 

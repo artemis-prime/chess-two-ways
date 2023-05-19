@@ -1,5 +1,6 @@
 import React, { type PropsWithChildren } from 'react'
-import { styled, type CSS } from '~/styles/stitches.config'
+
+import { styled, type CSS } from '~/style'
 
 const InnerDrawer = styled('div', {
 

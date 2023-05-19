@@ -1,6 +1,6 @@
 import React, { type  CSSProperties } from 'react'
 
-import { styled, common, deborder } from '~/styles/stitches.config'
+import { styled, common, deborder } from '~/style'
 
 import type WidgetIconDesc from './WidgetIconDesc'
 

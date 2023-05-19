@@ -1,6 +1,6 @@
 import React, { type HTMLProps } from 'react'
 
-import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
+import { styled, type CSS, common, deborder } from '~/style'
 
 import {  
   type WidgetIconDesc,
@@ -10,10 +10,10 @@ import {
   IconWidth,
 } from '~/primatives'
 
-// Following this: 
-// https://m3.material.io/components/navigation-drawer/specs
+  // Following this: 
+  // https://m3.material.io/components/navigation-drawer/specs
 
-// https://m3.material.io/styles/typography/type-scale-tokens#d74b73c2-ac5d-43c5-93b3-088a2f67723d
+  // https://m3.material.io/styles/typography/type-scale-tokens#d74b73c2-ac5d-43c5-93b3-088a2f67723d
 const StyledButton = styled('button', {
 
   all: 'unset',
