@@ -74,7 +74,6 @@ const {
       headerHeight: `${HEADER_HEIGHT}px`,
       headerHeightSmaller: `${HEADER_HEIGHT_SMALLER}px`,
       headerHeightSmall: `${HEADER_HEIGHT_SMALL}px`,
-      sideMenuItemHeight: '52px',
       popupMenuItemHeight: '42px'
     },
     radii: {
@@ -100,9 +99,7 @@ const {
 const common = {
   sideMenuItem: {
     borderRadius: '$menuRadius',
-    height: '$sideMenuItemHeight',
     pl: '$menuPL',
-    lineHeight: '$menuLineHeight',
     fontSize: '$menuDesktop',
     fontFamily: '$menuFont',
     fontWeight: '$menuFontWeight',

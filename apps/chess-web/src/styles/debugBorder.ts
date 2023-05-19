@@ -1,7 +1,7 @@
 const showForGroup = {
   menu: false,
   menuOuter: false,
-  layout: false,
+  layout: true,
   header: false,
   foo: false
 }

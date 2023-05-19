@@ -187,7 +187,7 @@ const Layout: React.FC<{}> = () => {
         <EndDiv >
           <Chalkboard showMoves={showMoves} setShowMoves={setShowMoves} />
         </EndDiv>
-        <SideMenu width={menuDrawerWidth()} open={drawerOpen} />
+        <SideMenu width={menuDrawerWidth()} open={drawerOpen} css={{ '@virtualStaging': { display: 'none'}}} />
       </Main>
     </Outer>
   )

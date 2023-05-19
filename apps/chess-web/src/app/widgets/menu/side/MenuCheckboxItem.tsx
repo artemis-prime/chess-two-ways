@@ -27,6 +27,22 @@ const StyledLabel = styled('label', {
   flexWrap: 'nowrap',
   pr: `${24 - IconMargin}px`,
 
+  height: '$headerHeightSmall',
+  lineHeight: '$headerHeightSmall',
+  fontSize: '$headerFontSizeSmall',
+
+  '@desktopSmall': {
+    height: '$headerHeightSmaller',
+    lineHeight: '$headerHeightSmaller',
+  },
+
+  '@menuBreak': {
+    height: '$headerHeight',
+    lineHeight: '$headerHeight',
+    fontSize: '$headerFontSize',
+  },
+
+
   '&:hover': {
     backgroundColor: '$menuHover'
   },

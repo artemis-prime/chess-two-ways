@@ -27,6 +27,21 @@ const StyledButton = styled('button', {
   cursor: 'pointer',
   outline: 'none',
 
+  height: '$headerHeightSmall',
+  lineHeight: '$headerHeightSmall',
+  fontSize: '$headerFontSizeSmall',
+
+  '@desktopSmall': {
+    height: '$headerHeightSmaller',
+    lineHeight: '$headerHeightSmaller',
+  },
+
+  '@menuBreak': {
+    height: '$headerHeight',
+    lineHeight: '$headerHeight',
+    fontSize: '$headerFontSize',
+  },
+
   '&:hover': {
     backgroundColor: '$menuBGColorHover'
   },
