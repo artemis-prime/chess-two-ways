@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite'
 
 import type { CSS } from '@stitches/react'
 import { Button, Flex, Checkbox } from '~/primatives'
-import { useBoardOrientation } from '~/services'
+import { useChessboardOrientation } from '~/services'
 
-const BoardDirectionWidget: React.FC<{css?: CSS}> = observer(({css}) => {
+const ChessboardDirectionWidget: React.FC<{css?: CSS}> = observer(({css}) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
 
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
   
@@ -19,4 +19,4 @@ const BoardDirectionWidget: React.FC<{css?: CSS}> = observer(({css}) => {
   )
 })
 
-export default BoardDirectionWidget
+export default ChessboardDirectionWidget

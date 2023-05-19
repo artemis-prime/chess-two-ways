@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
 import { styled } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame, useSnapshotPersistence } from '~/services'
+import { useChessboardOrientation, useGame, useSnapshotPersistence } from '~/services'
 import { Drawer, type IconAndStyles } from '~/primatives'
 
 import {
@@ -47,7 +47,7 @@ const SideMenu: React.FC<{
   width
 }) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
   const sp = useSnapshotPersistence()
   const game = useGame()
 

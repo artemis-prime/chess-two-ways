@@ -1,7 +1,6 @@
 import type { VariantProps } from '@stitches/react'
 import { styled, common } from '~/styles/stitches.config'
 
-
 const buttonCommon = {
   cursor: 'pointer',
   padding: '5px 12px',
@@ -74,12 +73,12 @@ const Button = styled('button', {
       
       },
     },
-    dash: {
+    chalkboard: {
       true: {
-        color: '$dashTextColor',
-        fontFamily: '$dashFont',
+        color: '$chalkboardTextColor',
+        fontFamily: '$chalkboardFont',
         '&:disabled': {
-          color: '$dashTextColorDisabled',
+          color: '$chalkboardTextColorDisabled',
         },
       }
     },
@@ -95,7 +94,7 @@ const Button = styled('button', {
   },
   compoundVariants: [
     {
-      dash: true,
+      chalkboard: true,
       variant: 'contained',
       css: {
         color: '$gray1',
@@ -149,7 +148,7 @@ const Button = styled('button', {
   ],
   defaultVariants: {
     variant: 'ghost',
-    dash: true,
+    chalkboard: true,
     menu: false
   },
 })

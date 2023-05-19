@@ -1,4 +1,4 @@
-export { default as BoardDirectionWidget } from './BoardDirectionWidget'
+export { default as ChessboardDirectionWidget } from './ChessboardDirectionWidget'
 export { default as GameStatusIndicator } from './GameStatusIndicator'
 export { default as InCheckIndicator } from './InCheckIndicator'
 export { default as Logo } from './Logo40'

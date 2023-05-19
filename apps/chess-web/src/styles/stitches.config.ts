@@ -51,13 +51,13 @@ const {
       normal: '1rem',
       menuDesktop: '18px',
       menuMobile: '14px',
-      dashSmaller: '0.9rem'
+      chalkboardSmaller: '0.9rem'
     },
     fontWeights: {
       menuFontWeight: 500
     },
     fonts: {
-      dashFont: 'chalk',
+      chalkboardFont: 'chalk',
       headerFont: 'TWK Everett',
         // linked directly in index.html 
       menuFont: "'Source Sans 3'" // need both sets of quotes
@@ -91,7 +91,7 @@ const {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
     transitions: {
-      dashInPortrait: 'height 300ms ease'
+      chalkboardInPortrait: 'height 300ms ease'
     },
     breakpoints: {},
   },

@@ -15,7 +15,7 @@ import {
 
 import bg from 'assets/img/slate_bg_low_res.jpg'
 
-const DashView = styled(Flex, {
+const ChalkboardOuter = styled(Flex, {
   backgroundColor: '#444',
   backgroundImage: `url(${bg})`, 
   backgroundSize: 'cover',
@@ -23,15 +23,15 @@ const DashView = styled(Flex, {
   width: '100%',
   maxWidth: '500px',
   height: '100%',
-  border: '4px $dashBorderColor solid',
+  border: '4px $chalkboardBorderColor solid',
   borderRadius: '5px',
   padding: '$1_5 $3',
-  color: '$dashTextColor',
+  color: '$chalkboardTextColor',
 
   '@allMobilePortrait': {
     maxWidth: 'initial',
     height: '22%',
-    transition: '$dashInPortrait',
+    transition: '$chalkboardInPortrait',
     borderTopLeftRadius: '$lgr',
     borderTopRightRadius: '$lgr',
     borderBottomLeftRadius: '$none',
@@ -44,7 +44,7 @@ const DashView = styled(Flex, {
       true: {
         '@allMobilePortrait': {
           height: '100%',
-          transition: '$dashInPortrait',
+          transition: '$chalkboardInPortrait',
         },
       }
     }
@@ -61,7 +61,7 @@ const Hr = styled('hr', {
   }
 })
 
-const Dash: React.FC<{
+const Chalkboard: React.FC<{
   showMoves: boolean
   setShowMoves: (b: boolean) => void
   css?: CSS
@@ -75,7 +75,7 @@ const Dash: React.FC<{
   const tm = useTransientMessage()
 
   return (
-    <DashView className='dash' direction='column' css={css} extendedInPortrait={showMoves} >
+    <ChalkboardOuter className='chalkboard' direction='column' css={css} extendedInPortrait={showMoves} >
       <Row justify='between' align='start' css={{w: '100%'}}>
         <Column >
         {(game.playing) ? (<>
@@ -95,9 +95,9 @@ const Dash: React.FC<{
       </Row>
       {!showMoves && <Hr />}
       <MovesTable show={showMoves} />
-      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$dashTextColor'}}>{tm.message.content}</Box>}
-    </DashView>
+      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box>}
+    </ChalkboardOuter>
   )
 })
 
-export default Dash
+export default Chalkboard

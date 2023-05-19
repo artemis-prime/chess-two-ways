@@ -53,8 +53,8 @@ $brown-light: rgba(167, 107, 55, 0.761);
 $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
 
-$dash-text: rgba(255, 255, 255, 0.9);
-$dash-text-disabled: $gray11;
+$chalkboard-text: rgba(255, 255, 255, 0.9);
+$chalkboard-text-disabled: $gray11;
 
 $menu-text: rgba(255, 255, 255, 0.9);
 $menu-text-disabled:  rgba(255, 255, 255, 0.45);
@@ -88,10 +88,10 @@ $menu-text-disabled:  rgba(255, 255, 255, 0.45);
   
   pieceColorBlack: $color-piece-black;
   pieceColorWhite: $color-piece-white;
-  dashBorderColor: $brown-light;
-  chessBoardBrown: $brown-darker;
-  dashTextColor: $dash-text;
-  dashTextColorDisabled: $dash-text-disabled;
+  chalkboardBorderColor: $brown-light;
+  chessboardBrown: $brown-darker;
+  chalkboardTextColor: $chalkboard-text;
+  chalkboardTextColorDisabled: $chalkboard-text-disabled;
 
   menuBGColor: $navy3;    
   menuBGColorHover: $navy4; 

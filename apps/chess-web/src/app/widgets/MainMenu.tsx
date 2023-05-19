@@ -6,7 +6,7 @@ import type { GameSnapshot } from '@artemis-prime/chess-core'
 
 import {type CSS } from '~/styles/stitches.config'
 import { 
-  useBoardOrientation, 
+  useChessboardOrientation, 
 //  useDeviceInfo, 
   useGame, 
   useSnapshotPersistence 
@@ -31,7 +31,7 @@ const AppMenubar: React.FC<{
   css
 }) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
   const sp = useSnapshotPersistence()
   const game = useGame()
 

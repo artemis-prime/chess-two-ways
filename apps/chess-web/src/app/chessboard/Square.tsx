@@ -25,7 +25,7 @@ const SquareOuter = styled('div', {
   variants: {
     dark: {
       true: {
-        backgroundColor: '$chessBoardBrown' 
+        backgroundColor: '$chessboardBrown' 
       }
     }
   }

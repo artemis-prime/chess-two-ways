@@ -5,8 +5,8 @@ import React, {
 } from 'react'
 
 import useGame from './useGame'
-import type BoardOrientation from './BoardOrientation'
-import { BoardOrientationImpl } from './BoardOrientation'
+import type ChessboardOrientation from './ChessboardOrientation'
+import { ChessboardOrientationImpl } from './ChessboardOrientation'
 import type Pulses from './Pulses'
 import { PulsesImpl } from './Pulses'
 
@@ -15,7 +15,7 @@ import { TransientMessageImpl } from './TransientMessage'
 
 interface UIServices  {
   pulses: Pulses
-  boardOrientation: BoardOrientation
+  chessboardOrientation: ChessboardOrientation
   transientMessage: TransientMessage
 }
 
@@ -25,17 +25,17 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const game = useGame()
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl(game))
+  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl(game))
   const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
   
   useEffect(() => {
     game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
-    boardOrientationRef.current.initialize()
+    chessboardOrientationRef.current.initialize()
     pulsesRef.current.initialize()
     transientMessageRef.current.initialize()
     return () => {
       game.unregisterListener('chess-web-messages-store')
-      boardOrientationRef.current.dispose()
+      chessboardOrientationRef.current.dispose()
       pulsesRef.current.dispose()
       transientMessageRef.current.dispose()
     }
@@ -45,7 +45,7 @@ const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     <UIServicesContext.Provider value={{
       pulses: pulsesRef.current,
       transientMessage: transientMessageRef.current,
-      boardOrientation: boardOrientationRef.current,
+      chessboardOrientation: chessboardOrientationRef.current,
     }}>
       {children}
     </UIServicesContext.Provider>

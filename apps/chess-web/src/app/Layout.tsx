@@ -6,9 +6,9 @@ import { BREAKPOINTS } from '~/styles/media.stitches'
 
 import { SideMenu } from '~/app/widgets'
 
-import Dash from './Dash'
+import Chalkboard from './Chalkboard'
 import Header from './Header'
-import Board from './Board'
+import Chessboard from './Chessboard'
 
 import '~/styles/fonts.scss'
 import '~/styles/body.scss'
@@ -102,7 +102,7 @@ const EndDiv = styled('div', {
   }
 })
 
-const BoardArea = styled('div', {
+const ChessboardOuter = styled('div', {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
@@ -142,7 +142,7 @@ const BoardArea = styled('div', {
   }
 })
 
-const BoardOuter: React.FC = () => {
+const ChessboardArea: React.FC = () => {
 
   const [tall, setTall] = useState<boolean>(false)
   const {  ref } = useResizeDetector({
@@ -156,14 +156,11 @@ const BoardOuter: React.FC = () => {
   })
 
   return (
-    <BoardArea ref={ref} >
-      <Board tall={tall} />
-    </BoardArea>
+    <ChessboardOuter ref={ref} >
+      <Chessboard tall={tall} />
+    </ChessboardOuter>
   )
 }
-
-
-
 
 const Layout: React.FC<{}> = () => {
   
@@ -186,9 +183,9 @@ const Layout: React.FC<{}> = () => {
       <Header menuOpen={drawerOpen} toggleMenu={toggleMenu} />
       <Main>
         <StartDiv />
-        <BoardOuter />
+        <ChessboardArea />
         <EndDiv >
-          <Dash showMoves={showMoves} setShowMoves={setShowMoves} />
+          <Chalkboard showMoves={showMoves} setShowMoves={setShowMoves} />
         </EndDiv>
         <SideMenu width={menuDrawerWidth()} open={drawerOpen} />
       </Main>
