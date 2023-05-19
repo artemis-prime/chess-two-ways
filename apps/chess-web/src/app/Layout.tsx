@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
-import { styled, deborder, useQueryCallback } from '~/style'
+import { styled, deborder, sideArea, useQueryCallback } from '~/style'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -11,15 +11,6 @@ import Chessboard from './Chessboard'
 
 import '~/style/fonts.scss'
 import '~/style/body.scss'
-
-const SIDEBAR_BY_BP = {
-  desktopTiny: 260,
-  desktopSmall: 300,
-  menuBreak: 320,
-  virtualStaging: 500,
-  xl: 430,
-  xxl: 520,
-}
 
 const Outer = styled('div', {
   boxSizing: 'border-box',
@@ -60,7 +51,7 @@ const StartDiv = styled('div', {
     display: 'block',
     flexGrow: 1,
     flexShrink: 0,
-    flexBasis: `${SIDEBAR_BY_BP.xl}px`,
+    flexBasis: sideArea.xl,
   }
 })
 
@@ -78,25 +69,25 @@ const EndDiv = styled('div', {
     justifyContent: 'flex-end',
   },
   '@desktopTiny': {
-    flexBasis:  `${SIDEBAR_BY_BP.desktopTiny}px)`,
+    flexBasis:  sideArea.desktopTiny,
     flexGrow: 0
   },
   '@desktopSmall': {
-    flexBasis:  `${SIDEBAR_BY_BP.desktopSmall}px)`,
+    flexBasis:  sideArea.desktopSmall,
   },
   '@menuBreak': {
-    flexBasis: `${SIDEBAR_BY_BP.menuBreak}px)`,
+    flexBasis: sideArea.menuBreak,
   },
   '@virtualStaging': {
     flexGrow: 1,
     flexShrink: 0,
-    flexBasis: `${SIDEBAR_BY_BP.virtualStaging}px`,
+    flexBasis: sideArea.virtualStaging,
   },
   '@xl': {
-    flexBasis: `${SIDEBAR_BY_BP.xl}px`,
+    flexBasis: sideArea.xl,
   },
   '@xxl': {
-    flexBasis: `${SIDEBAR_BY_BP.xxl}px`,
+    flexBasis: sideArea.xxl,
   }
 })
 
@@ -112,31 +103,25 @@ const ChessboardOuter = styled('div', {
     px: 0,
     flexGrow: 0,
   },
-
   '@desktopTiny': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.desktopTiny}px)`,
+    width: `calc(100% - ${sideArea.desktopTiny})`,
     justifyContent: 'flex-end',
   },
-
-
   '@desktopSmall': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.desktopSmall}px)`,
+    width: `calc(100% - ${sideArea.desktopSmall})`,
   },
-
   '@menuBreak': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.menuBreak}px)`,
+    width: `calc(100% - ${sideArea.menuBreak})`,
   },
-
   '@virtualStaging': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.virtualStaging}px)`,
+    width: `calc(100% - ${sideArea.virtualStaging})`,
   },
-
   '@xl': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.xl * 2}px)`, 
+    width: `calc(100% - ${sideArea.xlDoubled})`, 
     justifyContent: 'center',
   },
   '@xxl': {
-    width: `calc(100% - ${SIDEBAR_BY_BP.xxl * 2}px)`, 
+    width: `calc(100% - ${sideArea.xxlDoubled})`, 
   }
 })
 
