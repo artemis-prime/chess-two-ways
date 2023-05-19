@@ -1,11 +1,10 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
-import type { CSS } from '@stitches/react'
 
 import { useGame } from '~/services'
 
 import { Button, Flex, ResponsiveText } from '~/primatives'
-import { common } from '~/styles/stitches.config'
+import { common, type CSS } from '~/styles/stitches.config'
 
 const UndoRedoWidget: React.FC<{ 
   css?: CSS
