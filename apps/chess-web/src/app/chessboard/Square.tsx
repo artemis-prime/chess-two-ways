@@ -10,7 +10,7 @@ import {
   positionToString, 
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 import { usePulses } from '~/services'
 
 import PieceComponent from './Piece'
@@ -25,7 +25,7 @@ const SquareOuter = styled('div', {
   variants: {
     dark: {
       true: {
-        backgroundColor: '$brownDarker' 
+        backgroundColor: '$chessboardBrown' 
       }
     }
   }

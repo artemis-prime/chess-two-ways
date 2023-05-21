@@ -10,8 +10,7 @@ import {
   pieceToString
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
-
+import { styled } from '~/style'
 import { Flex } from '~/primatives'
 import { usePulses, useGame } from '~/services'
 
@@ -34,13 +33,13 @@ const PieceEffectsView = styled(Flex, {
     side: {
       white: {
         '& svg': {
-          fill: '$pieceWhite',
+          fill: '$pieceColorWhite',
           filter: 'drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45))'
         },
       },
       black: {
         '& svg': {
-          fill: '$pieceBlack',
+          fill: '$pieceColorBlack',
           filter: 'drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3))'
         },
       },

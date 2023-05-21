@@ -3,7 +3,7 @@ import React from 'react'
 import * as Menubar from '@radix-ui/react-menubar'
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
+import { styled, type CSS, common, deborder } from '~/style'
 
 import {  
   type WidgetIconDesc,
@@ -27,16 +27,20 @@ const itemstyles = {
   position: 'relative',
 
   '&[data-disabled]': {
-    color: '$menuTextDisabled',
+    color: '$menuTextColorDisabled',
     pointerEvents: 'none',
   },
 
   '&[data-highlighted]': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
   },
 
   '&:hover': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
+  },
+
+  '&:active': {
+    backgroundColor: '$menuBGColorPressed'
   },
 
   variants: {

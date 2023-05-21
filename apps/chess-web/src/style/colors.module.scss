@@ -1,4 +1,4 @@
-// This module has to be named this way and imported as it is::after
+// This module has to be named this way and imported as it is:
 // https://github.com/vitejs/vite/discussions/9601
 
 // https://www.radix-ui.com/docs/colors/palette-composition/the-scales#gray
@@ -15,6 +15,7 @@ $gray10: hsl(0, 0%, 52.3%);
 $gray11: hsl(0, 0%, 43.5%);
 $gray12: hsl(0, 0%, 9.0%);
 
+// https://www.radix-ui.com/docs/colors/palette-composition/the-scales#orange
 $orange1: hsl(24, 70.0%, 99.0%);
 $orange2: hsl(24, 83.3%, 97.6%);
 $orange3: hsl(24, 100%, 95.3%);
@@ -27,6 +28,12 @@ $orange9: hsl(24, 94.0%, 50.0%);
 $orange10: hsl(24, 100%, 46.5%);
 $orange11: hsl(24, 100%, 37.0%);
 $orange12: hsl(15, 60.0%, 17.0%);
+
+$navy3: hsl(226, 56.0%, 34.5%);    
+$navy4: hsl(226, 39.2%, 42%);
+$navy5: hsl(226, 39.2%, 46%);
+$navy6: hsl(226, 39.2%, 52%);
+$navy7: hsl(226, 39.2%, 60%);
 
 $alert1: $orange1; 
 $alert2: $orange2; 
@@ -45,23 +52,14 @@ $brown-darker: rgba(105, 49, 49, 0.75);
 $brown-light: rgba(167, 107, 55, 0.761);
 $color-piece-black: #573131;
 $color-piece-white: #f7f0be;
-$dash-border: $brown-light;
 
-$dash-text: rgba(255, 255, 255, 0.9);
-$dash-text-disabled: $gray11;
+$chalkboard-text: rgba(255, 255, 255, 0.9);
+$chalkboard-text-disabled: $gray11;
 
 $menu-text: rgba(255, 255, 255, 0.9);
-$menu-bg: hsl(226, 56.0%, 34.5%);    
-$menu-bg-hover: hsl(226, 39.2%, 42%);
-$menu-bg-selected-hover: hsl(226, 39.2%, 46%);
-$menu-bg-pressed: hsl(226, 39.2%, 52%);
-$menu-text-disabled: #c8c8c8;
-$menu-text-right-symbol: #ddd;
+$menu-text-disabled:  rgba(255, 255, 255, 0.45);
 
 :export {
-  brownDarker: $brown-darker;
-  brownLight: $brown-light;
-  
   gray1: $gray1;
   gray2: $gray2;
   gray3: $gray3;
@@ -88,19 +86,22 @@ $menu-text-right-symbol: #ddd;
   alert11: $alert11;
   alert12: $alert12;
   
+  pieceColorBlack: $color-piece-black;
+  pieceColorWhite: $color-piece-white;
+  chalkboardBorderColor: $brown-light;
+  chessboardBrown: $brown-darker;
+  chalkboardTextColor: $chalkboard-text;
+  chalkboardTextColorDisabled: $chalkboard-text-disabled;
 
+  menuBGColor: $navy3;    
+  menuBGColorHover: $navy4; 
+  menuBGColorSelectedHover: $navy5; 
+  menuBGColorPressed: $navy6; 
 
-  pieceBlack: $color-piece-black;
-  pieceWhite: $color-piece-white;
-  dashBorder: $dash-border;
-  dashText: $dash-text;
-  dashTextDisabled: $dash-text-disabled;
-
-  menuText: $menu-text;
-  menuBG: $menu-bg;    
-  menuBGHover: $menu-bg-hover;
-  menuBGSelectedHover: $menu-bg-selected-hover;
-  menuBGPressed: $menu-bg-pressed;
-  menuTextDisabled: $menu-text-disabled;
-  menuTextRightSymbol: $menu-text-right-symbol;
+  menuTextColor: $menu-text;
+  menuTextColorDisabled: $menu-text-disabled;
+  
+  menuContainedButtonColor: $navy5;
+  menuContainedButtonColorHover: $navy6;
+  menuContainedButtonColorPressed: $navy7;
 }

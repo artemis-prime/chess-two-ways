@@ -1,5 +1,4 @@
-import React, { type PropsWithChildren } from 'react'
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 const Box = styled('div', {})
 

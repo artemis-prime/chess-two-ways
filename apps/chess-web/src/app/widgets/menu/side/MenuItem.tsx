@@ -1,6 +1,6 @@
 import React, { type HTMLProps } from 'react'
 
-import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
+import { styled, type CSS, common, deborder } from '~/style'
 
 import {  
   type WidgetIconDesc,
@@ -10,14 +10,14 @@ import {
   IconWidth,
 } from '~/primatives'
 
-// Following this: 
-// https://m3.material.io/components/navigation-drawer/specs
+  // Following this: 
+  // https://m3.material.io/components/navigation-drawer/specs
 
-// https://m3.material.io/styles/typography/type-scale-tokens#d74b73c2-ac5d-43c5-93b3-088a2f67723d
+  // https://m3.material.io/styles/typography/type-scale-tokens#d74b73c2-ac5d-43c5-93b3-088a2f67723d
 const StyledButton = styled('button', {
 
   all: 'unset',
-  ...common.menu,
+  ...common.sideMenuItem,
   ...deborder('yellow', 'menu'),
   display: 'flex',
   flexDirection: 'row',
@@ -27,11 +27,26 @@ const StyledButton = styled('button', {
   cursor: 'pointer',
   outline: 'none',
 
+  height: '$headerHeightSmall',
+  lineHeight: '$headerHeightSmall',
+  fontSize: '$headerFontSizeSmall',
+
+  '@deskSmall': {
+    height: '$headerHeightSmaller',
+    lineHeight: '$headerHeightSmaller',
+  },
+
+  '@menuBreak': {
+    height: '$headerHeight',
+    lineHeight: '$headerHeight',
+    fontSize: '$headerFontSize',
+  },
+
   '&:hover': {
-    backgroundColor: '$menuBGHover'
+    backgroundColor: '$menuBGColorHover'
   },
   '&:active': {
-    backgroundColor: '$menuBGPressed'
+    backgroundColor: '$menuBGColorPressed'
   },
 
   variants: {
@@ -42,7 +57,7 @@ const StyledButton = styled('button', {
     },
     disabled: {
       true: {
-        color: '$menuTextDisabled',
+        color: '$menuTextColorDisabled',
         pointerEvents: 'none'
       }
     }

@@ -1,6 +1,5 @@
 import type { VariantProps } from '@stitches/react'
-import { styled } from '~/styles/stitches.config'
-
+import { styled, common } from '~/style'
 
 const buttonCommon = {
   cursor: 'pointer',
@@ -16,22 +15,12 @@ const Button = styled('button', {
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
-  lineHeight: '1.1',
 
   variants: {
     
     variant: {
       contained: {
         ...buttonCommon,
-        color: '$gray1',
-        backgroundColor: '$gray11',
-        '&:hover': {
-          backgroundColor: '$gray10'
-        },
-          // pressed
-        '&:active': {
-          backgroundColor: '$gray8' 
-        },
       },
       outlined: {
         ...buttonCommon,
@@ -39,7 +28,6 @@ const Button = styled('button', {
         color: '$gray1',
         '&:disabled': {
           cursor: 'default',
-          color: '$dashTextDisabled',
           borderColor: '$gray11',
           '&:hover': {
             backgroundColor: 'transparent',
@@ -72,14 +60,12 @@ const Button = styled('button', {
         cursor: 'pointer',
         border: 'none',
         backgroundColor: 'transparent',
-        color: '$dashText',
         p: 1,
         '&:hover': {
           textDecoration: 'underline',
         },
         '&:disabled': {
           cursor: 'default',
-          color: '$dashTextDisabled',
         },
         '&:disabled:hover': {
           textDecoration: 'none',
@@ -87,35 +73,92 @@ const Button = styled('button', {
       
       },
     },
-    size: {
-      xs: {
-        fontSize: '0.6rem',
-      },
-      small: {
-        fontSize: '0.8rem',
-      },
-      medium: {
-        fontSize: '1rem',
-      },
-      large: {
-        fontSize: '1.2rem',
-      },
+    chalkboard: {
+      true: {
+        color: '$chalkboardTextColor',
+        fontFamily: '$chalkboardFont',
+        '&:disabled': {
+          color: '$chalkboardTextColorDisabled',
+        },
+      }
+    },
+    menu: {
+      true: {
+        fontSize: 'inherit',
+        lineHeight: 'inherit',
+        '&:disabled': {
+          color: '$menuTextColorDisabled',
+        },
+      }
     },
   },
+  compoundVariants: [
+    {
+      chalkboard: true,
+      variant: 'contained',
+      css: {
+        color: '$gray1',
+        backgroundColor: '$gray11',
+        '&:hover': {
+          backgroundColor: '$gray10'
+        },
+          // pressed
+        '&:active': {
+          backgroundColor: '$gray8' 
+        },
+      }  
+    },
+    {
+      menu: true,
+      variant: 'contained',
+      css: {
+        color: '$gray1',
+        backgroundColor: '$menuContainedButtonColor',
+        '&:hover': {
+          backgroundColor: '$menuContainedButtonColorHover'
+        },
+          // pressed
+        '&:active': {
+          backgroundColor: '$menuContainedButtonColorPressed' 
+        },
+      }  
+    },
+    {
+      menu: true,
+      variant: 'ghost',
+      css: {
+        ...common.menuBarTrigger,
+        cursor: 'pointer',
+        border: 'none',
+        backgroundColor: '$menuBGColor',
+        px: '$1_5',
+        '&:hover': {
+          textDecoration: 'none',
+          backgroundColor: '$menuBGColorHover',
+          '&:disabled': {
+            backgroundColor: '$menuBGColor',
+          } 
+        },
+        '&:disabled': {
+          cursor: 'default',
+          color: '$menuTextColorDisabled'
+        },
+      }  
+    },
+  ],
   defaultVariants: {
     variant: 'ghost',
-    size: 'medium',
+    chalkboard: true,
+    menu: false
   },
 })
 type ButtonVariants = VariantProps<typeof Button>
   // https://simondosda.github.io/posts/2021-06-17-interface-property-type.html
 type ButtonVariant = ButtonVariants['variant'] 
-type ButtonSize = ButtonVariants['size'] 
 
 
 
 export {
   Button as default,
   type ButtonVariant,
-  type ButtonSize
 }

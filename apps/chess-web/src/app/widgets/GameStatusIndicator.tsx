@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 
 import { useGame } from '~/services'
 
-import '~/styles/gameStatusIndicator.scss'
+import '~/style/gameStatusIndicator.scss'
 
 const GameStatusIndicator: React.FC<{}> = observer(() => {
 

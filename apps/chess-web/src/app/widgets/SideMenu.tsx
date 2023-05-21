@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame, useSnapshotPersistence } from '~/services'
+import { styled, type CSS } from '~/style'
+import { useChessboardOrientation, useGame, useSnapshotPersistence } from '~/services'
 import { Drawer, type IconAndStyles } from '~/primatives'
 
 import {
@@ -26,8 +26,8 @@ const MenuRoot = styled('div', {
   w: '100%', 
   h: '100%', 
   p: '12px', // Spec: 28 to icon - 16 within button
-  backgroundColor: '$menuBG', 
-  color: '$menuText',
+  backgroundColor: '$menuBGColor', 
+  color: '$menuTextColor',
 
   '& hr': {
     mx: '$menuPL',
@@ -41,13 +41,13 @@ const MenuRoot = styled('div', {
 
 const SideMenu: React.FC<{
   open: boolean
-  width: number
+  css?: CSS
 }> = observer(({
   open,
-  width
+  css
 }) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
   const sp = useSnapshotPersistence()
   const game = useGame()
 
@@ -67,7 +67,7 @@ const SideMenu: React.FC<{
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
-    <Drawer side='left' width={width} open={open} >
+    <Drawer side='left' open={open} css={css}>
       <MenuRoot >
         <MenuSectionTitle>Direction</MenuSectionTitle>
         <hr />

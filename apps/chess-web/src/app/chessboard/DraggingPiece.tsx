@@ -1,8 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { styled } from '~/styles/stitches.config'
-
+import { styled } from '~/style'
 import { Flex } from '~/primatives'
 
 import registry from './pieceRegistry'
@@ -18,12 +17,12 @@ const PieceEffectsView = styled(Flex, {
     side: {
       white: {
         '& svg': {
-          fill: '$pieceWhite',
+          fill: '$pieceColorWhite',
         },
       },
       black: {
         '& svg': {
-          fill: '$pieceBlack',
+          fill: '$pieceColorBlack',
         },
       },
     },

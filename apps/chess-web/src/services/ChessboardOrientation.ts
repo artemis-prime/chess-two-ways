@@ -7,14 +7,14 @@ import {
   type IReactionDisposer
 } from 'mobx'
 
-interface BoardOrientation {
+interface ChessboardOrientation {
   whiteOnBottom: boolean,
   setWhiteOnBottom: (b: boolean) => void
   autoOrientToCurrentTurn: boolean,
   setAutoOrientToCurrentTurn: (b: boolean) => void 
 }
 
-class BoardOrientationImpl implements BoardOrientation {
+class ChessboardOrientationImpl implements ChessboardOrientation {
 
   private _game: Game
   private _reactionDisposer: IReactionDisposer | null = null
@@ -60,4 +60,4 @@ class BoardOrientationImpl implements BoardOrientation {
   }
 }
 
-export { type BoardOrientation as default, BoardOrientationImpl }
+export { type ChessboardOrientation as default, ChessboardOrientationImpl }
