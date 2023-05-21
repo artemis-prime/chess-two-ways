@@ -4,7 +4,7 @@ export type { SnapshotPersistenceService } from './SnapshotPersistenceProvider'
 export type { default as TransientMessage} from './TransientMessage'
 
 export { default as useChessboardOrientation } from './useChessboardOrientation'
-export { default as useGame } from './useGame'
+export { default as useChess } from './useChess'
 export { default as usePulses } from './usePulses'
 export { default as useSnapshotPersistence } from './useSnapshotPersistence'
 export { default as useTransientMessage } from './useTransientMessage'

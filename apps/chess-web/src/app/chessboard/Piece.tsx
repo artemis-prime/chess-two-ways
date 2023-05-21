@@ -12,7 +12,7 @@ import {
 
 import { styled } from '~/style'
 import { Flex } from '~/primatives'
-import { usePulses, useGame } from '~/services'
+import { usePulses, useChess } from '~/services'
 
 import registry from './pieceRegistry'
 
@@ -186,7 +186,7 @@ const PieceComponent: React.FC<{
   square
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const pulses = usePulses()
 
   if (!square.piece) {
@@ -236,7 +236,7 @@ const PieceDnDWrapper: React.FC<{
   square,
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const canDrag = square.piece && game.currentTurn === square.piece.side
   
   const {listeners, setNodeRef: draggableRef} = useDraggable({

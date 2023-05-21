@@ -4,7 +4,7 @@ import React, {
   useRef
 } from 'react'
 
-import useGame from './useGame'
+import useChess from './useChess'
 import type ChessboardOrientation from './ChessboardOrientation'
 import { ChessboardOrientationImpl } from './ChessboardOrientation'
 import type Pulses from './Pulses'
@@ -23,7 +23,7 @@ const UIServicesContext = React.createContext<UIServices | undefined>(undefined)
 
 const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
-  const game = useGame()
+  const game = useChess()
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
   const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl(game))
   const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))

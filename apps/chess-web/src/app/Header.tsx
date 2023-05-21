@@ -54,6 +54,8 @@ const Title = styled('h1', {
   fontFamily: '$headerFont',
   lineHeight: 'inherit',
   fontSize: 'inherit',
+  cursor: 'default',
+  userSelect: 'none',
 
   alignSelf: 'center',
   ...deborder('red', 'header'),

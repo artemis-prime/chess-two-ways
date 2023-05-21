@@ -3,9 +3,9 @@ import React, { useEffect, type PropsWithChildren } from 'react'
 import type { Game } from '@artemis-prime/chess-core'
 import { getGameSingleton } from '@artemis-prime/chess-core'
 
-const GameContext = React.createContext<Game | undefined>(undefined) 
+const DomainContext = React.createContext<Game | undefined>(undefined) 
 
-const GameProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
+const DomainProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   useEffect(() => {
     const disposers = getGameSingleton().registerReactions()
@@ -13,14 +13,14 @@ const GameProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
   }, [])
   
   return (
-    <GameContext.Provider value={getGameSingleton()}>
+    <DomainContext.Provider value={getGameSingleton()}>
       {children}
-    </GameContext.Provider>
+    </DomainContext.Provider>
   )
 }
 
 export {
-  GameProvider as default,
-  GameContext
+  DomainProvider as default,
+  DomainContext
 }
  

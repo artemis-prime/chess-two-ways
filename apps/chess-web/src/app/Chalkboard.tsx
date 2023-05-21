@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 
 import { styled, type CSS, deborder } from '~/style'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 import { Checkbox, Flex, HR } from '~/primatives'
 
 import {
@@ -176,7 +176,7 @@ const Chalkboard: React.FC<{
   css
 }) => {
 
-  const game = useGame()
+  const game = useChess()
 
   return (
     <ChalkbdOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
