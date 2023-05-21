@@ -17,7 +17,7 @@ const HeaderOuter = styled('header', {
   fontSize: '$headerFontSizeSmall',
   flex: 'none',
 
-  '@desktopSmall': {
+  '@deskSmall': {
     height: '$headerHeightSmaller',
     lineHeight: '$headerHeightSmaller',
   },
@@ -41,8 +41,8 @@ const Stage = styled('div', {
   ...deborder('white', 'header'),
 
 
-  '@virtualStaging': {
-    width: `${BREAKPOINTS.virtualStaging}px`,
+  '@maxStaging': {
+    width: `${BREAKPOINTS.maxStaging}px`,
     m: '0 auto',
   }
 })
@@ -58,16 +58,16 @@ const Title = styled('h1', {
   alignSelf: 'center',
   ...deborder('red', 'header'),
 
-  '@desktopTiny': {
+  '@deskSmaller': {
     fontSize: 'inherit',
   },
-  '@desktopSmall': {
+  '@deskSmall': {
     fontSize: '1.2em',
   },
   '@menuBreak': {
     fontSize: '1.4em',
   },
-  '@virtualStaging': {
+  '@maxStaging': {
     fontSize: '1.6em',
   },
 
@@ -89,13 +89,13 @@ const Left = styled('div', {
 
   ...deborder('yellow', 'header'),
 
-  '@desktopTiny': {
+  '@deskSmaller': {
     width: '85px' // undo / redo chevron version 
   },
   '@menuBreak': {
     width: '160px'  // undo / redo word version 
   },
-  '@virtualStaging': {
+  '@maxStaging': {
     width: 'initial'   
   }
 })
@@ -109,7 +109,7 @@ const Right = styled('div', {
   fontSize: 'inherit',
   ...deborder('yellow', 'header'),
 
-  '@virtualStaging': {
+  '@maxStaging': {
     width: '280px' // roughly Logo + MainMenu
   }
 })
@@ -129,10 +129,10 @@ const Header: React.FC<{
           width: 'initial', 
           lineHeight: '80%', 
           aspectRatio: 1, 
-          '@virtualStaging': {display: 'none'},
+          '@maxStaging': {display: 'none'},
         }}/>
-        <Logo css={{mr: '$1', display: 'none', '@virtualStaging': {display: 'flex'} }}/>
-        <MainMenu css={{display: 'none', '@virtualStaging': {display: 'flex'} }}/>
+        <Logo css={{mr: '$1', display: 'none', '@maxStaging': {display: 'flex'} }}/>
+        <MainMenu css={{display: 'none', '@maxStaging': {display: 'flex'} }}/>
       </Left>
       <Title>Chess Two Ways - Web</Title>
       <Right>

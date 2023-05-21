@@ -26,17 +26,16 @@ import getMoveComment from './getMoveComment'
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
-
-const COL_WIDTHS = ['1.5rem', '6rem', '6rem', 'auto']
+const COL_WIDTHS = ['1.1em', '6em', '6em', 'auto']
 
 const StyledSpan = styled('span', {})
 
 const Ellipses: React.FC = () => (
-  <StyledSpan css={{color: '$chalkboardTextColorDisabled', fontSize: '25px', lineHeight: '1rem', alignSelf: 'flex-start'}}>...</StyledSpan>
+  <StyledSpan css={{color: '$chalkboardTextColorDisabled', fontSize: '1.6em', lineHeight: '1em', alignSelf: 'flex-start'}}>...</StyledSpan>
 )
 
 const Comma: React.FC = () => (
-  <StyledSpan css={{fontSize: 'inherit', mr: '0.3rem'}}>,</StyledSpan>
+  <StyledSpan css={{fontSize: 'inherit', mr: '0.3em'}}>,</StyledSpan>
 )
 
 interface MoveRow {
@@ -76,6 +75,33 @@ class Rows {
   setHilightedSide(s: Side) {this.hilightedSide = s}
 }
 
+const StyledScrollable = styled(Scrollable, {
+
+  marginTop: '0.5em',
+
+  '@deskPortrait': {
+    maxHeight: '170px !important',  
+  },
+
+  '&::-webkit-scrollbar': {
+    width: '10px'
+  },
+
+  '&::-webkit-scrollbar-track': {
+    backgroundColor: '#444',
+    border: '1px solid #777',
+    borderRadius: '3px'
+  },
+
+  '&::-webkit-scrollbar-thumb': {
+    borderRadius: '4px',
+    backgroundColor: '#777',
+    '&:hover': {
+      backgroundColor: '#aaa'
+    }
+  }
+})
+
 const MovesTable: React.FC<{
   show: boolean
 }> = observer(({
@@ -90,13 +116,13 @@ const MovesTable: React.FC<{
     if (rowsRef.current.hilightedMoveRow !== null) {
       if (rowsRef.current.hilightedMoveRow === moveRow && rowsRef.current.hilightedSide === side) {
         return {
-          p: '2px',
-          border: '2px dashed $alert8',
+          p: '0.15em',
+          border: '0.1em dashed $alert8',
           borderRadius: '3px'
         }
       }
     }
-    return {p: '4px'}
+    return {p: '0.25em'}
   })
 
   const sideColor = computedFn((moveRow: number, side: Side): CSS => {
@@ -236,20 +262,21 @@ const MovesTable: React.FC<{
     <Box css={{w: '100%', mt: '$1_5'}}>
     {r.rows.length > 0 && (<>
       <Row css={{w: '100%', mb: '$_5'}} key='title-row'>
-        <Box css={{w: COL_WIDTHS[0], mr: '$1'}}>&nbsp;</Box>
+        <Box css={{w: COL_WIDTHS[0], mr: '$_5'}}>&nbsp;</Box>
         <Box css={{w: COL_WIDTHS[1], pr: '$1_5'}}><SideSwatch narrow side='white' css={swatchCss('white')}/></Box>
         <Box css={{w: COL_WIDTHS[2], pr: '$1_5'}}><SideSwatch narrow side='black' css={swatchCss('black')}/></Box>
         <Row justify='center' css={{w: COL_WIDTHS[3]}}>notes:</Row>
       </Row>
       <hr />
     </>)}
+    <StyledScrollable className='moves-table'>
     {r.rows.map((row: MoveRow, i) => (
-      <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')}>
+      <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='start'>
         <Box 
           css={{
-            w: COL_WIDTHS[0], 
+            minWidth: COL_WIDTHS[0], 
             flex: 'none', 
-            mr: '$1', 
+            //mr: '$_5', 
             color: disableRow(i) ? '$chalkboardTextColorDisabled' : '$chalkboardTextColor' 
           }}
         >{`${i + 1})`}</Box>
@@ -272,14 +299,14 @@ const MovesTable: React.FC<{
         >{row.black?.str ?? '?'}</Box>
         <Row 
           justify='start' 
-          align='end' 
+          align='start' 
           css={{
             w: COL_WIDTHS[3], 
             flexGrow: 3, 
             flexWrap: 'wrap', 
             whiteSpace: 'nowrap', 
-            fontSize: '0.8rem',
-            lineHeight: '1rem',
+            fontSize: '0.9em',
+            lineHeight: '1em',
             textAlign: 'right',
           }}
         >
@@ -297,10 +324,11 @@ const MovesTable: React.FC<{
     { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
     !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
       <Row css={{w: '100%', mb: '$_5'}} key='last'>
-        <Box css={{w: COL_WIDTHS[0], flex: 'none', mr: '$1', color:'$chalkboardTextColor' }}>{`${r.rows.length + 1})`}</Box>
+        <Box css={{minWidth: COL_WIDTHS[0], flex: 'none', mr: '$_5', color:'$chalkboardTextColor' }}>{`${r.rows.length + 1})`}</Box>
         <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$chalkboardTextColor', ...pulsingOpacity(true)}}>?</Box>
       </Row>
     )}
+    </StyledScrollable>
     </Box>
   ) : null
 })

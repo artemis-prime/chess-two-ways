@@ -31,7 +31,7 @@ const StyledButton = styled('button', {
   lineHeight: '$headerHeightSmall',
   fontSize: '$headerFontSizeSmall',
 
-  '@desktopSmall': {
+  '@deskSmall': {
     height: '$headerHeightSmaller',
     lineHeight: '$headerHeightSmaller',
   },

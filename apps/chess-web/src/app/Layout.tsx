@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
-import { styled, deborder, sideArea, useQueryCallback } from '~/style'
+import { 
+  styled, 
+  deborder, 
+  sideArea, 
+  applySideWidthsToStyles, 
+  useQueryCallback 
+} from '~/style'
 
 import { SideMenu } from '~/app/widgets'
 
@@ -29,59 +35,42 @@ const Main = styled('main', {
   alignItems: 'stretch',
   width: '100%',
   flexGrow: '1',
-  py: '$2',
   ...deborder('red', 'layout'),
+  fontSize: '0.75rem',
+  p: '$_5',
+  gap: '$_5',
 
   '@allMobilePortrait': {
     flexDirection: 'column',
-    pt: '$1_5',
     pb: 0,
-    px: '$_5',
   },
-  '@desktopTiny': {
-    py: '$1'
+  '@deskPortrait': {
+    flexDirection: 'column',
+    pb: 0,
   },
+  '@deskSmaller': {
+    fontSize: '0.8rem',
+  },
+  '@deskSmall': {
+    fontSize: '0.9rem',
+  },
+  '@menuBreak': {
+    fontSize: '1rem',
+    p: '$1',
+    gap: '$1',
+  },
+  
 })
 
 const StartDiv = styled('div', {
   ...deborder('green', 'layout'),
   display: 'none',
 
-  '@xl': {
+  '@maxStaging': {
     display: 'block',
     flexGrow: 1,
     flexShrink: 0,
-    flexBasis: sideArea.xl,
-  }
-})
-
-const EndDiv = styled('div', {
-  
-  ...deborder('blue', 'layout'),
-  pr: '$1',
-
-  '@allMobilePortrait': {
-    pr: 0,
-    pt: '$1',
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-  },
-  '@desktopTiny': {
-    flexBasis:  sideArea.desktopTiny,
-    flexGrow: 0
-  },
-  '@desktopSmall': {
-    flexBasis:  sideArea.desktopSmall,
-  },
-  '@menuBreak': {
-    flexBasis: sideArea.menuBreak,
-  },
-  '@virtualStaging': {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: sideArea.virtualStaging,
+    flexBasis: sideArea.maxStaging,
   },
   '@xl': {
     flexBasis: sideArea.xl,
@@ -91,44 +80,86 @@ const EndDiv = styled('div', {
   }
 })
 
-const ChessboardOuter = styled('div', {
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
-  px: '$1',
-  ...deborder('yellow', 'layout'),
+const EndDiv = styled('div', 
+  applySideWidthsToStyles(
+    {
+      flexShrink: 0,
+      flexGrow: 0,
+      ...deborder('blue', 'layout'),
 
-  '@allMobilePortrait': {
-    px: 0,
-    flexGrow: 0,
-  },
-  '@desktopTiny': {
-    width: `calc(100% - ${sideArea.desktopTiny})`,
-    justifyContent: 'flex-end',
-  },
-  '@desktopSmall': {
-    width: `calc(100% - ${sideArea.desktopSmall})`,
-  },
-  '@menuBreak': {
-    width: `calc(100% - ${sideArea.menuBreak})`,
-  },
-  '@virtualStaging': {
-    width: `calc(100% - ${sideArea.virtualStaging})`,
-  },
-  '@xl': {
-    width: `calc(100% - ${sideArea.xlDoubled})`, 
-    justifyContent: 'center',
-  },
-  '@xxl': {
-    width: `calc(100% - ${sideArea.xxlDoubled})`, 
+      '@allMobilePortrait': {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+      },
+      '@deskPortrait': {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        height: '260px',
+        transition: '$chalkboardInPortraitOpenTransition',
+        flex: 'none',
+      },
+      '@maxStaging': {
+        flexGrow: 1,
+        flexShrink: 0,
+      },
+    }
+    ,
+    'flexBasis',
+    (value: any): string => ((typeof value === 'number') ? `${value}px` : value as string)
+  ),
+  {
+    variants: {
+      showMoves: {
+        false: {
+          '@deskPortrait': {
+            height: '80px',
+          }
+        }
+      }
+    }
   }
-})
+)
+
+const ChessboardOuter = styled('div', 
+  applySideWidthsToStyles(
+    {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      ...deborder('yellow', 'layout'),
+
+      '@allMobilePortrait': {
+        px: 0,
+        flexGrow: 0,
+      },
+      '@deskPortrait': {
+        px: 0,
+        flexGrow: 1,
+        flexShrink: 1,
+      },
+      '@deskSmallest': {
+        flexShrink: 1,
+        flexGrow: 0,
+        justifyContent: 'flex-end',
+      },
+      '@maxStaging': {
+        justifyContent: 'center',
+      },
+    },
+    'width',
+    (value: any): string => (`calc(100% - ${((typeof value === 'number') ? `${value * 2}px` : value as string)})`),
+    true
+  )
+)
 
 const ChessboardArea: React.FC = () => {
 
   const [tall, setTall] = useState<boolean>(false)
-  const {  ref } = useResizeDetector({
+  const { ref } = useResizeDetector({
     onResize: (width, height) => {
       if (!width || !height) return ;
       const current = (height > width)
@@ -150,7 +181,7 @@ const Layout: React.FC<{}> = () => {
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean >(false) 
   const [showMoves, setShowMoves] = useState<boolean>(false)
 
-  useQueryCallback('virtualStaging', () => {setSideMenuOpen(false)})
+  useQueryCallback('maxStaging', () => {setSideMenuOpen(false)})
   const toggleMenu = () => { setSideMenuOpen((prev) => (!prev)) }
   
   return (
@@ -159,14 +190,15 @@ const Layout: React.FC<{}> = () => {
       <Main>
         <StartDiv />
         <ChessboardArea />
-        <EndDiv >
+        <EndDiv showMoves={showMoves}>
           <Chalkboard showMoves={showMoves} setShowMoves={setShowMoves} />
         </EndDiv>
         <SideMenu open={sideMenuOpen} css={{ 
-          '@virtualStaging': { display: 'none'},
+          '@maxStaging': { display: 'none'},
           '$$drawerWidth': '85%',
+          '@deskPortrait': { '$$drawerWidth': '280px' },
           '@tabletPortrait': { '$$drawerWidth': '280px' },
-          '@desktopTiny': { '$$drawerWidth': '280px' }
+          '@deskSmaller': { '$$drawerWidth': '280px' }
         }} />
       </Main>
     </Outer>

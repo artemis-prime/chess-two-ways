@@ -30,7 +30,7 @@ const StyledLabel = styled('label', {
   lineHeight: '$headerHeightSmall',
   fontSize: '$headerFontSizeSmall',
 
-  '@desktopSmall': {
+  '@deskSmall': {
     height: '$headerHeightSmaller',
     lineHeight: '$headerHeightSmaller',
   },

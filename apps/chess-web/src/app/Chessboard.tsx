@@ -31,11 +31,18 @@ const ChessboardInner = styled('div', {
     height: 'initial',
   },
 
+
   variants: {
     tall: {
       true: {
         width: '100%', 
         height: 'initial',
+      },
+      false: {
+        '@deskPortrait': {
+          height: '100%', 
+          weight: 'initial',
+        },
       }
     }
   }

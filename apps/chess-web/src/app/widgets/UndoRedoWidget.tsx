@@ -7,7 +7,8 @@ import { Button, Flex, ResponsiveText } from '~/primatives'
 
 const ALT_TRIGGERS = [
   'allMobile', 
-  'desktopTiny',  
+  'deskSmallest',  
+  'deskPortrait',
 ] as MediaQuery[]
 
 const MAIN_TRIGGERS = [

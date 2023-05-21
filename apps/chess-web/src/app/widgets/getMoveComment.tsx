@@ -10,7 +10,7 @@ import EMOJIS from './emojis'
 const Outer = styled('span', {})
 
 const Emoji = styled('span', {
-  fontSize: '0.8rem',
+  fontSize: 'inherit',
   variants: {
     lighter: {
       true: {
@@ -20,12 +20,12 @@ const Emoji = styled('span', {
     },
     larger: {
       true: {
-        fontSize: '0.9rem',
+        fontSize: '1em',
       }
     },
     large: {
       true: {
-        fontSize: '1.0rem',
+        fontSize: '1.2em',
       }
     }
   }
