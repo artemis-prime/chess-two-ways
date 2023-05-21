@@ -25,16 +25,13 @@ class PulsesImpl implements Pulses {
       _setSlow: action,
       _setFast: action
     })
-
   }
 
   initialize() {
     this._fastInterval = setInterval(() => {
-      //console.log("TICK FAST")
       this._setFast(!this.fast)   
     }, 200)  
     this._slowInterval = setInterval(() => {
-      //console.log("TICK SLOW")
       this._setSlow(!this.slow)   
     }, 500)  
   }

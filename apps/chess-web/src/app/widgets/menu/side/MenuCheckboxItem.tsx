@@ -1,9 +1,8 @@
-import React, { type PropsWithChildren } from 'react'
+import React from 'react'
 
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common, deborder } from '~/styles/stitches.config'
-
+import { styled, type CSS, common, deborder } from '~/style'
 import { Flex } from '~/primatives'
 
 import {  
@@ -17,7 +16,7 @@ import {
 const StyledLabel = styled('label', {
     
   all: 'unset',
-  ...common.menu,
+  ...common.sideMenuItem,
   ...deborder('white', 'menu'),
   cursor: 'pointer',
   display: 'flex', 
@@ -26,6 +25,21 @@ const StyledLabel = styled('label', {
   alignItems: 'center',
   flexWrap: 'nowrap',
   pr: `${24 - IconMargin}px`,
+
+  height: '$headerHeightSmall',
+  lineHeight: '$headerHeightSmall',
+  fontSize: '$headerFontSizeSmall',
+
+  '@deskSmall': {
+    height: '$headerHeightSmaller',
+    lineHeight: '$headerHeightSmaller',
+  },
+
+  '@menuBreak': {
+    height: '$headerHeight',
+    lineHeight: '$headerHeight',
+    fontSize: '$headerFontSize',
+  },
 
   '&:hover': {
     backgroundColor: '$menuHover'
@@ -46,15 +60,14 @@ const StyledLabel = styled('label', {
         pointerEvents: 'none'
       }
     }
-
   }
 })
 
 const CheckboxOuter = styled('div', {
+
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-
   '& svg': {
     width: 20,
     height: 20,
@@ -67,7 +80,6 @@ const MenuCheckboxItem: React.FC<{
   icon?: WidgetIconDesc
   css?: CSS
 } & React.HTMLProps<HTMLInputElement>> = ({
-  
   checked,
   setChecked, 
   icon,

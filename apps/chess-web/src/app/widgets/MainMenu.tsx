@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react'
-import { autorun } from 'mobx'
+import React, { useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { GameSnapshot } from '@artemis-prime/chess-core'
 
-import {type CSS } from '~/styles/stitches.config'
-import { useBoardOrientation, useDeviceInfo, useGame, useSnapshotPersistence } from '~/services'
+import {type CSS } from '~/style'
+import { 
+  useChessboardOrientation, 
+  useChess, 
+  useSnapshotPersistence 
+} from '~/services'
 import type { IconAndStyles } from '~/primatives'
 
 import {
@@ -26,11 +29,13 @@ const AppMenubar: React.FC<{
   css
 }) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
   const sp = useSnapshotPersistence()
-  const deviceInfo = useDeviceInfo()
-  const game = useGame()
+  const game = useChess()
 
+  const rootRef = useRef<HTMLDivElement>()
+
+  /*
   useEffect(() => {
 
     const hideMenu = () => {
@@ -46,12 +51,13 @@ const AppMenubar: React.FC<{
       // returning autorun's disposer as per mobx docs 
     return autorun(() => {
         // If we've just been resized down, manually hide the menu ("feature" of our menu lib)
-      if (!deviceInfo.breakpoint ) return;
-      if (deviceInfo.isWithin(null, 'menuBreak')) {
+      if (!deviceInfo.queryResult ) return;
+      if (deviceInfo.isWithin(null, 'lsMenuBreak')) {
         hideMenu()
       }
     })
   }, [])
+  */
 
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 

@@ -1,15 +1,15 @@
 import React from 'react'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 
 const StyledButton = styled('button', {
 
-  //  border: '0.5px solid red',
   border: 'none',
+  flex: 'none',
 
   backgroundColor: 'transparent',
   cursor: 'pointer',
-  width: '$header',
+  width: '$headerHeight',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
@@ -46,7 +46,7 @@ const StyledButton = styled('button', {
 })
 
 const StyledSpan = styled('span', {
-  fontSize: '63cqh', 
+  fontSize: '50cqh', 
   fontWeight: 700, 
   top: '1px', 
   left: '-1px', 
@@ -67,11 +67,5 @@ const BurgerButton: React.FC<{
     <StyledSpan>{'\u2630'}</StyledSpan>
   </StyledButton>
 )
-
-/*
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-<path d="M24 6h-24v-4h24v4zm0 4h-24v4h24v-4zm0 8h-24v4h24v-4z"/>
-</svg>
-*/
 
 export default BurgerButton

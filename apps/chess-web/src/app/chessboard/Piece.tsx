@@ -10,10 +10,9 @@ import {
   pieceToString
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
-
+import { styled } from '~/style'
 import { Flex } from '~/primatives'
-import { usePulses, useGame } from '~/services'
+import { usePulses, useChess } from '~/services'
 
 import registry from './pieceRegistry'
 
@@ -34,13 +33,13 @@ const PieceEffectsView = styled(Flex, {
     side: {
       white: {
         '& svg': {
-          fill: '$pieceWhite',
+          fill: '$pieceColorWhite',
           filter: 'drop-shadow(1px 4px 3px rgb(0 0 0 / 0.45))'
         },
       },
       black: {
         '& svg': {
-          fill: '$pieceBlack',
+          fill: '$pieceColorBlack',
           filter: 'drop-shadow(2px 4px 2px rgb(0 0 0 / 0.3))'
         },
       },
@@ -187,7 +186,7 @@ const PieceComponent: React.FC<{
   square
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const pulses = usePulses()
 
   if (!square.piece) {
@@ -237,7 +236,7 @@ const PieceDnDWrapper: React.FC<{
   square,
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const canDrag = square.piece && game.currentTurn === square.piece.side
   
   const {listeners, setNodeRef: draggableRef} = useDraggable({

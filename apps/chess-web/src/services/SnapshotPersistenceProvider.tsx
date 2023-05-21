@@ -1,6 +1,6 @@
-import React, { type PropsWithChildren, useRef } from 'react'
+import React, { type PropsWithChildren } from 'react'
 
-import type { Game, GameSnapshot } from '@artemis-prime/chess-core'
+import type { GameSnapshot } from '@artemis-prime/chess-core'
 
 interface SnapshotPersistenceService {
   save: (s: GameSnapshot, defaultFilename: string) => void
@@ -43,7 +43,7 @@ const SnapshotPersistenceProvider: React.FC<PropsWithChildren> = ({
       else {
         error('Chess: File parse error')
       }
-
+        // TODO
         // Allow the same file to be selected consecutively. 
         // https://github.com/ngokevin/react-file-reader-input/issues/11
       //originalEvent.target.value = ''

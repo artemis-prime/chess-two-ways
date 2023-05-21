@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import App from './App'
+import App from '~/app/App'
+import Services from '~/services/Services'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -38,7 +39,9 @@ if (detectTouchscreen()) {
   // https://stackoverflow.com/questions/48846289/why-is-my-react-component-is-rendering-twice
 root.render(
   <React.StrictMode>
-    <App />
+    <Services>
+      <App />
+    </Services>
   </React.StrictMode>
 )
 

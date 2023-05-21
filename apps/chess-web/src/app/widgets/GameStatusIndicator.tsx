@@ -1,13 +1,13 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 
-import '~/styles/gameStatusIndicator.scss'
+import '~/style/gameStatusIndicator.scss'
 
 const GameStatusIndicator: React.FC<{}> = observer(() => {
 
-  const game = useGame()
+  const game = useChess()
 
   return game.gameStatus.victor ? (
     <div className={`game-status-indicator ${game.gameStatus.state}`}>

@@ -1,24 +1,23 @@
 import React from 'react'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 
 const StyledBGDiv = styled('div', {
   w: '40px',
   h: '40px',
   borderRadius: '$rounded',
-  backgroundColor: '$pieceWhite',
+  backgroundColor: '$pieceColorWhite',
 
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
-  border: '2px solid $pieceBlack',
+  border: '2px solid $pieceColorBlack',
 
   '& svg': {
-    fill: '$pieceBlack'
+    fill: '$pieceColorBlack'
   }
 })
-
 
 const Knight: React.FC<{size: number}> = ({size}) => (
   <svg width={size} height={size} viewBox="0 -50 700 700" xmlns="http://www.w3.org/2000/svg" >

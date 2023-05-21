@@ -1,12 +1,12 @@
-import * as Menubar from '@radix-ui/react-menubar'
 import type { PropsWithChildren } from 'react'
+import * as Menubar from '@radix-ui/react-menubar'
 
-import { styled, common } from '~/styles/stitches.config'
+import { styled, common } from '~/style'
 
 const MenubarRoot = styled(Menubar.Root, {
   display: 'flex',
   direction: 'row',
-  height: '$header',
+  height: '$headerHeight',
 })
 
 const MenubarMenu = styled(Menubar.Menu, {})
@@ -22,19 +22,20 @@ const MenubarTrigger = styled(Menubar.Trigger, {
   justifyContent: 'space-between',
 
   '&[data-state="open"]': {
-    backgroundColor: '$menuBGHover',
+    backgroundColor: '$menuBGColorHover',
     '&:hover': {
-      backgroundColor: '$menuBGSelectedHover',
+      backgroundColor: '$menuBGColorSelectedHover',
     }
   },
   '&:hover': {
-    backgroundColor: '$menuBGHover',
+    backgroundColor: '$menuBGColorHover',
   }
+
 })
 
 const MenubarContent = styled(Menubar.Content, {
   minWidth: 220,
-  backgroundColor: '$menuBG',
+  backgroundColor: '$menuBGColor',
   borderRadius: '$popupMenu',
   boxShadow: '0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)',
   animationDuration: '400ms',
@@ -61,13 +62,13 @@ const RightSlot = styled('div', {
   marginLeft: 'auto',
   paddingLeft: 20,
   color: '$menuRightSymbol',
-  '[data-highlighted] > &': { color: '$menuText' },
-  '[data-disabled] &': { color: '$menuTextDisabled' },
+  '[data-highlighted] > &': { color: '$menuTextColor' },
+  '[data-disabled] &': { color: '$menuTextColorDisabled' },
 })
 
 const MenubarSeparator = styled(Menubar.Separator, {
   height: '0.5px',
-  backgroundColor: '$menuTextDisabled',
+  backgroundColor: '$menuTextColorDisabled',
   mx: '6px',
   my: '2px',
 })

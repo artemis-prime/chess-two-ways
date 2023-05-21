@@ -1,8 +1,8 @@
 import React, { type ReactNode } from 'react'
 
-import { ActionRecord, type AnnotatedResult, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
+import { ActionRecord, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 import SideSwatch from './SideSwatch'
 import EMOJIS from './emojis'
@@ -10,7 +10,7 @@ import EMOJIS from './emojis'
 const Outer = styled('span', {})
 
 const Emoji = styled('span', {
-  fontSize: '0.8rem',
+  fontSize: 'inherit',
   variants: {
     lighter: {
       true: {
@@ -20,12 +20,12 @@ const Emoji = styled('span', {
     },
     larger: {
       true: {
-        fontSize: '0.9rem',
+        fontSize: '1em',
       }
     },
     large: {
       true: {
-        fontSize: '1.0rem',
+        fontSize: '1.2em',
       }
     }
   }
@@ -44,7 +44,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
     check = true
     result.push(
       <Outer css={{color: '$alert9'}} key={rec.move.piece.side + 'one'}>
-        <SideSwatch smaller side={rec.move.piece.side}/>
+        <SideSwatch small side={rec.move.piece.side}/>
         <Text>:&nbsp;</Text>
         <Emoji>{EMOJIS.fist}</Emoji>
         <Text>!</Text>
@@ -54,7 +54,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
   if (previous?.annotatedResult === 'check') {
     result.push(
       <Outer key={rec.move.piece.side + 'two'}>
-        <SideSwatch smaller side={rec.move.piece.side}/>
+        <SideSwatch small side={rec.move.piece.side}/>
         <Text>{': phew! '}</Text>
         <Emoji larger lighter>{EMOJIS.ninja}</Emoji>
       </Outer>
@@ -66,7 +66,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
     if (!(check && rec.captured!.type === 'pawn')) {
       result.push(
         <Outer css={{color: rec.captured!.type === 'pawn' ? 'white' : '$alert8'}} key={rec.move.piece.side + 'three'}>
-          <SideSwatch smaller side={rec.captured!.side}/>
+          <SideSwatch small side={rec.captured!.side}/>
           {rec.captured!.type === 'pawn' ? (<>
             <Text>{': '}</Text>
             <Emoji larger>{EMOJIS.shrug}</Emoji>

@@ -24,7 +24,7 @@ const Checkbox: React.FC<{
     <Box css={css}>
       <label style={{cursor: 'pointer'}}>
         <input type='checkbox' checked={checked} onChange={onChange} hidden/>
-        <span style={{marginRight: '4px'}}>[<span style={{visibility: (checked) ? 'visible' : 'hidden'}}>{String.fromCharCode(10004)}</span>]</span>
+        <span style={{marginRight: '0.3em'}}>[<span style={{visibility: (checked) ? 'visible' : 'hidden'}}>{String.fromCharCode(10004)}</span>]</span>
         <span className='label'>{children}</span>
       </label>
     </Box>
