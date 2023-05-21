@@ -19,15 +19,16 @@ import '~/style/fonts.scss'
 import '~/style/body.scss'
 
 const Outer = styled('div', {
+  ...deborder('orange', 'layout'),
   boxSizing: 'border-box',
   width: '100vw',
   height: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  ...deborder('orange', 'layout'),
 })
 
 const Main = styled('main', {
+  ...deborder('red', 'layout'),
   position: 'relative',
   display: 'flex',
   flexDirection: 'row',
@@ -35,18 +36,33 @@ const Main = styled('main', {
   alignItems: 'stretch',
   width: '100%',
   flexGrow: '1',
-  ...deborder('red', 'layout'),
   fontSize: '0.75rem',
   p: '$_5',
   gap: '$_5',
 
   '@allMobilePortrait': {
     flexDirection: 'column',
+    justifyContent: 'space-between',
     pb: 0,
   },
+  '@phonePortrait': {
+    pt: '$2',
+    gap: '$1',
+  },
+  '@tabletPortrait': {
+    pt: '$1',
+  },
+
+  '@allMobileLandscape': {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+  },
+
   '@deskPortrait': {
     flexDirection: 'column',
+    p: '$1',
     pb: 0,
+    gap: '$1',
   },
   '@deskSmaller': {
     fontSize: '0.8rem',
@@ -62,7 +78,7 @@ const Main = styled('main', {
   
 })
 
-const StartDiv = styled('div', {
+const SymmetryDiv = styled('div', {
   ...deborder('green', 'layout'),
   display: 'none',
 
@@ -80,12 +96,17 @@ const StartDiv = styled('div', {
   }
 })
 
-const EndDiv = styled('div', 
+    // Only for @deskPortrait, we're varying / animating 
+    // the height of ChalkbdOuter (in Layout) 
+    // to open / close the chalkboard.
+    // In all other situations, we're varying the 
+    // chalkboard's actual height within that div.
+const ChalkbdOuter = styled('div', 
   applySideWidthsToStyles(
     {
+      ...deborder('blue', 'layout'),
       flexShrink: 0,
       flexGrow: 0,
-      ...deborder('blue', 'layout'),
 
       '@allMobilePortrait': {
         flexGrow: 1,
@@ -93,31 +114,34 @@ const EndDiv = styled('div',
         flexDirection: 'column',
         justifyContent: 'flex-end',
       },
+      '@allMobileLandscape': {
+        flex: '1 1 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+      },
       '@deskPortrait': {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        height: '260px',
-        transition: '$chalkboardInPortraitOpenTransition',
+        height: 'min(260px, 30%)',
+        transition: '$chalkboardOpenTransition',
         flex: 'none',
       },
       '@maxStaging': {
         flexGrow: 1,
         flexShrink: 0,
       },
-    }
-    ,
+    },
     'flexBasis',
     (value: any): string => ((typeof value === 'number') ? `${value}px` : value as string)
   ),
+    // Variants should be separated if wrapping a style object, 
+    // since otherwise typescript doesn't see the variant types as props.
   {
     variants: {
       showMoves: {
-        false: {
-          '@deskPortrait': {
-            height: '80px',
-          }
-        }
+        false: { '@deskPortrait': { height: '70px' } }
       }
     }
   }
@@ -135,6 +159,10 @@ const ChessboardOuter = styled('div',
       '@allMobilePortrait': {
         px: 0,
         flexGrow: 0,
+      },
+      '@allMobileLandscape': {
+        flex: 'none',
+        aspectRatio: '1 / 1',
       },
       '@deskPortrait': {
         px: 0,
@@ -188,14 +216,17 @@ const Layout: React.FC<{}> = () => {
     <Outer>
       <Header menuOpen={sideMenuOpen} toggleMenu={toggleMenu} />
       <Main>
-        <StartDiv />
+        <SymmetryDiv />
         <ChessboardArea />
-        <EndDiv showMoves={showMoves}>
+        <ChalkbdOuter showMoves={showMoves}>
           <Chalkboard showMoves={showMoves} setShowMoves={setShowMoves} />
-        </EndDiv>
+        </ChalkbdOuter>
         <SideMenu open={sideMenuOpen} css={{ 
           '@maxStaging': { display: 'none'},
-          '$$drawerWidth': '85%',
+            // Setting '$$drawerWidth' this way is part of 
+            // Drawer's API. 
+          '$$drawerWidth': '85%', 
+          '@allMobileLandscape': { '$$drawerWidth': '280px' },
           '@deskPortrait': { '$$drawerWidth': '280px' },
           '@tabletPortrait': { '$$drawerWidth': '280px' },
           '@deskSmaller': { '$$drawerWidth': '280px' }

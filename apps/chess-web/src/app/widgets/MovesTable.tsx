@@ -17,9 +17,9 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/style'
-import { useGame, usePulses } from '~/services'
-import { Row, Box } from '~/primatives'
+import { styled, type CSS, deborder } from '~/style'
+import { useGame, usePulses, useTransientMessage } from '~/services'
+import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 import getMoveComment from './getMoveComment'
@@ -37,6 +37,19 @@ const Ellipses: React.FC = () => (
 const Comma: React.FC = () => (
   <StyledSpan css={{fontSize: 'inherit', mr: '0.3em'}}>,</StyledSpan>
 )
+
+const Outer = styled('div', {
+  ...deborder('yellow', 'chalk'),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+})
+
+const ScrollableOuter = styled('div', {
+  flex: '1 0 auto', 
+  position: 'relative', 
+  ...deborder('red', 'chalk')
+})
 
 interface MoveRow {
   white: {
@@ -77,22 +90,22 @@ class Rows {
 
 const StyledScrollable = styled(Scrollable, {
 
-  marginTop: '0.5em',
-
-  '@deskPortrait': {
-    maxHeight: '170px !important',  
-  },
+  position: 'absolute', 
+  top: 0, 
+  bottom: 0, 
+  left: 0, 
+  right: 0,
+  mt: '$1',
+  overflowX: 'hidden',
 
   '&::-webkit-scrollbar': {
     width: '10px'
   },
-
   '&::-webkit-scrollbar-track': {
     backgroundColor: '#444',
     border: '1px solid #777',
     borderRadius: '3px'
   },
-
   '&::-webkit-scrollbar-thumb': {
     borderRadius: '4px',
     backgroundColor: '#777',
@@ -103,14 +116,17 @@ const StyledScrollable = styled(Scrollable, {
 })
 
 const MovesTable: React.FC<{
-  show: boolean
+  show: boolean,
+  css?: CSS
 }> = observer(({
-  show
+  show,
+  css
 }) => {
 
   const rowsRef = useRef<Rows>(new Rows())
   const game = useGame()
   const pulses = usePulses()
+  const tm = useTransientMessage()
 
   const sideHilight = computedFn((moveRow: number, side: Side): any => {
     if (rowsRef.current.hilightedMoveRow !== null) {
@@ -259,78 +275,80 @@ const MovesTable: React.FC<{
 
   const r = rowsRef.current
   return show ? (
-    <Box css={{w: '100%', mt: '$1_5'}}>
+    <Outer css={css}>
     {r.rows.length > 0 && (<>
-      <Row css={{w: '100%', mb: '$_5'}} key='title-row'>
+      <Row css={{w: '100%', mb: '$_5', flex: 'none'}} key='title-row'>
         <Box css={{w: COL_WIDTHS[0], mr: '$_5'}}>&nbsp;</Box>
         <Box css={{w: COL_WIDTHS[1], pr: '$1_5'}}><SideSwatch narrow side='white' css={swatchCss('white')}/></Box>
         <Box css={{w: COL_WIDTHS[2], pr: '$1_5'}}><SideSwatch narrow side='black' css={swatchCss('black')}/></Box>
         <Row justify='center' css={{w: COL_WIDTHS[3]}}>notes:</Row>
       </Row>
-      <hr />
+      <HR css={{flex: 'none'}}/>
     </>)}
-    <StyledScrollable className='moves-table'>
-    {r.rows.map((row: MoveRow, i) => (
-      <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='start'>
-        <Box 
-          css={{
-            minWidth: COL_WIDTHS[0], 
-            flex: 'none', 
-            //mr: '$_5', 
-            color: disableRow(i) ? '$chalkboardTextColorDisabled' : '$chalkboardTextColor' 
-          }}
-        >{`${i + 1})`}</Box>
-        <Box 
-          css={{
-            w: COL_WIDTHS[1], 
-            flex: 'none', 
-            ...sideColor(i, 'white'), 
-            ...sideHilight(i, 'white')
-          }}
-        >{row.white.str}</Box>
-        <Box 
-          css={{
-            w: COL_WIDTHS[2], 
-            flex: 'none', 
-            ...sideColor(i, 'black'), 
-            ...sideHilight(i, 'black'), 
-            ...pulsingOpacity(!row.black)
-          }}
-        >{row.black?.str ?? '?'}</Box>
-        <Row 
-          justify='start' 
-          align='start' 
-          css={{
-            w: COL_WIDTHS[3], 
-            flexGrow: 3, 
-            flexWrap: 'wrap', 
-            whiteSpace: 'nowrap', 
-            fontSize: '0.9em',
-            lineHeight: '1em',
-            textAlign: 'right',
-          }}
-        >
-          {disableRow(i) ? (
-            (row.white.note || row.black?.note) ? <Ellipses /> : ''
-          ) : (<>
-            { row.white.note }
-            {(row.white.note && row.black?.note) && <Comma />}
-            { row.black?.note ? ((disableSide(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
-          </>)}
-        </Row>
-      </Row>
-    ))}
-    
-    { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
-    !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
-      <Row css={{w: '100%', mb: '$_5'}} key='last'>
-        <Box css={{minWidth: COL_WIDTHS[0], flex: 'none', mr: '$_5', color:'$chalkboardTextColor' }}>{`${r.rows.length + 1})`}</Box>
-        <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$chalkboardTextColor', ...pulsingOpacity(true)}}>?</Box>
-      </Row>
-    )}
-    </StyledScrollable>
-    </Box>
-  ) : null
+      <ScrollableOuter>
+        <StyledScrollable>
+        {r.rows.map((row: MoveRow, i) => (
+          <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='start'>
+            <Box 
+              css={{
+                minWidth: COL_WIDTHS[0], 
+                flex: 'none', 
+                color: disableRow(i) ? '$chalkboardTextColorDisabled' : '$chalkboardTextColor' 
+              }}
+            >{`${i + 1})`}</Box>
+            <Box 
+              css={{
+                w: COL_WIDTHS[1], 
+                flex: 'none', 
+                ...sideColor(i, 'white'), 
+                ...sideHilight(i, 'white')
+              }}
+            >{row.white.str}</Box>
+            <Box 
+              css={{
+                w: COL_WIDTHS[2], 
+                flex: 'none', 
+                ...sideColor(i, 'black'), 
+                ...sideHilight(i, 'black'), 
+                ...pulsingOpacity(!row.black)
+              }}
+            >{row.black?.str ?? '?'}</Box>
+            <Row 
+              justify='start' 
+              align='start' 
+              css={{
+                w: COL_WIDTHS[3], 
+                flexGrow: 3, 
+                flexWrap: 'wrap', 
+                whiteSpace: 'nowrap', 
+                fontSize: '0.9em',
+                lineHeight: '1em',
+                textAlign: 'right',
+              }}
+            >
+              {disableRow(i) ? (
+                (row.white.note || row.black?.note) ? <Ellipses /> : ''
+              ) : (<>
+                { row.white.note }
+                {(row.white.note && row.black?.note) && <Comma />}
+                { row.black?.note ? ((disableSide(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
+              </>)}
+            </Row>
+          </Row>
+        ))}
+        
+        { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
+        !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
+          <Row css={{w: '100%', mb: '$_5'}} key='last'>
+            <Box css={{minWidth: COL_WIDTHS[0], flex: 'none', mr: '$_5', color:'$chalkboardTextColor' }}>{`${r.rows.length + 1})`}</Box>
+            <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$chalkboardTextColor', ...pulsingOpacity(true)}}>?</Box>
+          </Row>
+        )}
+        {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box>}
+        </StyledScrollable>
+      </ScrollableOuter>
+    </Outer>
+  ) : tm.message ? <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box> : null
 })
 
 export default MovesTable

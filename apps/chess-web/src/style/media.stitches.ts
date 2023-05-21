@@ -11,12 +11,17 @@ const BREAKPOINTS = {
 }
 
 const media = {
-  phonePortrait: `(max-width: ${BREAKPOINTS.tablet - 1}px) and (orientation: portrait)`,
-  phoneLandscape: `(max-height: ${BREAKPOINTS.tablet - 1}px) and (orientation: landscape)`,
-  tabletPortrait: `(min-width: ${BREAKPOINTS.tablet}px) and (orientation: portrait) and (pointer: coarse) and (hover: none)`,
-  tabletLandscape: `(min-height: ${BREAKPOINTS.tablet}px) and (orientation: landscape) and (pointer: coarse) and (hover: none)`,
   allMobilePortrait: '(orientation: portrait) and (pointer: coarse) and (hover: none)',
+  allMobileLandscape: '(orientation: landscape) and (pointer: coarse) and (hover: none)',
   allMobile: '(pointer: coarse) and (hover: none)',
+
+  phonePortrait: `(orientation: portrait) and (pointer: coarse) and (hover: none)`,
+  tabletPortrait: `(min-width: ${BREAKPOINTS.tablet}px) and (orientation: portrait) and (pointer: coarse) and (hover: none)`,
+  tabletLargePortrait: `(min-width: ${BREAKPOINTS.menuBreak}px) and (orientation: portrait) and (pointer: coarse) and (hover: none)`,
+
+  phoneLandscape: `(orientation: landscape) and (pointer: coarse) and (hover: none)`,
+  tabletLandscape: `(min-height: ${BREAKPOINTS.tablet}px) and (orientation: landscape) and (pointer: coarse) and (hover: none)`,
+  tabletLargeLandscape: `(min-height: ${BREAKPOINTS.menuBreak}px) and (orientation: landscape) and (pointer: coarse) and (hover: none)`,
 
   deskPortrait: `(orientation: portrait) and (pointer: fine)`, 
 

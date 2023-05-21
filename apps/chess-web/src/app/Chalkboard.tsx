@@ -1,21 +1,20 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { styled, type CSS } from '~/style'
+import { styled, type CSS, deborder } from '~/style'
 
-import { useGame, useTransientMessage } from '~/services'
-import { Box, Checkbox, Flex, Row } from '~/primatives'
+import { useGame } from '~/services'
+import { Checkbox, Flex, HR } from '~/primatives'
 
 import {
   GameStatusIndicator,
-  InCheckIndicator,
+  TurnAndInCheckWidget,
   MovesTable,
-  TurnIndicator,
 } from '~/app/widgets'
 
 import bg from 'assets/img/slate_bg_low_res.jpg'
 
-const ChalkboardOuter = styled(Flex, {
+const ChalkbdOuter = styled(Flex, {
 
   backgroundColor: '#444',
   backgroundImage: `url(${bg})`, 
@@ -23,7 +22,6 @@ const ChalkboardOuter = styled(Flex, {
   boxSizing: 'border-box',
   width: '100%',
   maxWidth: '500px',
-  height: '100%',
   border: '2px $chalkboardBorderColor solid',
   borderRadius: '5px',
   p: '$1_5 $1',
@@ -36,51 +34,137 @@ const ChalkboardOuter = styled(Flex, {
 
   '@allMobilePortrait': {
     maxWidth: 'initial',
-    height: '22%',
-    transition: '$chalkboardInPortraitOpenTransition',
+    transition: '$chalkboardOpenTransition',
     borderTopLeftRadius: '$lgr',
     borderTopRightRadius: '$lgr',
     borderBottomLeftRadius: '$none',
     borderBottomRightRadius: '$none',
     borderBottom: 'none',
+    p: '$2 $2',
   },
+  '@phonePortrait': {
+    fontSize: '1.3em',
+  },
+  '@tabletPortrait': {
+    fontSize: '1.3em',
+  },
+  '@tabletLargePortrait': {
+    fontSize: '1.6em',
+  },
+  '@phoneLandscape': {
+    width: '70%'
+  },
+
   '@deskPortrait': {
-    maxWidth: 'initial',
     flexGrow: 1,
+    maxWidth: 'initial',
     borderTopLeftRadius: '$lgr',
     borderTopRightRadius: '$lgr',
     borderBottomLeftRadius: '$none',
     borderBottomRightRadius: '$none',
     borderBottom: 'none',
     fontSize: '1.1em',
-    p: '$3 $3',
+    p: '$2 $3',
+  },
+  '@menuBreak': {
+    p: '$2 $1_5',
+    gap: '$1_5',
+  },
+  '@xl': {
+    p: '$2 $2',
   },
 
+    // Only for @deskPortrait, we're varying / animating 
+    // the height of ChalkbdOuter (in Layout) 
+    // to open / close the chalkboard.
+    // In all other situations, we're varying the 
+    // chalkboard's actual height within that div.
   variants: {
     showMoves: {
       true: {
-        '@allMobilePortrait': {
-          height: '100%',
-          transition: '$chalkboardInPortraitOpenTransition',
+        '@phonePortrait': {
+          height: '80%',
         },
-        '@deskPortrait': {
+        '@tabletPortrait': {
           height: '100%',
-          transition: '$chalkboardInPortraitOpenTransition',
-        }
+        },
+        '@phoneLandscape': {
+          transition: '$chalkboardOpenTransition',
+          height: '100%'
+        }, 
+        '@deskSmallest': {
+          height: '100%',
+          transition: '$chalkboardOpenTransition'
+        } 
+      },
+      false: {
+        '@deskSmallest': {
+          height: '15%',
+          minHeight: '90px',
+          transition: '$chalkboardOpenTransition'
+        }, 
+        '@allMobilePortrait': {
+          height: '15%',
+          minHeight: '90px',
+          transition: '$chalkboardOpenTransition'
+        },
+        '@phoneLandscape': {
+          transition: '$chalkboardOpenTransition',
+          height: '20%',
+          minHeight: '40px',
+        } 
       }
     }
   }
 })
 
-const Hr = styled('hr', {
-  w: '100%',
-  opacity: 0.5,
-  my: '0.125em',
+const ChalkbdTopStyled = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 
-  '@allMobilePortrait': {
-    display: 'none'
+  ...deborder('orange', 'chalk'),
+
+  '@deskPortrait': {
+    fontSize: '1.2em',
+  },
+  '@deskSmallest': {
+    fontSize: '0.9em',
+  },
+  '@xl': {
+    fontSize: '1.1em',
+  },
+
+  '@tabletPortrait': {
+    fontSize: '1.2em',
+  },
+  '@tabletLargePortrait': {
+    fontSize: '1.3em',
   }
 })
+
+const ChalkbdTop: React.FC<{
+  playing: boolean
+  showMoves: boolean
+  setShowMoves: (b: boolean) => void
+}> = ({
+  playing,
+  showMoves,
+  setShowMoves
+}) => {
+
+  return (
+    <ChalkbdTopStyled >
+      {playing ? (
+        <TurnAndInCheckWidget inCheckOnly={showMoves}/> 
+      ) : (
+        <GameStatusIndicator />
+      )}
+      <Checkbox checked={showMoves} setChecked={setShowMoves} >show moves</Checkbox>
+    </ChalkbdTopStyled>
+  )
+}
 
 const Chalkboard: React.FC<{
   showMoves: boolean
@@ -93,25 +177,13 @@ const Chalkboard: React.FC<{
 }) => {
 
   const game = useGame()
-  const tm = useTransientMessage()
 
   return (
-    <ChalkboardOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
-      <Row justify={(!game.playing || game.check || !showMoves) ? 'between' : 'end'} align='center'>
-      {(game.playing && !showMoves) && (<TurnIndicator />)}
-      {(game.playing && showMoves) && (<InCheckIndicator />)}
-        {(!game.playing) && (<GameStatusIndicator />)}
-        <Checkbox checked={showMoves} setChecked={setShowMoves} >show moves</Checkbox>
-      </Row>
-      {(game.playing && !showMoves) && (
-      <Row justify='start' align='center'>
-        <InCheckIndicator />
-      </Row>
-      )}
-      {!showMoves && <Hr />}
-      <MovesTable show={showMoves} />
-      {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box>}
-    </ChalkboardOuter>
+    <ChalkbdOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
+      <ChalkbdTop playing={game.playing} showMoves={showMoves} setShowMoves={setShowMoves}/>
+      {!showMoves && <HR css={{'@allMobilePortrait': { display: 'none' }}}/>}
+      <MovesTable show={showMoves} css={{mt: showMoves ? 0 : '$1', flexGrow: 1}} />
+    </ChalkbdOuter>
   )
 })
 

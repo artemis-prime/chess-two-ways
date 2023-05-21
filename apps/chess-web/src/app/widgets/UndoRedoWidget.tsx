@@ -13,6 +13,7 @@ const ALT_TRIGGERS = [
 
 const MAIN_TRIGGERS = [
   'menuBreak', 
+  'tabletLargePortrait'
 ] as MediaQuery[]
 
 

@@ -71,11 +71,15 @@ const Title = styled('h1', {
     fontSize: '1.6em',
   },
 
-  '@phonePortrait': {
-    //fontSize: '1rem', 
+  '@deskPortrait': {
+    fontSize: '1.4em', 
   },
+
   '@tabletPortrait': {
-    //fontSize: '1.9rem', 
+    fontSize: '1.4em', 
+  },
+  '@tabletLargePortrait': {
+    fontSize: '1.6em', 
   }
 }) 
 
@@ -91,6 +95,9 @@ const Left = styled('div', {
 
   '@deskSmaller': {
     width: '85px' // undo / redo chevron version 
+  },
+  '@tabletLargePortrait': {
+    width: '160px'  // undo / redo word version 
   },
   '@menuBreak': {
     width: '160px'  // undo / redo word version 

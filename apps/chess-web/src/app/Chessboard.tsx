@@ -30,20 +30,16 @@ const ChessboardInner = styled('div', {
     width: '100%', 
     height: 'initial',
   },
-
-
+  '@allMobileLandscape': {
+    height: '100%', 
+    width: 'initial',
+  },
   variants: {
     tall: {
       true: {
         width: '100%', 
         height: 'initial',
       },
-      false: {
-        '@deskPortrait': {
-          height: '100%', 
-          weight: 'initial',
-        },
-      }
     }
   }
 })

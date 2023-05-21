@@ -3,7 +3,7 @@ const showForGroup = {
   menuOuter: false,
   layout: false,
   header: false,
-  foo: false
+  chalk: false
 }
 
 type GroupsKey = keyof typeof showForGroup
