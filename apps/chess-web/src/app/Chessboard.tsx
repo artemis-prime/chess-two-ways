@@ -6,7 +6,7 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import type { ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled, type CSS } from '~/style'
-import { useChessboardOrientation, useGame } from '~/services'
+import { useChessboardOrientation, useChess } from '~/services'
 
 import { ChessDnDShell } from './chessboard/ChessDnD'
 import Square from './chessboard/Square'
@@ -52,7 +52,7 @@ const Chessboard: React.FC<{
   css
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const bo = useChessboardOrientation()
 
   return (

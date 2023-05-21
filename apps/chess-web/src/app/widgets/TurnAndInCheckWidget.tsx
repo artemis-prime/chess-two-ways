@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite'
 import { positionToString } from '@artemis-prime/chess-core'
 
 import { styled, type CSS } from '~/style'
-import { useGame, usePulses } from '~/services'
+import { useChess, usePulses } from '~/services'
 import { Box } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
@@ -42,7 +42,7 @@ const TurnAndInCheckWidget: React.FC<{
   css
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const pulses = usePulses()
   const [inCheckFrom, setInCheckFrom] = useState<string>('')
 

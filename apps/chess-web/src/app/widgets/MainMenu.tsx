@@ -6,7 +6,7 @@ import type { GameSnapshot } from '@artemis-prime/chess-core'
 import {type CSS } from '~/style'
 import { 
   useChessboardOrientation, 
-  useGame, 
+  useChess, 
   useSnapshotPersistence 
 } from '~/services'
 import type { IconAndStyles } from '~/primatives'
@@ -31,7 +31,7 @@ const AppMenubar: React.FC<{
 
   const bo = useChessboardOrientation()
   const sp = useSnapshotPersistence()
-  const game = useGame()
+  const game = useChess()
 
   const rootRef = useRef<HTMLDivElement>()
 

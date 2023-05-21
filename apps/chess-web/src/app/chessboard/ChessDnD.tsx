@@ -20,7 +20,7 @@ import {
 
 import { positionsEqual, type ObsPieceRef } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 
 import {type DnDStateInternal, getDnDStateSingleton} from './DnDState' 
 import type DnDPayload from './DnDPayload'
@@ -35,7 +35,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   
   const dragStateRef = useRef<DnDStateInternal>(getDnDStateSingleton())
   const sensorsSpreadRef = useRef<any>({})
-  const game = useGame()
+  const game = useChess()
 
   const pointerSensor = useSensor(PointerSensor)
   const touchSensor = useSensor(TouchSensor)

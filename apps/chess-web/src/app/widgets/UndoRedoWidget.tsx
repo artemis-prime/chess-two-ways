@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react-lite'
 
 import { common, type CSS, type MediaQuery } from '~/style'
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 import { Button, Flex, ResponsiveText } from '~/primatives'
 
 const ALT_TRIGGERS = [
@@ -23,7 +23,7 @@ const UndoRedoWidget: React.FC<{
   css,
 }) => {
 
-  const game = useGame()
+  const game = useChess()
 
   return (
     <Flex direction='row' justify='start' align='stretch' css={css}>

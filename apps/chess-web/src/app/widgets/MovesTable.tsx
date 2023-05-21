@@ -18,7 +18,7 @@ import ScrollableFeed from 'react-scrollable-feed'
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
 import { styled, type CSS, deborder } from '~/style'
-import { useGame, usePulses, useTransientMessage } from '~/services'
+import { useChess, usePulses, useTransientMessage } from '~/services'
 import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
@@ -124,7 +124,7 @@ const MovesTable: React.FC<{
 }) => {
 
   const rowsRef = useRef<Rows>(new Rows())
-  const game = useGame()
+  const game = useChess()
   const pulses = usePulses()
   const tm = useTransientMessage()
 
@@ -288,7 +288,7 @@ const MovesTable: React.FC<{
       <ScrollableOuter>
         <StyledScrollable>
         {r.rows.map((row: MoveRow, i) => (
-          <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='start'>
+          <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='center'>
             <Box 
               css={{
                 minWidth: COL_WIDTHS[0], 
