@@ -97,15 +97,15 @@ const Chalkboard: React.FC<{
 
   return (
     <ChalkboardOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
-      <Row justify={(!game.playing || game.check || !showMoves) ? 'between' : 'end'} align='center' css={{}}>
-      {(game.playing && !showMoves) && (<TurnIndicator css={{}} />)}
-      {(game.playing && showMoves) && (<InCheckIndicator css={{}} />)}
+      <Row justify={(!game.playing || game.check || !showMoves) ? 'between' : 'end'} align='center'>
+      {(game.playing && !showMoves) && (<TurnIndicator />)}
+      {(game.playing && showMoves) && (<InCheckIndicator />)}
         {(!game.playing) && (<GameStatusIndicator />)}
         <Checkbox checked={showMoves} setChecked={setShowMoves} >show moves</Checkbox>
       </Row>
       {(game.playing && !showMoves) && (
-      <Row justify='start' align='center' css={{}}>
-        <InCheckIndicator css={{}} />
+      <Row justify='start' align='center'>
+        <InCheckIndicator />
       </Row>
       )}
       {!showMoves && <Hr />}
