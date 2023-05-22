@@ -34,7 +34,7 @@ import Animated, {
   runOnUI,
  } from 'react-native-reanimated'
 
-import { useTheme } from '~/styles/stitches.config'
+import { useTheme } from '~/style'
 
 import { useMenu } from '~/services'
 

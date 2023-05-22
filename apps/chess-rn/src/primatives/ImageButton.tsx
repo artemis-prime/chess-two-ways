@@ -4,13 +4,8 @@ import {
   type StyleProp,
   ImageBackground,
   type ImageBackgroundProps,
-  Text,
-  View,
   type ViewStyle,
 } from 'react-native'
-
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
 
 import ButtonShell, {type ButtonViewProps, type ButtonState } from './ButtonShell'
 

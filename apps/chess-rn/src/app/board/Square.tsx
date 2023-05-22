@@ -14,7 +14,7 @@ import {
   FILES 
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 import { usePulses } from '~/services'
 
 import PieceComponent from './Piece'

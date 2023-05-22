@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 import { useBoardOrientation, useChess } from '~/services'
 import { BGImage } from '~/primatives'
 

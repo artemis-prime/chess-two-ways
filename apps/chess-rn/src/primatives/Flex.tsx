@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 const Flex = styled(View, {
   variants: {

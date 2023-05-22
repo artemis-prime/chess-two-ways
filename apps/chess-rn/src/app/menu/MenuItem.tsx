@@ -7,8 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { common, deborder, styled } from '~/style'
 
 import {  
   ButtonShell,
@@ -19,11 +18,10 @@ import {
   IconMargin
 } from '~/primatives'
 
-
 const MenuElementInnerView = styled(View,  {
 
-  ...debugBorder('white', 'menu'),
-  height: common.typography.menu.item.lineHeight,
+  ...deborder('white', 'menu'),
+  height: common.typ.menu.item.lineHeight,
   width: '100%',
   textAlignVertical: 'center',
   flexDirection: 'row',
@@ -43,8 +41,8 @@ const MenuElementInnerView = styled(View,  {
 })
 
 const TitleWrapper = styled(Text, {
-  ...common.typography.menu.item,
-  ...debugBorder('orange', 'menu'),
+  ...common.typ.menu.item,
+  ...deborder('orange', 'menu'),
   variants: {
     state: {
       disabled: {

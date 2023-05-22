@@ -1,6 +1,6 @@
 import { Text } from 'react-native'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 export default styled(Text, {
 

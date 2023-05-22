@@ -5,7 +5,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { styled, type CSS } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 import type MenuFlingHandleProps from './MenuFlingHandleProps'
 import MenuFlingHandle from './MenuFlingHandle'
 

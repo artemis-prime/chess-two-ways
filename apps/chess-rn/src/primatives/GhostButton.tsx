@@ -6,12 +6,12 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
+import { styled, common } from '~/style'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
 const GhostStyledText = styled(Text, 
-  common.typography.dash.normal,  
+  common.typ.dash.normal,  
   {
     variants: {
       state: {

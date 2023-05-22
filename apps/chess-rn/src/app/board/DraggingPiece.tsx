@@ -2,7 +2,7 @@ import React  from 'react'
 import { Text } from 'react-native'
 import { observer } from 'mobx-react-lite'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 import { PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 import { useDragState } from './ChessDnD'

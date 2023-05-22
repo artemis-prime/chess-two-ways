@@ -9,7 +9,7 @@ import {
 
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
 
-import { styled, useTheme } from '~/styles/stitches.config'
+import { styled, useTheme } from '~/style'
 import { BGImage, ImageButton } from '~/primatives'
 
 

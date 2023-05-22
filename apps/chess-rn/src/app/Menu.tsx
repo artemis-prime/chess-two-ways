@@ -8,8 +8,7 @@ import {
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
 import { observer } from 'mobx-react-lite'
 
-import { styled, common, css, useTheme } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { common, css, deborder, styled, useTheme } from '~/style'
 import { useBoardOrientation, useChess } from '~/services'
 
 import { MenuItem, MenuCheckboxItem } from './menu'
@@ -29,7 +28,7 @@ const MenuOuter: React.FC<{
     <Animated.View 
       style={[
         {
-          ...debugBorder('red', 'menuOuter'),
+          ...deborder('red', 'menuOuter'),
           position: 'absolute',
           left: 0,
           top: theme.sizes.appBarHeight,
@@ -53,7 +52,7 @@ const MenuOuter: React.FC<{
 
 
 const MenuSectionTitle = styled(Text, 
-  common.typography.menu.title,
+  common.typ.menu.title,
   css({
     borderBottomColor: '$dashText',
     borderBottomWidth: 1,
@@ -63,7 +62,7 @@ const MenuSectionTitle = styled(Text,
 )
 
 const MenuItemsOuter = styled(View, {
-  ...debugBorder('off'),
+  ...deborder('off'),
   pt: '$singleAndHalf'
 })
 
@@ -88,7 +87,7 @@ const Menu: React.FC<{
     <MenuOuter animatedStyle={animatedStyle} style={style}>
       <MenuItemsOuter style={{ 
         width: width * .9, 
-        ...debugBorder('blue', 'menu')
+        ...deborder('blue', 'menu')
       }}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 

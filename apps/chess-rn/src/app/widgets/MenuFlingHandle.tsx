@@ -10,7 +10,7 @@ import {
   GestureDetector
 } from 'react-native-gesture-handler'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 import { Row } from '~/primatives'
 import type { CSS } from 'stitches-native'

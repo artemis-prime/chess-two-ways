@@ -1,7 +1,7 @@
 import React, { type PropsWithChildren } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import { ThemeProvider, theme } from '~/styles/stitches.config'
+import { ThemeProvider, theme } from '~/style/stitches.config'
 
 import DomainProvider from '~/services/DomainProvider'
 import UIServicesProvider from '~/services/UIServicesProvider'
