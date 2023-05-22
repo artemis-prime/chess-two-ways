@@ -15,12 +15,12 @@ const AppBarView = styled(View, {
   alignItems: 'stretch',
   h: '$appBarHeight', 
   w: '100%', 
-  backgroundColor: '$headerBG',
+  backgroundColor: '$menuBGColor',
   borderBottomWidth: 0.5,
   borderBottomColor: 'gray',
 })
 
-const AppBarInDash: React.FC<{
+const AppBarInChalkboard: React.FC<{
   style?: StyleProp<ViewStyle>
   css?: CSS
 } & MenuFlingHandleProps> = ({
@@ -37,4 +37,4 @@ const AppBarInDash: React.FC<{
   )
 }
 
-export default AppBarInDash
+export default AppBarInChalkboard

@@ -38,7 +38,7 @@ const MenuFlingHandle: React.FC<{
   css
 }) => ( 
   <GestureDetector gesture={gesture}>
-    <Row style={style} align='center' css={{...css, pl: '$single',  opacity: 0.8}} collapsable={false} >
+    <Row style={style} align='center' css={{...css, pl: '$1',  opacity: 0.8}} collapsable={false} >
       {menuVisible ? (
         <Figure style={{fontSize: 30, top: -2, left: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
       ):(<> 

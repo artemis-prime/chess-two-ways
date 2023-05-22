@@ -49,7 +49,7 @@ const LogoButton: React.FC<{
 
 const OuterContainer = styled(View, {
   height: '100%', 
-  backgroundColor: '$headerBG'
+  backgroundColor: '$menuBGColor'
 })
 
 const GameAreaOuter: React.FC<{
@@ -69,9 +69,9 @@ const GameAreaOuter: React.FC<{
       justifyContent: 'flex-start',
       alignItems: 'stretch',
       height: '100%',
-      paddingLeft: theme.space.single,
-      paddingRight: theme.space.single,
-      paddingTop: theme.space.single,
+      paddingLeft: theme.space['1'],
+      paddingRight: theme.space['1'],
+      paddingTop: theme.space['1'],
       paddingBottom: 0,
       gap: 11, 
       backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -97,7 +97,7 @@ const GameContainer: React.FC<{
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: theme.colors.headerBG,
+      backgroundColor: theme.colors.menuBGColor,
     }, animatedStyle
     ]}>
       {children}

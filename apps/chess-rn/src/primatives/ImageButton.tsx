@@ -10,7 +10,7 @@ import {
 import ButtonShell, {type ButtonViewProps, type ButtonState } from './ButtonShell'
 
 
-const ButtonImageStates: React.FC< 
+const ImageButtonView: React.FC< 
   {
     stateImages: { [key in ButtonState]?: string }
   }
@@ -61,7 +61,7 @@ const ImageButton: React.FC<
   ...rest
 }) => (
   <ButtonShell 
-    view={ButtonImageStates as React.FC<ButtonViewProps>} 
+    view={ImageButtonView as React.FC<ButtonViewProps>} 
     viewProps={{ stateImages }}
     onClick={onClick} 
     {...rest} 

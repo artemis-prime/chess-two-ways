@@ -4,7 +4,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 import type { CSS } from 'stitches-native'
 
 import { useChess } from '~/services'
-import { Row, DashText } from '~/primatives'
+import { Row, ChalkText } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 
@@ -19,7 +19,7 @@ const TurnIndicator: React.FC<{
   return (
     <Row style={style} css={css}>
       <SideSwatch side={game.currentTurn} />
-      <DashText>'s turn</DashText>
+      <ChalkText>'s turn</ChalkText>
     </Row>
   )
 })

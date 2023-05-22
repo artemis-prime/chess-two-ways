@@ -7,7 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { common, deborder, styled } from '~/style'
+import { typography, deborder, styled } from '~/style'
 
 import {  
   CheckboxShell,
@@ -16,41 +16,37 @@ import {
   WidgetIcon,
 } from '~/primatives'
 
-const MenuElementInnerView = styled(View, {
+const MenuCheckboxItemOuter = styled(View, {
     
   ...deborder('white', 'menu'),
-  height: common.typ.menu.item.lineHeight,
+  height: typography.menu.item.lineHeight,
   width: '100%',
   flexDirection: 'row',
   justifyContent: 'space-between',
   variants: {
     pressed: {
       true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-        borderRadius: '$sm'
+        backgroundColor: '$menuBGColorPressed',
+        borderRadius: '$menuRadius' 
       }
     }
   }
 })
 
-const TitleWrapper = styled(Text, {
-  ...common.typ.menu.item,
+const ItemText = styled(Text, {
+  ...typography.menu.item,
   ...deborder('orange', 'menu'),
   variants: {
     disabled: {
       true: {
-        color: '$gray9'
+        color: '$menuTextDisabled'
       }
     },
-    pressed: {
-      true: {
-        color: '$gray3',
-      }
-    },
+    pressed: { true: {} }
   }
 })
 
-const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
+const MenuCheckboxItemCheckboxView: React.FC<CheckboxViewProps> = ({
   checked,
   pressed,
   disabled, 
@@ -58,10 +54,10 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
   style,
   children
 }) => (
-  <MenuElementInnerView {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
+  <MenuCheckboxItemOuter {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
     <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
       {icon && <WidgetIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
-      <TitleWrapper {...{pressed: !!pressed, disabled: !!disabled}}>{children}</TitleWrapper>
+      <ItemText {...{pressed: !!pressed, disabled: !!disabled}}>{children}</ItemText>
     </View>
     <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
       textAlign: 'right',
@@ -70,7 +66,7 @@ const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
       opacity: 0.8,
       fontWeight: '400'
     }}} />
-  </MenuElementInnerView>
+  </MenuCheckboxItemOuter>
 )
 
 const MenuCheckboxItem: React.FC<{
@@ -88,7 +84,7 @@ const MenuCheckboxItem: React.FC<{
     {...rest} 
     checked={checked} 
     setChecked={setChecked} 
-    view={MenuCheckboxView} 
+    view={MenuCheckboxItemCheckboxView} 
     icon={icon}
   />
 )

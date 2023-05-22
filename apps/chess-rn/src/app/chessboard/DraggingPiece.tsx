@@ -17,10 +17,10 @@ const StyledText = styled(Text, {
   variants: {
     side: {
       white: {
-        color: '$pieceWhite'
+        color: '$pieceColorWhite'
       },
       black: {
-        color: '$pieceBlack'
+        color: '$pieceColorBlack'
       },
     }
   }

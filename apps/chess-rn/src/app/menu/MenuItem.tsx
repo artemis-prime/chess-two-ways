@@ -7,7 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { common, deborder, styled } from '~/style'
+import { typography, deborder, styled } from '~/style'
 
 import {  
   ButtonShell,
@@ -18,10 +18,10 @@ import {
   IconMargin
 } from '~/primatives'
 
-const MenuElementInnerView = styled(View,  {
+const MenuItemOuter = styled(View,  {
 
   ...deborder('white', 'menu'),
-  height: common.typ.menu.item.lineHeight,
+  height: typography.menu.item.lineHeight,
   width: '100%',
   textAlignVertical: 'center',
   flexDirection: 'row',
@@ -32,25 +32,23 @@ const MenuElementInnerView = styled(View,  {
       disabled: {
       },
       pressed: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-        borderRadius: '$sm'
+        backgroundColor: '$menuBGColorPressed',
+        borderRadius: '$menuRadius' 
       },
       normal: {}
     }
   }
 })
 
-const TitleWrapper = styled(Text, {
-  ...common.typ.menu.item,
+const ItemText = styled(Text, {
+  ...typography.menu.item,
   ...deborder('orange', 'menu'),
   variants: {
     state: {
       disabled: {
-        color: '$gray9'
+        color: '$menuTextDisabled'
       },
-      pressed: {
-        color: '$gray3',
-      },
+      pressed: {},
       normal: {}
     },
     icon: {
@@ -61,16 +59,16 @@ const TitleWrapper = styled(Text, {
   }
 })
 
-const MenuButtonInner: React.FC<ButtonViewProps> = ({
+const MenuItemButtonView: React.FC<ButtonViewProps> = ({
   state,
   icon,
   children,
   style
 }) => (
-  <MenuElementInnerView state={state} style={style}>
+  <MenuItemOuter state={state} style={style}>
     {icon && <WidgetIcon state={state} icon={icon} />}
-    <TitleWrapper state={state} icon={!!icon}>{children}</TitleWrapper>
-  </MenuElementInnerView>
+    <ItemText state={state} icon={!!icon}>{children}</ItemText>
+  </MenuItemOuter>
 ) 
   
 const MenuItem: React.FC<{
@@ -85,7 +83,7 @@ const MenuItem: React.FC<{
 }) => (
   <ButtonShell 
     {...rest} 
-    view={MenuButtonInner} 
+    view={MenuItemButtonView} 
     icon={icon} 
     style={style}  
   >

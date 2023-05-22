@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react-lite'
 
 import { useChess } from '~/services'
-import { Row, Column, DashText } from '~/primatives'
+import { Row, Column, ChalkText } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 
@@ -11,25 +11,25 @@ const GameStatusIndicator: React.FC = observer(() => {
   const game = useChess()
 
   return game.gameStatus.victor ? (
-    <Column css={{ mb: '$single'}}>
+    <Column css={{ mb: '$1'}}>
       {game.gameStatus.victor === 'none' ? (<>
-        <DashText css={{mb: '$half'}}>
+        <ChalkText css={{mb: '$_5'}}>
           It's a draw!
-          <DashText size='smaller' css={{pl: '$single'}}>{game.gameStatus.state === 'stalemate' ? ' (stalemate)' : ' (agreement)'}</DashText>
-        </DashText> 
+          <ChalkText size='smaller' css={{pl: '$1'}}>{game.gameStatus.state === 'stalemate' ? ' (stalemate)' : ' (agreement)'}</ChalkText>
+        </ChalkText> 
         <Row align='center'>
           <SideSwatch small side='white' />
-          <DashText size='larger' css={{px: '$singleAndHalf'}}>=</DashText>
+          <ChalkText size='larger' css={{px: '$1_5'}}>=</ChalkText>
           <SideSwatch small side='black' />
-          {game.gameStatus.state === 'stalemate' && <DashText css={{px: '$singleAndHalf'}}>, $</DashText>}
+          {game.gameStatus.state === 'stalemate' && <ChalkText css={{px: '$1_5'}}>, $</ChalkText>}
         </Row> 
       </>) : (<>
         <Row align='center'>
           <SideSwatch small side={game.gameStatus.victor}/>
-          <DashText css={{ml: '$single'}}>won!</DashText>
-          <DashText size='smaller' css={{pl: '$single'}}>{game.gameStatus.state === 'checkmate' ? '(checkmate)' : '(concession)'}</DashText>
+          <ChalkText css={{ml: '$1'}}>won!</ChalkText>
+          <ChalkText size='smaller' css={{pl: '$1'}}>{game.gameStatus.state === 'checkmate' ? '(checkmate)' : '(concession)'}</ChalkText>
         </Row>
-        <DashText size='smaller'>{game.gameStatus.victor === 'white' ? '1-0' : '0-1'}{game.gameStatus.state === 'checkmate' ? ', #' : ', con.'}</DashText> 
+        <ChalkText size='smaller'>{game.gameStatus.victor === 'white' ? '1-0' : '0-1'}{game.gameStatus.state === 'checkmate' ? ', #' : ', con.'}</ChalkText> 
       </>)}
     </Column>
   ) : null

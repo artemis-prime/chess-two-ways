@@ -6,36 +6,60 @@ import {
   type ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/style'
+import { styled, typography } from '~/style'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
-const GhostStyledText = styled(Text, 
-  common.typ.dash.normal,  
+const GhostButtonText = styled(Text, 
+  typography.chalkboard.normal,  
   {
     variants: {
       state: {
-        disabled: {
-          color: '$gray9'
-        },
-        pressed: {
-          color: '$gray3',
-          textDecorationLine: 'underline',
-        },
+        disabled: {},
+        pressed: {},
         normal: {}
-      }
-    }
+      },
+      chalkboard: {
+        true: {
+          color: '$chalkboardTextColor',
+          fontFamily: '$chalkboardFont',
+        }
+      },
+      menu: {
+        true: {
+          color: '$chalkboardTextColor',
+          fontFamily: '$chalkboardFont',
+//          fontSize: 'inherit',
+        }
+      },
+    },
+    compoundVariants: [
+      {
+        chalkboard: true,
+        state: 'disabled',
+        css: {
+          color: '$chalkboardTextColorDisabled',
+        }
+      },
+      {
+        menu: true,
+        state: 'disabled',
+        css: {
+          color: '$menuTextColorDisabled',
+        }
+      },
+    ]
   }
 )
 
-const GhostText: React.FC<ButtonViewProps> = ({
+const GhostButtonView: React.FC<ButtonViewProps> = ({
   state,
   children,
   style
 }) => (
-  <GhostStyledText state={state} style={style}>
+  <GhostButtonText state={state} style={style}>
     {children}
-  </GhostStyledText>
+  </GhostButtonText>
 ) 
 
 const GhostButton: React.FC<{
@@ -47,7 +71,7 @@ const GhostButton: React.FC<{
   style,
   ...rest
 }) => (
-  <ButtonShell {...rest} onClick={onClick} view={GhostText} style={style}  >
+  <ButtonShell {...rest} onClick={onClick} view={GhostButtonView} style={style}  >
     {children}
   </ButtonShell>
 )

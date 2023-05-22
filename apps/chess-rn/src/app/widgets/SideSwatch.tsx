@@ -13,10 +13,10 @@ const SideSwatch = styled(View, {
   variants: {
     side: {
       white: {
-        backgroundColor: '$pieceWhite'
+        backgroundColor: '$pieceColorWhite'
       },
       black: {
-        backgroundColor: '$pieceBlack'
+        backgroundColor: '$pieceColorBlack'
       },
     },
     small: {

@@ -8,8 +8,8 @@ import {
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
 import { observer } from 'mobx-react-lite'
 
-import { common, css, deborder, styled, useTheme } from '~/style'
-import { useBoardOrientation, useChess } from '~/services'
+import { typography, css, deborder, styled, useTheme } from '~/style'
+import { useChessboardOrientation, useChess } from '~/services'
 
 import { MenuItem, MenuCheckboxItem } from './menu'
 
@@ -33,10 +33,10 @@ const MenuOuter: React.FC<{
           left: 0,
           top: theme.sizes.appBarHeight,
           width: '100%', 
-          paddingLeft: theme.space.menuPX,
-          paddingRight: theme.space.menuPX,
-          paddingBottom: theme.space.half,
-          marginTop: theme.space.half,
+          paddingLeft: theme.space.pxMenu,
+          paddingRight: theme.space.pxMenu,
+          paddingBottom: theme.space._5,
+          marginTop: theme.space._5,
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'flex-start'
@@ -52,18 +52,18 @@ const MenuOuter: React.FC<{
 
 
 const MenuSectionTitle = styled(Text, 
-  common.typ.menu.title,
+  typography.menu.title,
   css({
-    borderBottomColor: '$dashText',
+    borderBottomColor: '$chalkboardTextColor',
     borderBottomWidth: 1,
-    pt: '$menuSeparatorPY',
-    mb: '$menuSeparatorPY',
+    pt: '$pyMenuSeparator',
+    mb: '$pyMenuSeparator',
   })
 )
 
 const MenuItemsOuter = styled(View, {
   ...deborder('off'),
-  pt: '$singleAndHalf'
+  pt: '$1_5'
 })
 
 
@@ -77,7 +77,7 @@ const Menu: React.FC<{
   style 
 }) => {
 
-  const bo = useBoardOrientation()
+  const bo = useChessboardOrientation()
   const game = useChess()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 

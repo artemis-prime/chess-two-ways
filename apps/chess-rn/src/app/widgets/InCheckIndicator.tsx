@@ -4,7 +4,7 @@ import { autorun } from 'mobx'
 import { type Position, positionToString } from '@artemis-prime/chess-core'
 
 import { useChess } from '~/services'
-import { DashText } from '~/primatives'
+import { ChalkText } from '~/primatives'
 
 const InCheckIndicator: React.FC = () => {
 
@@ -25,7 +25,7 @@ const InCheckIndicator: React.FC = () => {
   ), [])
 
   return squaresString ? (
-    <DashText size='smaller' alert>{`In check from ${squaresString}!`}</DashText> 
+    <ChalkText size='smaller' alert>{`In check from ${squaresString}!`}</ChalkText> 
   ) : null
 }
 

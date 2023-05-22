@@ -49,8 +49,6 @@ const {
       headerFontSize: '1.2rem',
       normal: '1rem',
       menuDesktop: '18px',
-      menuMobile: '14px',
-      chalkboardSmaller: '0.9rem'
     },
     fontWeights: {
       menuFontWeight: 500

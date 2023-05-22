@@ -26,7 +26,7 @@ const SquareInner = styled(View, {
   variants: {
     brown: {
       true: {
-        backgroundColor: '$boardSquareBrown'
+        backgroundColor: '$chessboardBrown'
       },
     },
   }
@@ -107,7 +107,7 @@ const FeedbackView: React.FC<{
   )
 })
 
-  // See comments in Board.tsx re sizing changes 
+  // See comments in Chessboard.tsx re sizing changes 
 const Square: React.FC<{  
   square: ObsSquare,
   sizeInLayout: number | undefined

@@ -1,6 +1,6 @@
 export type { CSS } from 'stitches-native'
 export { default as deborder } from './debugBorder' 
-export { default as common } from './common' 
+export { default as typography } from './typography' 
 export {
   css,
   media,

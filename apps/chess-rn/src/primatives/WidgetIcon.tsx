@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-import { common, deborder, styled } from '~/style'
+import { typography, deborder, styled } from '~/style'
 
 import type WidgetIconDesc from './WidgetIconDesc'
 
@@ -9,7 +9,7 @@ const IconWidth = 32
 const IconMargin = 4
 
 const UnicodeWrapper = styled(Text, {
-  ...common.typ.menu.item,
+  ...typography.menu.item,
   ...deborder('yellow', 'menu'),
   fontSize: 36,
   fontWeight: '$bold',

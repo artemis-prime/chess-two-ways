@@ -204,7 +204,7 @@ const Piece: React.FC<{
   })()
 
   const height = fontSize * 1.1 // ensure no clipping 
-  const color = (square.piece.side === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
+  const color = (square.piece.side === 'white') ? theme.colors.pieceColorWhite : theme.colors.pieceColorBlack
 
     // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
   return (

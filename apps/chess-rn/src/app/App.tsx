@@ -38,8 +38,8 @@ import { useTheme } from '~/style'
 
 import { useMenu } from '~/services'
 
-import Board from './Board'
-import Dash from './Dash'
+import Chessboard from './Chessboard'
+import Chalkboard from './Chalkboard'
 
 import {
   CornerShim,
@@ -68,8 +68,8 @@ const GameArea: React.FC<{
       // This must be an animated view due to what seems to be a
       // r-n-reanimated bug.
     <Animated.View collapsable={false} style={{gap: 11}}>
-      <Dash disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
-      <Board disableInput={ui.menuVisible} />
+      <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
+      <Chessboard disableInput={ui.menuVisible} />
     </Animated.View>
   )
 })
@@ -162,7 +162,7 @@ const App: React.FC = () => {
     backgroundColor: interpolateColor(      
       menuAnimationBase.value, 
       [0, 1], 
-      ['rgba(0, 0, 0, 0.2)', theme.colors.headerBG]
+      ['rgba(0, 0, 0, 0.2)', theme.colors.menuBGColor]
     ) 
   }))
 

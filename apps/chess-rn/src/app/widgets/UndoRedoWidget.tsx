@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { type CSS } from 'stitches-native'
 
 import { useChess } from '~/services'
-import { GhostButton, Row, DashText } from '~/primatives'
+import { GhostButton, Row, ChalkText } from '~/primatives'
 
 const UndoRedoWidget: React.FC<{ 
   style?: StyleProp<ViewStyle> 
@@ -21,7 +21,7 @@ const UndoRedoWidget: React.FC<{
         onClick={game.undo.bind(game)}
         style={{ marginRight: !(game.canUndo || game.canRedo) ? 15 : 6 }}
       >Undo</GhostButton>
-      {(game.canUndo || game.canRedo) && <DashText>|</DashText>}
+      {(game.canUndo || game.canRedo) && <ChalkText>|</ChalkText>}
       <GhostButton 
         disabled={!game.canRedo}
         onClick={game.redo.bind(game)}

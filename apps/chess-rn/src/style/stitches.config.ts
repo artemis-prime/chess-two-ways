@@ -8,9 +8,9 @@ import utils from './utils.stitches'
 const isTablet = DeviceInfo.isTablet()
 
 const LINEHEIGHTS = {
-  menu: 40,
-  common: 34,
-  smaller: 28
+  lineHeightMenu: 40,
+  lineHeightNormal: 34,
+  lineHeightSmaller: 28
 } 
 
 // Cf: https://github.com/Temzasse/stitches-native/blob/main/example/src/styles/styled.ts#L56
@@ -47,17 +47,37 @@ const {
       alert11: '$orange11',
       alert12: '$orange12',
 
-      pieceBlack: '#573131',
-      pieceWhite: '#f7f0be',
-      dashBorder: 'rgba(167, 107, 55, 0.761)',
-      dashAlert: '$orange8',
-      dashText: '$gray7',
-      headerBG: '#274070', 
-      boardSquareBrown: 'rgba(124, 79, 52, 0.60)',
+      navy3: 'hsl(226, 56.0%, 34.5%)',    
+      navy4: 'hsl(226, 39.2%, 42%)',
+      navy5: 'hsl(226, 39.2%, 46%)',
+      navy6: 'hsl(226, 39.2%, 52%)',
+      navy7: 'hsl(226, 39.2%, 60%)',
+
+      pieceColorBlack: '#573131',
+      pieceColorWhite: '#f7f0be',
+      chalkboardBorderColor: '$pieceColorBlack',
+      chessboardBrown: 'rgba(124, 79, 52, 0.60)',
+      // $brown-darker: rgba(105, 49, 49, 0.75); // web
+
+      chalkboardTextColor: 'rgba(255, 255, 255, 0.9)',
+      chalkboardTextColorDisabled: '$gray11',
+
+      menuBGColor: '$navy3',    
+      menuBGColorHover: '$navy4', 
+      menuBGColorSelectedHover: '$navy5' ,
+      menuBGColorPressed: '$navy6', 
+
+      menuTextColor: 'rgba(255, 255, 255, 0.9)',
+      menuTextColorDisabled: 'rgba(255, 255, 255, 0.45)',
+      
+      menuContainedButtonColor: '$navy5',
+      menuContainedButtonColorHover: '$navy6',
+      menuContainedButtonColorPressed: '$navy7',
+   
     },
     fonts: {
-      dash: 'IDidThis',
-      menu: 'Roboto'
+      chalkboardFont: 'IDidThis',
+      menuFont: 'Roboto'
     },
     fontWeights: {
       bold: '700',
@@ -74,11 +94,10 @@ const {
       thick: 3,
     },
     fontSizes: {
-      common: LINEHEIGHTS.common * 0.6,
-      smaller: LINEHEIGHTS.smaller * 0.6,  
-      larger: LINEHEIGHTS.common * 0.7,
-      menu: LINEHEIGHTS.menu * .5,
-      menuTitle: LINEHEIGHTS.menu * .8
+      fontSizeNormal: LINEHEIGHTS.lineHeightNormal * 0.6,
+      fontSizeSmaller: LINEHEIGHTS.lineHeightSmaller * 0.6,  
+      fontSizeLarger: LINEHEIGHTS.lineHeightNormal * 0.7,
+      fontSizeMenuItem: LINEHEIGHTS.lineHeightMenu * .5,
     },
     lineHeights: {
       ...LINEHEIGHTS
@@ -91,37 +110,35 @@ const {
       modal: 1000,
     },
     space: {
-      none: 0,
-      half: 4,
-      single: 7,
-      singleAndHalf: 11,
-      double: 16,
-      triple: 23,
-      menuSeparatorPY: 7,
-      menuPY: 7,
-      menuPX: 11,
-      smallerLine: LINEHEIGHTS.smaller,
-      normalLine: LINEHEIGHTS.common,
-      menuLine: LINEHEIGHTS.menu,
-      appBar: 42,
-      big: 64,
+      '_5': 4,
+      1: 7,
+      '1_5': 11,
+      2: 16,
+      3: 23,
+      4: 32,
+      pyMenuSeparator: 7,
+      pxMenu: 11,
+      spaceAppBarHeight: 42,
+      spaceBig: 64,
     },
     sizes: {
       hairlineWidth: StyleSheet.hairlineWidth,
       ...LINEHEIGHTS,
       appBarHeight: 42,
-      swatchHNormal: LINEHEIGHTS.common * 0.7,
-      swatchWNormal: LINEHEIGHTS.common * 1.3, 
-      swatchHSmall: LINEHEIGHTS.common * 0.6,
-      swatchWSmall: LINEHEIGHTS.common * 0.6,
+      swatchHNormal: LINEHEIGHTS.lineHeightNormal * 0.7,
+      swatchWNormal: LINEHEIGHTS.lineHeightNormal * 1.3, 
+      swatchHSmall: LINEHEIGHTS.lineHeightNormal * 0.6,
+      swatchWSmall: LINEHEIGHTS.lineHeightNormal * 0.6,
       menuIconSize: 24,
     },
     radii: {
       none: 0,
       sm: 3,
       md: 8,
+      lgr: 12,
       lg: 16,
       rounded: 999,
+      menuRadius: 999,
     },
   },    
 })

@@ -1,4 +1,4 @@
-export { default as AppBarInDash } from './AppBarInDash'
+export { default as AppBarInChalkboard } from './AppBarInChalkboard'
 export { default as GameStatusIndicator } from './GameStatusIndicator'
 export { default as InCheckIndicator } from './InCheckIndicator'
 export { default as MenuFlingHandle } from './MenuFlingHandle'

@@ -11,7 +11,7 @@ import {
   GameStatusIndicator,
   TurnIndicator,
   InCheckIndicator,
-  AppBarInDash,
+  AppBarInChalkboard,
   type MenuFlingHandleProps
 } from '~/app/widgets'
 
@@ -26,10 +26,10 @@ const StyledBGImage = styled(BGImage, {
   borderTopRightRadius: '$lg',
   borderBottomLeftRadius: '$sm',
   borderBottomRightRadius: '$sm',
-  borderColor: '$pieceBlack',
+  borderColor: '$chalkboardBorderColor',
 })
 
-const Dash: React.FC<{
+const Chalkboard: React.FC<{
   disableInput: boolean,
   style?: StyleProp<ViewStyle>,
   css?: CSS
@@ -42,8 +42,8 @@ const Dash: React.FC<{
   const game = useChess()
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css} style={style}>
-      <AppBarInDash {...rest} />
-      <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$single', px: '$singleAndHalf'}}>
+      <AppBarInChalkboard {...rest} />
+      <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
         <Row justify='between' style={{ alignSelf: 'stretch' }}>
         {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
           <UndoRedoWidget />
@@ -54,4 +54,4 @@ const Dash: React.FC<{
   )
 })
 
-export default Dash
+export default Chalkboard
