@@ -10,14 +10,49 @@ import {
 import Animated, { type AnimateStyle } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/styles/stitches.config'
-import { BGImage } from '~/primatives'
+import { BGImage, ImageButton } from '~/primatives'
+
+
+const LogoButton: React.FC<{
+  onClick: () => void
+  animatedStyle: AnimateStyle<ViewStyle>
+  style?: StyleProp<ViewStyle>
+  disabled?: boolean
+}> = ({
+  onClick,
+  animatedStyle,
+  style,
+  disabled = false
+}) => (
+  <Animated.View 
+    style={[animatedStyle, {
+      position: 'absolute',
+      width: 40,
+      height: 40,
+      right: 12,
+      top: 48 + 12
+    }]}
+  >
+    <ImageButton disabled={disabled} onClick={onClick} 
+      style={[style, {
+        width: '100%',
+        height: '100%'
+      }]} 
+      stateImages={{
+        normal: 'knight_logo_80_normal',
+        pressed: 'knight_logo_80_pressed',
+        disabled: 'knight_logo_80_disabled'
+      }} 
+    />
+  </Animated.View>
+)
 
 const OuterContainer = styled(View, {
   height: '100%', 
   backgroundColor: '$headerBG'
 })
 
-const GameArea: React.FC<{
+const GameAreaOuter: React.FC<{
   showBorder: boolean
   style?: StyleProp<ViewStyle>
 } & PropsWithChildren> = ({
@@ -38,7 +73,7 @@ const GameArea: React.FC<{
       paddingRight: theme.space.single,
       paddingTop: theme.space.single,
       paddingBottom: 0,
-      gap: 11, // bug? Doesn't seem to recognize size token values.
+      gap: 11, 
       backgroundColor: 'rgba(0, 0, 0, 0.2)',
       borderColor: '#444',
       borderTopLeftRadius: showBorder ? theme.radii.md : 0,
@@ -113,10 +148,11 @@ const GameBGImage = styled(BGImage, {
 })
 
 export {
-  OuterContainer,
-  GameContainer,
-  GameArea,
-  StatusBarSpacer,
   CornerShim,
-  GameBGImage
+  GameAreaOuter,
+  GameBGImage,
+  GameContainer,
+  LogoButton,
+  OuterContainer,
+  StatusBarSpacer,
 }

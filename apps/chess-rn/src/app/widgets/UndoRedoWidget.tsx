@@ -3,7 +3,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 import { observer } from 'mobx-react-lite'
 import { type CSS } from 'stitches-native'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 import { GhostButton, Row, DashText } from '~/primatives'
 
 const UndoRedoWidget: React.FC<{ 
@@ -13,7 +13,7 @@ const UndoRedoWidget: React.FC<{
   style,
   css
 }) => {
-  const game = useGame()
+  const game = useChess()
   return (
     <Row justify='end' style={style} css={css} >
       <GhostButton 

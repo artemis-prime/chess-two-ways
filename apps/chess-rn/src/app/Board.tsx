@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite'
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled, type CSS } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame } from '~/services'
+import { useBoardOrientation, useChess } from '~/services'
 import { BGImage } from '~/primatives'
 
 import Square from './board/Square'
@@ -48,7 +48,7 @@ const Board: React.FC<{
   css 
 }) => {
 
-  const game = useGame()
+  const game = useChess()
   const bo = useBoardOrientation()
   
     // Squares need to know their size in pt to do internal layout.

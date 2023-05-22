@@ -3,12 +3,12 @@ import { autorun } from 'mobx'
 
 import { type Position, positionToString } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 import { DashText } from '~/primatives'
 
 const InCheckIndicator: React.FC = () => {
 
-  const game = useGame()
+  const game = useChess()
   const [squaresString, setSquaresString] = useState<string>('')
 
   useEffect(() => (

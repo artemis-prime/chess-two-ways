@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite'
 
 import { styled, common, css, useTheme } from '~/styles/stitches.config'
 import debugBorder from '~/styles/debugBorder'
-import { useBoardOrientation, useGame } from '~/services'
+import { useBoardOrientation, useChess } from '~/services'
 
 import { MenuItem, MenuCheckboxItem } from './menu'
 
@@ -79,7 +79,7 @@ const Menu: React.FC<{
 }) => {
 
   const bo = useBoardOrientation()
-  const game = useGame()
+  const game = useChess()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 

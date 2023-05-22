@@ -11,7 +11,7 @@ import {
   action, 
 } from 'mobx'
 
-import useGame from './useGame'
+import useChess from './useChess'
 import type BoardOrientation from './BoardOrientation'
 import type Pulses from './Pulses'
 import type MenuState from './MenuState'
@@ -85,7 +85,7 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
   const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl())
   const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
 
-  const game = useGame()
+  const game = useChess()
   
   useEffect(() => {
     const fastID = setInterval(() => {

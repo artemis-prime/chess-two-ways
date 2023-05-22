@@ -3,7 +3,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 import { observer } from 'mobx-react-lite'
 
 import { styled, type CSS } from '~/styles/stitches.config'
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 import { BGImage, Column, Row } from '~/primatives'
 
 import {
@@ -39,7 +39,7 @@ const Dash: React.FC<{
   css,
   ...rest
 }) => {
-  const game = useGame()
+  const game = useChess()
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css} style={style}>
       <AppBarInDash {...rest} />
