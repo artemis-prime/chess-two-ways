@@ -11,18 +11,18 @@ import {
   action, 
 } from 'mobx'
 
-import useGame from './useGame'
-import type BoardOrientation from './BoardOrientation'
+import useChess from './useChess'
+import type ChessboardOrientation from './ChessboardOrientation'
 import type Pulses from './Pulses'
 import type MenuState from './MenuState'
 
 interface UIServices  {
   pulses: Pulses
   menu: MenuState
-  boardOrientation: BoardOrientation
+  chessboardOrientation: ChessboardOrientation
 }
 
-class BoardOrientationImpl implements BoardOrientation {
+class ChessboardOrientationImpl implements ChessboardOrientation {
 
   whiteOnBottom = true
   autoOrientToCurrentTurn = false
@@ -82,10 +82,10 @@ const UIServicesContext = React.createContext<UIServices | undefined>(undefined)
 const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const boardOrientationRef = useRef<BoardOrientationImpl>(new BoardOrientationImpl())
+  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl())
   const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
 
-  const game = useGame()
+  const game = useChess()
   
   useEffect(() => {
     const fastID = setInterval(() => {
@@ -96,7 +96,7 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     }, 500)  
     const cleanupAutorun = autorun(
       () => {
-        const b = boardOrientationRef.current
+        const b = chessboardOrientationRef.current
         if (b.autoOrientToCurrentTurn) {
           if (game.currentTurn === 'white') {
             b.setWhiteOnBottom(true)
@@ -120,7 +120,7 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     <UIServicesContext.Provider value={{
       menu: menuStateRef.current,
       pulses: pulsesRef.current,
-      boardOrientation: boardOrientationRef.current
+      chessboardOrientation: chessboardOrientationRef.current
     }}>
       {children}
     </UIServicesContext.Provider>

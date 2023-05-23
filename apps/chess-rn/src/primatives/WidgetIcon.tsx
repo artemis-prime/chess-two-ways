@@ -1,7 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { typography, deborder, styled } from '~/style'
 
 import type WidgetIconDesc from './WidgetIconDesc'
 
@@ -10,8 +9,8 @@ const IconWidth = 32
 const IconMargin = 4
 
 const UnicodeWrapper = styled(Text, {
-  ...common.typography.menu.item,
-  ...debugBorder('yellow', 'menu'),
+  ...typography.menu.item,
+  ...deborder('yellow', 'menu'),
   fontSize: 36,
   fontWeight: '$bold',
   
@@ -49,7 +48,6 @@ const WidgetIcon: React.FC<{
   let style = (typeof icon === 'string') ? {} : icon.style 
   const stateToSpread = ['disabled', 'pressed'].includes(state) ? {state: state as 'disabled' | 'pressed'} : {}
   return (
-
     <UnicodeWrapper {...stateToSpread} style={style}>{unicode}</UnicodeWrapper>
   )
 }

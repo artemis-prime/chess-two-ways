@@ -6,7 +6,7 @@ export {
   styled,
   css,
 } from './stitches.config'
-export { default as common } from './common' 
+export { default as menu } from './menuStyles' 
 export { default as deborder } from './debugBorder' 
 export { BREAKPOINTS, type MediaQuery } from './media.stitches' 
 export { default as sideArea, applySideWidthsToStyles } from './sideArea' 

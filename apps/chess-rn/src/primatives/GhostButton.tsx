@@ -1,53 +1,116 @@
 import React, { type PropsWithChildren } from 'react'
 import { 
   type PressableProps,
-  type StyleProp,
   Text,
-  type ViewStyle,
+  View,
 } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
+import { styled, typography, type CSS } from '~/style'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
-const GhostStyledText = styled(Text, 
-  common.typography.dash.normal,  
+const GhostButtonBG = styled(View, 
   {
+    borderRadius: '$menuRadius',
+    backgroundColor: 'transparent',
     variants: {
       state: {
-        disabled: {
-          color: '$gray9'
-        },
-        pressed: {
-          color: '$gray3',
-          textDecorationLine: 'underline',
-        },
+        disabled: {},
+        pressed: {},
         normal: {}
-      }
-    }
+      },
+      chalkboard: {
+        true: {}
+      },
+      menu: {
+        true: { }
+      },
+    },
+    compoundVariants: [
+      {
+        chalkboard: true,
+        state: 'pressed',
+        css: {
+          backgroundColor: '$chalkboardButtonPressedBG',
+        }
+      },
+      {
+        menu: true,
+        state: 'pressed',
+        css: {
+          backgroundColor: '$menuBGColorPressed',
+        }
+      },
+    ]
   }
 )
 
-const GhostText: React.FC<ButtonViewProps> = ({
-  state,
-  children,
-  style
-}) => (
-  <GhostStyledText state={state} style={style}>
-    {children}
-  </GhostStyledText>
-) 
+const GhostButtonText = styled(Text, 
+  {
+    variants: {
+      state: {
+        disabled: {},
+        pressed: {},
+        normal: {}
+      },
+      chalkboard: {
+        true: { ...typography.chalkboard.normal }
+      },
+      menu: {
+        true: { ...typography.menu.sectionTitle }
+      },
+    },
+    compoundVariants: [
+      {
+        chalkboard: true,
+        state: 'disabled',
+        css: {
+          color: '$chalkboardTextColorDisabled',
+        }
+      },
+      {
+        menu: true,
+        state: 'disabled',
+        css: {
+          color: '$menuTextColorDisabled',
+        }
+      },
+    ]
+  }
+)
 
-const GhostButton: React.FC<{
-  onClick: () => void
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+const GhostButtonView: React.FC<{
+  menu?: boolean
+  chalkboard?: boolean
+  textCss?: CSS
+} & ButtonViewProps> = ({
   children,
-  onClick,
-  style,
+  css,
+  textCss,
   ...rest
 }) => (
-  <ButtonShell {...rest} onClick={onClick} view={GhostText} style={style}  >
+  <GhostButtonBG css={css} {...rest}>
+    <GhostButtonText css={textCss} {...rest}>
+      {children}
+    </GhostButtonText>
+  </GhostButtonBG>
+) 
+
+const GhostButton: React.FC<
+  {
+    onClick: () => void
+    menu?: boolean
+    chalkboard?: boolean
+    css?: CSS
+    textCss?: CSS
+  } 
+  & PropsWithChildren 
+  & Omit<PressableProps, 'style'>
+> = ({
+  children,
+  ...rest
+}) => (
+  <ButtonShell {...rest} view={GhostButtonView}  >
     {children}
   </ButtonShell>
 )

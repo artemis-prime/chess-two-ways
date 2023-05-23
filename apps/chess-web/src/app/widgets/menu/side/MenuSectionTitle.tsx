@@ -1,6 +1,6 @@
 import React, { type HTMLProps } from 'react'
 
-import { styled, type CSS, common, deborder } from '~/style'
+import { styled, type CSS, menu, deborder } from '~/style'
 
   // Following this: 
   // https://m3.material.io/components/navigation-drawer/specs
@@ -9,7 +9,7 @@ import { styled, type CSS, common, deborder } from '~/style'
 const StyledHeading = styled('h6', {
 
   all: 'unset',
-  ...common.sideMenuItem,
+  ...menu.sideMenuItem,
   borderRadius: 0,
   pl: 0,
   mx: '$menuPL',

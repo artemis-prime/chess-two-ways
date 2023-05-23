@@ -1,9 +1,5 @@
 import React, { type PropsWithChildren } from 'react'
-import { 
-  type StyleProp,
-  View,
-  type ViewStyle 
-} from 'react-native'
+import { View } from 'react-native'
 import { observer } from 'mobx-react-lite'
 import type {  VariantProps } from 'stitches-native'
 
@@ -14,7 +10,7 @@ import {
   FILES 
 } from '@artemis-prime/chess-core'
 
-import { styled } from '~/styles/stitches.config'
+import { styled, type CSS } from '~/style'
 import { usePulses } from '~/services'
 
 import PieceComponent from './Piece'
@@ -26,7 +22,7 @@ const SquareInner = styled(View, {
   variants: {
     brown: {
       true: {
-        backgroundColor: '$boardSquareBrown'
+        backgroundColor: '$chessboardBrown'
       },
     },
   }
@@ -107,15 +103,15 @@ const FeedbackView: React.FC<{
   )
 })
 
-  // See comments in Board.tsx re sizing changes 
+  // See comments in Chessboard.tsx re sizing changes 
 const Square: React.FC<{  
   square: ObsSquare,
   sizeInLayout: number | undefined
-  style?: StyleProp<ViewStyle>
+  css?: CSS
 }> = observer(({
   square,
   sizeInLayout,
-  style 
+  css 
 }) => {
 
   const rankOdd = (square.rank % 2)
@@ -125,12 +121,12 @@ const Square: React.FC<{
     // Only do inner layout stuff if we have an accurate size available.
     // This avoids potentional jump after initial layout.
   return (
-    <SquareInner {...brown} style={style}>
-      {sizeInLayout && (
+    <SquareInner {...brown} css={css}>
+    {sizeInLayout && (
       <FeedbackView squareStateRef={square} >
         <PieceComponent square={square} size={sizeInLayout} /> 
       </FeedbackView>
-      )}
+    )}
     </SquareInner>
   )
 })

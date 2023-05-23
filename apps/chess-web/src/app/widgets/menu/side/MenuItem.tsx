@@ -1,6 +1,6 @@
 import React, { type HTMLProps } from 'react'
 
-import { styled, type CSS, common, deborder } from '~/style'
+import { styled, type CSS, menu, deborder } from '~/style'
 
 import {  
   type WidgetIconDesc,
@@ -17,7 +17,7 @@ import {
 const StyledButton = styled('button', {
 
   all: 'unset',
-  ...common.sideMenuItem,
+  ...menu.sideMenuItem,
   ...deborder('yellow', 'menu'),
   display: 'flex',
   flexDirection: 'row',

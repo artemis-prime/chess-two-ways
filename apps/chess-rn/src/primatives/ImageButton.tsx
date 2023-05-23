@@ -4,22 +4,17 @@ import {
   type StyleProp,
   ImageBackground,
   type ImageBackgroundProps,
-  Text,
-  View,
   type ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
-
+import { type CSS, css } from '~/style'
 import ButtonShell, {type ButtonViewProps, type ButtonState } from './ButtonShell'
 
-
-const ButtonImageStates: React.FC< 
+const ImageButtonView: React.FC< 
   {
     stateImages: { [key in ButtonState]?: string }
   }
-  & ButtonViewProps
+  & Omit<ButtonViewProps, 'css'>
   & Omit<ImageBackgroundProps, 'source'>
 > = ({
   onError,    // ignore
@@ -33,16 +28,19 @@ const ButtonImageStates: React.FC<
   
   const handleError = (e:any) => { console.warn(e.nativeEvent.error) }
 
+  const toSpread = rest
+  // rt error
+  if ('css' in toSpread) {
+    delete toSpread.css
+  }
+
   return (
     <ImageBackground 
       source={{uri: stateImages[state]}} 
       onError={handleError} 
       resizeMode="cover" 
-      style={[style, {
-        //width: '100%',
-        overflow: 'hidden'
-      }]}
-      {...rest}
+      style={[style, { overflow: 'hidden' }]}
+      {...toSpread}
     >
       {children}
     </ImageBackground>
@@ -52,10 +50,8 @@ const ButtonImageStates: React.FC<
 const ImageButton: React.FC<
   {
     onClick: () => void
-    stateImages: {
-      [key in ButtonState]?: string
-    },
-    style?: StyleProp<ViewStyle>
+    stateImages: { [key in ButtonState]?: string }
+    style?: StyleProp<ViewStyle> // must be this form
   } 
   & PropsWithChildren 
   & Omit<PressableProps, 'style'>
@@ -66,7 +62,7 @@ const ImageButton: React.FC<
   ...rest
 }) => (
   <ButtonShell 
-    view={ButtonImageStates as React.FC<ButtonViewProps>} 
+    view={ImageButtonView as React.FC<ButtonViewProps>} 
     viewProps={{ stateImages }}
     onClick={onClick} 
     {...rest} 

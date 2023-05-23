@@ -2,9 +2,6 @@ import React, { type PropsWithChildren } from 'react'
 import { 
   Text, 
   View,
-  type StyleProp,
-  type ViewStyle,
-  type TextStyle,
   type ColorValue 
 } from 'react-native'
 import { observer } from 'mobx-react-lite'
@@ -15,7 +12,8 @@ import {
   PIECETYPE_TO_UNICODE 
 } from '@artemis-prime/chess-core'
 
-import { styled, useTheme } from '~/styles/stitches.config'
+import { styled, useTheme, type CSS } from '~/style'
+import { Box } from '~/primatives'
 import { usePulses } from '~/services'
 
 interface ShadowDesc {
@@ -125,14 +123,14 @@ const ShadowFigure = styled(Text, {
   // https://stackoverflow.com/questions/51611619/text-with-solid-shadow-in-react-native 
 const Shadows: React.FC<{
   descs: ShadowDesc[]
-  style?: StyleProp<TextStyle>
+  css?: CSS
 } & PropsWithChildren> = ({
   descs,
-  style,
+  css,
   children
 }) => (<>
   {descs.map((d, i) => (
-    <ShadowFigure style={[{color: d.color}, style]} variant={d.variant} key={i}>{children}</ShadowFigure> 
+    <ShadowFigure css={{...css, color: d.color}} variant={d.variant} key={i}>{children}</ShadowFigure> 
   ))}
 </>)
 
@@ -141,11 +139,11 @@ const Shadows: React.FC<{
 const Piece: React.FC<{  
   square: ObsSquare 
   size: number 
-  style?: StyleProp<ViewStyle>
+  css?: CSS
 }> = observer(({
   square,
   size,
-  style 
+  css
 }) => {
 
   const pulses = usePulses()
@@ -204,18 +202,18 @@ const Piece: React.FC<{
   })()
 
   const height = fontSize * 1.1 // ensure no clipping 
-  const color = (square.piece.side === 'white') ? theme.colors.pieceWhite : theme.colors.pieceBlack
+  const color = (square.piece.side === 'white') ? theme.colors.pieceColorWhite : theme.colors.pieceColorBlack
 
     // android bug: https://stackoverflow.com/questions/41943191/how-to-use-zindex-in-react-native
   return (
-    <View style={[style, { width: '100%', height: '100%' }]} >
-      <Shadows descs={shadows} style={{ fontSize, height  }} >
+    <Box css={{...css, w: '100%', h: '100%' }} >
+      <Shadows descs={shadows} css={{ fontSize, height }} >
         {PIECETYPE_TO_UNICODE[square.piece.type]}
       </Shadows> 
-      <PieceFigure figureSize={figureSize} style={{ fontSize, height, color }} >
+      <PieceFigure figureSize={figureSize} css={{ fontSize, height, color }} >
         {PIECETYPE_TO_UNICODE[square.piece.type]}
       </PieceFigure>
-    </View>
+    </Box>
   ) 
 })
 

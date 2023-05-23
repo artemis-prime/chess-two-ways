@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { 
-  View,
-  type StyleProp, 
-  type ViewStyle,
-  type LayoutChangeEvent 
-} from 'react-native'
+import { View, type LayoutChangeEvent } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/styles/stitches.config'
-import { useBoardOrientation, useGame } from '~/services'
+import { styled, type CSS } from '~/style'
+import { useChessboardOrientation, useChess } from '~/services'
 import { BGImage } from '~/primatives'
 
-import Square from './board/Square'
-import { ChessDnDShell, useDnDConfig } from './board/ChessDnD'
-import DraggingPiece from './board/DraggingPiece'
+import Square from './chessboard/Square'
+import { ChessDnDShell, useDnDConfig } from './chessboard/ChessDnD'
+import DraggingPiece from './chessboard/DraggingPiece'
 
-const BoardInner = styled(View, {
+const ChessboardOuter = styled(View, {
   aspectRatio: 1,
   width: '100%',
   backgroundColor: 'transparent', // needed for gestures to work on android
   borderWidth: '$thicker',
   borderRadius: '$sm',
   overflow: 'hidden', 
-  borderColor: '$pieceBlack',
+  borderColor: '$pieceColorBlack',
 })
 
 const SquaresOuter = styled(View, {
@@ -38,18 +33,16 @@ const SquaresOuter = styled(View, {
   backgroundColor: 'transparent', // needed for gestures to work on android
 })
 
-const Board: React.FC<{ 
+const Chessboard: React.FC<{ 
   disableInput: boolean
-  style?: StyleProp<ViewStyle> 
   css?: CSS
 }> = observer(({
   disableInput,
-  style,
   css 
 }) => {
 
-  const game = useGame()
-  const bo = useBoardOrientation()
+  const game = useChess()
+  const bo = useChessboardOrientation()
   
     // Squares need to know their size in pt to do internal layout.
     // Instead of forcing each square listen for it's own size changes,
@@ -73,7 +66,7 @@ const Board: React.FC<{
   }
 
   return (
-    <BoardInner style={style} css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
+    <ChessboardOuter css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
@@ -83,20 +76,20 @@ const Board: React.FC<{
         </SquaresOuter>
       </BGImage>
       <DraggingPiece sizeInLayout={boardSize && boardSize * .85 / 8} />
-    </BoardInner>
+    </ChessboardOuter>
   )
 })
 
 
 const BoardWithDnD: React.FC<{ 
   disableInput: boolean
-  style?: StyleProp<ViewStyle> 
+  css?: CSS 
 }> = ({
   disableInput,
-  style,
+  css,
 }) => (
   <ChessDnDShell>
-    <Board disableInput={disableInput} style={style} />
+    <Chessboard disableInput={disableInput} css={css} />
   </ChessDnDShell>
 )
 

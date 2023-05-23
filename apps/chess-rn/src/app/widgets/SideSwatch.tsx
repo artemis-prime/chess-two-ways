@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 const SideSwatch = styled(View, {
 
@@ -13,10 +13,10 @@ const SideSwatch = styled(View, {
   variants: {
     side: {
       white: {
-        backgroundColor: '$pieceWhite'
+        backgroundColor: '$pieceColorWhite'
       },
       black: {
-        backgroundColor: '$pieceBlack'
+        backgroundColor: '$pieceColorBlack'
       },
     },
     small: {

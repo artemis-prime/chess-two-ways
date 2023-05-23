@@ -19,7 +19,7 @@ import {
   layoutPositionToBoardPosition, 
 } from '@artemis-prime/chess-core'
 
-import { useGame } from '~/services'
+import { useChess } from '~/services'
 
 import type Point from './Point'
 import {
@@ -58,7 +58,7 @@ const ChessDnDShell: React.FC<React.PropsWithChildren> = ({ children }) => {
   const setWhiteOnBottom = (b: boolean): void => { 
     whiteOnBottomRef.current = b 
   }
-  const game = useGame()
+  const game = useChess()
 
   const squareFromTouchOffset = (pt: Point): Position | null => {
 

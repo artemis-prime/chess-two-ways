@@ -3,9 +3,11 @@ import {
   type GestureResponderEvent,
   Pressable,
   type PressableProps,
-  type StyleProp,
   type ViewStyle,
+  type StyleProp
 } from 'react-native'
+
+import { type CSS } from '~/style'
 
 import type WidgetIconDesc from './WidgetIconDesc'
 
@@ -13,23 +15,25 @@ type ButtonState = 'normal' | 'pressed' | 'disabled'
 
 interface ButtonViewProps extends PropsWithChildren {
   state: ButtonState
-  icon?: WidgetIconDesc, 
-  style?: StyleProp<ViewStyle>
+  icon?: WidgetIconDesc 
+  css?: CSS
 }
 
-interface ButtonShellProps extends Omit<PressableProps, 'children'>, PropsWithChildren {
-  view: React.FC<ButtonViewProps>,
+interface ButtonShellProps extends 
+  Omit<PressableProps, 'children'>, 
+  PropsWithChildren 
+{
+  view: React.FC<ButtonViewProps>
   onClick: () => void
   viewProps?: {[key in string]: any}
-  icon?: WidgetIconDesc,
-  style?: StyleProp<ViewStyle>
+  icon?: WidgetIconDesc
+  css?: CSS // must have both css and style
+  style?: StyleProp<ViewStyle> // must have both css and style
 } 
 
 const ButtonShell: React.FC<ButtonShellProps> = ({
   view,
   onClick,
-  style,
-  icon, 
   viewProps,
   disabled = false,
   children,
@@ -54,7 +58,7 @@ const ButtonShell: React.FC<ButtonShellProps> = ({
 
   return (
     <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled}} >
-      <ButtonView state={(disabled) ? 'disabled' : buttonState} style={style} icon={icon} {...rest} {...viewProps}>
+      <ButtonView state={(disabled) ? 'disabled' : buttonState} {...rest} {...viewProps}>
         {children}
       </ButtonView>
     </Pressable>

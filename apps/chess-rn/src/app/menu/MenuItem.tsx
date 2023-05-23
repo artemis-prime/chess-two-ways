@@ -1,14 +1,11 @@
 import React, { type PropsWithChildren } from 'react'
 import { 
   type PressableProps,
-  type StyleProp,
   Text,
   View,
-  type ViewStyle,
 } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { typography, deborder, styled, type CSS } from '~/style'
 
 import {  
   ButtonShell,
@@ -19,11 +16,10 @@ import {
   IconMargin
 } from '~/primatives'
 
+const MenuItemOuter = styled(View,  {
 
-const MenuElementInnerView = styled(View,  {
-
-  ...debugBorder('white', 'menu'),
-  height: common.typography.menu.item.lineHeight,
+  ...deborder('white', 'menu'),
+  height: typography.menu.item.lineHeight,
   width: '100%',
   textAlignVertical: 'center',
   flexDirection: 'row',
@@ -34,25 +30,23 @@ const MenuElementInnerView = styled(View,  {
       disabled: {
       },
       pressed: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-        borderRadius: '$sm'
+        backgroundColor: '$menuBGColorPressed',
+        borderRadius: '$menuRadius' 
       },
       normal: {}
     }
   }
 })
 
-const TitleWrapper = styled(Text, {
-  ...common.typography.menu.item,
-  ...debugBorder('orange', 'menu'),
+const ItemText = styled(Text, {
+  ...typography.menu.item,
+  ...deborder('orange', 'menu'),
   variants: {
     state: {
       disabled: {
-        color: '$gray9'
+        color: '$menuTextDisabled'
       },
-      pressed: {
-        color: '$gray3',
-      },
+      pressed: {},
       normal: {}
     },
     icon: {
@@ -63,34 +57,31 @@ const TitleWrapper = styled(Text, {
   }
 })
 
-const MenuButtonInner: React.FC<ButtonViewProps> = ({
+const MenuItemButtonView: React.FC<ButtonViewProps> = ({
   state,
   icon,
   children,
-  style
+  css
 }) => (
-  <MenuElementInnerView state={state} style={style}>
+  <MenuItemOuter state={state} css={css}>
     {icon && <WidgetIcon state={state} icon={icon} />}
-    <TitleWrapper state={state} icon={!!icon}>{children}</TitleWrapper>
-  </MenuElementInnerView>
+    <ItemText state={state} icon={!!icon}>{children}</ItemText>
+  </MenuItemOuter>
 ) 
   
-const MenuItem: React.FC<{
-  onClick: () => void
-  icon?: WidgetIconDesc,
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+const MenuItem: React.FC<
+  {
+    onClick: () => void
+    icon?: WidgetIconDesc
+    css?: CSS
+  } 
+  & PropsWithChildren 
+  & Omit<PressableProps, 'style'>
+> = ({
   children,
-  icon,
-  style,
   ...rest
 }) => (
-  <ButtonShell 
-    {...rest} 
-    view={MenuButtonInner} 
-    icon={icon} 
-    style={style}  
-  >
+  <ButtonShell {...rest} view={MenuItemButtonView} >
     {children}
   </ButtonShell>
 )
