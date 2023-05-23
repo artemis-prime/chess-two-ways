@@ -1,14 +1,8 @@
 import React  from 'react'
 import { 
   Text,
-  type StyleProp,
-  type ViewStyle,
+  Pressable,
 } from 'react-native'
-
-import {
-  type FlingGesture,
-  GestureDetector
-} from 'react-native-gesture-handler'
 
 import { styled } from '~/style'
 
@@ -26,17 +20,17 @@ const Figure = styled(Text, {
   fontWeight: "900",
 })
 
-const MenuFlingHandle: React.FC<{
+const MenuButton: React.FC<{
   menuVisible: boolean
-  gesture: FlingGesture
+  toggleMenu: () => void
   css?: CSS
 }> = ({
   menuVisible,
-  gesture,
+  toggleMenu,
   css
 }) => ( 
-  <GestureDetector gesture={gesture}>
-    <Row align='center' css={{...css, pl: '$1', opacity: 0.8}} collapsable={false} >
+  <Pressable onPress={toggleMenu} >
+    <Row align='center' css={{...css, pl: '$1', opacity: 0.8}} collapsable={false}>
       {menuVisible ? (
         <Figure css={{fontSize: 30, t: -2, l: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
       ):(<> 
@@ -44,8 +38,8 @@ const MenuFlingHandle: React.FC<{
         <Figure css={{fontSize: 18, t: 2, l: 2}}>{UNICODE.ARROW_TO_CORNER_DOWN_RIGHT}</Figure>
       </>)}
     </Row>
-  </GestureDetector>
+  </Pressable>
 )
 
-export default MenuFlingHandle
+export default MenuButton
 

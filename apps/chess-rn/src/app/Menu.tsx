@@ -1,4 +1,4 @@
-import React, { useEffect, type PropsWithChildren } from 'react'
+import React, { type PropsWithChildren } from 'react'
 import { 
   View, 
   Text, 
@@ -6,7 +6,7 @@ import {
   type StyleProp 
 } from 'react-native'
 import Animated, { 
-  type AnimateStyle, 
+  useAnimatedStyle,
   type SharedValue 
 } from 'react-native-reanimated'
 import { observer } from 'mobx-react-lite'
@@ -16,23 +16,21 @@ import { useChessboardOrientation, useChess } from '~/services'
 
 import { MenuItem, MenuCheckboxItem } from './menu'
 
-const getMenuAnimStyles = (v: SharedValue<number>): ViewStyle => {
-  'worklet';
-  return {
-    opacity: v.value,
-  }
-} 
+const OPEN_MENU_X_FRACTION = 0.65 // TODO
 
 const MenuOuter: React.FC<{
-  animatedStyle: AnimateStyle<ViewStyle>
+  animBase: SharedValue<number> 
   regStyle?: StyleProp<ViewStyle>
 } & PropsWithChildren> = ({
-  animatedStyle,
+  animBase,
   regStyle,
   children 
 }) => {
 
   const theme = useTheme()
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    opacity: animBase.value,
+  }))
 
   return (
     <Animated.View 
@@ -61,7 +59,6 @@ const MenuOuter: React.FC<{
   )
 }
 
-
 const MenuSectionTitle = styled(Text, 
   typography.menu.sectionTitle,
   css({
@@ -77,14 +74,13 @@ const MenuItemsOuter = styled(View, {
   pt: '$1_5'
 })
 
-
 const Menu: React.FC<{
   width: number
-  animatedStyle: AnimateStyle<ViewStyle>
+  animBase: SharedValue<number> 
   regStyle?: StyleProp<ViewStyle>
 }> = observer(({
   width,
-  animatedStyle,
+  animBase,
   regStyle 
 }) => {
 
@@ -93,10 +89,9 @@ const Menu: React.FC<{
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
 
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
-
   return (
-    <MenuOuter animatedStyle={animatedStyle} regStyle={regStyle}>
-      <MenuItemsOuter css={{w: width * .9}}>
+    <MenuOuter animBase={animBase} regStyle={regStyle}>
+      <MenuItemsOuter css={{w: width * .9 * OPEN_MENU_X_FRACTION}}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 
@@ -119,11 +114,6 @@ const Menu: React.FC<{
   )
 })
 
-// cycle arrow \u1F5D8
-// double arrow \u296F
-// dobule headed arrow \u2195
-
 export {
-  Menu as default,
-  getMenuAnimStyles
+  Menu as default
 }

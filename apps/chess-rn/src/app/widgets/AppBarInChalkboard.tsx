@@ -1,13 +1,10 @@
 import React from 'react'
-import { 
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
+import { View } from 'react-native'
 
 import { styled, type CSS } from '~/style'
-import type MenuFlingHandleProps from './MenuFlingHandleProps'
-import MenuFlingHandle from './MenuFlingHandle'
+
+import type MenuControlProps from './MenuControlProps'
+import MenuButton from './MenuButton'
 
 const AppBarView = styled(View, {
   flexDirection: 'row', 
@@ -22,17 +19,14 @@ const AppBarView = styled(View, {
 
 const AppBarInChalkboard: React.FC<{
   css?: CSS
-} & MenuFlingHandleProps> = ({
-  menuVisible,
-  gesture,
-  css
-}) => {
-  
-  return (
-    <AppBarView css={css}>
-      <MenuFlingHandle {...{menuVisible, gesture}}/>
-    </AppBarView>
-  )
-}
+} & MenuControlProps> = ({
+  css,
+  ...rest
+}) => (
+  <AppBarView css={css}>
+    <MenuButton {...rest}/>
+  </AppBarView>
+)
+
 
 export default AppBarInChalkboard

@@ -11,7 +11,7 @@ import {
   TurnIndicator,
   InCheckIndicator,
   AppBarInChalkboard,
-  type MenuFlingHandleProps
+  type MenuControlProps
 } from '~/app/widgets'
 
 const StyledBGImage = styled(BGImage, {
@@ -33,7 +33,7 @@ const Chalkboard: React.FC<
     disableInput: boolean,
     css?: CSS
   } 
-  & MenuFlingHandleProps
+  & MenuControlProps
 > = observer(({
   disableInput,
   css,
