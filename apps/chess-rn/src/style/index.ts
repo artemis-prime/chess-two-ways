@@ -6,6 +6,5 @@ export {
   css,
   media,
   styled,
-  theme, 
   useTheme,
 } from './stitches.config'

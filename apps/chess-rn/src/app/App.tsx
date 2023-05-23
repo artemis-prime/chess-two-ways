@@ -46,8 +46,7 @@ import {
   OuterContainer,
   getStatusBarSpacerAnimStyles,
   StatusBarSpacer,
-
-} from './LayoutComponents'
+} from './appComponents'
 
 const screenDimensions = Dimensions.get('screen')
 
