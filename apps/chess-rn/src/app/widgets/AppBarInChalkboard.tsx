@@ -5,10 +5,11 @@ import { styled, type CSS } from '~/style'
 
 import type MenuControlProps from './MenuControlProps'
 import MenuButton from './MenuButton'
+import UndoRedoWidget from './UndoRedoWidget'
 
-const AppBarView = styled(View, {
+const AppBarOuter = styled(View, {
   flexDirection: 'row', 
-  justifyContent: 'flex-start', 
+  justifyContent: 'space-between', 
   alignItems: 'stretch',
   h: '$appBarHeight', 
   w: '100%', 
@@ -23,9 +24,10 @@ const AppBarInChalkboard: React.FC<{
   css,
   ...rest
 }) => (
-  <AppBarView css={css}>
+  <AppBarOuter css={css}>
     <MenuButton {...rest}/>
-  </AppBarView>
+    <UndoRedoWidget />
+  </AppBarOuter>
 )
 
 

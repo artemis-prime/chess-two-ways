@@ -1,10 +1,9 @@
 import React from 'react'
-import { computed } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import { type CSS } from '~/style'
 import { useChess } from '~/services'
-import { GhostButton, Row, ChalkText } from '~/primatives'
+import { GhostButton, Row } from '~/primatives'
 
 const UndoRedoWidget: React.FC<{ 
   css?: CSS
@@ -12,24 +11,22 @@ const UndoRedoWidget: React.FC<{
   css
 }) => {
   const game = useChess()
-
-  const either = computed(() => (
-    game.canUndo || game.canRedo
-  ))
-
   return (
-    <Row justify='end' css={css} >
+    <Row justify='end' align='stretch' css={css} >
       <GhostButton 
+        menu
         disabled={!game.canUndo}
-        onClick={game.undo.bind(game)}
-        css={{ mr: !(either) ? 15 : 6 }}
-      >Undo</GhostButton>
-      {(either) && <ChalkText>|</ChalkText>}
+        onClick={game.undo}
+        css={{ px: '$2' }}
+        textCss={{fontSize: 40, top: 1}}
+      >{'\u2039'}</GhostButton>
       <GhostButton 
+        menu
         disabled={!game.canRedo}
-        onClick={game.redo.bind(game)}
-        css={{ ml: !(either) ? 0 : 5 }}
-      >Redo</GhostButton>
+        onClick={game.redo}
+        css={{ px: '$2' }}
+        textCss={{fontSize: 40, top: 1}}
+      >{'\u203A'}</GhostButton>
     </Row>
   )
 })

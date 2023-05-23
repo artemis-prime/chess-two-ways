@@ -31,14 +31,14 @@ const GhostButtonBG = styled(View,
         chalkboard: true,
         state: 'pressed',
         css: {
-          color: '$chalkboardButtonPressedBG',
+          backgroundColor: '$chalkboardButtonPressedBG',
         }
       },
       {
         menu: true,
         state: 'pressed',
         css: {
-          color: '$menuBGColorPressed',
+          backgroundColor: '$menuBGColorPressed',
         }
       },
     ]
@@ -79,13 +79,18 @@ const GhostButtonText = styled(Text,
   }
 )
 
-const GhostButtonView: React.FC<ButtonViewProps> = ({
-  state,
+const GhostButtonView: React.FC<{
+  menu?: boolean
+  chalkboard?: boolean
+  textCss?: CSS
+} & ButtonViewProps> = ({
   children,
-  css
+  css,
+  textCss,
+  ...rest
 }) => (
-  <GhostButtonBG css={css}>
-    <GhostButtonText state={state} >
+  <GhostButtonBG css={css} {...rest}>
+    <GhostButtonText css={textCss} {...rest}>
       {children}
     </GhostButtonText>
   </GhostButtonBG>
@@ -94,7 +99,10 @@ const GhostButtonView: React.FC<ButtonViewProps> = ({
 const GhostButton: React.FC<
   {
     onClick: () => void
+    menu?: boolean
+    chalkboard?: boolean
     css?: CSS
+    textCss?: CSS
   } 
   & PropsWithChildren 
   & Omit<PressableProps, 'style'>

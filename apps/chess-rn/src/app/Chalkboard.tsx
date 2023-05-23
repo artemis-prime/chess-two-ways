@@ -6,7 +6,6 @@ import { useChess } from '~/services'
 import { BGImage, Column, Row } from '~/primatives'
 
 import {
-  UndoRedoWidget,
   GameStatusIndicator,
   TurnIndicator,
   InCheckIndicator,
@@ -44,10 +43,7 @@ const Chalkboard: React.FC<
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
       <AppBarInChalkboard {...rest} />
       <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
-        <Row justify='between' css={{ alignSelf: 'stretch' }}>
         {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
-          <UndoRedoWidget />
-        </Row>
         {(game.playing) && <InCheckIndicator /> }
       </Column>
     </StyledBGImage>
