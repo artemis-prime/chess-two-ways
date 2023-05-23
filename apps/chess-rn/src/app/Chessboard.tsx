@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { 
-  View,
-  type StyleProp, 
-  type ViewStyle,
-  type LayoutChangeEvent 
-} from 'react-native'
+import { View, type LayoutChangeEvent } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
@@ -40,11 +35,9 @@ const SquaresOuter = styled(View, {
 
 const Chessboard: React.FC<{ 
   disableInput: boolean
-  style?: StyleProp<ViewStyle> 
   css?: CSS
 }> = observer(({
   disableInput,
-  style,
   css 
 }) => {
 
@@ -73,7 +66,7 @@ const Chessboard: React.FC<{
   }
 
   return (
-    <ChessboardOuter style={style} css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
+    <ChessboardOuter css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
       <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
@@ -90,13 +83,13 @@ const Chessboard: React.FC<{
 
 const BoardWithDnD: React.FC<{ 
   disableInput: boolean
-  style?: StyleProp<ViewStyle> 
+  css?: CSS 
 }> = ({
   disableInput,
-  style,
+  css,
 }) => (
   <ChessDnDShell>
-    <Chessboard disableInput={disableInput} style={style} />
+    <Chessboard disableInput={disableInput} css={css} />
   </ChessDnDShell>
 )
 

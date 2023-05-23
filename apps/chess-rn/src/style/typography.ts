@@ -10,7 +10,7 @@ const typography = {
       color: '$menuTextColor',
       textTransform: 'lowercase'
     }),
-    title: css({
+    sectionTitle: css({
       fontFamily: '$menuFont',
       lineHeight: '$lineHeightMenu',
       fontWeight: '$semibold',

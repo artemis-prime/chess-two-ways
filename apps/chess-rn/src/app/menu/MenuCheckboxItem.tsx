@@ -3,17 +3,16 @@ import {
   Text,
   View,
   type PressableProps,
-  type StyleProp,
-  type ViewStyle,
 } from 'react-native'
 
-import { typography, deborder, styled } from '~/style'
+import { typography, deborder, styled, type CSS } from '~/style'
 
 import {  
   CheckboxShell,
   type CheckboxViewProps,
   type WidgetIconDesc,
   WidgetIcon,
+  Row,
 } from '~/primatives'
 
 const MenuCheckboxItemOuter = styled(View, {
@@ -51,14 +50,14 @@ const MenuCheckboxItemCheckboxView: React.FC<CheckboxViewProps> = ({
   pressed,
   disabled, 
   icon,
-  style,
+  css,
   children
 }) => (
-  <MenuCheckboxItemOuter {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
-    <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+  <MenuCheckboxItemOuter {...{checked, pressed: !!pressed, disabled: !!disabled}} css={css}>
+    <Row>
       {icon && <WidgetIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
       <ItemText {...{pressed: !!pressed, disabled: !!disabled}}>{children}</ItemText>
-    </View>
+    </Row>
     <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
       textAlign: 'right',
       top: 4,
@@ -69,24 +68,19 @@ const MenuCheckboxItemCheckboxView: React.FC<CheckboxViewProps> = ({
   </MenuCheckboxItemOuter>
 )
 
-const MenuCheckboxItem: React.FC<{
-  checked: boolean
-  setChecked: (b: boolean) => void
-  icon?: WidgetIconDesc
-  style?: StyleProp<ViewStyle>
-} & PressableProps & PropsWithChildren> = ({
-  checked,
-  setChecked,
-  icon,
-  ...rest
-}) => (
-  <CheckboxShell 
-    {...rest} 
-    checked={checked} 
-    setChecked={setChecked} 
-    view={MenuCheckboxItemCheckboxView} 
-    icon={icon}
-  />
+const MenuCheckboxItem: React.FC<
+  {
+    checked: boolean
+    setChecked: (b: boolean) => void
+    icon?: WidgetIconDesc
+    css?: CSS
+  } 
+  & Omit<PressableProps, 'style'> 
+  & PropsWithChildren
+> = (
+  props
+) => (
+  <CheckboxShell {...props} view={MenuCheckboxItemCheckboxView} />
 )
 
 export default MenuCheckboxItem

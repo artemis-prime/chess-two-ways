@@ -61,6 +61,7 @@ const {
 
       chalkboardTextColor: 'rgba(255, 255, 255, 0.9)',
       chalkboardTextColorDisabled: '$gray11',
+      chalkboardButtonPressedBG: 'rgba(255, 255, 255, 0.3)',
 
       menuBGColor: '$navy3',    
       menuBGColorHover: '$navy4', 

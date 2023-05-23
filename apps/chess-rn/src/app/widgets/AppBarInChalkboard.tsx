@@ -21,17 +21,15 @@ const AppBarView = styled(View, {
 })
 
 const AppBarInChalkboard: React.FC<{
-  style?: StyleProp<ViewStyle>
   css?: CSS
 } & MenuFlingHandleProps> = ({
   menuVisible,
   gesture,
-  style,
   css
 }) => {
   
   return (
-    <AppBarView style={style} css={css}>
+    <AppBarView css={css}>
       <MenuFlingHandle {...{menuVisible, gesture}}/>
     </AppBarView>
   )

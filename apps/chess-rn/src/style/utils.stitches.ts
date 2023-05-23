@@ -57,6 +57,19 @@ const utils = {
   h: (value: PropertyValue<'height'>) => ({
     height: value,
   }),
+  // OFFSET
+  l: (value: PropertyValue<'left'>) => ({
+    left: value,
+  }),
+  t: (value: PropertyValue<'top'>) => ({
+    top: value,
+  }),
+  b: (value: PropertyValue<'bottom'>) => ({
+    bottom: value,
+  }),
+  r: (value: PropertyValue<'right'>) => ({
+    right: value,
+  }),
   size: (value: PropertyValue<'width'>) => ({
     width: value,
     height: value,

@@ -1,11 +1,14 @@
-import React, { type PropsWithChildren } from 'react'
+import React, { useEffect, type PropsWithChildren } from 'react'
 import { 
   View, 
   Text, 
   type ViewStyle, 
   type StyleProp 
 } from 'react-native'
-import Animated, { type AnimateStyle } from 'react-native-reanimated'
+import Animated, { 
+  type AnimateStyle, 
+  type SharedValue 
+} from 'react-native-reanimated'
 import { observer } from 'mobx-react-lite'
 
 import { typography, css, deborder, styled, useTheme } from '~/style'
@@ -13,12 +16,19 @@ import { useChessboardOrientation, useChess } from '~/services'
 
 import { MenuItem, MenuCheckboxItem } from './menu'
 
+const getMenuAnimStyles = (v: SharedValue<number>): ViewStyle => {
+  'worklet';
+  return {
+    opacity: v.value,
+  }
+} 
+
 const MenuOuter: React.FC<{
   animatedStyle: AnimateStyle<ViewStyle>
-  style?: StyleProp<ViewStyle>
+  regStyle?: StyleProp<ViewStyle>
 } & PropsWithChildren> = ({
   animatedStyle,
-  style,
+  regStyle,
   children 
 }) => {
 
@@ -39,9 +49,10 @@ const MenuOuter: React.FC<{
           marginTop: theme.space._5,
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          alignItems: 'flex-start'
+          alignItems: 'flex-start',
+          backgroundColor: theme.colors.menuBGColor
         }, 
-        style,
+        regStyle,
         animatedStyle
       ]}
     >
@@ -52,7 +63,7 @@ const MenuOuter: React.FC<{
 
 
 const MenuSectionTitle = styled(Text, 
-  typography.menu.title,
+  typography.menu.sectionTitle,
   css({
     borderBottomColor: '$chalkboardTextColor',
     borderBottomWidth: 1,
@@ -62,7 +73,7 @@ const MenuSectionTitle = styled(Text,
 )
 
 const MenuItemsOuter = styled(View, {
-  ...deborder('off'),
+  ...deborder('green', 'menu'),
   pt: '$1_5'
 })
 
@@ -70,11 +81,11 @@ const MenuItemsOuter = styled(View, {
 const Menu: React.FC<{
   width: number
   animatedStyle: AnimateStyle<ViewStyle>
-  style?: StyleProp<ViewStyle>
+  regStyle?: StyleProp<ViewStyle>
 }> = observer(({
   width,
   animatedStyle,
-  style 
+  regStyle 
 }) => {
 
   const bo = useChessboardOrientation()
@@ -84,11 +95,8 @@ const Menu: React.FC<{
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
 
   return (
-    <MenuOuter animatedStyle={animatedStyle} style={style}>
-      <MenuItemsOuter style={{ 
-        width: width * .9, 
-        ...deborder('blue', 'menu')
-      }}>
+    <MenuOuter animatedStyle={animatedStyle} regStyle={regStyle}>
+      <MenuItemsOuter css={{w: width * .9}}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 
@@ -115,4 +123,7 @@ const Menu: React.FC<{
 // double arrow \u296F
 // dobule headed arrow \u2195
 
-export default Menu
+export {
+  Menu as default,
+  getMenuAnimStyles
+}

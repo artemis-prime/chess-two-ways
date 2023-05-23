@@ -1,13 +1,11 @@
 import React, { type PropsWithChildren } from 'react'
 import { 
   type PressableProps,
-  type StyleProp,
   Text,
   View,
-  type ViewStyle,
 } from 'react-native'
 
-import { typography, deborder, styled } from '~/style'
+import { typography, deborder, styled, type CSS } from '~/style'
 
 import {  
   ButtonShell,
@@ -63,30 +61,27 @@ const MenuItemButtonView: React.FC<ButtonViewProps> = ({
   state,
   icon,
   children,
-  style
+  css
 }) => (
-  <MenuItemOuter state={state} style={style}>
+  <MenuItemOuter state={state} css={css}>
     {icon && <WidgetIcon state={state} icon={icon} />}
     <ItemText state={state} icon={!!icon}>{children}</ItemText>
   </MenuItemOuter>
 ) 
   
-const MenuItem: React.FC<{
-  onClick: () => void
-  icon?: WidgetIconDesc,
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+const MenuItem: React.FC<
+  {
+    onClick: () => void
+    icon?: WidgetIconDesc
+    css?: CSS
+  } 
+  & PropsWithChildren 
+  & Omit<PressableProps, 'style'>
+> = ({
   children,
-  icon,
-  style,
   ...rest
 }) => (
-  <ButtonShell 
-    {...rest} 
-    view={MenuItemButtonView} 
-    icon={icon} 
-    style={style}  
-  >
+  <ButtonShell {...rest} view={MenuItemButtonView} >
     {children}
   </ButtonShell>
 )

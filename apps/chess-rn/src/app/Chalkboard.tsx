@@ -1,5 +1,4 @@
 import React from 'react'
-import type { StyleProp, ViewStyle } from 'react-native'
 import { observer } from 'mobx-react-lite'
 
 import { styled, type CSS } from '~/style'
@@ -29,22 +28,23 @@ const StyledBGImage = styled(BGImage, {
   borderColor: '$chalkboardBorderColor',
 })
 
-const Chalkboard: React.FC<{
-  disableInput: boolean,
-  style?: StyleProp<ViewStyle>,
-  css?: CSS
-} & MenuFlingHandleProps> = observer(({
+const Chalkboard: React.FC<
+  {
+    disableInput: boolean,
+    css?: CSS
+  } 
+  & MenuFlingHandleProps
+> = observer(({
   disableInput,
-  style,
   css,
   ...rest
 }) => {
   const game = useChess()
   return (
-    <StyledBGImage imageURI={'slate_bg_low_res'} css={css} style={style}>
+    <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
       <AppBarInChalkboard {...rest} />
       <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
-        <Row justify='between' style={{ alignSelf: 'stretch' }}>
+        <Row justify='between' css={{ alignSelf: 'stretch' }}>
         {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
           <UndoRedoWidget />
         </Row>

@@ -7,14 +7,14 @@ import {
   type ViewStyle,
 } from 'react-native'
 
+import { type CSS, css } from '~/style'
 import ButtonShell, {type ButtonViewProps, type ButtonState } from './ButtonShell'
-
 
 const ImageButtonView: React.FC< 
   {
     stateImages: { [key in ButtonState]?: string }
   }
-  & ButtonViewProps
+  & Omit<ButtonViewProps, 'css'>
   & Omit<ImageBackgroundProps, 'source'>
 > = ({
   onError,    // ignore
@@ -28,16 +28,19 @@ const ImageButtonView: React.FC<
   
   const handleError = (e:any) => { console.warn(e.nativeEvent.error) }
 
+  const toSpread = rest
+  // rt error
+  if ('css' in toSpread) {
+    delete toSpread.css
+  }
+
   return (
     <ImageBackground 
       source={{uri: stateImages[state]}} 
       onError={handleError} 
       resizeMode="cover" 
-      style={[style, {
-        //width: '100%',
-        overflow: 'hidden'
-      }]}
-      {...rest}
+      style={[style, { overflow: 'hidden' }]}
+      {...toSpread}
     >
       {children}
     </ImageBackground>
@@ -47,10 +50,8 @@ const ImageButtonView: React.FC<
 const ImageButton: React.FC<
   {
     onClick: () => void
-    stateImages: {
-      [key in ButtonState]?: string
-    },
-    style?: StyleProp<ViewStyle>
+    stateImages: { [key in ButtonState]?: string }
+    style?: StyleProp<ViewStyle> // must be this form
   } 
   & PropsWithChildren 
   & Omit<PressableProps, 'style'>

@@ -4,6 +4,7 @@ export { default as CheckboxShell, type CheckboxViewProps } from './CheckboxShel
 export { default as GhostButton } from './GhostButton'
 export { default as ImageButton } from './ImageButton'
 export { default as SText } from './SText'
+export { default as Box } from './Box'
 export { default as ChalkText } from './ChalkText'
 export { default as Flex, Row, Column } from './Flex'
 export {

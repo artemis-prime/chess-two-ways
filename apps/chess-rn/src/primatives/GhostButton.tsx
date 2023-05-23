@@ -1,17 +1,51 @@
 import React, { type PropsWithChildren } from 'react'
 import { 
   type PressableProps,
-  type StyleProp,
   Text,
-  type ViewStyle,
+  View,
 } from 'react-native'
 
-import { styled, typography } from '~/style'
+import { styled, typography, type CSS } from '~/style'
 
 import ButtonShell, {type ButtonViewProps} from './ButtonShell'
 
+const GhostButtonBG = styled(View, 
+  {
+    borderRadius: '$menuRadius',
+    backgroundColor: 'transparent',
+    variants: {
+      state: {
+        disabled: {},
+        pressed: {},
+        normal: {}
+      },
+      chalkboard: {
+        true: {}
+      },
+      menu: {
+        true: { }
+      },
+    },
+    compoundVariants: [
+      {
+        chalkboard: true,
+        state: 'pressed',
+        css: {
+          color: '$chalkboardButtonPressedBG',
+        }
+      },
+      {
+        menu: true,
+        state: 'pressed',
+        css: {
+          color: '$menuBGColorPressed',
+        }
+      },
+    ]
+  }
+)
+
 const GhostButtonText = styled(Text, 
-  typography.chalkboard.normal,  
   {
     variants: {
       state: {
@@ -20,17 +54,10 @@ const GhostButtonText = styled(Text,
         normal: {}
       },
       chalkboard: {
-        true: {
-          color: '$chalkboardTextColor',
-          fontFamily: '$chalkboardFont',
-        }
+        true: { ...typography.chalkboard.normal }
       },
       menu: {
-        true: {
-          color: '$chalkboardTextColor',
-          fontFamily: '$chalkboardFont',
-//          fontSize: 'inherit',
-        }
+        true: { ...typography.menu.sectionTitle }
       },
     },
     compoundVariants: [
@@ -55,23 +82,27 @@ const GhostButtonText = styled(Text,
 const GhostButtonView: React.FC<ButtonViewProps> = ({
   state,
   children,
-  style
+  css
 }) => (
-  <GhostButtonText state={state} style={style}>
-    {children}
-  </GhostButtonText>
+  <GhostButtonBG css={css}>
+    <GhostButtonText state={state} >
+      {children}
+    </GhostButtonText>
+  </GhostButtonBG>
 ) 
 
-const GhostButton: React.FC<{
-  onClick: () => void
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+const GhostButton: React.FC<
+  {
+    onClick: () => void
+    css?: CSS
+  } 
+  & PropsWithChildren 
+  & Omit<PressableProps, 'style'>
+> = ({
   children,
-  onClick,
-  style,
   ...rest
 }) => (
-  <ButtonShell {...rest} onClick={onClick} view={GhostButtonView} style={style}  >
+  <ButtonShell {...rest} view={GhostButtonView}  >
     {children}
   </ButtonShell>
 )

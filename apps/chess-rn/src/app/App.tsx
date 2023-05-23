@@ -1,13 +1,12 @@
 import React, { 
   useRef, 
   useEffect, 
-  useState 
+  useState, 
 } from 'react'
 import {
   Dimensions,
   SafeAreaView,
   StatusBar,
-  type StyleProp,
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
@@ -23,54 +22,55 @@ import {
 
 import Animated, { 
   useSharedValue, 
-  useAnimatedStyle, 
   Easing, 
   withTiming,
-  interpolate,
-  Extrapolation,  
   runOnJS,
-  type AnimateStyle,
-  interpolateColor,
   runOnUI,
  } from 'react-native-reanimated'
 
-import { useTheme } from '~/style'
-
+import { useTheme, useAnimatedStyleExt } from '~/style'
 import { useMenu } from '~/services'
 
 import Chessboard from './Chessboard'
 import Chalkboard from './Chalkboard'
+import Menu, { getMenuAnimStyles } from './Menu'
 
 import {
+  getCornerShimAnimStyles,
   CornerShim,
-  GameAreaOuter,
-  GameBGImage,
+  GameProperOuter,
+  getGameContainerAnimStyles,
   GameContainer,
   LogoButton,
+  getLogoButtonAnimStyles,
   OuterContainer,
+  getStatusBarSpacerAnimStyles,
   StatusBarSpacer,
-} from './LayoutComponents'
 
-import Menu from './Menu'
+} from './LayoutComponents'
 
 const screenDimensions = Dimensions.get('screen')
 
-const OPEN_MENU_Y_OFFSET = 95
 const OPEN_MENU_X_FRACTION = 0.65
 
-const GameArea: React.FC<{
-  gesture: FlingGesture 
+const GameProper: React.FC<{
+  gesture: FlingGesture
+  showBorder: boolean 
 }> = observer(({
-  gesture
+  gesture,
+  showBorder
 }) => {
   const ui = useMenu()
+  const theme = useTheme()
   return (
-      // This must be an animated view due to what seems to be a
-      // r-n-reanimated bug.
-    <Animated.View collapsable={false} style={{gap: 11}}>
-      <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
-      <Chessboard disableInput={ui.menuVisible} />
-    </Animated.View>
+      // This must be an animated view AND IN THIS FILE
+      // due to what seems to be a r-n-reanimated bug.
+    <GameProperOuter showBorder={showBorder}>
+      <Animated.View collapsable={false} style={{gap: theme.space['1_5']}}>
+        <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} gesture={gesture} />
+        <Chessboard disableInput={ui.menuVisible} />
+      </Animated.View>
+    </GameProperOuter >
   )
 })
 
@@ -83,115 +83,86 @@ const App: React.FC = () => {
     // Can be referenced on both threads.
     // Mobx observables on the other, being proxied, get flagged 
     // and an Error is thrown (Since they are proxied object)
-  const menuVisible_sv = useSharedValue<boolean>(ui.menuVisible) 
+  const menuVisible = useSharedValue<boolean>(ui.menuVisible) 
 
     // 0 <--> 1: default state <--> menu visible 
     // Animated styles are interpolated as needed.
     // ui.menuVisible is mutated at the END of the animation.
-  const menuAnimationBase = useSharedValue<number>(menuVisible_sv.value ? 1 : 0) 
+  const animBase = useSharedValue<number>(menuVisible.value ? 1 : 0) 
 
     // Needs to change at slightly different times then ui.menuVisible
-  const [menuFullyVisible, setMenuFullyVisible] = useState<boolean>(menuVisible_sv.value)
+  const [menuFullyVisible, setMenuFullyVisible] = useState<boolean>(menuVisible.value)
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change',
       ({screen}) => { sizeRef.current = {w: screen.width, h: screen.height }},
     )
-    return () => { subscription?.remove() }
+    return () => { subscription.remove() }
   }, [])
 
-  const onMenuAnimationStarted = (): void => {
-    if (menuVisible_sv.value) {
-      setMenuFullyVisible(false)   
-    }
+    const onAnimationStarted = (): void => {
+    if (menuVisible.value) { setMenuFullyVisible(false) }
   }
 
-  const onMenuAnimationFinished = (openned: boolean): void => { 
+  const onAnimationFinished = (openned: boolean): void => { 
      if (openned) {
       setMenuFullyVisible(true)  
     }
-    menuVisible_sv.value = openned
+    menuVisible.value = openned
     ui.setMenuVisible(openned) 
   }
+
+  const closeMenu = () => { runOnUI(triggerAnimation)(null) }
+
     // Sometimes this is called from a click. 
     // Sometimes as onStart() of a drag gesture, 
     // which means it's on the UI thread.
     // We have to designate it as a 'worklet'; 
   const triggerAnimation = (e: GestureStateChangeEvent<FlingGestureHandlerEventPayload> | null) => {
     'worklet';
-    runOnJS(onMenuAnimationStarted)()
-    menuAnimationBase.value = withTiming(
-      menuVisible_sv.value ? 0 : 1, 
+    runOnJS(onAnimationStarted)()
+    animBase.value = withTiming(
+      menuVisible.value ? 0 : 1, 
       {
         duration: 200,
-        easing: menuVisible_sv.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
+        easing: menuVisible.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear),
       },
-        // on finish
       () => {
         // https://docs.swmansion.com/react-native-reanimated/docs/api/miscellaneous/runOnJS/
         // mobx observables (and any proxy objects) get clobbered when transfered onto the UI thread.
-        runOnJS(onMenuAnimationFinished)(!menuVisible_sv.value)
+        runOnJS(onAnimationFinished)(!menuVisible.value)
       }
     )
-  }
-
-  const closeMenu = () => {
-    runOnUI(triggerAnimation)(null)
   }
 
   const gesture = Gesture.Fling()
     .direction(Directions.RIGHT | Directions.LEFT)
     .onStart(triggerAnimation)
 
-  const gameContainerAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
-    left: interpolate(
-      menuAnimationBase.value, 
-      [0, 1], 
-      [0, sizeRef.current.w  * OPEN_MENU_X_FRACTION], 
-      { extrapolateRight: Extrapolation.CLAMP }
-    ),
-    top: interpolate(
-      menuAnimationBase.value, 
-      [0, 1], 
-      [0, OPEN_MENU_Y_OFFSET], 
-      { extrapolateRight: Extrapolation.CLAMP }
-    )
-  }), [sizeRef.current.w])
+  const animatedGameContainer = 
+    useAnimatedStyleExt<number, ViewStyle>(animBase, getGameContainerAnimStyles, [sizeRef.current.w])
 
-  const statusBarSpacerAnimatedStyle = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
-    backgroundColor: interpolateColor(      
-      menuAnimationBase.value, 
-      [0, 1], 
-      ['rgba(0, 0, 0, 0.2)', theme.colors.menuBGColor]
-    ) 
-  }))
+  const animatedStatusBarSpacer = 
+    useAnimatedStyleExt<number, ViewStyle>(animBase, getStatusBarSpacerAnimStyles, [theme.colors.menuBGColor])
 
-  const shimAnimatedStyle = useAnimatedStyle<AnimateStyle<ImageStyle>>(() => ({
-    opacity: menuAnimationBase.value
-  }))
+  const animatedCornerShim = 
+    useAnimatedStyleExt<number, ImageStyle>(animBase, getCornerShimAnimStyles)
 
-  const animatedOpacity = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
-    opacity: menuAnimationBase.value
-  }))
+  const animatedMenu = 
+    useAnimatedStyleExt<number, ViewStyle>(animBase, getMenuAnimStyles)
 
-  const animatedLogoButton = useAnimatedStyle<AnimateStyle<ViewStyle>>(() => ({
-    opacity: menuAnimationBase.value,
-    display: menuAnimationBase.value < 0.1 ? 'none' : 'flex'
-  }))
+  const animatedLogoButton = 
+    useAnimatedStyleExt<number, ViewStyle>(animBase, getLogoButtonAnimStyles)
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
       <OuterContainer>
-        <Menu animatedStyle={animatedOpacity} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
-        <GameContainer animatedStyle={gameContainerAnimatedStyle}>
-          <GameBGImage imageURI={'chess_bg_1920_low_res'} >
-            <StatusBarSpacer animatedStyle={statusBarSpacerAnimatedStyle} />
-            <CornerShim animatedStyle={shimAnimatedStyle} />
-            <GameAreaOuter showBorder={menuFullyVisible}>
-              <GameArea gesture={gesture} />
-            </GameAreaOuter>
-          </GameBGImage>
+        <Menu animatedStyle={animatedMenu} width={sizeRef.current.w  * OPEN_MENU_X_FRACTION}/>
+        <GameContainer animatedStyle={animatedGameContainer}>
+          <StatusBarSpacer animatedStyle={animatedStatusBarSpacer} />
+          <CornerShim animatedStyle={animatedCornerShim} />
+          <GameProper showBorder={menuFullyVisible} gesture={gesture} />
         </GameContainer>
         <LogoButton animatedStyle={animatedLogoButton} onClick={closeMenu} />
       </OuterContainer>

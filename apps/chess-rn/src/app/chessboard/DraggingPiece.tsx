@@ -7,7 +7,7 @@ import { styled } from '~/style'
 import { PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 import { useDragState } from './ChessDnD'
 
-const StyledText = styled(Text, {
+const PieceText = styled(Text, {
 
   fontWeight: '600', 
   textAlign: 'center',
@@ -33,13 +33,16 @@ const DraggingPiece: React.FC<{ sizeInLayout: number | undefined }> = observer((
   const ds = useDragState()
 
   return (sizeInLayout && ds.piece && ds.offset) ? (
-    <StyledText side={ds.piece.side} style={{
-      left: ds.offset.x - sizeInLayout / 2, 
-      top: ds.offset.y - sizeInLayout / 2,
-      fontSize: sizeInLayout * .8,
-      width: sizeInLayout,
-      height: sizeInLayout
-    }}>{PIECETYPE_TO_UNICODE[ds.piece.type]}</StyledText>
+    <PieceText 
+      side={ds.piece.side} 
+      css={{
+        l: ds.offset.x - sizeInLayout / 2, 
+        t: ds.offset.y - sizeInLayout / 2,
+        fontSize: sizeInLayout * .8,
+        w: sizeInLayout,
+        h: sizeInLayout
+      }}
+    >{PIECETYPE_TO_UNICODE[ds.piece.type]}</PieceText>
   ) : null
 })
 

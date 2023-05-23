@@ -8,26 +8,31 @@ import {
 } from 'react-native'
 
 import type WidgetIconDesc from './WidgetIconDesc'
+import type { CSS } from '~/style'
 
 interface CheckboxViewProps extends PropsWithChildren {
   checked: boolean,
   pressed: boolean,
   disabled: boolean | null, // to match type of Pressable prop
   icon?: WidgetIconDesc
-  style?: StyleProp<ViewStyle>
+  css?: CSS
 }
 
-const CheckboxShell: React.FC<{
-  view: React.ComponentType<CheckboxViewProps>
-  checked: boolean
-  setChecked: (b: boolean) => void
-  icon?: WidgetIconDesc
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+const CheckboxShell: React.FC<
+  {
+    view: React.ComponentType<CheckboxViewProps>
+    checked: boolean
+    setChecked: (b: boolean) => void
+    icon?: WidgetIconDesc
+    css?: CSS
+  } 
+  & PropsWithChildren 
+  & Omit<PressableProps, 'style'>
+> = ({
   view,
   checked,
   setChecked,
-  style,
+  css,
   icon, 
   disabled = false,
   children,
@@ -52,7 +57,7 @@ const CheckboxShell: React.FC<{
 
   return (
     <Pressable {...rest} {...{onPressIn, onPressOut, onPress, disabled: !!disabled}} >
-      <CheckboxView {...{checked, pressed, disabled, icon}} style={style} >
+      <CheckboxView {...{checked, pressed, disabled, icon}} css={css} >
         {children}
       </CheckboxView>
     </Pressable>

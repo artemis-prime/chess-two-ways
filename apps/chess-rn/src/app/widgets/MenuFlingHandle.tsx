@@ -29,21 +29,19 @@ const Figure = styled(Text, {
 const MenuFlingHandle: React.FC<{
   menuVisible: boolean
   gesture: FlingGesture
-  style?: StyleProp<ViewStyle> 
   css?: CSS
 }> = ({
   menuVisible,
   gesture,
-  style,
   css
 }) => ( 
   <GestureDetector gesture={gesture}>
-    <Row style={style} align='center' css={{...css, pl: '$1',  opacity: 0.8}} collapsable={false} >
+    <Row align='center' css={{...css, pl: '$1', opacity: 0.8}} collapsable={false} >
       {menuVisible ? (
-        <Figure style={{fontSize: 30, top: -2, left: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
+        <Figure css={{fontSize: 30, t: -2, l: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
       ):(<> 
-        <Figure style={{fontSize: 23}}>{UNICODE.BURGER_MENU}</Figure>
-        <Figure style={{fontSize: 18, top: 2, left: 2}}>{UNICODE.ARROW_TO_CORNER_DOWN_RIGHT}</Figure>
+        <Figure css={{fontSize: 23}}>{UNICODE.BURGER_MENU}</Figure>
+        <Figure css={{fontSize: 18, t: 2, l: 2}}>{UNICODE.ARROW_TO_CORNER_DOWN_RIGHT}</Figure>
       </>)}
     </Row>
   </GestureDetector>

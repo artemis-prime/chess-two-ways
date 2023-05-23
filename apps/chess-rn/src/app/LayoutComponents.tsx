@@ -4,24 +4,38 @@ import {
   View,
   type ViewStyle,
   type ImageStyle,
-  type StyleProp
+  type StyleProp,
+  type ColorValue
 } from 'react-native'
 
-import Animated, { type AnimateStyle } from 'react-native-reanimated'
+import Animated, { 
+  type AnimateStyle,   
+  interpolateColor,
+  type SharedValue, 
+  Extrapolation,
+  interpolate
+} from 'react-native-reanimated'
 
-import { styled, useTheme } from '~/style'
+import { styled } from '~/style'
 import { BGImage, ImageButton } from '~/primatives'
 
+const getLogoButtonAnimStyles = (v: SharedValue<number>): ViewStyle => {
+  'worklet';
+  return {
+    opacity: v.value,
+    display: v.value < 0.1 ? 'none' : 'flex'
+  }
+} 
 
 const LogoButton: React.FC<{
   onClick: () => void
   animatedStyle: AnimateStyle<ViewStyle>
-  style?: StyleProp<ViewStyle>
+  regStyle?: StyleProp<ViewStyle> // need this method since its animated
   disabled?: boolean
 }> = ({
   onClick,
   animatedStyle,
-  style,
+  regStyle,
   disabled = false
 }) => (
   <Animated.View 
@@ -34,7 +48,7 @@ const LogoButton: React.FC<{
     }]}
   >
     <ImageButton disabled={disabled} onClick={onClick} 
-      style={[style, {
+      style={[regStyle, {
         width: '100%',
         height: '100%'
       }]} 
@@ -52,36 +66,56 @@ const OuterContainer = styled(View, {
   backgroundColor: '$menuBGColor'
 })
 
-const GameAreaOuter: React.FC<{
-  showBorder: boolean
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren> = ({
-  showBorder, 
-  children,
-  style
-}) => {
+const GameProperOuter = styled(View, {
 
-  const theme = useTheme()
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  h: '100%',
+  p: '$1',
+  pb: 0,
+  gap: '$1_5', 
+  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  borderColor: '#444',
+  borderTopLeftRadius: 0,
+  borderWidth: 0,
 
-  return (
-    <View style={[{
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'stretch',
-      height: '100%',
-      paddingLeft: theme.space['1'],
-      paddingRight: theme.space['1'],
-      paddingTop: theme.space['1'],
-      paddingBottom: 0,
-      gap: 11, 
-      backgroundColor: 'rgba(0, 0, 0, 0.2)',
-      borderColor: '#444',
-      borderTopLeftRadius: showBorder ? theme.radii.md : 0,
-      borderWidth: showBorder ? 2 : 0,
-    }, style]}>
-      {children}
-    </View> 
-  )
+  variants: {
+    showBorder: {
+      true: {
+        borderTopLeftRadius: '$md',
+        borderWidth: '$thicker',
+      }
+    }
+  }
+})
+
+const GameBGImage = styled(BGImage, {
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  height: '100%',
+})
+
+const OPEN_MENU_Y_OFFSET = 95
+const OPEN_MENU_X_FRACTION = 0.65
+
+const getGameContainerAnimStyles = (v: SharedValue<number>, w: number): ViewStyle => {
+  'worklet';
+  return {
+    left: interpolate(
+      v.value, 
+      [0, 1], 
+      [0, (w as number) * OPEN_MENU_X_FRACTION], 
+      { extrapolateRight: Extrapolation.CLAMP }
+    ),
+    top: interpolate(
+      v.value, 
+      [0, 1], 
+      [0, OPEN_MENU_Y_OFFSET], 
+      { extrapolateRight: Extrapolation.CLAMP }
+    )
+  }
 }
 
 const GameContainer: React.FC<{
@@ -89,20 +123,30 @@ const GameContainer: React.FC<{
 } & PropsWithChildren> = ({
   animatedStyle,
   children 
-}) => {
-  const theme = useTheme()
-
-  return (
-    <Animated.View style={[{
+}) => (
+  <Animated.View style={[
+    {
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: theme.colors.menuBGColor,
-    }, animatedStyle
-    ]}>
+    }, 
+    animatedStyle
+  ]}>
+    <GameBGImage imageURI={'chess_bg_1920_low_res'}>
       {children}
-    </Animated.View>
-  )
+    </GameBGImage>
+  </Animated.View>
+)
+
+const getStatusBarSpacerAnimStyles = (v: SharedValue<number>, color: string): ViewStyle => {
+  'worklet';
+  return {
+    backgroundColor: interpolateColor(      
+      v.value, 
+      [0, 1], 
+      ['rgba(0, 0, 0, 0.2)', color ]
+    ) as ColorValue 
+  }
 }
 
 const StatusBarSpacer: React.FC<{
@@ -115,6 +159,13 @@ const StatusBarSpacer: React.FC<{
     height: StatusBar.currentHeight!,
   }, animatedStyle]} />
 )
+
+const getCornerShimAnimStyles = (v: SharedValue<number>): ImageStyle => {
+  'worklet';
+  return {
+    opacity: v.value,
+  }
+} 
 
   // Creates the appearance of border radius though only
   // siblings are involved.  Yes, I tried everything else, 
@@ -140,19 +191,16 @@ const CornerShim: React.FC<{
   />
 )
 
-const GameBGImage = styled(BGImage, {
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'stretch',
-  height: '100%',
-})
-
 export {
+  getCornerShimAnimStyles,
   CornerShim,
-  GameAreaOuter,
-  GameBGImage,
+  GameProperOuter,
+  getGameContainerAnimStyles,
   GameContainer,
+  getLogoButtonAnimStyles,
   LogoButton,
+  GameBGImage,
   OuterContainer,
+  getStatusBarSpacerAnimStyles,
   StatusBarSpacer,
 }
