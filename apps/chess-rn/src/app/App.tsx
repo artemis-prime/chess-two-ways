@@ -9,14 +9,14 @@ import {
   StatusBar,
 } from 'react-native'
 import { observer } from 'mobx-react-lite'
-import Animated, { 
+import { 
   useSharedValue, 
   Easing, 
   withTiming,
   runOnJS,
+  type SharedValue,
 } from 'react-native-reanimated'
 
-import { useTheme } from '~/style'
 import { useMenu } from '~/services'
 
 import Chessboard from './Chessboard'
@@ -36,21 +36,18 @@ const screenDimensions = Dimensions.get('screen')
 
 const GameProper: React.FC<{
   toggleMenu: () => void
-  showBorder: boolean 
+  animBase: SharedValue<number>
 }> = observer(({
   toggleMenu,
-  showBorder
+  animBase
 }) => {
   const ui = useMenu()
-  const theme = useTheme()
   return (
-      // This must be an animated view AND IN THIS FILE
+      // There must be an animated view IN THIS FILE
       // due to what seems to be a subtle r-n-reanimated bug.
-    <GameProperOuter showBorder={showBorder}>
-      <Animated.View collapsable={false} style={{gap: theme.space['1_5']}}>
-        <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} toggleMenu={toggleMenu} />
-        <Chessboard disableInput={ui.menuVisible} />
-      </Animated.View>
+    <GameProperOuter animBase={animBase}>
+      <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} toggleMenu={toggleMenu} />
+      <Chessboard disableInput={ui.menuVisible} />
     </GameProperOuter >
   )
 })
@@ -85,11 +82,12 @@ const App: React.FC = () => {
   }
 
   const onAnimationFinished = (): void => { 
-    menuVisible.value = !menuVisible.value
-    if (menuVisible.value) {
+    const open = !menuVisible.value
+    if (open) {
       setMenuFullyVisible(true)  
     }
-    ui.setMenuVisible(menuVisible.value) 
+    ui.setMenuVisible(open) 
+    menuVisible.value = open
   }
 
   const toggleMenu = () => { animate() }
@@ -115,7 +113,7 @@ const App: React.FC = () => {
         <GameContainer animBase={animBase} width={sizeRef.current.w}>
           <StatusBarSpacer animBase={animBase} />
           <CornerShim animBase={animBase} />
-          <GameProper showBorder={menuFullyVisible} toggleMenu={toggleMenu} />
+          <GameProper animBase={animBase} toggleMenu={toggleMenu} />
         </GameContainer>
         <LogoButton animBase={animBase} onClick={toggleMenu} />
       </OuterContainer>

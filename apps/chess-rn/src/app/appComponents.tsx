@@ -61,29 +61,47 @@ const OuterContainer = styled(View, {
   backgroundColor: '$menuBGColor'
 })
 
-const GameProperOuter = styled(View, {
-
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'stretch',
-  h: '100%',
-  p: '$1',
-  pb: 0,
-  gap: '$1_5', 
-  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  borderColor: '#444',
-  borderTopLeftRadius: 0,
-  borderWidth: 0,
-
-  variants: {
-    showBorder: {
-      true: {
-        borderTopLeftRadius: '$md',
-        borderWidth: '$thicker',
-      }
-    }
-  }
-})
+const GameProperOuter: React.FC<{
+  animBase: SharedValue<number>
+} & PropsWithChildren> = ({
+  animBase,
+  children
+}) => {
+  const theme = useTheme()
+  return (
+    <Animated.View style={[
+      {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        height: '100%',
+        padding: theme.space[1],
+        paddingBottom: 0,
+        gap: theme.space['1_5'], 
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderColor: '#444',
+      }, 
+      useAnimatedStyle<ViewStyle>(
+        () => ({
+          borderTopLeftRadius: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, theme.radii.md], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          ),
+          borderWidth: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, theme.borderWidths.thicker], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          ),
+        }) 
+      )
+    ]}>
+      {children}
+    </Animated.View>
+  )
+}
 
 const GameBGImage = styled(BGImage, {
   flexDirection: 'column',
