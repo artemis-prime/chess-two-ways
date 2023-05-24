@@ -17,6 +17,10 @@ import Animated, {
 
 import { styled, useTheme } from '~/style'
 import { BGImage, ImageButton } from '~/primatives'
+import { observer } from 'mobx-react-lite'
+import { useMenu } from '~/services'
+import Chalkboard from './Chalkboard'
+import Chessboard from './Chessboard'
 
 const LogoButton: React.FC<{
   onClick: () => void
@@ -61,54 +65,6 @@ const OuterContainer = styled(View, {
   backgroundColor: '$menuBGColor'
 })
 
-const GameProperOuter: React.FC<{
-  animBase: SharedValue<number>
-} & PropsWithChildren> = ({
-  animBase,
-  children
-}) => {
-  const theme = useTheme()
-  return (
-    <Animated.View style={[
-      {
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-        height: '100%',
-        padding: theme.space[1],
-        paddingBottom: 0,
-        gap: theme.space['1_5'], 
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderColor: '#444',
-      }, 
-      useAnimatedStyle<ViewStyle>(
-        () => ({
-          borderTopLeftRadius: interpolate(
-            animBase.value, 
-            [0, 1], 
-            [0, theme.radii.md], 
-            { extrapolateRight: Extrapolation.CLAMP }
-          ),
-          borderWidth: interpolate(
-            animBase.value, 
-            [0, 1], 
-            [0, theme.borderWidths.thicker], 
-            { extrapolateRight: Extrapolation.CLAMP }
-          ),
-        }) 
-      )
-    ]}>
-      {children}
-    </Animated.View>
-  )
-}
-
-const GameBGImage = styled(BGImage, {
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'stretch',
-  height: '100%',
-})
 
   // TODO
 const OPEN_MENU_Y_OFFSET = 95
@@ -147,9 +103,14 @@ const GameContainer: React.FC<{
       [width]
     )
   ]}>
-    <GameBGImage imageURI={'chess_bg_1920_low_res'}>
+    <BGImage imageURI={'chess_bg_1920_low_res'} style={{
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'stretch',
+      height: '100%',
+    }}>
       {children}
-    </GameBGImage>
+    </BGImage>
   </Animated.View>
 )
 
@@ -202,12 +163,71 @@ const CornerShim: React.FC<{
   />
 )
 
+const GameOuter: React.FC<{
+  animBase: SharedValue<number>
+} & PropsWithChildren> = ({
+  animBase,
+  children
+}) => {
+  const theme = useTheme()
+  return (
+    <Animated.View style={[
+      {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        height: '100%',
+        padding: theme.space[1],
+        paddingBottom: 0,
+        gap: theme.space['1_5'], 
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderColor: '#444',
+      }, 
+      useAnimatedStyle<ViewStyle>(
+        () => ({
+          borderTopLeftRadius: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, theme.radii.md], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          ),
+          borderWidth: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, theme.borderWidths.thicker], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          ),
+        }) 
+      )
+    ]}>
+      {children}
+    </Animated.View>
+  )
+}
+
+const Game: React.FC<{
+  toggleMenu: () => void
+  animBase: SharedValue<number>
+}> = observer(({
+  toggleMenu,
+  animBase
+}) => {
+  const ui = useMenu()
+  return (
+      // There must be an animated view IN THIS FILE
+      // due to what seems to be a subtle r-n-reanimated bug.
+    <GameOuter animBase={animBase}>
+      <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} toggleMenu={toggleMenu} />
+      <Chessboard disableInput={ui.menuVisible} />
+    </GameOuter >
+  )
+})
+
 export {
   CornerShim,
-  GameProperOuter,
   GameContainer,
   LogoButton,
-  GameBGImage,
   OuterContainer,
   StatusBarSpacer,
+  Game
 }
