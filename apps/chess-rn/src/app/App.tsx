@@ -57,18 +57,10 @@ const App: React.FC = () => {
   const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const ui = useMenu()
 
-    // Can be referenced on both threads.
-    // Mobx observables on the other, being proxied, get flagged 
-    // and an Error is thrown (Since they are proxied object)
-  const menuVisible = useSharedValue<boolean>(ui.menuVisible) 
-
     // 0 <--> 1: default state <--> menu visible 
     // Animated styles are interpolated as needed.
     // ui.menuVisible is mutated at the END of the animation.
-  const animBase = useSharedValue<number>(menuVisible.value ? 1 : 0) 
-
-    // Needs to change at slightly different times then ui.menuVisible
-  const [menuFullyVisible, setMenuFullyVisible] = useState<boolean>(menuVisible.value)
+  const animBase = useSharedValue<number>(ui.menuVisible ? 1 : 0) 
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change',
@@ -77,31 +69,15 @@ const App: React.FC = () => {
     return () => { subscription.remove() }
   }, [])
 
-  const onAnimationStarted = (): void => {
-    if (menuVisible.value) { setMenuFullyVisible(false) }
-  }
-
-  const onAnimationFinished = (): void => { 
-    const open = !menuVisible.value
-    if (open) {
-      setMenuFullyVisible(true)  
-    }
-    ui.setMenuVisible(open) 
-    menuVisible.value = open
-  }
-
   const toggleMenu = () => { animate() }
+  const animationEnded = () => { ui.setMenuVisible(!ui.menuVisible) }
 
-    // Sometimes this is called from a click. 
-    // Sometimes as onStart() of a drag gesture, 
-    // which means it's on the UI thread.
-    // We have to designate it as a 'worklet'; 
+    // not a 'worklet', but the callback is! (dunno <shrug>)
   const animate = () => {
-    onAnimationStarted()
     animBase.value = withTiming(
-      menuVisible.value ? 0 : 1, 
-      { duration: 200, easing: menuVisible.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
-      () => { runOnJS(onAnimationFinished)() }
+      ui.menuVisible ? 0 : 1, 
+      { duration: 200, easing: ui.menuVisible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
+      () => { runOnJS(animationEnded)() }
     )
   }
 
