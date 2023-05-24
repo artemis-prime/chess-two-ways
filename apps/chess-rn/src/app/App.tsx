@@ -51,8 +51,8 @@ const App: React.FC = () => {
   const animationEnded = () => { ui.setMenuVisible(!ui.menuVisible) }
 
     // Not a 'worklet', but the callback is! (dunno <shrug>)
-    // also can't be defined inline for some odd reason.
-    // I'm guessing that's a babel plugin issue.
+    // It also can't be defined inline for some odd reason.
+    // (reanimated babel plugin issue?).
   const animate = () => {
     animBase.value = withTiming(
       ui.menuVisible ? 0 : 1, 
