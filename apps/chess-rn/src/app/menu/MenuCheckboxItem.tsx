@@ -5,82 +5,76 @@ import {
   type PressableProps,
 } from 'react-native'
 
-import { typography, deborder, styled, type CSS } from '~/style'
+import { typography, deborder, styled, type CSS, useTheme } from '~/style'
 
-import {  
-  CheckboxShell,
-  type CheckboxViewProps,
-  type WidgetIconDesc,
-  WidgetIcon,
-  Row,
-} from '~/primatives'
+import { Row, ButtonBase } from '~/primatives'
 
-const MenuCheckboxItemOuter = styled(View, {
-    
-  ...deborder('white', 'menu'),
-  height: typography.menu.item.lineHeight,
-  width: '100%',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  variants: {
-    pressed: {
-      true: {
-        backgroundColor: '$menuBGColorPressed',
-        borderRadius: '$menuRadius' 
-      }
-    }
-  }
-})
+import WidgetIcon, {
+  IconWidth,
+  IconMargin
+} from './WidgetIcon' 
+import type WidgetIconDesc from './WidgetIconDesc'
 
 const ItemText = styled(Text, {
-  ...typography.menu.item,
-  ...deborder('orange', 'menu'),
-  variants: {
-    disabled: {
-      true: {
-        color: '$menuTextDisabled'
-      }
-    },
-    pressed: { true: {} }
-  }
-})
 
-const MenuCheckboxItemCheckboxView: React.FC<CheckboxViewProps> = ({
-  checked,
-  pressed,
-  disabled, 
-  icon,
-  css,
-  children
-}) => (
-  <MenuCheckboxItemOuter {...{checked, pressed: !!pressed, disabled: !!disabled}} css={css}>
-    <Row>
-      {icon && <WidgetIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
-      <ItemText {...{pressed: !!pressed, disabled: !!disabled}}>{children}</ItemText>
-    </Row>
-    <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
-      textAlign: 'right',
-      top: 4,
-      left: 7,
-      opacity: 0.8,
-      fontWeight: '400'
-    }}} />
-  </MenuCheckboxItemOuter>
-)
+  ...deborder('orange', 'menu'),
+  ...typography.menu.item,
+  variants: {
+    disabled: { true: {color: '$menuTextColorDisabled'}},
+    icon: { false: { ml: IconWidth + IconMargin } }
+  },
+})
 
 const MenuCheckboxItem: React.FC<
   {
     checked: boolean
     setChecked: (b: boolean) => void
+    disabled?: boolean
     icon?: WidgetIconDesc
-    css?: CSS
   } 
-  & Omit<PressableProps, 'style'> 
   & PropsWithChildren
-> = (
-  props
-) => (
-  <CheckboxShell {...props} view={MenuCheckboxItemCheckboxView} />
-)
-
+> = ({
+  checked,
+  setChecked,
+  disabled,
+  icon,
+  children
+}) => {
+  const theme = useTheme()
+  return (
+    <ButtonBase 
+      onPressAnimations={[{
+        prop: 'backgroundColor',
+        from: theme.colors.menuBGColor,
+        to: theme.colors.menuBGColorPressed 
+      }]}
+      containerStyle={{
+        ...deborder('white', 'menu'),
+        height: theme.lineHeights.lineHeightMenu,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingLeft: theme.space[1],
+        paddingRight: theme.space[1],
+        borderRadius: theme.radii.menuRadius,
+      }}
+      on={checked}
+      disabled={disabled}
+      onClick={setChecked}
+    >
+      <Row>
+        {icon && <WidgetIcon disabled={disabled} icon={icon} />}
+        <ItemText disabled={disabled} icon={!!icon}>{children}</ItemText>
+      </Row>
+      <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
+        textAlign: 'right',
+        top: 4,
+        left: 7,
+        opacity: 0.8,
+        fontWeight: '400'
+      }}} />
+    </ButtonBase>
+  )
+}
 export default MenuCheckboxItem
