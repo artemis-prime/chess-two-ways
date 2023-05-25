@@ -47,7 +47,7 @@ const ImageButtonView: React.FC<
   )
 }
 
-const ImageButtonOld: React.FC<
+const ImageButton: React.FC<
   {
     onClick: () => void
     stateImages: { [key in ButtonState]?: string }
@@ -71,4 +71,4 @@ const ImageButtonOld: React.FC<
   </ButtonShell>
 )
 
-export default ImageButtonOld
+export default ImageButton

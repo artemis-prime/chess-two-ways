@@ -16,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/style'
-import { BGImage, ImageButtonOld } from '~/primatives'
+import { BGImage, ImageButton } from '~/primatives'
 import { observer } from 'mobx-react-lite'
 import { useMenu } from '~/services'
 import Chalkboard from './Chalkboard'
@@ -46,7 +46,7 @@ const LogoButton: React.FC<{
       display: animBase.value < 0.1 ? 'none' : 'flex'
     })) 
   ]}>
-    <ImageButtonOld disabled={disabled} onClick={onClick} 
+    <ImageButton disabled={disabled} onClick={onClick} 
       style={[style, {
         width: '100%',
         height: '100%'
