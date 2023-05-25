@@ -11,7 +11,6 @@ import AnimatedPressable, { type ViewPropAnimation }  from './AnimatedPressable'
 
 interface ButtonViewProps extends PropsWithChildren {
   on?: boolean
-  pressed?: boolean
   disabled?: boolean 
   menu? : boolean
   chalkboard?: boolean
@@ -21,7 +20,9 @@ interface ButtonViewProps extends PropsWithChildren {
 
 const ButtonBase: React.FC<{
   view?: React.ComponentType<ButtonViewProps>
-  animations: ViewPropAnimation[]
+  onPressAnimations: ViewPropAnimation[]
+  onPressAnimationDuration?: number,
+  fireClickAfterAnimation?: boolean,
     // If 'on' is provided, this will
     // be called with the value toggled 
   onClick: ((on: boolean) => void) | (() => void) 
@@ -33,7 +34,9 @@ const ButtonBase: React.FC<{
   viewProps?: {[key in string]: any}
 } & PropsWithChildren> = ({
   view,
-  animations,
+  onPressAnimations,
+  onPressAnimationDuration,
+  fireClickAfterAnimation,
   onClick,
   containerStyle,
   on,
@@ -45,9 +48,8 @@ const ButtonBase: React.FC<{
 }) => {
 
   const ButtonView = view // must convert the referenced variable to uppercase
-  const [pressed, setPressed] = useState<boolean>(false)
 
-  const onPress = (ignore: GestureResponderEvent) => {
+  const _onClick = () => {
     if (on === undefined) {
       (onClick as () => void)()
     }
@@ -60,13 +62,13 @@ const ButtonBase: React.FC<{
     <AnimatedPressable
       style={containerStyle ?? {}}
       disabled={disabled}
-      animations={animations}
-      setPressed={setPressed}
-      onPress={onPress}
+      animations={onPressAnimations}
+      duration={onPressAnimationDuration}
+      onClick={_onClick}
+      fireClickAfterAnimation={fireClickAfterAnimation}
     >
     {ButtonView ? (
       <ButtonView 
-        pressed={pressed} 
         on={on} 
         disabled={disabled} 
         css={viewCss}

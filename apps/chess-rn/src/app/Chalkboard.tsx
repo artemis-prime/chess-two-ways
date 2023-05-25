@@ -1,9 +1,11 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
+import type { SharedValue } from 'react-native-reanimated'
+
 import { styled, type CSS } from '~/style'
 import { useChess } from '~/services'
-import { BGImage, Column, Row } from '~/primatives'
+import { BGImage, Column } from '~/primatives'
 
 import {
   GameStatusIndicator,
@@ -30,18 +32,20 @@ const StyledBGImage = styled(BGImage, {
 const Chalkboard: React.FC<
   {
     disableInput: boolean,
+    animBaseForButton?: SharedValue<number>
     css?: CSS
   } 
   & MenuControlProps
 > = observer(({
   disableInput,
+  animBaseForButton,
   css,
   ...rest
 }) => {
   const game = useChess()
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
-      <AppBarInChalkboard {...rest} />
+      <AppBarInChalkboard animBaseForButton={animBaseForButton} {...rest} />
       <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
         {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
         {(game.playing) && <InCheckIndicator /> }

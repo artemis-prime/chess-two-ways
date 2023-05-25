@@ -17,6 +17,7 @@ import Animated, {
   interpolateColor,
   interpolate,
   Extrapolation,
+  runOnJS,
 } from 'react-native-reanimated'
 
 import { isValidNumericStyleProp } from '~/style'
@@ -38,44 +39,39 @@ interface ImagePropAnimation {
 interface AnimatedPressableProps {
   animations: ViewPropAnimation[]
   duration?: number
+  fireClickAfterAnimation?: boolean
   style?: StyleProp<ViewStyle>
-  setPressed?: (p: boolean) => void
-}
-
-interface AnimatedPressableImageProps {
-  imageURI: string
-  containerAnimations: ViewPropAnimation[]
-  imageAnimations: ImagePropAnimation[]
-  duration?: number
-  containerStyle?: StyleProp<ViewStyle>
-  imageStyle?: StyleProp<ImageStyle>
-  setPressed?: (p: boolean) => void
+  onClick: () => void
 }
 
 const AnimatedPressable: React.FC<
   AnimatedPressableProps
-  & Omit<PressableProps, 'onPressIn' | 'onPressOut' | 'children'>
+  & Omit<PressableProps, 'onPressIn' | 'onPressOut' | 'onPress' | 'children'>
   & PropsWithChildren
 > = ({
   style,
   children,
   animations,
   duration,
-  setPressed,
+  onClick,
+  fireClickAfterAnimation = false,
   ...rest
 }) => {
   
-  const pressed = useSharedValue<boolean>(false)
+  const animBase = useSharedValue<number>(0)
 
-  const animBase = useDerivedValue(() => {
-    return withTiming(
-      pressed.value ? 1 : 0, 
-      { 
-        duration : duration ?? 50, 
-        easing: pressed.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
-      }
+  const animate = (pressingIn: boolean) => {
+    animBase.value = withTiming(
+      pressingIn ? 1 : 0, 
+      { duration: duration ?? 50, easing: pressingIn ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
+      () => { runOnJS(animationEnded)(pressingIn) }
     )
-  }) 
+  }
+  const animationEnded = (pressedIn: boolean) => {
+    if (fireClickAfterAnimation && !pressedIn) {
+      onClick()
+    }
+  }
 
   useEffect(() => {
     animations.forEach((a: ViewPropAnimation) => {
@@ -92,18 +88,9 @@ const AnimatedPressable: React.FC<
     })
   }, [])
 
-  const onPressIn = (e: GestureResponderEvent): void => { 
-    pressed.value = true;
-    if (setPressed) {
-      setPressed(true)
-    } 
-  }
-  const onPressOut = (e: GestureResponderEvent): void => { 
-    pressed.value = false 
-    if (setPressed) {
-      setPressed(false)
-    } 
-  }
+  const onPressIn = (e: GestureResponderEvent): void => { animate(true) }
+  const onPressOut = (e: GestureResponderEvent): void => { animate(false) }
+  const onPress = (e: GestureResponderEvent): void => { if (!fireClickAfterAnimation) { onClick() } } 
 
   const animStyle = useAnimatedStyle<ViewStyle>(() => {
     const result: any = {}
@@ -131,7 +118,7 @@ const AnimatedPressable: React.FC<
     (Array.isArray(style)) ? [...style, animStyle] : [style, animStyle]
 
   return ( 
-    <Pressable onPressIn={onPressIn} onPressOut={onPressOut} {...rest}>
+    <Pressable onPressIn={onPressIn} onPressOut={onPressOut} onPress={onPress} {...rest}>
       <Animated.View style={styleArray}>
         {children}
       </Animated.View>
@@ -139,6 +126,17 @@ const AnimatedPressable: React.FC<
   )
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+interface AnimatedPressableImageProps {
+  imageURI: string
+  containerAnimations: ViewPropAnimation[]
+  imageAnimations: ImagePropAnimation[]
+  duration?: number
+  containerStyle?: StyleProp<ViewStyle>
+  imageStyle?: StyleProp<ImageStyle>
+  setPressed?: (p: boolean) => void
+}
 
 const AnimatedPressableImage: React.FC<
   AnimatedPressableImageProps

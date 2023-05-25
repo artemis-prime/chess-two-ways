@@ -40,7 +40,7 @@ const MenuItem: React.FC<{
   
   return (
     <ButtonBase 
-      animations={[{
+      onPressAnimations={[{
         prop: 'backgroundColor',
         from: theme.colors.menuBGColor,
         to: theme.colors.menuBGColorPressed 

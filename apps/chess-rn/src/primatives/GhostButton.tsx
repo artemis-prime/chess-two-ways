@@ -56,7 +56,7 @@ const GhostButton: React.FC<{
   const theme = useTheme()
   return (
     <ButtonBase 
-      animations={[{
+      onPressAnimations={[{
         prop: 'backgroundColor',
         from: (menu) ? theme.colors.menuBGColor : 'rgba(0, 0, 0, 0)',
         to: (menu) ? theme.colors.menuBGColorPressed : theme.colors.chalkboardButtonPressedBG 

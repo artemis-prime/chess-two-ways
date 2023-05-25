@@ -27,6 +27,7 @@ import {
 import Menu from './Menu'
 
 const screenDimensions = Dimensions.get('screen')
+const ANIM_DURATION = 200
 
 const App: React.FC = () => {
 
@@ -55,7 +56,7 @@ const App: React.FC = () => {
   const animate = () => {
     animBase.value = withTiming(
       ui.menuVisible ? 0 : 1, 
-      { duration: 200, easing: ui.menuVisible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
+      { duration: ANIM_DURATION, easing: ui.menuVisible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
       () => { runOnJS(animationEnded)() }
     )
   }

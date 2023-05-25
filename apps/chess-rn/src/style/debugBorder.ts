@@ -1,6 +1,7 @@
 const showForGroup = {
   menu: false,
-  menuOuter: false
+  menuOuter: false,
+  header: false
 }
 
 type GroupsKey = keyof typeof showForGroup

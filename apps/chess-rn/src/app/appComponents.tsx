@@ -175,10 +175,13 @@ const Game: React.FC<{
 }) => {
   const ui = useMenu()
   return (
-      // There must be an animated view IN THIS FILE
-      // due to what seems to be a subtle r-n-reanimated bug.
-    <GameOuter animBase={animBase}>
-      <Chalkboard disableInput={ui.menuVisible} menuVisible={ui.menuVisible} toggleMenu={toggleMenu} />
+     <GameOuter animBase={animBase}>
+      <Chalkboard 
+        disableInput={ui.menuVisible} 
+        menuVisible={ui.menuVisible} 
+        toggleMenu={toggleMenu} 
+        animBaseForButton={animBase}
+      />
       <Chessboard disableInput={ui.menuVisible} />
     </GameOuter >
   )
