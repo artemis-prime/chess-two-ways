@@ -16,8 +16,6 @@ import {
 
 import { useMenu } from '~/services'
 
-import Menu from './Menu'
-
 import {
   CornerShim,
   GameContainer,
@@ -26,6 +24,7 @@ import {
   StatusBarSpacer,
   Game
 } from './appComponents'
+import Menu from './Menu'
 
 const screenDimensions = Dimensions.get('screen')
 

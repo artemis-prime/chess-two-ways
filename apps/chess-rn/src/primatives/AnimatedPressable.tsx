@@ -1,10 +1,12 @@
-import React, { type PropsWithChildren }  from 'react'
+import React, { useEffect, type PropsWithChildren }  from 'react'
 import { 
   Pressable,
   type PressableProps,
   type GestureResponderEvent,
   type StyleProp,
   type ViewStyle,
+  type ImageStyle,
+  type ColorValue,
 } from 'react-native'
 import Animated, { 
   useSharedValue, 
@@ -17,16 +19,36 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated'
 
-interface TouchFeedbackOptions {
-  bgColor?: string[]
-  color?: string[]
-  duration?: number
-  opacity?: number[]
+import { isValidNumericStyleProp } from '~/style'
+
+type ViewProp = keyof ViewStyle 
+type ImageProp = keyof ImageStyle 
+interface ViewPropAnimation {
+  prop: ViewProp 
+  from: string | number
+  to: string | number
+}
+
+interface ImagePropAnimation {
+  prop: ImageProp 
+  from: string | number
+  to: string | number
 }
 
 interface AnimatedPressableProps {
-  feedbackOptions: TouchFeedbackOptions
+  animations: ViewPropAnimation[]
+  duration?: number
   style?: StyleProp<ViewStyle>
+  setPressed?: (p: boolean) => void
+}
+
+interface AnimatedPressableImageProps {
+  imageURI: string
+  containerAnimations: ViewPropAnimation[]
+  imageAnimations: ImagePropAnimation[]
+  duration?: number
+  containerStyle?: StyleProp<ViewStyle>
+  imageStyle?: StyleProp<ImageStyle>
   setPressed?: (p: boolean) => void
 }
 
@@ -37,7 +59,8 @@ const AnimatedPressable: React.FC<
 > = ({
   style,
   children,
-  feedbackOptions,
+  animations,
+  duration,
   setPressed,
   ...rest
 }) => {
@@ -47,9 +70,28 @@ const AnimatedPressable: React.FC<
   const animBase = useDerivedValue(() => {
     return withTiming(
       pressed.value ? 1 : 0, 
-      { duration : feedbackOptions.duration ?? 50, easing: pressed.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
+      { 
+        duration : duration ?? 50, 
+        easing: pressed.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
+      }
     )
   }) 
+
+  useEffect(() => {
+    animations.forEach((a: ViewPropAnimation) => {
+      if (typeof a.from === 'string') {
+        if (!a.prop.endsWith('olor')) {
+          throw new Error('AnimatedPressable: Unrecognized color property!')
+        }
+      }
+      else {
+        if (!isValidNumericStyleProp(a.prop)) {
+          throw new Error('AnimatedPressable: Unrecognized numeric property!')
+        }
+      }
+    })
+  }, [])
+
   const onPressIn = (e: GestureResponderEvent): void => { 
     pressed.value = true;
     if (setPressed) {
@@ -65,28 +107,23 @@ const AnimatedPressable: React.FC<
 
   const animStyle = useAnimatedStyle<ViewStyle>(() => {
     const result: any = {}
-    if (feedbackOptions.color) {
-      result.color = interpolateColor(      
-        animBase.value, 
-        [0, 1], 
-        [feedbackOptions.color[0], feedbackOptions.color[1]]
-      )
-    }
-    if (feedbackOptions.bgColor) {
-      result.backgroundColor = interpolateColor(      
-        animBase.value, 
-        [0, 1], 
-        [feedbackOptions.bgColor[0], feedbackOptions.bgColor[1]]
-      )
-    }
-    if (feedbackOptions.opacity) {
-      result.opacity = interpolate(      
-        animBase.value, 
-        [0, 1], 
-        [feedbackOptions.opacity[0], feedbackOptions.opacity[1]],
-        { extrapolateRight: Extrapolation.CLAMP }
-      )
-    }
+    animations.forEach((a: ViewPropAnimation) => {
+      if (typeof a.from === 'string') {
+        result[a.prop] = interpolateColor(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to]
+        ) as ColorValue 
+      }
+      else {
+        result[a.prop as ViewProp] = interpolate(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to as number],
+          { extrapolateRight: Extrapolation.CLAMP }
+        )
+      }
+    })
     return result as ViewStyle
   })
 
@@ -102,8 +139,140 @@ const AnimatedPressable: React.FC<
   )
 }
 
+
+const AnimatedPressableImage: React.FC<
+  AnimatedPressableImageProps
+  & Omit<PressableProps, 'onPressIn' | 'onPressOut' | 'children'>
+  & PropsWithChildren
+> = ({
+  imageURI,
+  containerStyle,
+  imageStyle,
+  children,
+  containerAnimations,
+  imageAnimations,
+  duration,
+  setPressed,
+  ...rest
+}) => {
+  
+  const pressed = useSharedValue<boolean>(false)
+
+  const animBase = useDerivedValue(() => {
+    return withTiming(
+      pressed.value ? 1 : 0, 
+      { 
+        duration : duration ?? 50, 
+        easing: pressed.value ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
+      }
+    )
+  }) 
+
+  useEffect(() => {
+    containerAnimations.forEach((a: ViewPropAnimation) => {
+      if (typeof a.from === 'string') {
+        if (!a.prop.endsWith('olor')) {
+          throw new Error('AnimatedPressable: Unrecognized color property!')
+        }
+      }
+      else {
+        if (!isValidNumericStyleProp(a.prop)) {
+          throw new Error('AnimatedPressable: Unrecognized numeric property!')
+        }
+      }
+    })
+    imageAnimations.forEach((a: ImagePropAnimation) => {
+      if (typeof a.from === 'string') {
+        if (!a.prop.endsWith('olor')) {
+          throw new Error('AnimatedPressable: Unrecognized color property!')
+        }
+      }
+      else {
+        if (!isValidNumericStyleProp(a.prop)) {
+          throw new Error('AnimatedPressable: Unrecognized numeric property!')
+        }
+      }
+    })
+  }, [])
+
+  const onPressIn = (e: GestureResponderEvent): void => { 
+    pressed.value = true;
+    if (setPressed) {
+      setPressed(true)
+    } 
+  }
+  const onPressOut = (e: GestureResponderEvent): void => { 
+    pressed.value = false 
+    if (setPressed) {
+      setPressed(false)
+    } 
+  }
+
+  const viewAnimStyle = useAnimatedStyle<ViewStyle>(() => {
+    const result: any = {}
+    containerAnimations.forEach((a: ViewPropAnimation) => {
+      if (typeof a.from === 'string') {
+        result[a.prop] = interpolateColor(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to]
+        ) as ColorValue 
+      }
+      else {
+        result[a.prop as ViewProp] = interpolate(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to as number],
+          { extrapolateRight: Extrapolation.CLAMP }
+        )
+      }
+    })
+    return result as ViewStyle
+  })
+
+  const imageAnimStyle = useAnimatedStyle<ImageStyle>(() => {
+    const result: any = {}
+    imageAnimations.forEach((a: ImagePropAnimation) => {
+      if (typeof a.from === 'string') {
+        result[a.prop] = interpolateColor(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to]
+        ) as ColorValue 
+      }
+      else {
+        result[a.prop as ViewProp] = interpolate(      
+          animBase.value, 
+          [0, 1], 
+          [a.from, a.to as number],
+          { extrapolateRight: Extrapolation.CLAMP }
+        )
+      }
+    })
+    return result as ImageStyle
+  })
+
+  const viewStyleArray: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>> = 
+    (Array.isArray(containerStyle)) ? [...containerStyle, viewAnimStyle] : [containerStyle, viewAnimStyle]
+
+  const imageStyleArray: StyleProp<Animated.AnimateStyle<StyleProp<ImageStyle>>> = 
+    (Array.isArray(imageStyle)) ? [...imageStyle, imageAnimStyle] : [imageStyle, imageAnimStyle]
+
+  return ( 
+    <Pressable onPressIn={onPressIn} onPressOut={onPressOut} {...rest}>
+      <Animated.View style={viewStyleArray}>
+        <Animated.Image style={imageStyleArray} source={{uri: imageURI}}/>
+      </Animated.View>
+    </Pressable>
+  )
+}
+
+
 export {
   AnimatedPressable as default,
-  type TouchFeedbackOptions,
-  type AnimatedPressableProps
+  AnimatedPressableImage, 
+  type ViewPropAnimation,
+  type ImagePropAnimation,
+  type AnimatedPressableProps,
+  type AnimatedPressableImageProps,
 }

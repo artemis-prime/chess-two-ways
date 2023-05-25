@@ -40,9 +40,11 @@ const MenuItem: React.FC<{
   
   return (
     <ButtonBase 
-      feedbackOptions={{
-        bgColor: [theme.colors.menuBGColor, theme.colors.menuBGColorPressed] 
-      }}
+      animations={[{
+        prop: 'backgroundColor',
+        from: theme.colors.menuBGColor,
+        to: theme.colors.menuBGColorPressed 
+      }]}
       containerStyle={{
         ...deborder('white', 'menu'),
         height: theme.lineHeights.lineHeightMenu,

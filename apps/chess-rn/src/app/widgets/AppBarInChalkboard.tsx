@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View } from 'react-native'
 
 import { styled, type CSS } from '~/style'
@@ -23,12 +23,10 @@ const AppBarInChalkboard: React.FC<{
 } & MenuControlProps> = ({
   css,
   ...rest
-}) => (
+}) => ( 
   <AppBarOuter css={css}>
     <MenuButton {...rest}/>
     <UndoRedoWidget menu/>
   </AppBarOuter>
 )
-
-
 export default AppBarInChalkboard

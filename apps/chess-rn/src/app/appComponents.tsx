@@ -4,7 +4,6 @@ import {
   View,
   type ViewStyle,
   type ImageStyle,
-  type StyleProp,
 } from 'react-native'
 
 import Animated, { 
@@ -16,55 +15,17 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { styled, useTheme } from '~/style'
-import { BGImage, ImageButton } from '~/primatives'
+import { BGImage } from '~/primatives'
 import { observer } from 'mobx-react-lite'
 import { useMenu } from '~/services'
 import Chalkboard from './Chalkboard'
 import Chessboard from './Chessboard'
-
-const LogoButton: React.FC<{
-  onClick: () => void
-  animBase: SharedValue<number>
-  style?: StyleProp<ViewStyle> 
-  disabled?: boolean
-}> = ({
-  onClick,
-  animBase,
-  style,
-  disabled = false
-}) => (
-  <Animated.View style={[
-    {
-      position: 'absolute',
-      width: 40,
-      height: 40,
-      right: 12,
-      top: 48 + 12
-    },
-    useAnimatedStyle<ViewStyle>(() => ({
-      opacity: animBase.value,
-      display: animBase.value < 0.1 ? 'none' : 'flex'
-    })) 
-  ]}>
-    <ImageButton disabled={disabled} onClick={onClick} 
-      style={[style, {
-        width: '100%',
-        height: '100%'
-      }]} 
-      stateImages={{
-        normal: 'knight_logo_80_normal',
-        pressed: 'knight_logo_80_pressed',
-        disabled: 'knight_logo_80_disabled'
-      }} 
-    />
-  </Animated.View>
-)
+import { LogoButton } from './widgets'
 
 const OuterContainer = styled(View, {
   height: '100%', 
   backgroundColor: '$menuBGColor'
 })
-
 
   // TODO
 const OPEN_MENU_Y_OFFSET = 95
@@ -223,11 +184,37 @@ const Game: React.FC<{
   )
 })
 
+const AnimatedLogoButton: React.FC<{
+  onClick: () => void
+  animBase: SharedValue<number>
+}> = ({
+  onClick,
+  animBase,
+}) => (
+  <Animated.View style={[
+    {
+      position: 'absolute',
+      width: 40,
+      height: 40,
+      right: 12,
+      top: 48 + 12
+    },
+    useAnimatedStyle<ViewStyle>(() => ({
+      opacity: animBase.value,
+      display: animBase.value < 0.1 ? 'none' : 'flex'
+    })) 
+  ]}>
+    <LogoButton onClick={onClick} />
+  </Animated.View>
+)
+
+
+
 export {
   CornerShim,
   GameContainer,
-  LogoButton,
   OuterContainer,
   StatusBarSpacer,
+  AnimatedLogoButton as LogoButton,
   Game
 }

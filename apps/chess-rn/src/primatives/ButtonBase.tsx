@@ -7,7 +7,7 @@ import {
 
 import { type CSS } from '~/style'
 
-import AnimatedPressable, { type TouchFeedbackOptions }  from './AnimatedPressable'
+import AnimatedPressable, { type ViewPropAnimation }  from './AnimatedPressable'
 
 interface ButtonViewProps extends PropsWithChildren {
   on?: boolean
@@ -21,7 +21,7 @@ interface ButtonViewProps extends PropsWithChildren {
 
 const ButtonBase: React.FC<{
   view?: React.ComponentType<ButtonViewProps>
-  feedbackOptions: TouchFeedbackOptions
+  animations: ViewPropAnimation[]
     // If 'on' is provided, this will
     // be called with the value toggled 
   onClick: ((on: boolean) => void) | (() => void) 
@@ -33,7 +33,7 @@ const ButtonBase: React.FC<{
   viewProps?: {[key in string]: any}
 } & PropsWithChildren> = ({
   view,
-  feedbackOptions,
+  animations,
   onClick,
   containerStyle,
   on,
@@ -60,7 +60,7 @@ const ButtonBase: React.FC<{
     <AnimatedPressable
       style={containerStyle ?? {}}
       disabled={disabled}
-      feedbackOptions={feedbackOptions}
+      animations={animations}
       setPressed={setPressed}
       onPress={onPress}
     >

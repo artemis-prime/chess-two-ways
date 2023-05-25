@@ -1,4 +1,11 @@
-export { default as AnimatedPressable, type AnimatedPressableProps} from './AnimatedPressable'
+export { 
+  default as AnimatedPressable,
+  AnimatedPressableImage, 
+  type ViewPropAnimation,
+  type ImagePropAnimation,
+  type AnimatedPressableProps,
+  type AnimatedPressableImageProps,
+} from './AnimatedPressable'
 export { default as BGImage } from './BGImage'
 export { default as ButtonBase, type ButtonViewProps } from './ButtonBase'
 export { default as GhostButton } from './GhostButton'

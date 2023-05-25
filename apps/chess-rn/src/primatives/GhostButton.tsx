@@ -56,12 +56,11 @@ const GhostButton: React.FC<{
   const theme = useTheme()
   return (
     <ButtonBase 
-      feedbackOptions={{
-        bgColor: (menu) ? 
-          [theme.colors.menuBGColor, theme.colors.menuBGColorPressed] 
-          : 
-          ['rgba(0, 0, 0, 0)', theme.colors.chalkboardButtonPressedBG]
-      }}
+      animations={[{
+        prop: 'backgroundColor',
+        from: (menu) ? theme.colors.menuBGColor : 'rgba(0, 0, 0, 0)',
+        to: (menu) ? theme.colors.menuBGColorPressed : theme.colors.chalkboardButtonPressedBG 
+      }]}
       view={ButtonText as React.ComponentType<ButtonViewProps>}
       onClick={onClick}
       containerStyle={[
