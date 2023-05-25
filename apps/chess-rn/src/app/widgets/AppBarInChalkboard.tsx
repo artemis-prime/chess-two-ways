@@ -26,7 +26,7 @@ const AppBarInChalkboard: React.FC<{
 }) => (
   <AppBarOuter css={css}>
     <MenuButton {...rest}/>
-    <UndoRedoWidget />
+    <UndoRedoWidget menu/>
   </AppBarOuter>
 )
 

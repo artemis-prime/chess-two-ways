@@ -101,7 +101,7 @@ const Menu: React.FC<{
         <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn}
-          icon={'\u27F3'}//'\u27F3'
+          icon={'\u27F3'}
         >auto-swap</MenuCheckboxItem>
         <MenuSectionTitle>Game</MenuSectionTitle>
         {(game.playing) && (<>

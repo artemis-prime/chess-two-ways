@@ -8,13 +8,13 @@ import {
 } from 'react-native'
 
 import { type CSS, css } from '~/style'
-import ButtonShell, {type ButtonViewProps, type ButtonState } from './ButtonShell'
+import ButtonShell, {type ButtonViewPropsOld, type ButtonState } from './ButtonShell'
 
 const ImageButtonView: React.FC< 
   {
     stateImages: { [key in ButtonState]?: string }
   }
-  & Omit<ButtonViewProps, 'css'>
+  & Omit<ButtonViewPropsOld, 'css'>
   & Omit<ImageBackgroundProps, 'source'>
 > = ({
   onError,    // ignore
@@ -47,7 +47,7 @@ const ImageButtonView: React.FC<
   )
 }
 
-const ImageButton: React.FC<
+const ImageButtonOld: React.FC<
   {
     onClick: () => void
     stateImages: { [key in ButtonState]?: string }
@@ -62,7 +62,7 @@ const ImageButton: React.FC<
   ...rest
 }) => (
   <ButtonShell 
-    view={ImageButtonView as React.FC<ButtonViewProps>} 
+    view={ImageButtonView as React.FC<ButtonViewPropsOld>} 
     viewProps={{ stateImages }}
     onClick={onClick} 
     {...rest} 
@@ -71,4 +71,4 @@ const ImageButton: React.FC<
   </ButtonShell>
 )
 
-export default ImageButton
+export default ImageButtonOld

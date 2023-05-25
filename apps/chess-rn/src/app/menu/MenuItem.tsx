@@ -1,89 +1,67 @@
 import React, { type PropsWithChildren } from 'react'
-import { 
-  type PressableProps,
-  Text,
-  View,
-} from 'react-native'
+import { Text } from 'react-native'
 
-import { typography, deborder, styled, type CSS } from '~/style'
+import { typography, deborder, styled, useTheme } from '~/style'
 
 import {  
-  ButtonShell,
+  ButtonBase,
   type ButtonViewProps,
-  type WidgetIconDesc,
-  WidgetIcon,
-  IconWidth,
-  IconMargin
 } from '~/primatives'
 
-const MenuItemOuter = styled(View,  {
+import WidgetIcon, {
+  IconWidth,
+  IconMargin
+} from './WidgetIcon' 
+import type WidgetIconDesc from './WidgetIconDesc'
 
-  ...deborder('white', 'menu'),
-  height: typography.menu.item.lineHeight,
-  width: '100%',
-  textAlignVertical: 'center',
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  variants: {
-    state: {
-      disabled: {
-      },
-      pressed: {
-        backgroundColor: '$menuBGColorPressed',
-        borderRadius: '$menuRadius' 
-      },
-      normal: {}
-    }
-  }
-})
 
 const ItemText = styled(Text, {
-  ...typography.menu.item,
+
   ...deborder('orange', 'menu'),
+  ...typography.menu.item,
   variants: {
-    state: {
-      disabled: {
-        color: '$menuTextDisabled'
-      },
-      pressed: {},
-      normal: {}
-    },
-    icon: {
-      false: {
-        marginLeft: IconWidth + IconMargin
-      }
-    }
-  }
+    disabled: { true: {color: '$menuTextColorDisabled'}},
+    icon: { false: { ml: IconWidth + IconMargin } }
+  },
 })
 
-const MenuItemButtonView: React.FC<ButtonViewProps> = ({
-  state,
-  icon,
+const MenuItem: React.FC<{
+  onClick: () => void
+  disabled?: boolean
+  icon?: WidgetIconDesc
+} & PropsWithChildren> = ({
   children,
-  css
-}) => (
-  <MenuItemOuter state={state} css={css}>
-    {icon && <WidgetIcon state={state} icon={icon} />}
-    <ItemText state={state} icon={!!icon}>{children}</ItemText>
-  </MenuItemOuter>
-) 
-  
-const MenuItem: React.FC<
-  {
-    onClick: () => void
-    icon?: WidgetIconDesc
-    css?: CSS
-  } 
-  & PropsWithChildren 
-  & Omit<PressableProps, 'style'>
-> = ({
-  children,
-  ...rest
-}) => (
-  <ButtonShell {...rest} view={MenuItemButtonView} >
-    {children}
-  </ButtonShell>
-)
+  disabled,
+  onClick,
+  icon
+}) => {
 
+  const theme = useTheme()
+  
+  return (
+    <ButtonBase 
+      feedbackOptions={{
+        bgColor: [theme.colors.menuBGColor, theme.colors.menuBGColorPressed] 
+      }}
+      containerStyle={{
+        ...deborder('white', 'menu'),
+        height: theme.lineHeights.lineHeightMenu,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingLeft: theme.space[1],
+        paddingRight: theme.space[1],
+        borderRadius: theme.radii.menuRadius,
+      }}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {icon && <WidgetIcon disabled={disabled} icon={icon} />}
+      <ItemText disabled={disabled} icon={!!icon}>
+        {children}
+      </ItemText>
+    </ButtonBase>
+  )
+}
 export default MenuItem

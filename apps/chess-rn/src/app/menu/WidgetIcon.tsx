@@ -18,15 +18,20 @@ const UnicodeWrapper = styled(Text, {
   textAlign: 'center',
   left: IconXOffset,
   mr: IconMargin,
+
   variants: {
     state: {
       disabled: {
-        color: '$gray9'
+        color: '$menuTextColorDisabled'
       },
-      pressed: {
-        color: '$gray3',
-      },
+      pressed: {},
       default: {}
+    },
+    
+    disabled: {
+      true: {
+        color: '$menuTextColorDisabled'
+      }
     }
   },
   defaultVariants: {
@@ -36,19 +41,21 @@ const UnicodeWrapper = styled(Text, {
 
 const WidgetIcon: React.FC<{
   icon: WidgetIconDesc | undefined
-  state: 'disabled' | 'pressed' | string
+  state?: 'disabled' | 'pressed' | string
+  disabled?: boolean
 }> = ({
   icon,
-  state
+  state,
+  disabled
 }) => {
   if (icon === undefined) {
     return null
   }
   let unicode = (typeof icon === 'string') ? icon as string : icon.icon 
   let style = (typeof icon === 'string') ? {} : icon.style 
-  const stateToSpread = ['disabled', 'pressed'].includes(state) ? {state: state as 'disabled' | 'pressed'} : {}
+  let toSpread = (state && ['disabled', 'pressed'].includes(state)) ? {state: state as 'disabled' | 'pressed'} : { disabled } 
   return (
-    <UnicodeWrapper {...stateToSpread} style={style}>{unicode}</UnicodeWrapper>
+    <UnicodeWrapper {...toSpread} style={style}>{unicode}</UnicodeWrapper>
   )
 }
 

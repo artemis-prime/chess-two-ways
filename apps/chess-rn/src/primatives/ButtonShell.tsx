@@ -9,21 +9,21 @@ import {
 
 import { type CSS } from '~/style'
 
-import type WidgetIconDesc from './WidgetIconDesc'
+import { type WidgetIconDesc} from '~/app/menu'
 
 type ButtonState = 'normal' | 'pressed' | 'disabled'
 
-interface ButtonViewProps extends PropsWithChildren {
+interface ButtonViewPropsOld extends PropsWithChildren {
   state: ButtonState
   icon?: WidgetIconDesc 
   css?: CSS
 }
 
 interface ButtonShellProps extends 
-  Omit<PressableProps, 'children'>, 
+  Omit<PressableProps, 'onPressIn' | 'onPressOut' | 'children'>, 
   PropsWithChildren 
 {
-  view: React.FC<ButtonViewProps>
+  view: React.FC<ButtonViewPropsOld>
   onClick: () => void
   viewProps?: {[key in string]: any}
   icon?: WidgetIconDesc
@@ -67,6 +67,6 @@ const ButtonShell: React.FC<ButtonShellProps> = ({
 
 export {
   ButtonShell as default,
-  type ButtonViewProps,
+  type ButtonViewPropsOld,
   type ButtonState
 }
