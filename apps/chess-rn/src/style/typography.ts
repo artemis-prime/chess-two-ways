@@ -21,19 +21,19 @@ const typography = {
   chalkboard: {
     normal: css({
       fontFamily: '$chalkboardFont',
-      lineHeight: '$lineHeightNormal',
+      lineHeight: '$lineHeightChalkboardNormal',
       fontSize: '$fontSizeNormal',
-      color: '$chalkboardTextColor'
+      color: '$chalkboardTextColor',
     }),
     smaller: css({
       fontFamily: '$chalkboardFont',
-      lineHeight: '$lineHeightSmaller',
+      lineHeight: '$lineHeightChalkboardSmaller',
       fontSize: '$fontSizeSmaller',
       color: '$chalkboardTextColor'
     }),
     alertSmaller: css({
       fontFamily: '$chalkboardFont',
-      lineHeight: '$lineHeightSmaller',
+      lineHeight: '$lineHeightChalkboardSmaller',
       fontSize: '$fontSizeSmaller',
       color: '$alert8'
     })

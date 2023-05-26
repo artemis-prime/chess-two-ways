@@ -8,7 +8,7 @@ import { Checkbox, Flex, HR } from '~/primatives'
 
 import {
   GameStatusIndicator,
-  TurnAndInCheckWidget,
+  TurnAndInCheckIndicator,
   MovesTable,
 } from '~/app/widgets'
 
@@ -157,7 +157,7 @@ const ChalkbdTop: React.FC<{
   return (
     <ChalkbdTopStyled >
       {playing ? (
-        <TurnAndInCheckWidget inCheckOnly={showMoves}/> 
+        <TurnAndInCheckIndicator inCheckOnly={showMoves}/> 
       ) : (
         <GameStatusIndicator />
       )}

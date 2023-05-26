@@ -1,10 +1,9 @@
 export { default as AppBarInChalkboard } from './AppBarInChalkboard'
 export { default as BurgerToChevronButton } from './BurgerToChevronButton'
 export { default as GameStatusIndicator } from './GameStatusIndicator'
-export { default as InCheckIndicator } from './InCheckIndicator'
 export { default as LogoButton } from './LogoButton'
 export type { default as MenuControlProps } from './MenuControlProps'
 export { default as SideSwatch } from './SideSwatch'
-export { default as TurnIndicator } from './TurnIndicator'
+export { default as TurnAndInCheckIndicator } from './TurnAndInCheckIndicator'
 export { default as UndoRedoWidget } from './UndoRedoWidget'
 

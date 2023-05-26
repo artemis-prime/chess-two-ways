@@ -9,8 +9,8 @@ const isTablet = DeviceInfo.isTablet()
 
 const LINEHEIGHTS = {
   lineHeightMenu: 40,
-  lineHeightNormal: 34,
-  lineHeightSmaller: 28
+  lineHeightChalkboardNormal: 26,
+  lineHeightChalkboardSmaller: 22
 } 
 
 // Cf: https://github.com/Temzasse/stitches-native/blob/main/example/src/styles/styled.ts#L56
@@ -95,9 +95,9 @@ const {
       thick: 3,
     },
     fontSizes: {
-      fontSizeNormal: LINEHEIGHTS.lineHeightNormal * 0.6,
-      fontSizeSmaller: LINEHEIGHTS.lineHeightSmaller * 0.6,  
-      fontSizeLarger: LINEHEIGHTS.lineHeightNormal * 0.7,
+      fontSizeNormal: LINEHEIGHTS.lineHeightChalkboardNormal * 0.7,
+      fontSizeSmaller: LINEHEIGHTS.lineHeightChalkboardSmaller * 0.7,  
+      fontSizeLarger: LINEHEIGHTS.lineHeightChalkboardNormal * 0.8,
       fontSizeMenuItem: LINEHEIGHTS.lineHeightMenu * .5,
     },
     lineHeights: {
@@ -117,6 +117,8 @@ const {
       2: 16,
       3: 23,
       4: 32,
+      5: 40,
+      6: 48,
       pyMenuSeparator: 7,
       pxMenu: 11,
       spaceAppBarHeight: 42,
@@ -126,10 +128,10 @@ const {
       hairlineWidth: StyleSheet.hairlineWidth,
       ...LINEHEIGHTS,
       appBarHeight: 42,
-      swatchHNormal: LINEHEIGHTS.lineHeightNormal * 0.7,
-      swatchWNormal: LINEHEIGHTS.lineHeightNormal * 1.3, 
-      swatchHSmall: LINEHEIGHTS.lineHeightNormal * 0.6,
-      swatchWSmall: LINEHEIGHTS.lineHeightNormal * 0.6,
+      swatchHNormal: LINEHEIGHTS.lineHeightChalkboardNormal * 0.8,
+      swatchWNormal: LINEHEIGHTS.lineHeightChalkboardNormal * 1.3, 
+      swatchHSmall: LINEHEIGHTS.lineHeightChalkboardNormal * 0.6,
+      swatchWSmall: LINEHEIGHTS.lineHeightChalkboardNormal * 0.6,
       menuIconSize: 24,
     },
     radii: {

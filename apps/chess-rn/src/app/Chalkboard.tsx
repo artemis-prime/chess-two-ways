@@ -3,14 +3,13 @@ import { observer } from 'mobx-react-lite'
 
 import type { SharedValue } from 'react-native-reanimated'
 
-import { styled, type CSS } from '~/style'
+import { styled, type CSS, deborder } from '~/style'
 import { useChess } from '~/services'
-import { BGImage, Column } from '~/primatives'
+import { BGImage, Column, Row } from '~/primatives'
 
 import {
   GameStatusIndicator,
-  TurnIndicator,
-  InCheckIndicator,
+  TurnAndInCheckIndicator,
   AppBarInChalkboard,
   type MenuControlProps
 } from '~/app/widgets'
@@ -46,9 +45,14 @@ const Chalkboard: React.FC<
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
       <AppBarInChalkboard animBaseForButton={animBaseForButton} {...rest} />
-      <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
-        {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
-        {(game.playing) && <InCheckIndicator /> }
+      <Column 
+        align='stretch' 
+        pointerEvents={(disableInput ? 'none' : 'auto')} 
+        css={{py: '$1', px: '$1_5', ...deborder('red', 'chalkboard')}}
+      >
+        <Row align='stretch' css={{...deborder('yellow', 'chalkboard')}}>
+          {(game.playing) ?  <TurnAndInCheckIndicator /> : <GameStatusIndicator />}
+        </Row>
       </Column>
     </StyledBGImage>
   )

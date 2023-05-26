@@ -1,5 +1,5 @@
 export { default as GameStatusIndicator } from './GameStatusIndicator'
-export { default as TurnAndInCheckWidget } from './TurnAndInCheckWidget'
+export { default as TurnAndInCheckIndicator } from './TurnAndInCheckIndicator'
 export { default as Logo } from './Logo40'
 export { default as MainMenu } from './MainMenu'
 export { default as MovesTable } from './MovesTable'
