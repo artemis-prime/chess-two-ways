@@ -20,7 +20,7 @@ import { Game, Main } from './appComponents'
 import Menu from './Menu'
 
 const dim = Dimensions.get('screen')
-const ANIM_DURATION = 200
+const ANIM_DURATION = 100 // ms
 
 const App: React.FC = () => {
 
