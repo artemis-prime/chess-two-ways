@@ -1,10 +1,10 @@
 import React, { type PropsWithChildren } from 'react'
 import {
   StatusBar,
-  View,
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
+import { observer } from 'mobx-react-lite'
 
 import Animated, { 
   Extrapolation,
@@ -14,30 +14,36 @@ import Animated, {
   useAnimatedStyle
 } from 'react-native-reanimated'
 
-import { styled, useTheme } from '~/style'
-import { BGImage } from '~/primatives'
-import { observer } from 'mobx-react-lite'
+import { useTheme, layout } from '~/style'
+import { BGImage, Box } from '~/primatives'
 import { useMenu } from '~/services'
+
 import Chalkboard from './Chalkboard'
 import Chessboard from './Chessboard'
 import { LogoButton } from './widgets'
 
-const OuterContainer = styled(View, {
-  height: '100%', 
-  backgroundColor: '$menuBGColor'
-})
+const Main: React.FC<{
+  toggleMenu: () => void
+  animBase: SharedValue<number>
+} & PropsWithChildren> = ({
+  toggleMenu,
+  animBase,
+  children
+}) => (
+  <Box css={{height: '100%', backgroundColor: '$menuBGColor'}}>
+    {children}
+    <AnimatedLogoButton animBase={animBase} onClick={toggleMenu} />
+  </Box>
+)
 
-  // TODO
-const OPEN_MENU_Y_OFFSET = 95
-const OPEN_MENU_X_FRACTION = 0.65
-
-const GameContainer: React.FC<{
+const Game: React.FC<{
+  toggleMenu: () => void
   animBase: SharedValue<number>
   width: number
-} & PropsWithChildren> = ({
+}> = ({
+  toggleMenu,
   animBase,
   width,
-  children 
 }) => (
 
   <Animated.View style={[
@@ -51,13 +57,13 @@ const GameContainer: React.FC<{
         left: interpolate(
           animBase.value, 
           [0, 1], 
-          [0, width * OPEN_MENU_X_FRACTION], 
+          [0, width * layout.portrait.openMenu.xFraction], 
           { extrapolateRight: Extrapolation.CLAMP }
         ),
         top: interpolate(
           animBase.value, 
           [0, 1], 
-          [0, OPEN_MENU_Y_OFFSET], 
+          [0, layout.portrait.openMenu.yOffset], 
           { extrapolateRight: Extrapolation.CLAMP }
         )
       }), 
@@ -70,7 +76,9 @@ const GameContainer: React.FC<{
       alignItems: 'stretch',
       height: '100%',
     }}>
-      {children}
+      <StatusBarSpacer animBase={animBase} />
+      <CornerShim animBase={animBase} />
+      <GameProper animBase={animBase} toggleMenu={toggleMenu} />
     </BGImage>
   </Animated.View>
 )
@@ -106,13 +114,15 @@ const CornerShim: React.FC<{
 }> = ({
   animBase  
 }) => (
+    // Size is half the resolution since image was captured at double density/
+    // (ok for both case)
   <Animated.Image 
     source={{uri: 'menu_corner_shim_14x14'}} 
     resizeMode='cover'
     style={[
       {
         position: 'absolute',
-        width: 7, // half since image was captured at double density (ok for both case)
+        width: 7, 
         height: 7,
         left: 0,
         top: StatusBar.currentHeight!
@@ -124,13 +134,15 @@ const CornerShim: React.FC<{
   />
 )
 
-const GameOuter: React.FC<{
+const GameProper: React.FC<{
   animBase: SharedValue<number>
-} & PropsWithChildren> = ({
+  toggleMenu: () => void
+}> = observer(({
   animBase,
-  children
+  toggleMenu,
 }) => {
   const theme = useTheme()
+  const ui = useMenu()
   return (
     <Animated.View style={[
       {
@@ -161,21 +173,6 @@ const GameOuter: React.FC<{
         }) 
       )
     ]}>
-      {children}
-    </Animated.View>
-  )
-}
-
-const Game: React.FC<{
-  toggleMenu: () => void
-  animBase: SharedValue<number>
-}> = observer(({
-  toggleMenu,
-  animBase
-}) => {
-  const ui = useMenu()
-  return (
-     <GameOuter animBase={animBase}>
       <Chalkboard 
         disableInput={ui.menuVisible} 
         menuVisible={ui.menuVisible} 
@@ -183,7 +180,7 @@ const Game: React.FC<{
         animBaseForButton={animBase}
       />
       <Chessboard disableInput={ui.menuVisible} />
-    </GameOuter >
+    </Animated.View>
   )
 })
 
@@ -211,13 +208,7 @@ const AnimatedLogoButton: React.FC<{
   </Animated.View>
 )
 
-
-
 export {
-  CornerShim,
-  GameContainer,
-  OuterContainer,
-  StatusBarSpacer,
-  AnimatedLogoButton as LogoButton,
+  Main,
   Game
 }

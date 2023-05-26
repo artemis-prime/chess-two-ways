@@ -38,7 +38,6 @@ const MenuRoot = styled('div', {
   '@headerStaging': {display: 'none'}
 })
 
-
 const SideMenu: React.FC<{
   open: boolean
   css?: CSS

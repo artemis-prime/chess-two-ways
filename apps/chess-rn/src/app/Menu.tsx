@@ -11,12 +11,18 @@ import Animated, {
 } from 'react-native-reanimated'
 import { observer } from 'mobx-react-lite'
 
-import { typography, css, deborder, styled, useTheme } from '~/style'
+import { 
+  typography, 
+  css, 
+  deborder, 
+  styled, 
+  useTheme, 
+  layout 
+} from '~/style'
 import { useChessboardOrientation, useChess } from '~/services'
 
-import { MenuItem, MenuCheckboxItem } from './menu'
-
-const OPEN_MENU_X_FRACTION = 0.65 // TODO
+import menuIcons from './menu/menuIcons'
+import { MenuItem, MenuCheckboxItem, type IconAndStyles } from './menu'
 
 const MenuOuter: React.FC<{
   animBase: SharedValue<number> 
@@ -28,32 +34,28 @@ const MenuOuter: React.FC<{
 }) => {
 
   const theme = useTheme()
-  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
-    opacity: animBase.value,
-  }))
-
   return (
-    <Animated.View 
-      style={[
-        {
-          ...deborder('red', 'menuOuter'),
-          position: 'absolute',
-          left: 0,
-          top: theme.sizes.appBarHeight,
-          width: '100%', 
-          paddingLeft: theme.space.pxMenu,
-          paddingRight: theme.space.pxMenu,
-          paddingBottom: theme.space._5,
-          marginTop: theme.space._5,
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          backgroundColor: theme.colors.menuBGColor
-        }, 
-        regStyle,
-        animatedStyle
-      ]}
-    >
+    <Animated.View  style={[
+      {
+        ...deborder('red', 'menuOuter'),
+        position: 'absolute',
+        left: 0,
+        top: theme.sizes.appBarHeight,
+        width: '100%', 
+        paddingLeft: theme.space.pxMenu,
+        paddingRight: theme.space.pxMenu,
+        paddingBottom: theme.space._5,
+        marginTop: theme.space._5,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        backgroundColor: theme.colors.menuBGColor
+      }, 
+      regStyle,
+      useAnimatedStyle<ViewStyle>(() => ({
+        opacity: animBase.value,
+      }))
+    ]}>
       {children}
     </Animated.View>
   )
@@ -91,29 +93,27 @@ const Menu: React.FC<{
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
   return (
     <MenuOuter animBase={animBase} regStyle={regStyle}>
-      <MenuItemsOuter css={{w: width * .9 * OPEN_MENU_X_FRACTION}}>
+      <MenuItemsOuter css={{w: width * .9 * layout.portrait.openMenu.xFraction}}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 
-          icon={'\u296F'}
+          icon={menuIcons.swap}
         >swap</MenuItem>
         <MenuCheckboxItem 
           checked={bo.autoOrientToCurrentTurn} 
           setChecked={bo.setAutoOrientToCurrentTurn}
-          icon={'\u27F3'}
+          icon={menuIcons.autoSwap}
         >auto-swap</MenuCheckboxItem>
         <MenuSectionTitle>Game</MenuSectionTitle>
         {(game.playing) && (<>
-          <MenuItem onClick={game.offerADraw} icon={{icon: '=', style: {fontSize: 26, fontWeight: '300'}}}>offer a draw</MenuItem>
-          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: {fontSize: 17, fontWeight: '300'}}}>{game.currentTurn} concedes</MenuItem>
+          <MenuItem onClick={game.offerADraw} icon={menuIcons.draw}>offer a draw</MenuItem>
+          <MenuItem onClick={game.concede} icon={{icon: currentConcedes, style: (menuIcons.concede as IconAndStyles).style}}>{game.currentTurn} concedes</MenuItem>
         </>)}
-        <MenuItem onClick={game.reset} icon={{icon: '\u21ba', style: {fontSize: 32}}}>reset</MenuItem>
+        <MenuItem onClick={game.reset} icon={menuIcons.reset}>reset</MenuItem>
       </MenuItemsOuter>
     </MenuOuter>
   )
 })
 
-export {
-  Menu as default
-}
+export default Menu

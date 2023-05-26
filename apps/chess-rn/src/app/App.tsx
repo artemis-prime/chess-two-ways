@@ -16,23 +16,16 @@ import {
 
 import { useMenu } from '~/services'
 
-import {
-  CornerShim,
-  GameContainer,
-  LogoButton,
-  OuterContainer,
-  StatusBarSpacer,
-  Game
-} from './appComponents'
+import { Game, Main } from './appComponents'
 import Menu from './Menu'
 
-const screenDimensions = Dimensions.get('screen')
+const dim = Dimensions.get('screen')
 const ANIM_DURATION = 200
 
 const App: React.FC = () => {
 
-  const sizeRef = useRef<{w: number, h: number}>({w: screenDimensions.width, h: screenDimensions.height})
   const ui = useMenu()
+  const sizeRef = useRef<{w: number, h: number}>({w: dim.width, h: dim.height})
 
     // 0 <--> 1   
     // menu hidden <--> menu visible 
@@ -48,15 +41,18 @@ const App: React.FC = () => {
   }, [])
 
   const toggleMenu = () => { animate() }
-  const animationEnded = () => { ui.setMenuVisible(!ui.menuVisible) }
 
     // Not a 'worklet', but the callback is! (dunno <shrug>)
     // It also can't be defined inline for some odd reason.
     // (reanimated babel plugin issue?).
   const animate = () => {
+    const animationEnded = () => { ui.setMenuVisible(!ui.menuVisible) }
     animBase.value = withTiming(
       ui.menuVisible ? 0 : 1, 
-      { duration: ANIM_DURATION, easing: ui.menuVisible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) },
+      { 
+        duration: ANIM_DURATION, 
+        easing: ui.menuVisible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
+      },
       () => { runOnJS(animationEnded)() }
     )
   }
@@ -64,15 +60,10 @@ const App: React.FC = () => {
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-      <OuterContainer>
+      <Main animBase={animBase} toggleMenu={toggleMenu}>
         <Menu animBase={animBase} width={sizeRef.current.w}/>
-        <GameContainer animBase={animBase} width={sizeRef.current.w}>
-          <StatusBarSpacer animBase={animBase} />
-          <CornerShim animBase={animBase} />
-          <Game animBase={animBase} toggleMenu={toggleMenu} />
-        </GameContainer>
-        <LogoButton animBase={animBase} onClick={toggleMenu} />
-      </OuterContainer>
+        <Game animBase={animBase} toggleMenu={toggleMenu} width={sizeRef.current.w} />
+      </Main>
     </SafeAreaView>
   )
 }

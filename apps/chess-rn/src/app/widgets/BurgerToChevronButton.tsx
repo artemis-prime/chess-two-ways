@@ -1,4 +1,4 @@
-import React, { useEffect }  from 'react'
+import React  from 'react'
 import { 
   Text,
   type StyleProp,
@@ -15,10 +15,10 @@ import Animated, {
 import { styled, useTheme, deborder } from '~/style'
 import { ButtonBase } from '~/primatives'
 
-const UNICODE = {
-  BURGER_MENU: '\u2630',
-  ARROW_TO_CORNER_DOWN_RIGHT: '\u21F2',
-  ARROW_TO_CORNER_UP_LEFT:'\u21F1'
+const icons = {
+  burger: '\u2630',
+  arrowToCornerDownRight: '\u21F2',
+  arrowToCornerUpLeft:'\u21F1'
 }
 
 const Figure = styled(Text, {
@@ -89,7 +89,7 @@ const BurgerToChevronButton: React.FC<{
           display: animBase.value > 0.9 ? 'none' : 'flex'
         }))
       ]}>
-        <Figure css={{fontSize: 23}}>{UNICODE.BURGER_MENU}</Figure>  
+        <Figure css={{fontSize: 23}}>{icons.burger}</Figure>  
       </Animated.View>
       <Animated.View style={[
         commonStyles,
@@ -98,13 +98,13 @@ const BurgerToChevronButton: React.FC<{
           display: animBase.value < 0.1 ? 'none' : 'flex'
         }))
       ]}>
-        <Figure css={{fontSize: 30, t: -2, l: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
+        <Figure css={{fontSize: 30, t: -2, l: -1}}>{icons.arrowToCornerUpLeft}</Figure>
       </Animated.View>
     </>) 
     : (burger ? (
-        <Figure css={{fontSize: 23}}>{UNICODE.BURGER_MENU}</Figure>  
+        <Figure css={{fontSize: 23}}>{icons.burger}</Figure>  
     ) : (
-      <Figure css={{fontSize: 30, t: -2, l: -1}}>{UNICODE.ARROW_TO_CORNER_UP_LEFT}</Figure>
+      <Figure css={{fontSize: 30, t: -2, l: -1}}>{icons.arrowToCornerUpLeft}</Figure>
     ))}
     </ButtonBase>
   )
