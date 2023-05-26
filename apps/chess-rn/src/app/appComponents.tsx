@@ -11,12 +11,18 @@ import Animated, {
   interpolate,
   interpolateColor,
   type SharedValue, 
-  useAnimatedStyle
+  useAnimatedStyle,
+  useSharedValue,
+  useDerivedValue,
+  withTiming,
+  Easing,
+  useAnimatedProps,
+  runOnJS
 } from 'react-native-reanimated'
 
-import { useTheme, layout } from '~/style'
-import { BGImage, Box } from '~/primatives'
-import { useMenu } from '~/services'
+import { useTheme, layout, deborder } from '~/style'
+import { BGImage, Box, Column } from '~/primatives'
+import { useChalkboard, useMenu } from '~/services'
 
 import Chalkboard from './Chalkboard'
 import Chessboard from './Chessboard'
@@ -134,15 +140,37 @@ const CornerShim: React.FC<{
   />
 )
 
+
 const GameProper: React.FC<{
   animBase: SharedValue<number>
   toggleMenu: () => void
 }> = observer(({
-  animBase,
+  animBase : menuAnimBase,
   toggleMenu,
 }) => {
   const theme = useTheme()
-  const ui = useMenu()
+  const menu = useMenu()
+  const cb = useChalkboard()
+
+  const cbAnimBase = useSharedValue<number>(cb.open ? 1 : 0) 
+
+    // state changes at the end of the animiation
+  const animate = (opening: boolean) => {
+    const onFinished = () => { cb.setOpen(opening) }
+    cbAnimBase.value = withTiming(
+      opening ? 1 : 0,
+      {
+        duration: 200,  
+        easing: opening ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
+      },
+      () => { runOnJS(onFinished)() }
+    )
+  }
+
+  const setOpen = (b: boolean) => {
+    animate(b) 
+  }
+
   return (
     <Animated.View style={[
       {
@@ -151,7 +179,7 @@ const GameProper: React.FC<{
         alignItems: 'stretch',
         height: '100%',
         padding: theme.space[1],
-        paddingBottom: 0,
+        paddingBottom: 65,
         gap: theme.space['1_5'], 
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
         borderColor: '#444',
@@ -159,13 +187,13 @@ const GameProper: React.FC<{
       useAnimatedStyle<ViewStyle>(
         () => ({
           borderTopLeftRadius: interpolate(
-            animBase.value, 
+            menuAnimBase.value, 
             [0, 1], 
             [0, theme.radii.md], 
             { extrapolateRight: Extrapolation.CLAMP }
           ),
           borderWidth: interpolate(
-            animBase.value, 
+            menuAnimBase.value, 
             [0, 1], 
             [0, theme.borderWidths.thicker], 
             { extrapolateRight: Extrapolation.CLAMP }
@@ -173,13 +201,31 @@ const GameProper: React.FC<{
         }) 
       )
     ]}>
-      <Chalkboard 
-        disableInput={ui.menuVisible} 
-        menuVisible={ui.menuVisible} 
-        toggleMenu={toggleMenu} 
-        animBaseForButton={animBase}
-      />
-      <Chessboard disableInput={ui.menuVisible} />
+      <Animated.View 
+        collapsable={false} 
+        style={[
+          {
+            ...deborder('yellow', 'layout'),
+            minHeight: 100,
+            flexBasis: 100,
+            flexShrink: 0,
+          },
+          useAnimatedStyle(() => ({
+            flexGrow: cbAnimBase.value,
+          }))
+        ]}
+      >
+        <Chalkboard 
+          disableInput={menu.visible} 
+          visible={menu.visible} 
+          toggleMenu={toggleMenu} 
+          animBaseForButton={menuAnimBase}
+          open={cb.open}
+          setOpen={setOpen}
+          css={{ position: 'absolute', t: 0, b: 0, r: 0, l: 0 }}
+        />
+      </Animated.View>
+      <Chessboard css={{flexGrow: 0, flexShrink: 0 }} disableInput={menu.visible} />
     </Animated.View>
   )
 })

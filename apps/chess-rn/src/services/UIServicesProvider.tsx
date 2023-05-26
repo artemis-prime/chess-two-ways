@@ -15,11 +15,13 @@ import useChess from './useChess'
 import type ChessboardOrientation from './ChessboardOrientation'
 import type Pulses from './Pulses'
 import type MenuState from './MenuState'
+import type ChalkboardState from './ChalkboardState'
 
 interface UIServices  {
   pulses: Pulses
   menu: MenuState
   chessboardOrientation: ChessboardOrientation
+  chalkboard: ChalkboardState
 }
 
 class ChessboardOrientationImpl implements ChessboardOrientation {
@@ -47,16 +49,30 @@ class ChessboardOrientationImpl implements ChessboardOrientation {
 
 class MenuStateImpl implements MenuState {
   
-  menuVisible: boolean = false
+  visible: boolean = false
   
   constructor() {
     makeObservable(this, {
-      menuVisible: observable,
-      setMenuVisible: action.bound 
+      visible: observable,
+      setVisible: action.bound 
     })
   }
 
-  setMenuVisible(b: boolean) { this.menuVisible = b }
+  setVisible(b: boolean) { this.visible = b }
+}
+
+class ChalkboardStateImpl implements ChalkboardState {
+  
+  open: boolean = false
+  
+  constructor() {
+    makeObservable(this, {
+      open: observable,
+      setOpen: action.bound 
+    })
+  }
+
+  setOpen(b: boolean) { this.open = b }
 }
 
 class PulsesImpl implements Pulses {
@@ -84,6 +100,7 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
   const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
   const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl())
   const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
+  const chalkboardStateRef = useRef<ChalkboardStateImpl>(new ChalkboardStateImpl())
 
   const game = useChess()
   
@@ -120,7 +137,8 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
     <UIServicesContext.Provider value={{
       menu: menuStateRef.current,
       pulses: pulsesRef.current,
-      chessboardOrientation: chessboardOrientationRef.current
+      chessboardOrientation: chessboardOrientationRef.current,
+      chalkboard: chalkboardStateRef.current
     }}>
       {children}
     </UIServicesContext.Provider>

@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { SharedValue } from 'react-native-reanimated'
 
 import { styled, type CSS, deborder } from '~/style'
 import { useChess } from '~/services'
-import { BGImage, Column, Row } from '~/primatives'
+import { BGImage, Checkbox, Column, Row } from '~/primatives'
 
 import {
   GameStatusIndicator,
@@ -19,7 +19,7 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  minHeight: 150,
+  //minHeight: 150,
   borderWidth: '$thicker',
   borderTopLeftRadius: '$lg',
   borderTopRightRadius: '$lg',
@@ -30,28 +30,35 @@ const StyledBGImage = styled(BGImage, {
 
 const Chalkboard: React.FC<
   {
-    disableInput: boolean,
+    open: boolean
+    setOpen: (b: boolean) => void
+    disableInput?: boolean
     animBaseForButton?: SharedValue<number>
     css?: CSS
   } 
   & MenuControlProps
 > = observer(({
-  disableInput,
+  open,
+  setOpen,
+  disableInput = false,
   animBaseForButton,
   css,
   ...rest
 }) => {
+
   const game = useChess()
+
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
       <AppBarInChalkboard animBaseForButton={animBaseForButton} {...rest} />
       <Column 
         align='stretch' 
         pointerEvents={(disableInput ? 'none' : 'auto')} 
-        css={{py: '$1', px: '$1_5', ...deborder('red', 'chalkboard')}}
+        css={{py: '$1',  pl: '$1_5', pr: '$_5', ...deborder('red', 'chalkboard')}}
       >
-        <Row align='stretch' css={{...deborder('yellow', 'chalkboard')}}>
+        <Row justify='between' align='center' css={{...deborder('yellow', 'chalkboard')}}>
           {(game.playing) ?  <TurnAndInCheckIndicator /> : <GameStatusIndicator />}
+          <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
       </Column>
     </StyledBGImage>

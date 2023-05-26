@@ -8,6 +8,7 @@ export {
 } from './AnimatedPressable'
 export { default as BGImage } from './BGImage'
 export { default as ButtonBase, type ButtonViewProps } from './ButtonBase'
+export { default as Checkbox } from './Checkbox'
 export { default as GhostButton } from './GhostButton'
 export { default as ImageButton } from './ImageButton'
 export { default as SText } from './SText'

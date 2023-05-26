@@ -25,7 +25,7 @@ const AppBarInChalkboard: React.FC<{
 } & MenuControlProps> = ({
   animBaseForButton,
   css,
-  menuVisible,
+  visible,
   toggleMenu
 }) => {
 
@@ -43,7 +43,7 @@ const AppBarInChalkboard: React.FC<{
           ...deborder('green', 'header')
         }}
         animBase={animBaseForButton}
-        burger={!menuVisible}
+        burger={!visible}
         setBurger={setOn}
       />
       <UndoRedoWidget menu css={deborder('yellow', 'header')}/>

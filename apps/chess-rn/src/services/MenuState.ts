@@ -1,6 +1,6 @@
 interface MenuState {
-  menuVisible: boolean,
-  setMenuVisible: (b: boolean) => void
+  visible: boolean,
+  setVisible: (b: boolean) => void
 }
 
 export { type MenuState as default}
