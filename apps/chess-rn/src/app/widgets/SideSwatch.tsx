@@ -25,7 +25,15 @@ const SideSwatch = styled(View, {
         h: '$swatchHSmall', 
         w: '$swatchWSmall',
       }
+    },
+    narrow: {
+      true: {
+        h: '$swatchHSmall', 
+        // width is set dynamically
+        borderWidth: '$normal', 
+      }
     }
+
   }
 })
 

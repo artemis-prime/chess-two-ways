@@ -337,7 +337,7 @@ const MovesTable: React.FC<{
           </Row>
         ))}
         
-        { // If the previous row was complete, create a fake last row for the pulsing '?' for white.
+        { // If the previous row was complete, create a fake last row for the pulsing '?' in white's column.
         !disableRow(r.rows.length /* safe */) && r.rows.length > 0 && r.rows[r.rows.length - 1].black != null && (
           <Row css={{w: '100%', mb: '$_5'}} key='last'>
             <Box css={{minWidth: COL_WIDTHS[0], flex: 'none', mr: '$_5', color:'$chalkboardTextColor' }}>{`${r.rows.length + 1})`}</Box>

@@ -20,6 +20,17 @@ const ChalkText = styled(Text, {
       smaller: {
         lineHeight: '$lineHeightChalkboardSmaller',
         fontSize: '$fontSizeSmaller',
+      },
+      small: {
+        lineHeight: '$lineHeightChalkboardSmall',
+        fontSize: '$fontSizeSmall',
+        textAlignVertical: 'bottom',
+      },
+      short: {
+        height: '$lineHeights$lineHeightChalkboardSmall',
+        lineHeight: '$lineHeightChalkboardShort',
+        fontSize: '$fontSizeSmaller',
+        textAlignVertical: 'bottom',
       }
     },
     alert: {

@@ -6,7 +6,9 @@ const showForGroup = {
   header: false,
   chalkboard: false,
   checkbox: false,
-  layout: false
+  layout: false,
+  moves: true,
+  movesH: false
 }
 
 type GroupsKey = keyof typeof showForGroup

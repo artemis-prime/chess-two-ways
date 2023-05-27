@@ -10,7 +10,9 @@ const isTablet = DeviceInfo.isTablet()
 const LINEHEIGHTS = {
   lineHeightMenu: 40,
   lineHeightChalkboardNormal: 26,
-  lineHeightChalkboardSmaller: 22
+  lineHeightChalkboardSmaller: 22,
+  lineHeightChalkboardSmall: 18,
+  lineHeightChalkboardShort: 16
 } 
 
 // Cf: https://github.com/Temzasse/stitches-native/blob/main/example/src/styles/styled.ts#L56
@@ -96,8 +98,9 @@ const {
     },
     fontSizes: {
       fontSizeNormal: LINEHEIGHTS.lineHeightChalkboardNormal * 0.7,
-      fontSizeSmaller: LINEHEIGHTS.lineHeightChalkboardSmaller * 0.7,  
       fontSizeLarger: LINEHEIGHTS.lineHeightChalkboardNormal * 0.8,
+      fontSizeSmaller: LINEHEIGHTS.lineHeightChalkboardSmaller * 0.7,  
+      fontSizeSmall: LINEHEIGHTS.lineHeightChalkboardSmall * 0.7,  
       fontSizeMenuItem: LINEHEIGHTS.lineHeightMenu * .5,
     },
     lineHeights: {

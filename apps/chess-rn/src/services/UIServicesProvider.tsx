@@ -63,7 +63,7 @@ class MenuStateImpl implements MenuState {
 
 class ChalkboardStateImpl implements ChalkboardState {
   
-  open: boolean = false
+  open: boolean = true
   
   constructor() {
     makeObservable(this, {

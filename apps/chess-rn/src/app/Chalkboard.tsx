@@ -11,6 +11,7 @@ import {
   GameStatusIndicator,
   TurnAndInCheckIndicator,
   AppBarInChalkboard,
+  MovesTable,
   type MenuControlProps
 } from '~/app/widgets'
 
@@ -57,9 +58,10 @@ const Chalkboard: React.FC<
         css={{py: '$1',  pl: '$1_5', pr: '$_5', ...deborder('red', 'chalkboard')}}
       >
         <Row justify='between' align='center' css={{...deborder('yellow', 'chalkboard')}}>
-          {(game.playing) ?  <TurnAndInCheckIndicator /> : <GameStatusIndicator />}
+          {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
+        <MovesTable show={open} css={{mt: open ? 0 : '$1', flexGrow: 1}}/>
       </Column>
     </StyledBGImage>
   )
