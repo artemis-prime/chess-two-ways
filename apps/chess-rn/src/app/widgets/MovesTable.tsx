@@ -11,7 +11,7 @@ import { useChess, usePulses } from '~/services'
 
 import SideSwatch from './SideSwatch'
 import Rows, { type MoveRow } from './movesTable/Rows'
-import HilightHelper from './movesTable/HilightHelper'
+import RenderHelper from './movesTable/RenderHelper'
 import useTableReactions from './movesTable/useTableReactions'
 import TableRow from './movesTable/TableRow'
 
@@ -35,9 +35,9 @@ const MovesTable: React.FC<{
 }) => {
 
   const rowsRef = useRef<Rows>(new Rows())
-  const helperRef = useRef<HilightHelper>(new HilightHelper(rowsRef.current))
-  const game = useChess()
   const pulses = usePulses()
+  const helperRef = useRef<RenderHelper>(new RenderHelper(rowsRef.current, pulses))
+  const game = useChess()
 
   useTableReactions(game, rowsRef.current)
 
@@ -49,18 +49,40 @@ const MovesTable: React.FC<{
 
   const HeaderRow: React.FC = observer(() => (
     <Row align='end' css={{w: '100%', mb: '$_5', flex: 0}} key='title-row'>
-      <Box css={{w: COLS[0], mr: '$_5', ...deb('yellow', 'movesH')}}><CT>{' '}</CT></Box>
+      <Box css={{ mr: '$_5', ...deb('yellow', 'movesH')}}><CT size='small' css={{opacity: 0}}>{helperRef.current.sizingString()}</CT></Box>
       <Box css={{w: COLS[1], pr: '$1_5', ...deb('orange', 'movesH')}}>
         <SideSwatch narrow side='white' css={swatchCss('white')}/>
       </Box>
       <Box css={{w: COLS[2], pr: '$1_5', ...deb('yellow', 'movesH')}}>
         <SideSwatch narrow side='black' css={swatchCss('black')}/>
       </Box>
-      <Row justify='center' align='end' css={{flexGrow: 1, ...deb('orange', 'movesH')}}>
+      <Row justify='start' align='end' css={{flexGrow: 1, pl: '$1', ...deb('orange', 'movesH')}}>
         <CT size='short' css={{ top: 2, ...deb('white', 'movesH')}}>notes:</CT>
       </Row>
     </Row>
   ))
+
+  const Footer: React.FC = observer(() => (
+    // If the previous row was complete, create a fake last row for the pulsing '?' in white's column.
+    (!helperRef.current.disableRow(rowsRef.current.rows.length /* safe */) 
+      && rowsRef.current.rows.length > 0 
+      && rowsRef.current.rows[rowsRef.current.rows.length - 1].black != null
+    ) ? (
+      <Row css={{w: '100%', mb: '$_5'}} key='last'>
+        <Box css={{minWidth: COLS[0], flex: -1, mr: '$_5', color:'$chalkboardTextColor', ...deb('red', 'moves')}}>
+          <CT size='small' css={{opacity: 0}}>{helperRef.current.sizingString()}</CT>
+          <CT size='small' css={{position: 'absolute', t: 0, l: 0, b: 0, r: 0}}>
+            {`${rowsRef.current.rows.length + 1})`}
+          </CT>
+        </Box>
+        <Box css={{w: COLS[1], flex: '5 0 auto', color: '$chalkboardTextColor', ...helperRef.current.pulsingOpacity(true)}}>
+          <CT size='small' css={helperRef.current.pulsingFontSize('$fontSizeSmaller', '$fontSizeSmall', true)}>?</CT>
+        </Box>
+      </Row>
+    ) 
+    : 
+    null
+  )) 
 
   return show ? (
     <Outer css={css}>
@@ -70,6 +92,7 @@ const MovesTable: React.FC<{
         renderItem={({item, index}) => (<TableRow row={item} i={index} h={helperRef.current} />)}
         data={rowsRef.current.rows.slice()}
         keyExtractor={(row) => (row.white.str + (row.black?.str ?? ''))}
+        ListFooterComponent={Footer}
       />
     </Outer>
   ) : null

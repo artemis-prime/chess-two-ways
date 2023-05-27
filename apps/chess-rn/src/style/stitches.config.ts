@@ -11,8 +11,8 @@ const LINEHEIGHTS = {
   lineHeightMenu: 40,
   lineHeightChalkboardNormal: 26,
   lineHeightChalkboardSmaller: 22,
-  lineHeightChalkboardSmall: 18,
-  lineHeightChalkboardShort: 16
+  lineHeightChalkboardSmall: 20,
+  lineHeightChalkboardShort: 18
 } 
 
 // Cf: https://github.com/Temzasse/stitches-native/blob/main/example/src/styles/styled.ts#L56

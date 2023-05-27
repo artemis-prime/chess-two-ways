@@ -55,7 +55,7 @@ const Chalkboard: React.FC<
       <Column 
         align='stretch' 
         pointerEvents={(disableInput ? 'none' : 'auto')} 
-        css={{py: '$1',  pl: '$1_5', pr: '$_5', ...deborder('red', 'chalkboard')}}
+        css={{py: '$1',  pl: '$_5', pr: '$_5', ...deborder('red', 'chalkboard')}}
       >
         <Row justify='between' align='center' css={{...deborder('yellow', 'chalkboard')}}>
           {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}

@@ -2,15 +2,26 @@ import { computedFn } from 'mobx-utils'
 import { type Side } from '@artemis-prime/chess-core'
 
 import { type CSS } from '~/style'
-import { type MoveRow, type HilightState } from './Rows'
+import Rows, { type MoveRow } from './Rows'
+import { type Pulses } from '~/services'
 
-class HilightHelper {
+class Helper {
 
-  private _state: HilightState
+  private _state: Rows 
+  private _pulses: Pulses
 
-  constructor(h: HilightState) {
-    this._state = h
+  constructor(r: Rows, p: Pulses) {
+    this._state = r
+    this._pulses = p
   }
+
+  pulsingOpacity = computedFn((enabled: boolean): CSS => (
+    (enabled) ? { opacity: this._pulses.slow ? .8 : .7} : {}
+  )) 
+
+  pulsingFontSize = computedFn((on: string, off: string, enabled: boolean): CSS => (
+    (enabled) ? { fontSize: this._pulses.slow ? on : off} : {}
+  )) 
 
   sideHilight = computedFn((moveRow: number, side: Side): CSS => {
 
@@ -63,6 +74,19 @@ class HilightHelper {
     }
     return false
   })
+
+  sizingString = computedFn((): string => {
+    if (this._state.rows.length < 10) {
+      return '7)'
+    } 
+    else if (this._state.rows.length < 100) {
+      return '77)'
+    }
+    else {
+      return '777)'
+    }
+  })
+
 }
 
-export default HilightHelper
+export default Helper

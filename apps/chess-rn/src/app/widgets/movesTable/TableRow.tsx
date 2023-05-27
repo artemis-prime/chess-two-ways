@@ -1,14 +1,12 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
-import { computedFn } from 'mobx-utils'
 
-import { type CSS } from '~/style'
+import { deborder } from '~/style'
 import { Row, Box, ChalkText as CT } from '~/primatives'
 
 import { type MoveRow } from './Rows'
-import { usePulses } from '~/services'
 import COLS from './COLS'
-import HilightHelper from './HilightHelper'
+import RenderHelper from './RenderHelper'
 
 const Ellipses: React.FC = () => (
   <CT css={{
@@ -23,68 +21,67 @@ const Comma: React.FC = () => (
 
 const TableRow: React.FC<{
   row: MoveRow
-  h: HilightHelper
+  h: RenderHelper
   i: number
 }> = observer(({
   row,
   h,
   i
-}) => {
-
-  const pulses = usePulses()
-
-  const pulsingOpacity = computedFn((enabled: boolean): CSS => (
-    (enabled) ? { opacity: pulses.slow ? .8 : .7} : {}
-  )) 
-
-  return (
-    <Row css={{mb: '$_5'}} align='center'>
-      <Box css={{
-        minWidth: COLS[0], 
-        flex: -1, // https://reactnative.dev/docs/layout-props#flex
+}) => (
+  <Row css={{mb: '$_5'}} align='center'>
+    <Box css={{
+      minWidth: COLS[0], 
+      flex: -1, // https://reactnative.dev/docs/layout-props#flex
+    }}>
+      <CT size='small' css={{opacity: 0}}>{h.sizingString()}</CT>
+      <CT size='small' css={{
+          position: 'absolute', t: 0, l: 0, b: 0, r: 0,
+          color: h.disableRow(i) ? '$chalkboardTextColorDisabled' : '$chalkboardTextColor',
+          ...deborder('red')
       }}>
-        <CT size='smaller' css={{color: h.disableRow(i) ? '$chalkboardTextColorDisabled' : '$chalkboardTextColor'}}>
-          {`${i + 1})`}
-        </CT>
-      </Box>
-      <Box css={{
-        w: COLS[1], 
-        flex: 0, 
-        ...h.sideHilight(i, 'white')
+        {`${i + 1})`}
+      </CT>
+    </Box>
+    <Box css={{
+      w: COLS[1], 
+      flex: 0, 
+      ...h.sideHilight(i, 'white')
+    }}>
+      <CT size='small' css={h.sideColor(row, i, 'white')}>
+        {row.white.str}
+      </CT>
+    </Box>
+    <Box css={{
+      w: COLS[2], 
+      flex: 0, 
+      ...h.sideHilight(i, 'black'), 
+      ...h.pulsingOpacity(!row.black)
+    }}>
+      <CT size='small' css={{
+        ...h.sideColor(row, i, 'black'), 
+        ...h.pulsingFontSize('$fontSizeSmaller', '$fontSizeSmall', !row.black)
       }}>
-        <CT size='smaller' css={h.sideColor(row, i, 'white')}>
-          {row.white.str}
-        </CT>
-      </Box>
-      <Box css={{
-        w: COLS[2], 
-        flex: 0, 
-        ...h.sideHilight(i, 'black'), 
-        ...pulsingOpacity(!row.black)
+        {row.black?.str ?? '?'}
+      </CT>
+    </Box>
+    <Row justify='start' align='start' css={{
+      flex: 1, 
+      flexWrap: 'wrap', 
+      textAlign: 'right',
+    }}>
+      <CT size='short' css={{
+        textAlign: 'right'
       }}>
-        <CT size='smaller' css={h.sideColor(row, i, 'black')}>
-          {row.black?.str ?? '?'}
-        </CT>
-      </Box>
-      <Row justify='start' align='start' css={{
-        flex: 1, 
-        flexWrap: 'wrap', 
-        textAlign: 'right',
-      }}>
-        <CT size='short' css={{
-          textAlign: 'right'
-        }}>
-        {h.disableRow(i) ? (
-          (row.white.note || row.black?.note) ? <Ellipses /> : ''
-        ) : (<>
-          { row.white.note }
-          {(row.white.note && row.black?.note) && <Comma />}
-          { row.black?.note ? ((h.disableSide(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
-        </>)}
-        </CT>
-      </Row>
+      {h.disableRow(i) ? (
+        (row.white.note || row.black?.note) ? <Ellipses /> : ''
+      ) : (<>
+        { row.white.note }
+        {(row.white.note && row.black?.note) && <Comma />}
+        { row.black?.note ? ((h.disableSide(i, 'black')) ? <Ellipses /> : row.black!.note) : '' } 
+      </>)}
+      </CT>
     </Row>
-  )
-})
+  </Row>
+))
 
 export default TableRow

@@ -22,12 +22,7 @@ interface MoveRow {
   } | null
 } 
 
-interface HilightState {
-  hilightedMoveRow: number | null
-  hilightedSide: Side  
-}
-
-class Rows implements HilightState{
+class Rows {
 
   rows: MoveRow[] = []
   lastActionIndex =  -1
@@ -54,5 +49,4 @@ class Rows implements HilightState{
 export {
   Rows as default,
   type MoveRow,
-  type HilightState
 }
