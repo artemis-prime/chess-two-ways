@@ -18,11 +18,12 @@ import ScrollableFeed from 'react-scrollable-feed'
 import { ActionRecord, type Side } from '@artemis-prime/chess-core'
 
 import { styled, type CSS, deborder } from '~/style'
-import { useChess, usePulses, useTransientMessage } from '~/services'
+import { useChess, usePulses } from '~/services'
 import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 import getMoveComment from './getMoveComment'
+import TransientMessage from './TransientMessage'
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
@@ -116,7 +117,7 @@ const StyledScrollable = styled(Scrollable, {
 })
 
 const MovesTable: React.FC<{
-  show: boolean,
+  show: boolean
   css?: CSS
 }> = observer(({
   show,
@@ -126,7 +127,6 @@ const MovesTable: React.FC<{
   const rowsRef = useRef<Rows>(new Rows())
   const game = useChess()
   const pulses = usePulses()
-  const tm = useTransientMessage()
 
   const sideHilight = computedFn((moveRow: number, side: Side): any => {
     if (rowsRef.current.hilightedMoveRow !== null) {
@@ -274,9 +274,9 @@ const MovesTable: React.FC<{
   })) 
 
   const r = rowsRef.current
+
   return show ? (
     <Outer css={css}>
-    {r.rows.length > 0 && (<>
       <Row css={{w: '100%', mb: '$_5', flex: 'none'}} key='title-row'>
         <Box css={{w: COL_WIDTHS[0], mr: '$_5'}}>&nbsp;</Box>
         <Box css={{w: COL_WIDTHS[1], pr: '$1_5'}}><SideSwatch narrow side='white' css={swatchCss('white')}/></Box>
@@ -284,7 +284,6 @@ const MovesTable: React.FC<{
         <Row justify='center' css={{w: COL_WIDTHS[3]}}>notes:</Row>
       </Row>
       <HR css={{flex: 'none'}}/>
-    </>)}
       <ScrollableOuter>
         <StyledScrollable>
         {r.rows.map((row: MoveRow, i) => (
@@ -344,11 +343,11 @@ const MovesTable: React.FC<{
             <Box css={{w: COL_WIDTHS[1], flex: '5 0 auto', color: '$chalkboardTextColor', ...pulsingOpacity(true)}}>?</Box>
           </Row>
         )}
-        {tm.message && <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box>}
+        <TransientMessage />
         </StyledScrollable>
       </ScrollableOuter>
     </Outer>
-  ) : tm.message ? <Box css={{color: tm.message.type.includes('warning') ? '$alert8' : '$chalkboardTextColor'}}>{tm.message.content}</Box> : null
+  ) : null
 })
 
 export default MovesTable

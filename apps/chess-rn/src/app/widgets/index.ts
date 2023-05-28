@@ -5,6 +5,7 @@ export { default as LogoButton } from './LogoButton'
 export type { default as MenuControlProps } from './MenuControlProps'
 export { default as MovesTable } from './MovesTable'
 export { default as SideSwatch } from './SideSwatch'
+export { default as TransientMessage } from './TransientMessage'
 export { default as TurnAndInCheckIndicator } from './TurnAndInCheckIndicator'
 export { default as UndoRedoWidget } from './UndoRedoWidget'
 

@@ -5,14 +5,15 @@ import type { SharedValue } from 'react-native-reanimated'
 
 import { styled, type CSS, deborder } from '~/style'
 import { useChess } from '~/services'
-import { BGImage, Checkbox, Column, Row } from '~/primatives'
+import { BGImage, Checkbox, Column, Row, HR } from '~/primatives'
 
 import {
-  GameStatusIndicator,
-  TurnAndInCheckIndicator,
   AppBarInChalkboard,
+  GameStatusIndicator,
+  type MenuControlProps,
   MovesTable,
-  type MenuControlProps
+  TransientMessage,
+  TurnAndInCheckIndicator,
 } from '~/app/widgets'
 
 const StyledBGImage = styled(BGImage, {
@@ -62,6 +63,10 @@ const Chalkboard: React.FC<
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
         <MovesTable show={open} css={{mt: open ? 0 : '$1', flexGrow: 1}}/>
+        {!open && (<>
+          <HR css={{'@allMobilePortrait': { display: 'none' }}}/>
+          <TransientMessage />
+        </>)}
       </Column>
     </StyledBGImage>
   )
