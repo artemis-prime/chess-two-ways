@@ -10,16 +10,27 @@ const ChalkText = styled(Text, {
   variants: {
     size: {
       normal: {
-        lineHeight: '$lineHeightNormal',
+        lineHeight: '$lineHeightChalkboardNormal',
         fontSize: '$fontSizeNormal',
       },
       larger: {
-        lineHeight: '$lineHeightNormal',
+        lineHeight: '$lineHeightChalkboardNormal',
         fontSize: '$fontSizeLarger',
       },
       smaller: {
-        lineHeight: '$lineHeightSmaller',
+        lineHeight: '$lineHeightChalkboardSmaller',
         fontSize: '$fontSizeSmaller',
+      },
+      small: {
+        lineHeight: '$lineHeightChalkboardSmall',
+        fontSize: '$fontSizeSmall',
+        textAlignVertical: 'bottom',
+      },
+      short: {
+        height: '$lineHeights$lineHeightChalkboardSmall',
+        lineHeight: '$lineHeightChalkboardShort',
+        fontSize: '$fontSizeSmaller',
+        textAlignVertical: 'bottom',
       }
     },
     alert: {

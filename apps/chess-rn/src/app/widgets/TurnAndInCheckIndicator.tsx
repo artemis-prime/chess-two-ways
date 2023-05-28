@@ -1,17 +1,19 @@
 import React, {useState, useEffect } from 'react'
+import { Text } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import { positionToString } from '@artemis-prime/chess-core'
 
-import { styled, type CSS } from '~/style'
+import { styled, type CSS, typography, deborder } from '~/style'
 import { useChess, usePulses } from '~/services'
-import { Box } from '~/primatives'
+import { Row } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 
-const Text = styled('span', {
-  color: '$chalkboardTextColor',
+const CheckText = styled(Text, {
+  ...typography.chalkboard.normal,
+  ...deborder('green', 'chalkboard'),
   variants: {
     inCheck: { true: {} },
     pulse: { true: {} },
@@ -34,7 +36,7 @@ const Text = styled('span', {
   ]
 }) 
 
-const TurnAndInCheckWidget: React.FC<{
+const TurnAndInCheckIndicator: React.FC<{
   inCheckOnly?: boolean
   css?: CSS
 }> = observer(({
@@ -57,18 +59,27 @@ const TurnAndInCheckWidget: React.FC<{
     setInCheckFrom(str)
   })), [])
 
-    // Using 'visibility' (vs 'display') holds space in the layout, which reduces jumping around.
   return (
-    <Box css={{...css, 
-      visibility:  (inCheckOnly ? (inCheckFrom.length > 0 ? 'visible' : 'hidden') : 'visible')
-    }}>
-      <SideSwatch side={game.currentTurn} css={{ 
-        w: (inCheckFrom.length > 0) ? '1em' : '3em', 
-        '@deskPortrait': {fontSize: '1.3em'}
-      }}/>
-      <Text pulse={pulses.slow} inCheck={inCheckFrom.length > 0}>{(inCheckFrom.length > 0) ? `'s in check from ${inCheckFrom}!` : 's turn'}</Text>
-    </Box> 
+    <Row 
+      align='stretch' 
+      css={{
+        ...css, 
+        ...deborder('white', 'chalkboard'), 
+        visible: (inCheckOnly ? (inCheckFrom ? true : false) : true)
+      }}
+    >
+      <SideSwatch 
+        side={game.currentTurn} 
+        css={{ 
+          ...deborder('red', 'chalkboard'), 
+          w: (inCheckFrom ? '$space$3' : '$space$6') 
+        }}
+      />
+      <CheckText pulse={pulses.slow} inCheck={!!inCheckFrom}>
+        {inCheckFrom ? `'s in check from ${inCheckFrom}!` : 's turn'}
+      </CheckText>
+    </Row> 
   )
 })
 
-export default TurnAndInCheckWidget
+export default TurnAndInCheckIndicator

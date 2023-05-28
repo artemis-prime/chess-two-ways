@@ -1,6 +1,21 @@
+import { makeObservable, observable, action } from 'mobx'
 interface MenuState {
-  menuVisible: boolean,
-  setMenuVisible: (b: boolean) => void
+  visible: boolean,
+  setVisible: (b: boolean) => void
 }
 
-export { type MenuState as default}
+class MenuStateImpl implements MenuState {
+  
+  visible: boolean = false
+  
+  constructor() {
+    makeObservable(this, {
+      visible: observable,
+      setVisible: action.bound 
+    })
+  }
+
+  setVisible(b: boolean) { this.visible = b }
+}
+
+export { type MenuState as default, MenuStateImpl}

@@ -4,123 +4,60 @@ import React, {
   useRef
 } from 'react'
 
-import { 
-  autorun, 
-  makeObservable, 
-  observable, 
-  action, 
-} from 'mobx'
-
 import useChess from './useChess'
 import type ChessboardOrientation from './ChessboardOrientation'
+import { ChessboardOrientationImpl } from './ChessboardOrientation'
 import type Pulses from './Pulses'
+import { PulsesImpl } from './Pulses'
+import type TransientMessage from './TransientMessage'
+import { TransientMessageImpl } from './TransientMessage'
 import type MenuState from './MenuState'
+import { MenuStateImpl } from './MenuState'
+import type ChalkboardState from './ChalkboardState'
+import { ChalkboardStateImpl } from './ChalkboardState'
 
 interface UIServices  {
   pulses: Pulses
   menu: MenuState
   chessboardOrientation: ChessboardOrientation
-}
-
-class ChessboardOrientationImpl implements ChessboardOrientation {
-
-  whiteOnBottom = true
-  autoOrientToCurrentTurn = false
-
-  constructor() {
-    makeObservable(this,{
-      whiteOnBottom: observable,
-      autoOrientToCurrentTurn: observable,
-      setWhiteOnBottom: action.bound,
-      setAutoOrientToCurrentTurn: action.bound,   
-    }) 
-  }
-  
-  setWhiteOnBottom(b: boolean) {
-    this.whiteOnBottom = b
-  }
-
-  setAutoOrientToCurrentTurn(b: boolean) {
-    this.autoOrientToCurrentTurn = b
-  }
-}
-
-class MenuStateImpl implements MenuState {
-  
-  menuVisible: boolean = false
-  
-  constructor() {
-    makeObservable(this, {
-      menuVisible: observable,
-      setMenuVisible: action.bound 
-    })
-  }
-
-  setMenuVisible(b: boolean) { this.menuVisible = b }
-}
-
-class PulsesImpl implements Pulses {
-
-  slow: boolean = false
-  fast: boolean = false
-  
-  constructor() {
-    makeObservable(this, {
-      slow: observable,
-      fast: observable,
-      setFast: action,
-      setSlow: action
-    })
-  }
-
-  setFast(b: boolean) { this.fast = b }
-  setSlow(b: boolean) { this.slow = b }
+  chalkboard: ChalkboardState
+  transientMessage: TransientMessage
 }
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
 
 const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
-  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl())
-  const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
-
   const game = useChess()
+
+  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
+  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl(game))
+  const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
+
+  const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
+  const chalkboardStateRef = useRef<ChalkboardStateImpl>(new ChalkboardStateImpl())
+
   
   useEffect(() => {
-    const fastID = setInterval(() => {
-      pulsesRef.current.setFast(!pulsesRef.current.fast)   
-    }, 200)  
-    const slowID = setInterval(() => {
-      pulsesRef.current.setSlow(!pulsesRef.current.slow)   
-    }, 500)  
-    const cleanupAutorun = autorun(
-      () => {
-        const b = chessboardOrientationRef.current
-        if (b.autoOrientToCurrentTurn) {
-          if (game.currentTurn === 'white') {
-            b.setWhiteOnBottom(true)
-          }
-          else {
-            b.setWhiteOnBottom(false)
-          }
-        }
-      }, 
-      { scheduler: (run) => (setTimeout(run, 300)) }
-    )
-  
+    game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
+    chessboardOrientationRef.current.initialize()
+    pulsesRef.current.initialize()
+    transientMessageRef.current.initialize()
     return () => {
-      clearInterval(fastID)
-      clearInterval(slowID)
-      cleanupAutorun()
+      game.unregisterListener('chess-web-messages-store')
+      chessboardOrientationRef.current.dispose()
+      pulsesRef.current.dispose()
+      transientMessageRef.current.dispose()
     }
   }, [])
 
   return (
     <UIServicesContext.Provider value={{
-      menu: menuStateRef.current,
       pulses: pulsesRef.current,
-      chessboardOrientation: chessboardOrientationRef.current
+      transientMessage: transientMessageRef.current,
+      chessboardOrientation: chessboardOrientationRef.current,
+      menu: menuStateRef.current,
+      chalkboard: chalkboardStateRef.current
     }}>
       {children}
     </UIServicesContext.Provider>

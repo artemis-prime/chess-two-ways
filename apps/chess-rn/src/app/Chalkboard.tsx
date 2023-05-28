@@ -1,18 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { SharedValue } from 'react-native-reanimated'
 
-import { styled, type CSS } from '~/style'
+import { styled, type CSS, deborder } from '~/style'
 import { useChess } from '~/services'
-import { BGImage, Column } from '~/primatives'
+import { BGImage, Checkbox, Column, Row, HR } from '~/primatives'
 
 import {
-  GameStatusIndicator,
-  TurnIndicator,
-  InCheckIndicator,
   AppBarInChalkboard,
-  type MenuControlProps
+  GameStatusIndicator,
+  type MenuControlProps,
+  MovesTable,
+  TransientMessage,
+  TurnAndInCheckIndicator,
 } from '~/app/widgets'
 
 const StyledBGImage = styled(BGImage, {
@@ -20,7 +21,7 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  minHeight: 150,
+  //minHeight: 150,
   borderWidth: '$thicker',
   borderTopLeftRadius: '$lg',
   borderTopRightRadius: '$lg',
@@ -31,24 +32,41 @@ const StyledBGImage = styled(BGImage, {
 
 const Chalkboard: React.FC<
   {
-    disableInput: boolean,
+    open: boolean
+    setOpen: (b: boolean) => void
+    disableInput?: boolean
     animBaseForButton?: SharedValue<number>
     css?: CSS
   } 
   & MenuControlProps
 > = observer(({
-  disableInput,
+  open,
+  setOpen,
+  disableInput = false,
   animBaseForButton,
   css,
   ...rest
 }) => {
+
   const game = useChess()
+
   return (
     <StyledBGImage imageURI={'slate_bg_low_res'} css={css}>
       <AppBarInChalkboard animBaseForButton={animBaseForButton} {...rest} />
-      <Column pointerEvents={(disableInput ? 'none' : 'auto')} css={{py: '$1', px: '$1_5'}}>
-        {(game.playing) ?  <TurnIndicator /> : <GameStatusIndicator />}
-        {(game.playing) && <InCheckIndicator /> }
+      <Column 
+        align='stretch' 
+        pointerEvents={(disableInput ? 'none' : 'auto')} 
+        css={{py: '$1',  pl: '$_5', pr: '$_5', ...deborder('red', 'movesLayout'), flex: 1}}
+      >
+        <Row justify='between' align='center' css={{flex: 0, ...deborder('yellow', 'movesLayout')}}>
+          {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
+          <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
+        </Row>
+        <MovesTable show={open} css={{mt: open ? 0 : '$1', flex: 1}}/>
+        {!open && (<>
+          <HR />
+          <TransientMessage />
+        </>)}
       </Column>
     </StyledBGImage>
   )

@@ -1,6 +1,6 @@
 
 interface MenuControlProps {
-  menuVisible: boolean
+  visible: boolean
   toggleMenu: () => void
 }
 

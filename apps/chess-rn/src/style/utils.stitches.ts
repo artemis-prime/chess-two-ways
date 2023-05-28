@@ -74,6 +74,11 @@ const utils = {
     width: value,
     height: value,
   }),
+    // mimics visibility: 'hidden' | 'visible' 
+  visible: (b: boolean) => ({
+    opacity:  b ? 1 : 0,
+    pointerEvents: b ? 'auto' : 'none'
+  })
 }
 
 export default utils

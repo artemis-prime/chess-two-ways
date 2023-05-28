@@ -8,8 +8,9 @@ import { Checkbox, Flex, HR } from '~/primatives'
 
 import {
   GameStatusIndicator,
-  TurnAndInCheckWidget,
+  TurnAndInCheckIndicator,
   MovesTable,
+  TransientMessage,
 } from '~/app/widgets'
 
 import bg from 'assets/img/slate_bg_low_res.jpg'
@@ -157,7 +158,7 @@ const ChalkbdTop: React.FC<{
   return (
     <ChalkbdTopStyled >
       {playing ? (
-        <TurnAndInCheckWidget inCheckOnly={showMoves}/> 
+        <TurnAndInCheckIndicator inCheckOnly={showMoves}/> 
       ) : (
         <GameStatusIndicator />
       )}
@@ -175,14 +176,16 @@ const Chalkboard: React.FC<{
   setShowMoves,
   css
 }) => {
-
   const game = useChess()
-
+    // MovesTable holds state, so has to always be in the tree.
   return (
     <ChalkbdOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
       <ChalkbdTop playing={game.playing} showMoves={showMoves} setShowMoves={setShowMoves}/>
-      {!showMoves && <HR css={{'@allMobilePortrait': { display: 'none' }}}/>}
-      <MovesTable show={showMoves} css={{mt: showMoves ? 0 : '$1', flexGrow: 1}} />
+      <MovesTable show={showMoves} css={{mt: showMoves ? 0 : '$1', flexGrow: 1, ...deborder('red', 'layout')}} />
+      {!showMoves && (<>
+        <HR css={{'@allMobilePortrait': { display: 'none' }}}/>
+        <TransientMessage />
+      </>)}
     </ChalkbdOuter>
   )
 })
