@@ -1,13 +1,7 @@
-import { 
-  useEffect,
-  type ReactNode
-} from 'react'
-import { 
-  reaction, 
-  type IReactionDisposer 
-} from 'mobx'
+import { useEffect } from 'react'
+import { reaction, type IReactionDisposer } from 'mobx'
 
-import type { ActionRecord, Game, Side } from '@artemis-prime/chess-core'
+import type { Game, Side } from '@artemis-prime/chess-core'
 
 import Rows from './Rows'
 import getMoveNote from './getMoveNote'

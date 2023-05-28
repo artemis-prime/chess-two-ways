@@ -8,6 +8,8 @@ const showForGroup = {
   checkbox: false,
   layout: false,
   moves: false,
+  movesLayout: false,
+  movesRow: false,
   movesH: false
 }
 
@@ -23,7 +25,7 @@ const debugBorder = (color: ColorValue | null, group?: string) => (
     {} 
     : 
     {
-      borderWidth: 0.5,
+      borderWidth: 1,
       borderColor: color,
     }
 )

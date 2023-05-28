@@ -1,1 +1,1 @@
-export default [20, 75, 75, 'auto']
+export default [20, 80, 80, 'auto']

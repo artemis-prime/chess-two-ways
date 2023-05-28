@@ -6,7 +6,7 @@ interface ChalkboardState {
 
 class ChalkboardStateImpl implements ChalkboardState {
   
-  open: boolean = true
+  open: boolean = false
   
   constructor() {
     makeObservable(this, {

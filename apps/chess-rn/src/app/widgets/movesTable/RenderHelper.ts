@@ -37,17 +37,13 @@ class Helper {
     return {p: '0.25em'}
   })
 
-  sideColor = computedFn((r: MoveRow, index: number, side: Side): CSS => {
+  sideTextProps = computedFn((r: MoveRow, index: number, side: Side): { alert?: boolean, disabled?: boolean} => {
 
     if (this.disableSide(index, side)) {
-      return { color: '$chalkboardTextColorDisabled'}
+      return { disabled: true }
     }
     const half = r[side]
-    return { color: half ? 
-      ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$chalkboardTextColor')  
-      : 
-      '$chalkboardTextColor'
-    }
+    return { alert: (!!half && (!!half.rec.annotatedResult || half.rec.action.includes('capture'))) }
   })
 
   disableSide = computedFn((moveRow: number, side: Side): boolean => {

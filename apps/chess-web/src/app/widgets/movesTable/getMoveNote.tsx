@@ -4,7 +4,7 @@ import { ActionRecord, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 
 import { styled } from '~/style'
 
-import SideSwatch from './SideSwatch'
+import SideSwatch from '../SideSwatch'
 import EMOJIS from './emojis'
 
 const Outer = styled('span', {})

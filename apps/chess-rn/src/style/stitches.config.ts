@@ -101,6 +101,10 @@ const {
       fontSizeLarger: LINEHEIGHTS.lineHeightChalkboardNormal * 0.8,
       fontSizeSmaller: LINEHEIGHTS.lineHeightChalkboardSmaller * 0.7,  
       fontSizeSmall: LINEHEIGHTS.lineHeightChalkboardSmall * 0.7,  
+      fontSizeEmojiSmaller: LINEHEIGHTS.lineHeightChalkboardSmall * 0.6,  
+      fontSizeEmoji: LINEHEIGHTS.lineHeightChalkboardSmall * 0.7,  
+      fontSizeEmojiLarger: LINEHEIGHTS.lineHeightChalkboardSmall * 0.8,  
+      fontSizeEmojiLarge: LINEHEIGHTS.lineHeightChalkboardSmall * 0.9,  
       fontSizeMenuItem: LINEHEIGHTS.lineHeightMenu * .5,
     },
     lineHeights: {

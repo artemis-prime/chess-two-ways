@@ -1,29 +1,20 @@
-import React, { 
-  useEffect,
-  useRef,
-  type ReactNode
-} from 'react'
-import { 
-  makeObservable, 
-  observable, 
-  action, 
-  reaction, 
-  type IReactionDisposer 
-} from 'mobx'
+import React, { useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 import { computedFn } from 'mobx-utils'
 
 import ScrollableFeed from 'react-scrollable-feed' 
 
-import { ActionRecord, type Side } from '@artemis-prime/chess-core'
+import { type Side } from '@artemis-prime/chess-core'
 
 import { styled, type CSS, deborder } from '~/style'
 import { useChess, usePulses } from '~/services'
 import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
-import getMoveComment from './getMoveComment'
 import TransientMessage from './TransientMessage'
+import Rows, { type MoveRow } from './movesTable/Rows'
+import useTableReactions from './movesTable/useTableReactions'
+
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
@@ -52,42 +43,6 @@ const ScrollableOuter = styled('div', {
   ...deborder('red', 'chalk')
 })
 
-interface MoveRow {
-  white: {
-    str: string
-    rec: ActionRecord
-    note: ReactNode
-  }
-  black: {
-    str: string
-    rec: ActionRecord
-    note: ReactNode
-  } | null
-} 
-
-class Rows {
-
-  rows: MoveRow[] = []
-  lastActionIndex = -1
-
-  hilightedMoveRow: number | null = null
-  hilightedSide: Side = 'white' // arbitrary.  only dereferenced after being set  
-
-  constructor() {
-    makeObservable(this, {
-      rows: observable.shallow,
-      hilightedMoveRow: observable,
-      hilightedSide: observable,
-      setRows: action,
-      setHilightedMoveRow: action,
-      setHilightedSide: action,
-    })
-  }
-
-  setRows(rows: MoveRow[]) {this.rows = rows}
-  setHilightedMoveRow(r: number | null) {this.hilightedMoveRow = r}
-  setHilightedSide(s: Side) {this.hilightedSide = s}
-}
 
 const StyledScrollable = styled(Scrollable, {
 
@@ -127,6 +82,8 @@ const MovesTable: React.FC<{
   const rowsRef = useRef<Rows>(new Rows())
   const game = useChess()
   const pulses = usePulses()
+
+  useTableReactions(game, rowsRef.current)
 
   const sideHilight = computedFn((moveRow: number, side: Side): any => {
     if (rowsRef.current.hilightedMoveRow !== null) {
@@ -173,95 +130,6 @@ const MovesTable: React.FC<{
     }
     return false
   })
-
-  useEffect(() => {
-
-    const r = rowsRef.current
-    const disposers: IReactionDisposer[] = []
-    disposers.push(reaction(
-      () => {
-          // Reaction firing as the result of an action after an undo
-          // So must rewind lastActionIndex to exactly the second to last
-          // element (since that is the last index handled that is still valid) 
-        if (r.lastActionIndex >= 0 && game.actions.length - 1 <= r.lastActionIndex) {
-          r.lastActionIndex = game.actions.length - 2
-        }
-        
-        return ({
-          first: r.lastActionIndex, 
-          last: game.actions.length - 1
-        })
-      },
-      ({first, last}) => {
-        const lastRow = first % 2 ? (first - 1) / 2 : first / 2
-          // If there have been undo's...
-        const currentRows = (lastRow < r.rows.length - 1) ? 
-            // ...truncate the array 
-          r.rows.slice(0, lastRow + 1) 
-          : 
-          [...r.rows]
-
-        let index = first + 1
-        for ( ; index <= last; index++) {
-          const currentAction = game.actions[index] 
-          const previousAction = game.actions[index - 1] 
-            // black
-          if (index % 2) {
-            const row = r.rows[r.rows.length - 1]
-              // Must mutate the actual array
-            currentRows[currentRows.length - 1] = {
-              white: {...row.white},
-              black: {
-                str: currentAction.toCommonLANString(), 
-                rec: currentAction,
-                note: getMoveComment(currentAction, previousAction)
-              },
-            }
-          } 
-            // white
-          else {
-            currentRows.push({
-              white: {
-                str: currentAction.toCommonLANString(),
-                rec: currentAction,
-                note: getMoveComment(currentAction, previousAction)
-              },
-              black: null,
-            }) 
-          }
-        }
-        r.lastActionIndex = --index
-        r.setRows(currentRows)
-    }))
-
-    disposers.push(reaction(
-      () => {
-        let hilightedRow: number | null = null // not in undo / redo "state" 
-        let hilightedSide: Side = 'white'  // arbitrary (avoiding null)
-          // in undo / redo "state"
-        if (game.actionIndex < game.actions.length - 1) {
-            // boundary condition
-          if (game.actionIndex === -1) {
-            hilightedRow = -1
-          }
-          else {
-            hilightedRow = (game.actionIndex % 2) ? ((game.actionIndex - 1) / 2) : (game.actionIndex / 2)
-            hilightedSide = (game.actionIndex % 2) ? 'black' : 'white' 
-          }
-        }
-        return {
-          hilightedRow,
-          hilightedSide
-        }
-      },
-      ({hilightedRow, hilightedSide}) => {
-        r.setHilightedMoveRow(hilightedRow)
-        r.setHilightedSide(hilightedSide) 
-      }
-    ))
-
-    return () => {disposers.forEach((disposer) => { disposer() })}
-  }, [])
 
   const pulsingOpacity = computedFn((enabled: boolean): CSS => (
     (enabled) ? { opacity: pulses.slow ? .8 : .7} : {}

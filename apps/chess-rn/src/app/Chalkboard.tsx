@@ -56,15 +56,15 @@ const Chalkboard: React.FC<
       <Column 
         align='stretch' 
         pointerEvents={(disableInput ? 'none' : 'auto')} 
-        css={{py: '$1',  pl: '$_5', pr: '$_5', ...deborder('red', 'chalkboard')}}
+        css={{py: '$1',  pl: '$_5', pr: '$_5', ...deborder('red', 'movesLayout'), flex: 1}}
       >
-        <Row justify='between' align='center' css={{...deborder('yellow', 'chalkboard')}}>
+        <Row justify='between' align='center' css={{flex: 0, ...deborder('yellow', 'movesLayout')}}>
           {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
-        <MovesTable show={open} css={{mt: open ? 0 : '$1', flexGrow: 1}}/>
+        <MovesTable show={open} css={{mt: open ? 0 : '$1', flex: 1}}/>
         {!open && (<>
-          <HR css={{'@allMobilePortrait': { display: 'none' }}}/>
+          <HR />
           <TransientMessage />
         </>)}
       </Column>
