@@ -1,12 +1,5 @@
-import React, { 
-  useRef, 
-  useEffect, 
-} from 'react'
-import {
-  Dimensions,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native'
+import React from 'react'
+import { SafeAreaView, StatusBar } from 'react-native'
 import { 
   useSharedValue, 
   Easing, 
