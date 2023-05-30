@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, type LayoutChangeEvent } from 'react-native'
+import { View, type LayoutChangeEvent, type ViewStyle } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled, type CSS } from '~/style'
-import { useChessboardOrientation, useChess } from '~/services'
+import { useChessboardOrientation, useChess, useViewport } from '~/services'
 import { BGImage } from '~/primatives'
 
 import Square from './chessboard/Square'
@@ -14,14 +14,22 @@ import { ChessDnDShell, useDnDConfig } from './chessboard/ChessDnD'
 import DraggingPiece from './chessboard/DraggingPiece'
 
 const ChessboardOuter = styled(View, {
-  aspectRatio: 1,
+  aspectRatio: '1 / 1',
   width: '100%',
   backgroundColor: 'transparent', // needed for gestures to work on android
   borderWidth: '$thicker',
   borderRadius: '$sm',
   overflow: 'hidden', 
   borderColor: '$pieceColorBlack',
+  variants: {
+    landscape: { true: {
+      height: '100%',
+      width: 'auto'
+    }}
+  }
 })
+
+const food: ViewStyle = {} 
 
 const SquaresOuter = styled(View, {
   height: '100%',
@@ -43,6 +51,7 @@ const Chessboard: React.FC<{
 
   const game = useChess()
   const bo = useChessboardOrientation()
+  const viewport = useViewport()
   
     // Squares need to know their size in pt to do internal layout.
     // Instead of forcing each square listen for it's own size changes,
@@ -66,7 +75,12 @@ const Chessboard: React.FC<{
   }
 
   return (
-    <ChessboardOuter css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
+    <ChessboardOuter 
+      css={css} 
+      landscape={viewport.landscape}
+      pointerEvents={(disableInput ? 'none' : 'auto')} 
+      collapsable={false}
+    >
       <BGImage imageURI={'wood_grain_bg_low_res'}  >
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (

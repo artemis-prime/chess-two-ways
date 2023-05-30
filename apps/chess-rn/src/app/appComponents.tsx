@@ -1,9 +1,10 @@
-import React, { type PropsWithChildren } from 'react'
+import React, { useEffect, type PropsWithChildren } from 'react'
 import {
   StatusBar,
   type ViewStyle,
   type ImageStyle,
 } from 'react-native'
+import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import Animated, { 
@@ -13,16 +14,14 @@ import Animated, {
   type SharedValue, 
   useAnimatedStyle,
   useSharedValue,
-  useDerivedValue,
   withTiming,
   Easing,
-  useAnimatedProps,
   runOnJS
 } from 'react-native-reanimated'
 
-import { useTheme, layout, deborder } from '~/style'
-import { BGImage, Box, Column } from '~/primatives'
-import { useChalkboard, useMenu } from '~/services'
+import { useTheme, layout, deborder, useUpdateOnOrientationChange } from '~/style'
+import { BGImage, Box } from '~/primatives'
+import { useChalkboard, useMenu, useViewport } from '~/services'
 
 import Chalkboard from './Chalkboard'
 import Chessboard from './Chessboard'
@@ -45,50 +44,57 @@ const Main: React.FC<{
 const Game: React.FC<{
   toggleMenu: () => void
   animBase: SharedValue<number>
-  width: number
 }> = ({
   toggleMenu,
   animBase,
-  width,
-}) => (
+}) => {
 
-  <Animated.View style={[
-    {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-    }, 
-    useAnimatedStyle<ViewStyle>(
-      () => ({
-        left: interpolate(
-          animBase.value, 
-          [0, 1], 
-          [0, width * layout.portrait.openMenu.xFraction], 
-          { extrapolateRight: Extrapolation.CLAMP }
-        ),
-        top: interpolate(
-          animBase.value, 
-          [0, 1], 
-          [0, layout.portrait.openMenu.yOffset], 
-          { extrapolateRight: Extrapolation.CLAMP }
-        )
-      }), 
-      [width]
-    )
-  ]}>
-    <BGImage imageURI={'chess_bg_1920_low_res'} style={{
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'stretch',
-      height: '100%',
-    }}>
-      <StatusBarSpacer animBase={animBase} />
-      <CornerShim animBase={animBase} />
-      <GameProper animBase={animBase} toggleMenu={toggleMenu} />
-    </BGImage>
-  </Animated.View>
-)
+  const v = useViewport()
+  const width = useSharedValue<number>(v.w)
 
+  useEffect(() => {
+    return autorun(() => {
+      width.value = v.w 
+    })
+  }, [])
+
+  return (
+    <Animated.View style={[
+      {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+      }, 
+      useAnimatedStyle<ViewStyle>(
+        () => ({
+          left: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, width.value * layout.portrait.openMenu.xFraction], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          ),
+          top: interpolate(
+            animBase.value, 
+            [0, 1], 
+            [0, layout.portrait.openMenu.yOffset], 
+            { extrapolateRight: Extrapolation.CLAMP }
+          )
+        }) 
+      )
+    ]}>
+      <BGImage imageURI={'chess_bg_1920_low_res'} style={{
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        height: '100%',
+      }}>
+        <StatusBarSpacer animBase={animBase} />
+        <CornerShim animBase={animBase} />
+        <GameProper animBase={animBase} toggleMenu={toggleMenu} />
+      </BGImage>
+    </Animated.View>
+  )
+}
 const StatusBarSpacer: React.FC<{
   animBase: SharedValue<number>
 }> = ({
@@ -140,7 +146,6 @@ const CornerShim: React.FC<{
   />
 )
 
-
 const GameProper: React.FC<{
   animBase: SharedValue<number>
   toggleMenu: () => void
@@ -169,7 +174,7 @@ const GameProper: React.FC<{
 
   const setOpen = (b: boolean) => {
     animate(b) 
-  }
+    }
 
   return (
     <Animated.View style={[
@@ -213,17 +218,17 @@ const GameProper: React.FC<{
           useAnimatedStyle(() => ({
             flexGrow: cbAnimBase.value,
           }))
-        ]}
-      >
-        <Chalkboard 
-          disableInput={menu.visible} 
-          visible={menu.visible} 
-          toggleMenu={toggleMenu} 
-          animBaseForButton={menuAnimBase}
-          open={cb.open}
-          setOpen={setOpen}
-          css={{ position: 'absolute', t: 0, b: 0, r: 0, l: 0 }}
-        />
+          ]}
+        >
+          <Chalkboard 
+            disableInput={menu.visible} 
+            visible={menu.visible} 
+            toggleMenu={toggleMenu} 
+            animBaseForButton={menuAnimBase}
+            open={cb.open}
+            setOpen={setOpen}
+            css={{ position: 'absolute', t: 0, b: 0, r: 0, l: 0 }}
+          />
       </Animated.View>
       <Chessboard css={{flexGrow: 0, flexShrink: 0 }} disableInput={menu.visible} />
     </Animated.View>

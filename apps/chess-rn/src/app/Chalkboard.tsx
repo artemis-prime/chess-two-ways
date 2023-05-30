@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { SharedValue } from 'react-native-reanimated'
 
-import { styled, type CSS, deborder } from '~/style'
+import { 
+  styled, 
+  type CSS, 
+  deborder, 
+//  useUpdateOnOrientationChange 
+} from '~/style'
 import { useChess } from '~/services'
 import { BGImage, Checkbox, Column, Row, HR } from '~/primatives'
 
@@ -21,7 +26,6 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  //minHeight: 150,
   borderWidth: '$thicker',
   borderTopLeftRadius: '$lg',
   borderTopRightRadius: '$lg',

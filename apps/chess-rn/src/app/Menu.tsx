@@ -23,6 +23,7 @@ import { useChessboardOrientation, useChess } from '~/services'
 
 import menuIcons from './menu/menuIcons'
 import { MenuItem, MenuCheckboxItem, type IconAndStyles } from './menu'
+import useViewport from '~/services/useViewport'
 
 const MenuOuter: React.FC<{
   animBase: SharedValue<number> 
@@ -77,11 +78,9 @@ const MenuItemsOuter = styled(View, {
 })
 
 const Menu: React.FC<{
-  width: number
   animBase: SharedValue<number> 
   regStyle?: StyleProp<ViewStyle>
 }> = observer(({
-  width,
   animBase,
   regStyle 
 }) => {
@@ -89,11 +88,12 @@ const Menu: React.FC<{
   const bo = useChessboardOrientation()
   const game = useChess()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+  const { w } = useViewport()
 
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
   return (
     <MenuOuter animBase={animBase} regStyle={regStyle}>
-      <MenuItemsOuter css={{w: width * .9 * layout.portrait.openMenu.xFraction}}>
+      <MenuItemsOuter css={{w: w * .9 * layout.portrait.openMenu.xFraction}}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 

@@ -5,7 +5,7 @@ import { computedFn } from 'mobx-utils'
 
 import { type Side } from '@artemis-prime/chess-core'
 
-import { styled, type CSS, deborder as deb } from '~/style'
+import { styled, type CSS, deborder as deb, useUpdateOnOrientationChange } from '~/style'
 import { Row, Box, HR, } from '~/primatives'
 import { useChess, usePulses } from '~/services'
 
@@ -16,14 +16,12 @@ import useTableReactions from './movesTable/useTableReactions'
 import TableRow from './movesTable/TableRow'
 import COLS from './movesTable/COLS'
 import TT from './movesTable/TableText'
-import NT from './movesTable/NotesText'
 
 const Outer = styled(View, {
   ...deb('yellow', 'moves'),
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'stretch',
-  //height: 100
 })
 
 const MovesTable: React.FC<{
@@ -38,7 +36,7 @@ const MovesTable: React.FC<{
   const pulses = usePulses()
   const helperRef = useRef<RenderHelper>(new RenderHelper(rowsRef.current, pulses))
   const game = useChess()
-
+  //useUpdateOnOrientationChange(50)
   useTableReactions(game, rowsRef.current)
 
   const swatchCss = computedFn((side: Side): CSS =>  ({
@@ -102,4 +100,3 @@ const MovesTable: React.FC<{
 })
 
 export default MovesTable
- 
