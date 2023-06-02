@@ -55,10 +55,10 @@ class TransientMessageImpl implements ChessListener, TransientMessage {
   }
 
   initialize() {
+      // If the current transient message was not from the current action,
+      // clear it.
     this._reactionDisposer = reaction(
-      () => {
-        return (this._game.actionIndex >= 0 && this._message?.actionIndex != this._game.actionIndex)
-      },
+      () => (this._game.actionIndex >= 0 && this._message?.actionIndex != this._game.actionIndex),
       (clear: boolean) => {
         if (clear) {
           this._setMessage(null)

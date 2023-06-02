@@ -50,10 +50,13 @@ class MovePairs {
   setMoveNoteFn(f: GetMoveNoteFn) { this._moveNoteFn = f }
 
   initialize() {
+
+      // Listens to the action stack and reacts by updating
+      // the MovePairs stack appropriately.
     this._disposers.push(reaction(
       () => {
-          // Reaction firing as the result of an action after an undo
-          // So must rewind _lastActionIndex to exactly the second to last
+          // Reaction firing as the result of an action *after* an undo,
+          // so must trim back _lastActionIndex to exactly the second to last
           // element (since that is the last index handled that is still valid) 
         if (this._lastActionIndex >= 0 && this._game.actions.length - 1 <= this._lastActionIndex) {
           this._lastActionIndex = this._game.actions.length - 2
@@ -102,12 +105,12 @@ class MovePairs {
             }) 
           }
         }
-        this.lastActionIndex = --index
+        this._lastActionIndex = --index
         this.setRows(currentRows)
     }))
 
-      // Reacts to being 'in the undo / redo mode' and
-      // sets hilightedRow / hilighted Side as needed.
+      // Listens to being 'in the undo / redo mode' and
+      // reacts by setting hilightedRow and hilightedSide as needed.
     this._disposers.push(reaction(
       () => {
         let hilightedRow: number | null = null // not in undo / redo "state" 
