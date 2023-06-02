@@ -10,7 +10,6 @@ import {
 import { ActionRecord, type Game, type Side} from '@artemis-prime/chess-core'
 import {type GetMoveNoteFn} from '~/app/widgets/movesTable/GetMoveNote'
 
-
 interface MovePair {
   white: {
     str: string
@@ -44,14 +43,10 @@ class MovePairs {
       hilightedMoveRow: observable,
       hilightedSide: observable,
       setRows: action,
-      //setHilightedMoveRow: action,
-      //setHilightedSide: action,
     })
   }
 
   setRows(rows: MovePair[]) {this.rows = rows}
-//  setHilightedMoveRow(r: number | null) {this.hilightedMoveRow = r}
-//  setHilightedSide(s: Side) {this.hilightedSide = s}
   setMoveNoteFn(f: GetMoveNoteFn) { this._moveNoteFn = f }
 
   initialize() {
@@ -111,6 +106,8 @@ class MovePairs {
         this.setRows(currentRows)
     }))
 
+      // Reacts to being 'in the undo / redo mode' and
+      // sets hilightedRow / hilighted Side as needed.
     this._disposers.push(reaction(
       () => {
         let hilightedRow: number | null = null // not in undo / redo "state" 
