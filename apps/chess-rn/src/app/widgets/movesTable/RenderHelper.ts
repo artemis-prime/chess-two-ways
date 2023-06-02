@@ -2,15 +2,14 @@ import { computedFn } from 'mobx-utils'
 import { type Side } from '@artemis-prime/chess-core'
 
 import { type CSS } from '~/style'
-import Rows, { type MoveRow } from './Rows'
-import { type Pulses } from '~/services'
+import { type Pulses, MovePairs, type MovePair } from '~/services'
 
 class Helper {
 
-  private _state: Rows 
+  private _state: MovePairs 
   private _pulses: Pulses
 
-  constructor(r: Rows, p: Pulses) {
+  constructor(r: MovePairs, p: Pulses) {
     this._state = r
     this._pulses = p
   }
@@ -37,7 +36,7 @@ class Helper {
     return {p: '0.25em'}
   })
 
-  sideTextProps = computedFn((r: MoveRow, index: number, side: Side): { alert?: boolean, disabled?: boolean} => {
+  sideTextProps = computedFn((r: MovePair, index: number, side: Side): { alert?: boolean, disabled?: boolean} => {
 
     if (this.disableSide(index, side)) {
       return { disabled: true }

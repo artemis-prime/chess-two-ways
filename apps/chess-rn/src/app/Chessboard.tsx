@@ -16,24 +16,23 @@ import DraggingPiece from './chessboard/DraggingPiece'
 const ChessboardOuter = styled(View, {
   aspectRatio: '1 / 1',
   width: '100%',
-  backgroundColor: 'transparent', // needed for gestures to work on android
+  backgroundColor: 'transparent', 
   borderWidth: '$thicker',
   borderRadius: '$sm',
   overflow: 'hidden', 
   borderColor: '$pieceColorBlack',
   variants: {
-    landscape: { true: {
-      height: '100%',
-      width: 'auto'
-    }}
+    landscape: { true: { width: 'auto' }}
   }
 })
 
-const food: ViewStyle = {} 
-
 const SquaresOuter = styled(View, {
-  height: '100%',
-  width: '100%',
+    // This helps with layout issues.  Not sure why precisely. 
+  position: 'absolute',
+  l: 0,
+  t: 0,
+  r: 0,
+  b: 0,
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-start',
@@ -61,12 +60,9 @@ const Chessboard: React.FC<{
   const { layoutListener: layoutListenerDnd, setWhiteOnBottom: notifyDndOrientationChanged } = useDnDConfig()
       
 
-  useEffect(() => (
-      // returning autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
-    autorun(() => {
-      notifyDndOrientationChanged(bo.whiteOnBottom)
-    })
-  ),[])
+  useEffect(() => (autorun(() => {
+    notifyDndOrientationChanged(bo.whiteOnBottom)
+  })),[])
 
   const layoutListener = (e: LayoutChangeEvent): void  => {
     const {nativeEvent: { layout: {width}}} = e;
@@ -81,10 +77,10 @@ const Chessboard: React.FC<{
       pointerEvents={(disableInput ? 'none' : 'auto')} 
       collapsable={false}
     >
-      <BGImage imageURI={'wood_grain_bg_low_res'}  >
+      <BGImage imageURI={'wood_grain_bg_low_res'}  style={{height: '100%'}}>
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
-              // See comments above
+            // See comments above
           <Square square={s} sizeInLayout={boardSize && boardSize / 8 } key={`key-${s.rank}-${s.file}`} />
         ))}
         </SquaresOuter>
@@ -93,7 +89,6 @@ const Chessboard: React.FC<{
     </ChessboardOuter>
   )
 })
-
 
 const BoardWithDnD: React.FC<{ 
   disableInput: boolean

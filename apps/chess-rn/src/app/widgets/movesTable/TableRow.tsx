@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite'
 
 import { deborder, type CSS } from '~/style'
 import { Row, Box } from '~/primatives'
+import { type MovePair } from '~/services'
 
-import { type MoveRow } from './Rows'
 import COLS from './COLS'
 import RenderHelper from './RenderHelper'
 import TT from './TableText'
@@ -20,7 +20,7 @@ const Comma: React.FC = () => (
 
 
 const TableRow: React.FC<{
-  row: MoveRow
+  row: MovePair
   h: RenderHelper
   i: number
 }> = observer(({

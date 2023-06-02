@@ -6,9 +6,13 @@ import { ActionRecord, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 import { styled } from '~/style'
 import { Row } from '~/primatives'
 
-import SideSwatch from '../SideSwatch'
-import NT from './NotesText'
-import EMOJIS from './emojis'
+import SideSwatch from '~/app/widgets/SideSwatch'
+import NT from '~/app/widgets/movesTable/NotesText'
+import EMOJIS from '~/app/widgets/movesTable/emojis'
+
+interface GetMoveNoteFn {
+  (action: ActionRecord, prevAction: ActionRecord): ReactNode
+}
 
 const Outer: React.FC<PropsWithChildren> = ({
   children
@@ -43,7 +47,7 @@ const Emoji = styled(Text, {
   },
 })
 
-const getMoveComment = (
+const getMoveNote = (
   rec: ActionRecord, 
   previous: ActionRecord | undefined
 ): ReactNode => {
@@ -95,4 +99,7 @@ const getMoveComment = (
   return null
 }
 
-export default getMoveComment
+export {
+  type GetMoveNoteFn,
+  getMoveNote as default
+}

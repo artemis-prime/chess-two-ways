@@ -7,7 +7,6 @@ import {
   styled, 
   type CSS, 
   deborder, 
-//  useUpdateOnOrientationChange 
 } from '~/style'
 import { useChess } from '~/services'
 import { BGImage, Checkbox, Column, Row, HR } from '~/primatives'
@@ -66,7 +65,7 @@ const Chalkboard: React.FC<
           {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
-        <MovesTable show={open} css={{mt: open ? 0 : '$1', flex: 1}}/>
+        {open && <MovesTable css={{mt: '$1', flex: 1}}/>}
         {!open && (<>
           <HR />
           <TransientMessage />

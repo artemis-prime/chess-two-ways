@@ -1,109 +1,142 @@
-import React from 'react'
-import { type ViewStyle } from 'react-native'
+import React, { useEffect } from 'react'
+import {
+  StatusBar,
+  type ViewStyle,
+  type ImageStyle,
+} from 'react-native'
+import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import Animated, { 
   Extrapolation,
   interpolate,
+  interpolateColor,
   type SharedValue, 
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
-  Easing,
-  runOnJS
 } from 'react-native-reanimated'
 
-import { useTheme, deborder } from '~/style'
-import { useChalkboard, useMenu, useViewport } from '~/services'
+import { useTheme, layout, deborder } from '~/style'
+import { BGImage } from '~/primatives'
+import { useViewport } from '~/services'
 
-import Chalkboard from './Chalkboard'
-import Chessboard from './Chessboard'
+import Boards from './Boards'
 
 const GameArea: React.FC<{
-  animBase: SharedValue<number>
   toggleMenu: () => void
-}> = observer(({
-  animBase : menuAnimBase,
+  animBase: SharedValue<number>
+}> = ({
   toggleMenu,
+  animBase,
 }) => {
-  const theme = useTheme()
-  const menu = useMenu()
-  const cb = useChalkboard()
 
-  const cbAnimBase = useSharedValue<number>(cb.open ? 1 : 0) 
+  const v = useViewport()
+  const fraction = v.landscape ? layout.landscape.openMenu.xFraction : layout.portrait.openMenu.xFraction
+  const left = useSharedValue<number>(v.w * fraction)
+  const top = useSharedValue<number>(v.landscape ? layout.landscape.openMenu.yOffset : layout.portrait.openMenu.yOffset)
 
-    // state changes at the end of the animiation
-  const animate = (opening: boolean) => {
-    const onFinished = () => { cb.setOpen(opening) }
-    cbAnimBase.value = withTiming(
-      opening ? 1 : 0,
-      {
-        duration: 200,  
-        easing: opening ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
-      },
-      () => { runOnJS(onFinished)() }
-    )
-  }
-
-  const setOpen = (b: boolean) => { animate(b) }
+  useEffect(() => {
+    return autorun(() => {
+      left.value = v.w * (v.landscape ? layout.landscape.openMenu.xFraction : layout.portrait.openMenu.xFraction)
+      top.value = v.landscape ? layout.landscape.openMenu.yOffset : layout.portrait.openMenu.yOffset
+    })
+  }, [])
 
   return (
     <Animated.View style={[
       {
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
+        position: 'absolute',
+        width: '100%',
         height: '100%',
-        padding: theme.space[1],
-        paddingBottom: 65,
-        gap: theme.space['1_5'], 
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderColor: '#444',
+        //...deborder('white', 'layout')
       }, 
       useAnimatedStyle<ViewStyle>(
         () => ({
-          borderTopLeftRadius: interpolate(
-            menuAnimBase.value, 
+          left: interpolate(
+            animBase.value, 
             [0, 1], 
-            [0, theme.radii.md], 
+            [0, left.value], 
             { extrapolateRight: Extrapolation.CLAMP }
           ),
-          borderWidth: interpolate(
-            menuAnimBase.value, 
+          top: interpolate(
+            animBase.value, 
             [0, 1], 
-            [0, theme.borderWidths.thicker], 
+            [0, top.value], 
             { extrapolateRight: Extrapolation.CLAMP }
-          ),
+          )
         }) 
       )
     ]}>
-      <Animated.View 
-        collapsable={false} 
-        style={[
-          {
-            ...deborder('yellow', 'layout'),
-            minHeight: 100,
-            flexBasis: 100,
-            flexShrink: 0,
-          },
-          useAnimatedStyle(() => ({
-            flexGrow: cbAnimBase.value,
-          }))
-          ]}
-        >
-          <Chalkboard 
-            disableInput={menu.visible} 
-            visible={menu.visible} 
-            toggleMenu={toggleMenu} 
-            animBaseForButton={menuAnimBase}
-            open={cb.open}
-            setOpen={setOpen}
-            css={{ position: 'absolute', t: 0, b: 0, r: 0, l: 0 }}
-          />
-      </Animated.View>
-      <Chessboard css={{flexGrow: 0, flexShrink: 0 }} disableInput={menu.visible} />
+      <BGImage 
+        imageURI={'chess_bg_1920_low_res'} 
+        style={{
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          flexGrow: 1,
+          ...deborder('purple', 'layout'),
+        }}
+      >
+        <StatusBarSpacer animBase={animBase} />
+        <CornerShim animBase={animBase} />
+        <Boards animBase={animBase} toggleMenu={toggleMenu} />
+      </BGImage>
     </Animated.View>
   )
+}
+
+const StatusBarSpacer: React.FC<{
+  animBase: SharedValue<number>
+}> = observer(({
+  animBase 
+}) => {
+  const theme = useTheme()
+  const viewport = useViewport()
+  return (
+    <Animated.View style={[
+      {
+        //width: '100%', 
+        flex: 0,
+        height: viewport.statusBarHeight,
+        ...deborder('lightgreen', 'layout')
+      }, 
+      useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(      
+          animBase.value, 
+          [0, 1], 
+          ['rgba(0, 0, 0, 0.2)', theme.colors.menuBGColor ]
+        )
+      }))
+    ]}/>
+  )
 })
+
+  // Creates the appearance of border radius though only
+  // siblings are involved.  Yes, I tried everything else, 
+  // believe you me!  Yessiree
+const CornerShim: React.FC<{
+  animBase: SharedValue<number>
+}> = ({
+  animBase  
+}) => (
+    // Size is half the resolution since image was captured at double density/
+    // (ok for both case)
+  <Animated.Image 
+    source={{uri: 'menu_corner_shim_14x14'}} 
+    resizeMode='cover'
+    style={[
+      {
+        position: 'absolute',
+        width: 7, 
+        height: 7,
+        left: 0,
+        top: StatusBar.currentHeight!
+      },
+      useAnimatedStyle<ImageStyle>(() => ({
+        opacity: animBase.value
+      }))
+    ]} 
+  />
+)
 
 export default GameArea

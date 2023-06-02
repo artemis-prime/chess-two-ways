@@ -124,7 +124,7 @@ const Square: React.FC<{
     <SquareInner {...brown} css={css}>
     {sizeInLayout && (
       <FeedbackView squareStateRef={square} >
-        <PieceComponent square={square} size={sizeInLayout} /> 
+         <PieceComponent square={square} size={sizeInLayout} /> 
       </FeedbackView>
     )}
     </SquareInner>

@@ -88,12 +88,14 @@ const Menu: React.FC<{
   const bo = useChessboardOrientation()
   const game = useChess()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
-  const { w } = useViewport()
+  const vp = useViewport()
 
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
+  const widthFraction = vp.landscape ? 
+    layout.landscape.openMenu.xFraction : layout.portrait.openMenu.xFraction
   return (
     <MenuOuter animBase={animBase} regStyle={regStyle}>
-      <MenuItemsOuter css={{w: w * .9 * layout.portrait.openMenu.xFraction}}>
+      <MenuItemsOuter css={{w: vp.w * .9 * widthFraction}}>
         <MenuSectionTitle>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 

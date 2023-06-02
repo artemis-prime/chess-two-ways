@@ -1,20 +1,23 @@
 import React from 'react'
-import { SafeAreaView, StatusBar } from 'react-native'
+import { StatusBar } from 'react-native'
 import { 
-  useSharedValue, 
   Easing, 
   withTiming,
   runOnJS,
+  useSharedValue, 
 } from 'react-native-reanimated'
 
-import { useMenu } from '~/services'
-import { Game, Main } from './appComponents'
+import { useMenu, useMeasuredStatusBar } from '~/services'
+
+import GameArea from './GameArea'
+import Main from './Main'
 import Menu from './Menu'
 const ANIM_DURATION = 100 // ms
 
 const App: React.FC = () => {
 
   const menu = useMenu()
+  const onLayout = useMeasuredStatusBar()
 
     // 0 <--> 1   
     // menu hidden <--> menu visible 
@@ -39,13 +42,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
-      <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent'} />
-      <Main animBase={animBase} toggleMenu={toggleMenu}>
-        <Menu animBase={animBase} />
-        <Game animBase={animBase} toggleMenu={toggleMenu} />
-      </Main>
-    </SafeAreaView>
+    <Main animBase={animBase} toggleMenu={toggleMenu} onLayout={onLayout}>
+      <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent' /*'rgba(100, 0, 0, .4)'*/} />
+      <Menu animBase={animBase} />
+      <GameArea animBase={animBase} toggleMenu={toggleMenu} />
+    </Main>
   )
 }
 
