@@ -19,25 +19,22 @@ const App: React.FC = () => {
   const menu = useMenu()
   const onLayout = useMeasuredStatusBar()
 
-    // 0 <--> 1   
-    // menu hidden <--> menu visible 
-    // Animated styles are interpolated as needed.
+    // 0 (menu closed) <--> 1 (menu open)   
     // menu.visible is updated at the END of the animation.
   const animBase = useSharedValue<number>(menu.visible ? 1 : 0) 
-  const toggleMenu = () => { animate() }
 
-    // Not a 'worklet', but the callback is! (dunno <shrug>)
+    // Not a 'worklet', but the end callback is! 
     // It also can't be defined inline for some odd reason.
     // (reanimated babel plugin issue?).
-  const animate = () => {
-    const animationEnded = () => { menu.setVisible(!menu.visible) }
+  const toggleMenu = () => {
+    const actualToggle = () => { menu.setVisible(!menu.visible) }
     animBase.value = withTiming(
       menu.visible ? 0 : 1, 
       { 
         duration: ANIM_DURATION, 
         easing: menu.visible ? Easing.out(Easing.linear) : Easing.in(Easing.linear) 
       },
-      () => { runOnJS(animationEnded)() }
+      () => { runOnJS(actualToggle)() } // called at end
     )
   }
 
