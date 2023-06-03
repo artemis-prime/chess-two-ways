@@ -73,8 +73,8 @@ const Boards: React.FC<{
       ]}
     >
       <Chalkboard 
-        disableInput={menu.visible} 
-        visible={menu.visible} 
+        disableInput={menu.open} 
+        visible={menu.open} 
         toggleMenu={toggleMenu} 
         animBaseForButton={menuAnimBase}
         open={cb.open}
@@ -109,8 +109,8 @@ const Boards: React.FC<{
         ]}
       >
         <Chalkboard 
-          disableInput={menu.visible} 
-          visible={menu.visible} 
+          disableInput={menu.open} 
+          visible={menu.open} 
           toggleMenu={toggleMenu} 
           animBaseForButton={menuAnimBase}
           open={cb.open}
@@ -163,7 +163,7 @@ const Boards: React.FC<{
       ) : (
         <ChalkboardOuterPortrait />
       )}
-      <Chessboard css={{flex: 0, ...deborder('lightgreen', 'layoutInner' ) }} disableInput={menu.visible} />
+      <Chessboard css={{flex: 0, ...deborder('lightgreen', 'layoutInner' ) }} disableInput={menu.open} />
 
     </Animated.View>
   )

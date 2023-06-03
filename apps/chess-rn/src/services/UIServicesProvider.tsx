@@ -5,27 +5,21 @@ import React, {
 } from 'react'
 
 import useChess from './useChess'
-import type ChessboardOrientation from './ChessboardOrientation'
 import { ChessboardOrientationImpl } from './ChessboardOrientation'
-import type Pulses from './Pulses'
 import { PulsesImpl } from './Pulses'
-import type TransientMessage from './TransientMessage'
 import { TransientMessageImpl } from './TransientMessage'
-import type MenuState from './MenuState'
 import { MenuStateImpl } from './MenuState'
-import type ChalkboardState from './ChalkboardState'
 import { ChalkboardStateImpl } from './ChalkboardState'
-import type ViewportState from './ViewportState'
 import { ViewportStateImpl } from './ViewportState'
 import MovePairs from './MovePairs'
 
 interface UIServices  {
-  pulses: Pulses
-  menu: MenuState
-  chessboardOrientation: ChessboardOrientation
-  chalkboard: ChalkboardState
-  transientMessage: TransientMessage
-  viewport: ViewportState
+  pulses: PulsesImpl
+  menu: MenuStateImpl
+  chessboardOrientation: ChessboardOrientationImpl
+  chalkboard: ChalkboardStateImpl
+  transientMessage: TransientMessageImpl
+  viewport: ViewportStateImpl
   movePairs: MovePairs
 }
 
@@ -35,44 +29,37 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   const game = useChess()
 
-  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl(game))
-  const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
-
-  const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
-  const chalkboardStateRef = useRef<ChalkboardStateImpl>(new ChalkboardStateImpl())
-  const viewportRef = useRef<ViewportStateImpl>(new ViewportStateImpl())
-  const movePairsRef = useRef<MovePairs>(new MovePairs(game))
+  const servicesRef = useRef<UIServices>({
+    pulses: new PulsesImpl(),
+    menu: new MenuStateImpl(),
+    chessboardOrientation: new ChessboardOrientationImpl(game),
+    transientMessage: new TransientMessageImpl(game),
+    chalkboard: new ChalkboardStateImpl(),
+    viewport: new ViewportStateImpl(),
+    movePairs: new MovePairs(game),
+  })
 
   useEffect(() => {
-    
-    game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
-    chessboardOrientationRef.current.initialize()
-    pulsesRef.current.initialize()
-    transientMessageRef.current.initialize()
-    viewportRef.current.initialize()
-    movePairsRef.current.initialize()
+    const s = servicesRef.current;
+    game.registerListener(s.transientMessage, 'chess-web-messages-store');
+    s.chessboardOrientation.initialize()
+    s.pulses.initialize()
+    s.transientMessage.initialize()
+    s.viewport.initialize()
+    s.movePairs.initialize()
 
     return () => {
       game.unregisterListener('chess-web-messages-store')
-      chessboardOrientationRef.current.dispose()
-      pulsesRef.current.dispose()
-      transientMessageRef.current.dispose()
-      viewportRef.current.dispose()
-      movePairsRef.current.dispose()
+      s.chessboardOrientation.dispose()
+      s.pulses.dispose()
+      s.transientMessage.dispose()
+      s.viewport.dispose()
+      s.movePairs.dispose()
     }
   }, [])
 
   return (
-    <UIServicesContext.Provider value={{
-      pulses: pulsesRef.current,
-      transientMessage: transientMessageRef.current,
-      chessboardOrientation: chessboardOrientationRef.current,
-      menu: menuStateRef.current,
-      chalkboard: chalkboardStateRef.current,
-      viewport: viewportRef.current,
-      movePairs: movePairsRef.current
-    }}>
+    <UIServicesContext.Provider value={servicesRef.current}>
       {children}
     </UIServicesContext.Provider>
   )

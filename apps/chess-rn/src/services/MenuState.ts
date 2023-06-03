@@ -1,21 +1,21 @@
 import { makeObservable, observable, action } from 'mobx'
 interface MenuState {
-  visible: boolean,
-  setVisible: (b: boolean) => void
+  open: boolean,
+  setOpen: (b: boolean) => void
 }
 
 class MenuStateImpl implements MenuState {
   
-  visible: boolean = false
+  open: boolean = false
   
   constructor() {
     makeObservable(this, {
-      visible: observable,
-      setVisible: action.bound 
+      open: observable,
+      setOpen: action.bound 
     })
   }
 
-  setVisible(b: boolean) { this.visible = b }
+  setOpen(b: boolean) { this.open = b }
 }
 
 export { type MenuState as default, MenuStateImpl}
