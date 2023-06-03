@@ -65,8 +65,9 @@ const Chalkboard: React.FC<
           {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
-        {open && <MovesTable css={{mt: '$1', flex: 1}}/>}
-        {!open && (<>
+        {open ? (
+          <MovesTable css={{mt: '$1', flex: 1}}/>
+        ) : (<>
           <HR />
           <TransientMessage />
         </>)}

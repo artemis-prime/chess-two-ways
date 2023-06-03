@@ -181,8 +181,9 @@ const Chalkboard: React.FC<{
   return (
     <ChalkbdOuter direction='column' align='stretch' css={css} showMoves={showMoves} >
       <ChalkbdTop playing={game.playing} showMoves={showMoves} setShowMoves={setShowMoves}/>
-      <MovesTable show={showMoves} css={{mt: showMoves ? 0 : '$1', flexGrow: 1, ...deborder('red', 'layout')}} />
-      {!showMoves && (<>
+      {showMoves ? (
+        <MovesTable css={{mt: showMoves ? 0 : '$1', flexGrow: 1, ...deborder('red', 'layout')}} /> 
+      ) : (<>
         <HR css={{'@allMobilePortrait': { display: 'none' }}}/>
         <TransientMessage />
       </>)}

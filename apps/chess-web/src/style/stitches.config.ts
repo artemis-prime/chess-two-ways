@@ -87,7 +87,7 @@ const {
       shallowShadow: '1px 2px 2px rgba(0, 0, 0, 0.12);',
     },
     transitions: {
-      chalkboardOpenTransition: 'height 200ms ease-in',
+      chalkboardOpenTransition: 'height 100ms ease-in',
       drawerLeftOpenTransition: 'left 150ms ease-in',
       drawerRightOpenTransition: 'right 150ms ease-in'
     },

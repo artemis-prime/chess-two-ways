@@ -7,14 +7,17 @@ import ScrollableFeed from 'react-scrollable-feed'
 import { type Side } from '@artemis-prime/chess-core'
 
 import { styled, type CSS, deborder } from '~/style'
-import { useChess, usePulses } from '~/services'
+import { 
+  type MovePair,  
+  useChess, 
+  useMovePairs, 
+  usePulses 
+} from '~/services'
 import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 import TransientMessage from './TransientMessage'
-import Rows, { type MoveRow } from './movesTable/Rows'
-import useTableReactions from './movesTable/useTableReactions'
-
+import moveNoteFn from './movesTable/GetMoveNote'
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any
@@ -72,22 +75,18 @@ const StyledScrollable = styled(Scrollable, {
 })
 
 const MovesTable: React.FC<{
-  show: boolean
   css?: CSS
 }> = observer(({
-  show,
   css
 }) => {
 
-  const rowsRef = useRef<Rows>(new Rows())
+  const movePairs = useMovePairs(moveNoteFn)
   const game = useChess()
   const pulses = usePulses()
 
-  useTableReactions(game, rowsRef.current)
-
   const sideHilight = computedFn((moveRow: number, side: Side): any => {
-    if (rowsRef.current.hilightedMoveRow !== null) {
-      if (rowsRef.current.hilightedMoveRow === moveRow && rowsRef.current.hilightedSide === side) {
+    if (movePairs.hilightedMoveRow !== null) {
+      if (movePairs.hilightedMoveRow === moveRow && movePairs.hilightedSide === side) {
         return {
           p: '0.15em',
           border: '0.1em dashed $alert8',
@@ -103,18 +102,18 @@ const MovesTable: React.FC<{
     if (disableSide(moveRow, side)) {
       return { color: '$chalkboardTextColorDisabled'}
     }
-    const half = rowsRef.current.rows[moveRow][side]
+    const half = movePairs.rows[moveRow][side]
     return {color:  half ? ((half.rec.annotatedResult || half.rec.action.includes('capture')) ? '$alert8' : '$chalkboardTextColor')  : '$chalkboardTextColor'}
   })
 
   const disableSide = computedFn((moveRow: number, side: Side): boolean => {
 
-    if (rowsRef.current.hilightedMoveRow !== null) {
-      if (moveRow > rowsRef.current.hilightedMoveRow) {
+    if (movePairs.hilightedMoveRow !== null) {
+      if (moveRow > movePairs.hilightedMoveRow) {
         return true
       }
-      else if (moveRow === rowsRef.current.hilightedMoveRow) {
-        if (side === 'black' && rowsRef.current.hilightedSide === 'white') {
+      else if (moveRow === movePairs.hilightedMoveRow) {
+        if (side === 'black' && movePairs.hilightedSide === 'white') {
           return true 
         }
       }
@@ -123,8 +122,8 @@ const MovesTable: React.FC<{
   })
 
   const disableRow = computedFn((moveRow: number): boolean => {
-    if (rowsRef.current.hilightedMoveRow !== null) {
-      if (moveRow > rowsRef.current.hilightedMoveRow) {
+    if (movePairs.hilightedMoveRow !== null) {
+      if (moveRow > movePairs.hilightedMoveRow) {
         return true
       }
     }
@@ -141,9 +140,9 @@ const MovesTable: React.FC<{
     opacity: (game.currentTurn === side) ? 1 : ((side === 'white') ? 0.7 : 0.5)
   })) 
 
-  const r = rowsRef.current
+  const r = movePairs
 
-  return show ? (
+  return (
     <Outer css={css}>
       <Row css={{w: '100%', mb: '$_5', flex: 'none'}} key='title-row'>
         <Box css={{w: COL_WIDTHS[0], mr: '$_5'}}>&nbsp;</Box>
@@ -154,7 +153,7 @@ const MovesTable: React.FC<{
       <HR css={{flex: 'none'}}/>
       <ScrollableOuter>
         <StyledScrollable>
-        {r.rows.map((row: MoveRow, i) => (
+        {r.rows.map((row: MovePair, i) => (
           <Row css={{w: '100%', mb: '$_5'}} key={row.white.str + (row.black?.str ?? '')} align='center'>
             <Box 
               css={{
@@ -215,7 +214,7 @@ const MovesTable: React.FC<{
         </StyledScrollable>
       </ScrollableOuter>
     </Outer>
-  ) : null
+  )
 })
 
 export default MovesTable
