@@ -1,22 +1,32 @@
 import React from 'react'
-import { StatusBar } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import { 
   Easing, 
   withTiming,
   runOnJS,
   useSharedValue, 
 } from 'react-native-reanimated'
+import { observer } from 'mobx-react-lite'
 
-import { useMenu, useMeasuredStatusBar } from '~/services'
+import { useMenu, useMeasuredStatusBar, useViewport } from '~/services'
+import { styled, deborder as deb, useTheme } from '~/style'
+import { LogoButton } from '~/app/widgets'
 
 import GameArea from './GameArea'
-import Main from './Main'
 import Menu from './Menu'
-const ANIM_DURATION = 100 // ms
+const ANIM_DURATION = 100 // in ms
 
-const App: React.FC = () => {
+const Main = styled(View, {
+  height: '100%', 
+  backgroundColor: '$menuBGColor', 
+  ...deb('orange', 'layout')
+})
+
+const App: React.FC = observer(() => {
 
   const menu = useMenu()
+  const th = useTheme()
+  const vp = useViewport()
   const onLayout = useMeasuredStatusBar()
 
     // 0 (menu closed) <--> 1 (menu open)   
@@ -39,12 +49,16 @@ const App: React.FC = () => {
   }
 
   return (
-    <Main animBase={animBase} toggleMenu={toggleMenu} onLayout={onLayout}>
-      <StatusBar translucent={true} barStyle='light-content' backgroundColor={'transparent' /*'rgba(100, 0, 0, .4)'*/} />
+    <Main onLayout={onLayout}>
+      <StatusBar translucent={true} barStyle='light-content' backgroundColor='transparent' />
       <Menu animBase={animBase} />
       <GameArea animBase={animBase} toggleMenu={toggleMenu} />
+      <LogoButton animBase={animBase} onClick={toggleMenu} style={{ 
+        right: th.space['1_5'], 
+        top: vp.statusBarHeight + th.space['1_5'] 
+      }}/>
     </Main>
   )
-}
+})
 
 export default App

@@ -25,7 +25,7 @@ import Boards from './Boards'
 const GameArea: React.FC<{
   toggleMenu: () => void
   animBase: SharedValue<number>
-}> = ({
+}> = observer(({
   toggleMenu,
   animBase,
 }) => {
@@ -83,7 +83,7 @@ const GameArea: React.FC<{
       </BGImage>
     </Animated.View>
   )
-}
+})
 
 const StatusBarSpacer: React.FC<{
   animBase: SharedValue<number>

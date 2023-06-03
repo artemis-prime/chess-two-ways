@@ -1,13 +1,15 @@
 import React, { type PropsWithChildren } from 'react'
-import { 
-  Text,
-  View,
-  type PressableProps,
-} from 'react-native'
+import { Text } from 'react-native'
 
-import { typography, deborder, styled, type CSS, useTheme } from '~/style'
+import { typography, deborder, styled, useTheme } from '~/style'
 
 import { Row, ButtonBase } from '~/primatives'
+
+const UNI = {
+  checkedBallot: '\u2611',
+  uncheckedBallot: '\u2610',
+  checkmark: '\u2713'
+}
 
 import WidgetIcon, {
   IconWidth,
@@ -67,12 +69,13 @@ const MenuCheckboxItem: React.FC<
         {icon && <WidgetIcon disabled={disabled} icon={icon} />}
         <ItemText disabled={disabled} icon={!!icon}>{children}</ItemText>
       </Row>
-      <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
+      <WidgetIcon state='default' icon={{icon: UNI.checkmark, style: {
         textAlign: 'right',
-        top: 4,
+        fontSize: 20,
+        top: 2,
         left: 7,
-        opacity: 0.8,
-        fontWeight: '400'
+        opacity: checked ? 0.8 : 0,
+        fontWeight: '300'
       }}} />
     </ButtonBase>
   )
