@@ -16,12 +16,8 @@ const PieceText = styled(Text, {
   opacity: 0.8,
   variants: {
     side: {
-      white: {
-        color: '$pieceColorWhite'
-      },
-      black: {
-        color: '$pieceColorBlack'
-      },
+      white: { color: '$pieceColorWhite' },
+      black: { color: '$pieceColorBlack' }
     }
   }
 })

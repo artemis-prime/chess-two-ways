@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, type LayoutChangeEvent } from 'react-native'
+import { View, type LayoutChangeEvent, type ViewStyle } from 'react-native'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 
 import { type ObsSquare } from '@artemis-prime/chess-core'
 
 import { styled, type CSS } from '~/style'
-import { useChessboardOrientation, useChess } from '~/services'
+import { useChessboardOrientation, useChess, useViewport } from '~/services'
 import { BGImage } from '~/primatives'
 
 import Square from './chessboard/Square'
@@ -14,18 +14,25 @@ import { ChessDnDShell, useDnDConfig } from './chessboard/ChessDnD'
 import DraggingPiece from './chessboard/DraggingPiece'
 
 const ChessboardOuter = styled(View, {
-  aspectRatio: 1,
+  aspectRatio: '1 / 1',
   width: '100%',
-  backgroundColor: 'transparent', // needed for gestures to work on android
+  backgroundColor: 'transparent', 
   borderWidth: '$thicker',
   borderRadius: '$sm',
   overflow: 'hidden', 
   borderColor: '$pieceColorBlack',
+  variants: {
+    landscape: { true: { width: 'auto' }}
+  }
 })
 
 const SquaresOuter = styled(View, {
-  height: '100%',
-  width: '100%',
+    // This helps with layout issues.  Not sure why precisely. 
+  position: 'absolute',
+  l: 0,
+  t: 0,
+  r: 0,
+  b: 0,
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-start',
@@ -43,6 +50,7 @@ const Chessboard: React.FC<{
 
   const game = useChess()
   const bo = useChessboardOrientation()
+  const viewport = useViewport()
   
     // Squares need to know their size in pt to do internal layout.
     // Instead of forcing each square listen for it's own size changes,
@@ -52,12 +60,9 @@ const Chessboard: React.FC<{
   const { layoutListener: layoutListenerDnd, setWhiteOnBottom: notifyDndOrientationChanged } = useDnDConfig()
       
 
-  useEffect(() => (
-      // returning autorun()'s cleanup function: https://mobx.js.org/reactions.html#always-dispose-of-reactions
-    autorun(() => {
-      notifyDndOrientationChanged(bo.whiteOnBottom)
-    })
-  ),[])
+  useEffect(() => (autorun(() => {
+    notifyDndOrientationChanged(bo.whiteOnBottom)
+  })),[])
 
   const layoutListener = (e: LayoutChangeEvent): void  => {
     const {nativeEvent: { layout: {width}}} = e;
@@ -66,11 +71,16 @@ const Chessboard: React.FC<{
   }
 
   return (
-    <ChessboardOuter css={css} pointerEvents={(disableInput ? 'none' : 'auto')} collapsable={false}>
-      <BGImage imageURI={'wood_grain_bg_low_res'}  >
+    <ChessboardOuter 
+      css={css} 
+      landscape={viewport.landscape}
+      pointerEvents={(disableInput ? 'none' : 'auto')} 
+      collapsable={false}
+    >
+      <BGImage imageURI={'wood_grain_bg_low_res'}  style={{height: '100%'}}>
         <SquaresOuter onLayout={layoutListener} >
         {game.getBoardAsArray(bo.whiteOnBottom).map((s: ObsSquare) => (
-              // See comments above
+            // See comments above
           <Square square={s} sizeInLayout={boardSize && boardSize / 8 } key={`key-${s.rank}-${s.file}`} />
         ))}
         </SquaresOuter>
@@ -79,7 +89,6 @@ const Chessboard: React.FC<{
     </ChessboardOuter>
   )
 })
-
 
 const BoardWithDnD: React.FC<{ 
   disableInput: boolean

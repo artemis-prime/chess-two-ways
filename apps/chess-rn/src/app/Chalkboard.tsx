@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { SharedValue } from 'react-native-reanimated'
 
-import { styled, type CSS, deborder } from '~/style'
+import { 
+  styled, 
+  type CSS, 
+  deborder, 
+} from '~/style'
 import { useChess } from '~/services'
 import { BGImage, Checkbox, Column, Row, HR } from '~/primatives'
 
@@ -21,7 +25,6 @@ const StyledBGImage = styled(BGImage, {
   flexGrow: 0,
   flexShrink: 1,
   backgroundColor: '#333',
-  //minHeight: 150,
   borderWidth: '$thicker',
   borderTopLeftRadius: '$lg',
   borderTopRightRadius: '$lg',
@@ -62,7 +65,7 @@ const Chalkboard: React.FC<
           {(game.playing) ?  <TurnAndInCheckIndicator  inCheckOnly={open}/> : <GameStatusIndicator />}
           <Checkbox checked={open} setChecked={setOpen} >show moves</Checkbox>
         </Row>
-        <MovesTable show={open} css={{mt: open ? 0 : '$1', flex: 1}}/>
+        {open && <MovesTable css={{mt: '$1', flex: 1}}/>}
         {!open && (<>
           <HR />
           <TransientMessage />

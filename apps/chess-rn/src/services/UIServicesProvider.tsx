@@ -15,6 +15,9 @@ import type MenuState from './MenuState'
 import { MenuStateImpl } from './MenuState'
 import type ChalkboardState from './ChalkboardState'
 import { ChalkboardStateImpl } from './ChalkboardState'
+import type ViewportState from './ViewportState'
+import { ViewportStateImpl } from './ViewportState'
+import MovePairs from './MovePairs'
 
 interface UIServices  {
   pulses: Pulses
@@ -22,6 +25,8 @@ interface UIServices  {
   chessboardOrientation: ChessboardOrientation
   chalkboard: ChalkboardState
   transientMessage: TransientMessage
+  viewport: ViewportState
+  movePairs: MovePairs
 }
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
@@ -36,18 +41,25 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
 
   const menuStateRef = useRef<MenuStateImpl>(new MenuStateImpl())
   const chalkboardStateRef = useRef<ChalkboardStateImpl>(new ChalkboardStateImpl())
+  const viewportRef = useRef<ViewportStateImpl>(new ViewportStateImpl())
+  const movePairsRef = useRef<MovePairs>(new MovePairs(game))
 
-  
   useEffect(() => {
+    
     game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
     chessboardOrientationRef.current.initialize()
     pulsesRef.current.initialize()
     transientMessageRef.current.initialize()
+    viewportRef.current.initialize()
+    movePairsRef.current.initialize()
+
     return () => {
       game.unregisterListener('chess-web-messages-store')
       chessboardOrientationRef.current.dispose()
       pulsesRef.current.dispose()
       transientMessageRef.current.dispose()
+      viewportRef.current.dispose()
+      movePairsRef.current.dispose()
     }
   }, [])
 
@@ -57,7 +69,9 @@ const UIServicesProvider: React.FC< PropsWithChildren<{}>> = ({ children }) => {
       transientMessage: transientMessageRef.current,
       chessboardOrientation: chessboardOrientationRef.current,
       menu: menuStateRef.current,
-      chalkboard: chalkboardStateRef.current
+      chalkboard: chalkboardStateRef.current,
+      viewport: viewportRef.current,
+      movePairs: movePairsRef.current
     }}>
       {children}
     </UIServicesContext.Provider>
@@ -69,4 +83,3 @@ export {
   UIServicesContext,
   type UIServices
 }
-

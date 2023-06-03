@@ -13,7 +13,6 @@ import { observer } from 'mobx-react-lite'
 
 import { 
   typography, 
-  css, 
   deborder, 
   styled, 
   useTheme, 
@@ -23,24 +22,27 @@ import { useChessboardOrientation, useChess } from '~/services'
 
 import menuIcons from './menu/menuIcons'
 import { MenuItem, MenuCheckboxItem, type IconAndStyles } from './menu'
+import useViewport from '~/services/useViewport'
 
 const MenuOuter: React.FC<{
   animBase: SharedValue<number> 
   regStyle?: StyleProp<ViewStyle>
-} & PropsWithChildren> = ({
+} & PropsWithChildren> = observer(({
   animBase,
   regStyle,
   children 
 }) => {
 
   const theme = useTheme()
+  const viewport = useViewport()
+
   return (
     <Animated.View  style={[
       {
         ...deborder('red', 'menuOuter'),
         position: 'absolute',
         left: 0,
-        top: theme.sizes.appBarHeight,
+        top: viewport.statusBarHeight,
         width: '100%', 
         paddingLeft: theme.space.pxMenu,
         paddingRight: theme.space.pxMenu,
@@ -59,29 +61,29 @@ const MenuOuter: React.FC<{
       {children}
     </Animated.View>
   )
-}
+})
 
-const MenuSectionTitle = styled(Text, 
-  typography.menu.sectionTitle,
-  css({
-    borderBottomColor: '$chalkboardTextColor',
-    borderBottomWidth: 1,
-    pt: '$pyMenuSeparator',
-    mb: '$pyMenuSeparator',
-  })
-)
+const MenuSectionTitle = styled(Text, {
+  ...typography.menu.sectionTitle,
+  borderBottomColor: '$chalkboardTextColor',
+  borderBottomWidth: 1,
+  pt: '$pyMenuSeparator',
+  mb: '$pyMenuSeparator',
+  variants: {
+    first: { true: {
+      pt: '$_5'
+    }}
+  },
+})
 
 const MenuItemsOuter = styled(View, {
   ...deborder('green', 'menu'),
-  pt: '$1_5'
 })
 
 const Menu: React.FC<{
-  width: number
   animBase: SharedValue<number> 
   regStyle?: StyleProp<ViewStyle>
 }> = observer(({
-  width,
   animBase,
   regStyle 
 }) => {
@@ -89,12 +91,15 @@ const Menu: React.FC<{
   const bo = useChessboardOrientation()
   const game = useChess()
   const swapDirection = () => { bo.setWhiteOnBottom(!bo.whiteOnBottom) }
+  const vp = useViewport()
 
   const currentConcedes = (game.currentTurn === 'white') ? '0-1' : '1-0' 
+  const widthFraction = vp.landscape ? 
+    layout.landscape.openMenu.xFraction : layout.portrait.openMenu.xFraction
   return (
     <MenuOuter animBase={animBase} regStyle={regStyle}>
-      <MenuItemsOuter css={{w: width * .9 * layout.portrait.openMenu.xFraction}}>
-        <MenuSectionTitle>Board Direction</MenuSectionTitle>
+      <MenuItemsOuter css={{w: vp.w * .9 * widthFraction}}>
+        <MenuSectionTitle first>Board Direction</MenuSectionTitle>
         <MenuItem 
           onClick={swapDirection} 
           disabled={bo.autoOrientToCurrentTurn} 

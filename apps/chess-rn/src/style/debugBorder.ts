@@ -7,6 +7,7 @@ const showForGroup = {
   chalkboard: false,
   checkbox: false,
   layout: false,
+  layoutInner: false,
   moves: false,
   movesLayout: false,
   movesRow: false,

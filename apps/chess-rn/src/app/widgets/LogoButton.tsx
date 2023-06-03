@@ -1,11 +1,12 @@
 import React from 'react'
-import { 
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
+import { type ViewStyle, type StyleProp } from 'react-native'
+import Animated, { 
+  type SharedValue, 
+  useAnimatedStyle,
+} from 'react-native-reanimated'
 
+import { useTheme, deborder as deb } from '~/style'
 import { ImageButton } from '~/primatives'
-import { useTheme } from '~/style'
 
 const LogoButton: React.FC<{
   onClick: () => void
@@ -41,4 +42,29 @@ const LogoButton: React.FC<{
   )
 }
 
-export default LogoButton
+const AnimatedLogoButton: React.FC<{
+  onClick: () => void
+  animBase: SharedValue<number>
+  style?: StyleProp<ViewStyle>
+}> = ({
+  onClick,
+  animBase,
+  style
+}) => (
+  <Animated.View style={[
+    style,
+    {
+      position: 'absolute',
+      width: 40,
+      height: 40,
+    },
+    useAnimatedStyle<ViewStyle>(() => ({
+      opacity: animBase.value,
+      display: animBase.value < 0.1 ? 'none' : 'flex'
+    })) 
+  ]}>
+    <LogoButton onClick={onClick} />
+  </Animated.View>
+)
+
+export default AnimatedLogoButton
