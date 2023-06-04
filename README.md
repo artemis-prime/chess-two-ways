@@ -1,9 +1,9 @@
 # Chess two ways
 
 ## An exploration of React, React Native, and Domain Driven Design
-(...and chess)
 
 <div align='center'>
+<p >(...and chess)</p>
 <image src='./docs/web-shot-larger.png' width='80%'/>
 </div>
 
