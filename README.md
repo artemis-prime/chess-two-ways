@@ -3,10 +3,10 @@
 ## An exploration of React, React Native, and Domain Driven Design
 (...and chess)
 
-<image src='./docs/web-shot-larger.png' width='80%' align='center'/>
+<div align='center'>
+<image src='./docs/web-shot-larger.png' width='80%'/>
+</div>
 
-
-<br clear="both"/>
 
 ### Workspace structure
 This `yarn` monorepo has three packages:
