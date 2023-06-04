@@ -21,7 +21,6 @@
 		BE84B29688B940118897088A /* wood_grain_bg_low_res.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 83EAB02F501A41EDA0E75D74 /* wood_grain_bg_low_res.jpg */; };
 		1BE81E8084EA4C2688C52D55 /* knight_logo_80_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = A75EBFE3090241DC89DC6A27 /* knight_logo_80_disabled.png */; };
 		45838925E475407EB2700D41 /* knight_logo_80_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = F474E6593CFE471199B29E9E /* knight_logo_80_normal.png */; };
-		78A8254C1E544A7AB743124E /* knight_logo_80_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 142BC6F2672D4CFBB76E8483 /* knight_logo_80_pressed.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +58,6 @@
 		83EAB02F501A41EDA0E75D74 /* wood_grain_bg_low_res.jpg */ = {isa = PBXFileReference; name = "wood_grain_bg_low_res.jpg"; path = "../../../assets/rn/img/wood_grain_bg_low_res.jpg"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		A75EBFE3090241DC89DC6A27 /* knight_logo_80_disabled.png */ = {isa = PBXFileReference; name = "knight_logo_80_disabled.png"; path = "../../../assets/rn/img/knight_logo_80_disabled.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		F474E6593CFE471199B29E9E /* knight_logo_80_normal.png */ = {isa = PBXFileReference; name = "knight_logo_80_normal.png"; path = "../../../assets/rn/img/knight_logo_80_normal.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		142BC6F2672D4CFBB76E8483 /* knight_logo_80_pressed.png */ = {isa = PBXFileReference; name = "knight_logo_80_pressed.png"; path = "../../../assets/rn/img/knight_logo_80_pressed.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,7 +173,6 @@
 				83EAB02F501A41EDA0E75D74 /* wood_grain_bg_low_res.jpg */,
 				A75EBFE3090241DC89DC6A27 /* knight_logo_80_disabled.png */,
 				F474E6593CFE471199B29E9E /* knight_logo_80_normal.png */,
-				142BC6F2672D4CFBB76E8483 /* knight_logo_80_pressed.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -284,7 +281,6 @@
 				BE84B29688B940118897088A /* wood_grain_bg_low_res.jpg in Resources */,
 				1BE81E8084EA4C2688C52D55 /* knight_logo_80_disabled.png in Resources */,
 				45838925E475407EB2700D41 /* knight_logo_80_normal.png in Resources */,
-				78A8254C1E544A7AB743124E /* knight_logo_80_pressed.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

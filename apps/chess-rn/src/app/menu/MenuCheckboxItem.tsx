@@ -1,97 +1,83 @@
 import React, { type PropsWithChildren } from 'react'
-import { 
-  Text,
-  View,
-  type PressableProps,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
+import { Text } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { typography, deborder, styled, useTheme } from '~/style'
 
-import {  
-  CheckboxShell,
-  type CheckboxViewProps,
-  type WidgetIconDesc,
-  WidgetIcon,
-} from '~/primatives'
+import { Row, ButtonBase } from '~/primatives'
 
-const MenuElementInnerView = styled(View, {
-    
-  ...debugBorder('white', 'menu'),
-  height: common.typography.menu.item.lineHeight,
-  width: '100%',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
+const UNI = {
+  checkedBallot: '\u2611',
+  uncheckedBallot: '\u2610',
+  checkmark: '\u2713'
+}
+
+import WidgetIcon, {
+  IconWidth,
+  IconMargin
+} from './WidgetIcon' 
+import type WidgetIconDesc from './WidgetIconDesc'
+
+const ItemText = styled(Text, {
+
+  ...deborder('orange', 'menu'),
+  ...typography.menu.item,
   variants: {
-    pressed: {
-      true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-        borderRadius: '$sm'
-      }
-    }
-  }
+    disabled: { true: {color: '$menuTextColorDisabled'}},
+    icon: { false: { ml: IconWidth + IconMargin } }
+  },
 })
 
-const TitleWrapper = styled(Text, {
-  ...common.typography.menu.item,
-  ...debugBorder('orange', 'menu'),
-  variants: {
-    disabled: {
-      true: {
-        color: '$gray9'
-      }
-    },
-    pressed: {
-      true: {
-        color: '$gray3',
-      }
-    },
-  }
-})
-
-const MenuCheckboxView: React.FC<CheckboxViewProps> = ({
-  checked,
-  pressed,
-  disabled, 
-  icon,
-  style,
-  children
-}) => (
-  <MenuElementInnerView {...{checked, pressed: !!pressed, disabled: !!disabled}} style={style}>
-    <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-      {icon && <WidgetIcon state={disabled ? 'disabled' : pressed ? 'pressed' : 'default'} icon={icon} /> }
-      <TitleWrapper {...{pressed: !!pressed, disabled: !!disabled}}>{children}</TitleWrapper>
-    </View>
-    <WidgetIcon state='default' icon={{icon: checked ? '\u2611' : '\u2610', style: {
-      textAlign: 'right',
-      top: 4,
-      left: 7,
-      opacity: 0.8,
-      fontWeight: '400'
-    }}} />
-  </MenuElementInnerView>
-)
-
-const MenuCheckboxItem: React.FC<{
-  checked: boolean
-  setChecked: (b: boolean) => void
-  icon?: WidgetIconDesc
-  style?: StyleProp<ViewStyle>
-} & PressableProps & PropsWithChildren> = ({
+const MenuCheckboxItem: React.FC<
+  {
+    checked: boolean
+    setChecked: (b: boolean) => void
+    disabled?: boolean
+    icon?: WidgetIconDesc
+  } 
+  & PropsWithChildren
+> = ({
   checked,
   setChecked,
+  disabled,
   icon,
-  ...rest
-}) => (
-  <CheckboxShell 
-    {...rest} 
-    checked={checked} 
-    setChecked={setChecked} 
-    view={MenuCheckboxView} 
-    icon={icon}
-  />
-)
-
+  children
+}) => {
+  const theme = useTheme()
+  return (
+    <ButtonBase 
+      onPressAnimations={[{
+        prop: 'backgroundColor',
+        from: theme.colors.menuBGColor,
+        to: theme.colors.menuBGColorPressed 
+      }]}
+      containerStyle={{
+        ...deborder('white', 'menu'),
+        height: theme.lineHeights.lineHeightMenu,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingLeft: theme.space[1],
+        paddingRight: theme.space[1],
+        borderRadius: theme.radii.menuRadius,
+      }}
+      on={checked}
+      disabled={disabled}
+      onClick={setChecked}
+    >
+      <Row>
+        {icon && <WidgetIcon disabled={disabled} icon={icon} />}
+        <ItemText disabled={disabled} icon={!!icon}>{children}</ItemText>
+      </Row>
+      <WidgetIcon state='default' icon={{icon: UNI.checkmark, style: {
+        textAlign: 'right',
+        fontSize: 20,
+        top: 2,
+        left: 7,
+        opacity: checked ? 0.8 : 0,
+        fontWeight: '300'
+      }}} />
+    </ButtonBase>
+  )
+}
 export default MenuCheckboxItem

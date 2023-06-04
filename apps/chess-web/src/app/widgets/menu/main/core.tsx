@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import * as Menubar from '@radix-ui/react-menubar'
 
-import { styled, common } from '~/style'
+import { styled, menu } from '~/style'
 
 const MenubarRoot = styled(Menubar.Root, {
   display: 'flex',
@@ -13,7 +13,7 @@ const MenubarMenu = styled(Menubar.Menu, {})
 
 const MenubarTrigger = styled(Menubar.Trigger, {
   all: 'unset',
-  ...common.menuBarTrigger,
+  ...menu.menuBarTrigger,
 
   outline: 'none',
   userSelect: 'none',
@@ -56,9 +56,9 @@ const MenubarPopup: React.FC<PropsWithChildren> = ({
 
 const RightSlot = styled('div', {
 
-  fontSize: common.menuBarPopupItem.fontSize,
-  fontFamily: common.menuBarPopupItem.fontFamily,
-  fontWeight: common.menuBarPopupItem.fontWeight,
+  fontSize: menu.menuBarPopupItem.fontSize,
+  fontFamily: menu.menuBarPopupItem.fontFamily,
+  fontWeight: menu.menuBarPopupItem.fontWeight,
   marginLeft: 'auto',
   paddingLeft: 20,
   color: '$menuRightSymbol',

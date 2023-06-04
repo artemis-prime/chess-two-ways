@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { common, type CSS, type MediaQuery } from '~/style'
+import { menu, type CSS, type MediaQuery } from '~/style'
 import { useChess } from '~/services'
 import { Button, Flex, ResponsiveText } from '~/primatives'
 
@@ -31,28 +31,28 @@ const UndoRedoWidget: React.FC<{
         menu
         disabled={!game.canUndo}
         onClick={game.undo}
-        css={{...common.menuBarTrigger, px: '$2'}}
+        css={{...menu.menuBarTrigger, px: '$2'}}
       >
         <ResponsiveText 
           main='Undo' 
           alt={'\u2039'} 
           altTriggers={ALT_TRIGGERS} 
           mainTriggers={MAIN_TRIGGERS}
-          css={{ fontFamily: common.menuBarTrigger.fontFamily }}
+          css={{ fontFamily: menu.menuBarTrigger.fontFamily }}
         />
       </Button>
       <Button 
         menu
         disabled={!game.canRedo}
         onClick={game.redo}
-        css={{...common.menuBarTrigger, px: '$2'}}
+        css={{...menu.menuBarTrigger, px: '$2'}}
       >
         <ResponsiveText 
           main='Redo' 
           alt={'\u203A'} 
           altTriggers={ALT_TRIGGERS} 
           mainTriggers={MAIN_TRIGGERS}
-          css={{ fontFamily: common.menuBarTrigger.fontFamily }}
+          css={{ fontFamily: menu.menuBarTrigger.fontFamily }}
         />
       </Button>
     </Flex>

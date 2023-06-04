@@ -1,5 +1,5 @@
 import type { VariantProps } from '@stitches/react'
-import { styled, common } from '~/style'
+import { styled, menu } from '~/style'
 
 const buttonCommon = {
   cursor: 'pointer',
@@ -127,7 +127,7 @@ const Button = styled('button', {
       menu: true,
       variant: 'ghost',
       css: {
-        ...common.menuBarTrigger,
+        ...menu.menuBarTrigger,
         cursor: 'pointer',
         border: 'none',
         backgroundColor: '$menuBGColor',

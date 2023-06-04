@@ -2,7 +2,7 @@ import React from 'react'
 
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common, deborder } from '~/style'
+import { styled, type CSS, menu, deborder } from '~/style'
 import { Flex } from '~/primatives'
 
 import {  
@@ -16,7 +16,7 @@ import {
 const StyledLabel = styled('label', {
     
   all: 'unset',
-  ...common.sideMenuItem,
+  ...menu.sideMenuItem,
   ...deborder('white', 'menu'),
   cursor: 'pointer',
   display: 'flex', 

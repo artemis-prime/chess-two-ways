@@ -1,98 +1,69 @@
 import React, { type PropsWithChildren } from 'react'
-import { 
-  type PressableProps,
-  type StyleProp,
-  Text,
-  View,
-  type ViewStyle,
-} from 'react-native'
+import { Text } from 'react-native'
 
-import { styled, common } from '~/styles/stitches.config'
-import debugBorder from '~/styles/debugBorder'
+import { typography, deborder, styled, useTheme } from '~/style'
 
 import {  
-  ButtonShell,
+  ButtonBase,
   type ButtonViewProps,
-  type WidgetIconDesc,
-  WidgetIcon,
-  IconWidth,
-  IconMargin
 } from '~/primatives'
 
+import WidgetIcon, {
+  IconWidth,
+  IconMargin
+} from './WidgetIcon' 
+import type WidgetIconDesc from './WidgetIconDesc'
 
-const MenuElementInnerView = styled(View,  {
 
-  ...debugBorder('white', 'menu'),
-  height: common.typography.menu.item.lineHeight,
-  width: '100%',
-  textAlignVertical: 'center',
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
+const ItemText = styled(Text, {
+
+  ...deborder('orange', 'menu'),
+  ...typography.menu.item,
   variants: {
-    state: {
-      disabled: {
-      },
-      pressed: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-        borderRadius: '$sm'
-      },
-      normal: {}
-    }
-  }
+    disabled: { true: {color: '$menuTextColorDisabled'}},
+    icon: { false: { ml: IconWidth + IconMargin } }
+  },
 })
 
-const TitleWrapper = styled(Text, {
-  ...common.typography.menu.item,
-  ...debugBorder('orange', 'menu'),
-  variants: {
-    state: {
-      disabled: {
-        color: '$gray9'
-      },
-      pressed: {
-        color: '$gray3',
-      },
-      normal: {}
-    },
-    icon: {
-      false: {
-        marginLeft: IconWidth + IconMargin
-      }
-    }
-  }
-})
-
-const MenuButtonInner: React.FC<ButtonViewProps> = ({
-  state,
-  icon,
-  children,
-  style
-}) => (
-  <MenuElementInnerView state={state} style={style}>
-    {icon && <WidgetIcon state={state} icon={icon} />}
-    <TitleWrapper state={state} icon={!!icon}>{children}</TitleWrapper>
-  </MenuElementInnerView>
-) 
-  
 const MenuItem: React.FC<{
   onClick: () => void
-  icon?: WidgetIconDesc,
-  style?: StyleProp<ViewStyle>
-} & PropsWithChildren & PressableProps> = ({
+  disabled?: boolean
+  icon?: WidgetIconDesc
+} & PropsWithChildren> = ({
   children,
-  icon,
-  style,
-  ...rest
-}) => (
-  <ButtonShell 
-    {...rest} 
-    view={MenuButtonInner} 
-    icon={icon} 
-    style={style}  
-  >
-    {children}
-  </ButtonShell>
-)
+  disabled,
+  onClick,
+  icon
+}) => {
 
+  const theme = useTheme()
+  
+  return (
+    <ButtonBase 
+      onPressAnimations={[{
+        prop: 'backgroundColor',
+        from: theme.colors.menuBGColor,
+        to: theme.colors.menuBGColorPressed 
+      }]}
+      containerStyle={{
+        ...deborder('white', 'menu'),
+        height: theme.lineHeights.lineHeightMenu,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingLeft: theme.space[1],
+        paddingRight: theme.space[1],
+        borderRadius: theme.radii.menuRadius,
+      }}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {icon && <WidgetIcon disabled={disabled} icon={icon} />}
+      <ItemText disabled={disabled} icon={!!icon}>
+        {children}
+      </ItemText>
+    </ButtonBase>
+  )
+}
 export default MenuItem

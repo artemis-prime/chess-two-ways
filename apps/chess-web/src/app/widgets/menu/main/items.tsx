@@ -3,7 +3,7 @@ import React from 'react'
 import * as Menubar from '@radix-ui/react-menubar'
 import { CheckIcon } from '@radix-ui/react-icons'
 
-import { styled, type CSS, common, deborder } from '~/style'
+import { styled, type CSS, menu, deborder } from '~/style'
 
 import {  
   type WidgetIconDesc,
@@ -19,7 +19,7 @@ const itemstyles = {
   all: 'unset',
   userSelect: 'none',
 
-  ...common.menuBarPopupItem,
+  ...menu.menuBarPopupItem,
   ...deborder('white', 'menu'),
   
   display: 'flex',

@@ -5,18 +5,16 @@ import React, {
 } from 'react'
 
 import useChess from './useChess'
-import type ChessboardOrientation from './ChessboardOrientation'
 import { ChessboardOrientationImpl } from './ChessboardOrientation'
-import type Pulses from './Pulses'
 import { PulsesImpl } from './Pulses'
-
-import type TransientMessage from './TransientMessage'
 import { TransientMessageImpl } from './TransientMessage'
+import MovePairs from './MovePairs'
 
 interface UIServices  {
-  pulses: Pulses
-  chessboardOrientation: ChessboardOrientation
-  transientMessage: TransientMessage
+  pulses: PulsesImpl
+  chessboardOrientation: ChessboardOrientationImpl
+  transientMessage: TransientMessageImpl
+  movePairs: MovePairs
 }
 
 const UIServicesContext = React.createContext<UIServices | undefined>(undefined) 
@@ -24,29 +22,33 @@ const UIServicesContext = React.createContext<UIServices | undefined>(undefined)
 const UIServicesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const game = useChess()
-  const pulsesRef = useRef<PulsesImpl>(new PulsesImpl())
-  const chessboardOrientationRef = useRef<ChessboardOrientationImpl>(new ChessboardOrientationImpl(game))
-  const transientMessageRef = useRef<TransientMessageImpl>(new TransientMessageImpl(game))
-  
+
+  const servicesRef = useRef<UIServices>({
+    pulses: new PulsesImpl(),
+    chessboardOrientation: new ChessboardOrientationImpl(game),
+    transientMessage: new TransientMessageImpl(game),
+    movePairs: new MovePairs(game)
+  })
+
   useEffect(() => {
-    game.registerListener(transientMessageRef.current, 'chess-web-messages-store')
-    chessboardOrientationRef.current.initialize()
-    pulsesRef.current.initialize()
-    transientMessageRef.current.initialize()
+    const s = servicesRef.current;
+    game.registerListener(s.transientMessage, 'chess-web-messages-store')
+    s.chessboardOrientation.initialize()
+    s.pulses.initialize()
+    s.transientMessage.initialize()
+    s.movePairs.initialize()
+    
     return () => {
       game.unregisterListener('chess-web-messages-store')
-      chessboardOrientationRef.current.dispose()
-      pulsesRef.current.dispose()
-      transientMessageRef.current.dispose()
+      s.chessboardOrientation.dispose()
+      s.pulses.dispose()
+      s.transientMessage.dispose()
+      s.movePairs.dispose()
     }
   }, [])
 
   return (
-    <UIServicesContext.Provider value={{
-      pulses: pulsesRef.current,
-      transientMessage: transientMessageRef.current,
-      chessboardOrientation: chessboardOrientationRef.current,
-    }}>
+    <UIServicesContext.Provider value={servicesRef.current}>
       {children}
     </UIServicesContext.Provider>
   )

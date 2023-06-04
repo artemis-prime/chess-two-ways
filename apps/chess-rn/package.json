@@ -16,10 +16,11 @@
     "mobx-react-lite": "^3.4.3",
     "mobx-utils": "6.0.6",
     "react": "18.2.0",
-    "react-native": "^0.72.0-rc.1",
+    "react-native": "0.72.0-rc.3",
     "react-native-device-info": "^10.6.0",
-    "react-native-gesture-handler": "^2.9.0",
-    "react-native-reanimated": "^3.1.0",
+    "react-native-gesture-handler": "^2.10.2",
+    "react-native-reanimated": "^3.2.0",
+    "react-singleton-hook": "^4.0.1",
     "stitches-native": "^0.4.0"
   },
   "devDependencies": {

@@ -13,7 +13,8 @@ module.exports = {
       }
     ],
       // https://mobx.js.org/migrating-from-4-or-5.html#getting-started
-    ["@babel/plugin-proposal-class-properties", { "loose": false }],
+      // CANNOT USE with Flatlist on Android.  Grree
+    //["@babel/plugin-proposal-class-properties", { "loose": false }],
     'react-native-reanimated/plugin',
   ]
 };

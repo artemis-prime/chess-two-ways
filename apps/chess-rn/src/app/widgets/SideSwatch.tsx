@@ -1,11 +1,11 @@
 import { View } from 'react-native'
 
-import { styled } from '~/styles/stitches.config'
+import { styled } from '~/style'
 
 const SideSwatch = styled(View, {
 
-  height: '$swatchHNormal', 
-  width: '$swatchWNormal',
+  h: '$swatchHNormal', 
+  w: '$swatchWNormal',
   borderRadius: '$sm',
   borderWidth: '$thicker',
   borderColor: '#777',
@@ -13,19 +13,27 @@ const SideSwatch = styled(View, {
   variants: {
     side: {
       white: {
-        backgroundColor: '$pieceWhite'
+        backgroundColor: '$pieceColorWhite'
       },
       black: {
-        backgroundColor: '$pieceBlack'
+        backgroundColor: '$pieceColorBlack'
       },
     },
     small: {
       true: {
         borderWidth: '$normal',
-        height: '$swatchHSmall', 
-        width: '$swatchWSmall',
+        h: '$swatchHSmall', 
+        w: '$swatchWSmall',
+      }
+    },
+    narrow: {
+      true: {
+        h: '$swatchHSmall', 
+        // width is set dynamically
+        borderWidth: '$normal', 
       }
     }
+
   }
 })
 

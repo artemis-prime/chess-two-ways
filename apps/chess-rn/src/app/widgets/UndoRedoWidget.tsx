@@ -1,32 +1,43 @@
 import React from 'react'
-import type { StyleProp, ViewStyle } from 'react-native'
 import { observer } from 'mobx-react-lite'
-import { type CSS } from 'stitches-native'
 
-import { useGame } from '~/services'
-import { GhostButton, Row, DashText } from '~/primatives'
+import { type CSS, useTheme } from '~/style'
+import { useChess } from '~/services'
+import { GhostButton, Row } from '~/primatives'
 
-const UndoRedoWidget: React.FC<{ 
-  style?: StyleProp<ViewStyle> 
+const UndoRedoWidget: React.FC<{
+  menu?: boolean 
+  chalkboard?: boolean 
   css?: CSS
 }> = observer(({
-  style,
+  menu, 
+  chalkboard, 
   css
 }) => {
-  const game = useGame()
+  const game = useChess()
+  const theme = useTheme()
+  const commonStyle = {
+    paddingLeft: theme.space[2],
+    paddingRight: theme.space[2]
+  }
   return (
-    <Row justify='end' style={style} css={css} >
+    <Row justify='end' align='stretch' css={css} >
       <GhostButton 
+        menu={menu}
+        chalkboard={chalkboard}
         disabled={!game.canUndo}
-        onClick={game.undo.bind(game)}
-        style={{ marginRight: !(game.canUndo || game.canRedo) ? 15 : 6 }}
-      >Undo</GhostButton>
-      {(game.canUndo || game.canRedo) && <DashText>|</DashText>}
+        onClick={game.undo}
+        containerStyle={commonStyle}
+        textCss={{fontSize: 40, t: 1}}
+      >{'\u2039'}</GhostButton>
       <GhostButton 
+        menu={menu}
+        chalkboard={chalkboard}
         disabled={!game.canRedo}
-        onClick={game.redo.bind(game)}
-        style={{ marginLeft: !(game.canUndo || game.canRedo) ? 0 : 5 }}
-      >Redo</GhostButton>
+        onClick={game.redo}
+        containerStyle={commonStyle}
+        textCss={{fontSize: 40, t: 1}}
+      >{'\u203A'}</GhostButton>
     </Row>
   )
 })
