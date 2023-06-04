@@ -1,28 +1,28 @@
-# UI Architecture (common)
+# UI Architecture 
 
-We can have a document like this precisely because an effort was made to keep the UI *architecture* similar if not the same.  Ultimately React is React, whether Native or Web, so organizing an app shouldn't have to differ from one to the other.
+This document exists precisely because an effort was made to keep the UI *architecture*, if not implementation, as similar as possible on both platforms. Ultimately React is React, whether Native or Web, so organizing an app shouldn't have to differ much from one to the other.
 
 ## Main Organization
 
-* `app`: the specific implementation of the app UI itself, including layout, domain-specific feature components, etc. Usually contains a `widgets` subdirectory. 
-* `primatives`: common components that are not domain-specific and likely reused in many places in the app. These would include general UI elements like `Button`, `Dialog`, `Drawer` etc. 
-* `services`: all cross-cutting concerns, often implemented using React `Context`s / `Provider`s, and hooks.
-* `style`: anything style or theming realated. Any styling specific to a component is encapsulated in that component. This directory contains the necessary support for that encapsulation.  
+* **`app`**: the specific implementation of the app UI itself, including layout, domain-specific feature components, etc. Usually contains a `widgets` subdirectory. 
+* **`primatives`**: common components that are not domain-specific and likely reused in many places in the app. These would include general UI elements like `Button`, `Dialog`, `Drawer` etc. 
+* **`services`**: all cross-cutting concerns, often implemented using React `Context`s / `Provider`s, and hooks.
+* **`style`**: anything style or theming realated. Any styling specific to a component is encapsulated in that component. This directory contains the necessary support for that encapsulation.  
 
-**In an app where the domain code is in the same tree (a non-monorepo), there would also be a `domain` directory.** It would contain the equivalent of what `just-the-chess` has in our repo.  (See the [Core Architecture documentation](./just-the-chess/CORE_ARCH.md) for more on that)
+* ( **`domain`** ): In an app where **the domain is in the same directory** --a single-app non-monorepo, there'd be **a `domain` directory**. It would contain the equivalent of what `just-the-chess` does in our repo.  (See the [Core Architecture doc](./just-the-chess/CORE_ARCH.md) for more on that.)
 
-Over many projects, I've found this organization to be a clean, simple, and easily understood way to organize UI code.  
+Over many projects, I've found this organization to be a clear, simple, and expressive enough to succeed at many levels of complexity.  
 
-## Stitches: Look Ma, no framework.
+## **Stitches**: Look Ma, no framework.
 
-The more I've used more feature-packed, "complete" frameworks like [Material UI](https://mui.com/), the more I see them as a double-edged sword. If your UI is strongly in line with the design concept of a framework, and you need to develop an MVP asap, this can ease things dramatically. If on the other hand, you want something more specific, or only have a few common variants of various components, you can spend a lot of time fighting (aka, "customizing") the framework just to achieve simple goals. This disadvantage is often obscured further by the seeming advantage of having a theming mechanism. 
+The more I've used more feature-packed, turn-key frameworks like [Material UI](https://mui.com/), the more seem like a double-edged sword. On the one hand, if your UI is strongly aligned with the design concept of a framework, and you need to develop something asap, they can ease things dramatically. On the other, if you're building something more idiosyncratic (like a Chess game), or only have a few common component variants, you can waste a lot of time fighting (ie, "customizing") the framework just to achieve simple goals. 
 
-Enter [Stitches](https://stitches.dev/). Stitches (and it's excellent [React Native port](https://github.com/Temzasse/stitches-native)) has truly managed to find a sweetspot between simplicity and power. With it, you can quickly create useful styled components while not burdening the project with design assumptions you don't share, or needless layers of styling code to fight. In the time saved, you can easily develop the `primatives` you actually need!
+Enter [Stitches](https://stitches.dev/). Stitches and it's excellent React Native port, [stitches-native](https://github.com/Temzasse/stitches-native), have truly managed to find the sweetspot between simplicity and power. With it, you can quickly create useful styled components while not burdening the project with design assumptions you don't share, or needless layers of framework code to fight. In the time saved, you can easily develop the `primatives` you actually need!
 
-It has many features, but truly shines in two areas:
+Stitches has many features, but truly shines in two areas:
 
-### **theming**
-Stitches theming provides a way to create virtually *any set of desired design tokens* **and** a simple way to apply them to any styled component (via the '$' notation below)
+### **Theming**
+Stitches theming offers a powerful way to create and use virtually *any set of desired design tokens* via it's powerful the '$' notation (shown below)
 
 ```typescript
 const { styled } = createStitches({
@@ -38,8 +38,8 @@ const { styled } = createStitches({
   },
   space: {
     sm: '4px',
-    md: '8px'
-    lg: '12px,
+    md: '8px',
+    lg: '12px',
   },
   fonts: {},
   // etc
@@ -59,13 +59,13 @@ const MyComponent = styled('div', {
 ```
 
 ### **style / prop variants**
-Herein lies the true power and convenience that Stitches brings: a easy way of specifying component-level design props right from within style blocks. 
+Using a truely powerful and innovative syntax, Stitches brings incredible convenience in specifying prop variants right from style blocks. For example,
 
 ```typescript
 const Button = styled('button', {
 
   backgroundColor: 'transparent',
-  borderRadius: '3px,
+  borderRadius: '3px',
   height: '1.1rem',
 
   variants: {
@@ -83,7 +83,6 @@ const Button = styled('button', {
           backgroundColor: '$gray4',
         },
       },
-      // other types
     },
     smaller: {
       true: {
@@ -91,22 +90,25 @@ const Button = styled('button', {
       }
     }
   },
+  devaultVariants: {
+    type: 'common'
+  }
 })
 
 // ...
 
-<Button type='alert' smaller>Go it!</Button>
+<Button type='alert' smaller>Got it!</Button>
 
 ```
 
-This has proven to be a very powerful and convenient mechanism when dealing with UI variants that respond to domain-specific states or types.  For example, in our [core architecture](./CORE_ARCH.md), `Action`s such as `'move'` or `'capture'` can have corresponding prop variants that make up the appearance of a square.
+This feature has proven to be particularly powerful when dealing with the very UI variants that arise in showing domain-specific states or types.  For example, `Action`s such as `'move'` or `'capture'` can have corresponding prop variants that make up the appearance of a square, as shown below.  
 
 ## Key Implementations and Uses of Domain
 
 ### **Square and Piece components**
-As mentioned in the [core architecture doc](./CORE_ARCH.md), the core provides observable state for a `Square` which enables the UI to render it. These are `occupant` and `squareState`
+As mentioned in the [core architecture doc](./CORE_ARCH.md), the core provides two observable state variables for a `Square` which enables the UI to render it: `occupant` and `squareState`
 
-This allows for a `SquareComponent` to provide feedback based on `squareState`, by translating it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
+`SquareComponent`  simply displays feedback  by translating `squareState` it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
 
 ```typescript
   // simplified for clarity

@@ -42,7 +42,7 @@ Please run all scripts from the monorepo root (where the root `package.json` liv
 React Native: The above assumes you have Java 11, and the Android SDK correctly installed and configured.  In practice you also need Android Studio to create key files and emulator profiles.  [Instructions are here](https://reactnative.dev/docs/environment-setup).  Select 'React Native CLI Quickstart' (not Expo), and then whatever Development OS you are on, and 'Android' for the Target OS. 
 
 
-<image src='./rn-shot.png' width='20%' align='right' style='margin-left: 20px;'/>
+<image src='./rn-port-moves.png' width='20%' align='right' style='margin-left: 20px;'/>
 
 ## Domain Driven Design 
 
