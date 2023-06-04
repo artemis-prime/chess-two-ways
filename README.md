@@ -1,11 +1,10 @@
 # Chess two ways
 
-<image src='./docs/web-shot-larger.png' width='60%' align='right' style='margin-left: 10px;'/>
-
-## A demonstration of React, React Native, and Domain Driven Design
+## An exploration of React, React Native, and Domain Driven Design
 (...and chess)
-<br/>
-<br/>
+
+<image src='./docs/web-shot-larger.png' width='60%' style='margin-left: 10px;'/>
+
 
 <br clear="both"/>
 
@@ -19,7 +18,6 @@ This `yarn` monorepo has three packages:
   "apps/chess-rn"
 ]
 ```
-
 
 
 They are named and organized this way to further re-enforce the separation of concerns between the core domain (in `just-the-chess/`), and the two actual apps (in `chess-web` and in `chess-rn`)
