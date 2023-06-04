@@ -6,4 +6,4 @@ A discerning eye might notice a supreme lack of configuration files in this pack
 ### location of `index.html` 
 That same discerning eye may also notice that `index.html` does not live in some specially annointed place derived from web servers like `public/`.  It is a `vite` convention that it lives at the very root of your source tree.  They consider it part of the code for your app and the actual entry point from which a dependency graph can be built.   
 
-[return to main doc](../../README.md)
+[return to main doc](../README.md)
