@@ -28,8 +28,8 @@ type PieceType =
   'king'
 
 interface Piece {
-  type: PieceType
-  side: Side
+  readonly type: PieceType
+  readonly side: Side
 } 
 
 
@@ -43,12 +43,12 @@ class Square implements Position {
   readonly rank: Rank 
   readonly file: File 
   occupant: Piece | null  // observable state, if null, Square is empty
-  state: SquareState      // observable state ('origin', 'possible move', 'possible capture', etc)
+  state: SquareState      // observable state ( indicated roll in corrent or previous move: 'origin', 'valid move', 'possible capture', etc)
 }
 
 ```
 
-This should be enough for a UI to render the state of the Chess game at any time
+The above contains enough symantics for any UI to render the Chess game in any meaningful state.
 
 ## **Behavior Domain:** Moves, Actions, and Resolutions
 
@@ -98,18 +98,18 @@ codewise...
 
 ```
 
-`applyResolution` changes `observable` state, likely including `squareState` for this square. (And possibly others, if `Action` is say, `'castle'`. This involves four squares changing: King's `from` and `to`, and Rook's `from` and `to`!)
+Depending on the square's possible function in the current move `applyResolution` changes `squareState` for this square. (And possibly others, if `Action` is say, `'castle'`. This involves four squares changing: King's `from` and `to`, and Rook's `from` and `to`!)
 
-Reacting to changes in `squareState`, the UI can do things like draw a green circle in an allowable empty square being dragged over, or make the opponent's piece pulse larger with a thicker drop shadow indicating a possible `'capture'`. 
+Reacting to changes in `squareState`, the UI can display various forms of feedback.  These could include a green circle in an empty square being dragged over as a valid move, or in the case of potential `'capture'`, the opponent's piece pulsing larger with a thicker dropshadow. 
 
 
 ## **Reactive UI**
 
-To implement such responses, as well render state generally, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's very conducive to Domain Driven Design since it doesn't impose itself on the architecture.  Unlike with other state management solutions, its whole approach is simplyemphasizes simplicity and transparency. There is not notion of a 'Store' per se: any objects or even individual fields of objects can be tracked as `observable`. Just implement the domain, making relevant things `observable`, and the UI will render properly. 
+To implement such responses, as well render state generally, we use the fantastic [`mobx`](https://mobx.js.org/) library. Among other great qualities, it's very conducive to Domain Driven Design since it doesn't impose its own concepts on the architecture.  Unlike with other state management solutions, its whole approach emphasizes simplicity and transparency. There is no notion of a 'Store' per se: any objects or individual fields of objects can be `observable`. Just implement the domain as you would, while making certain things `observable`, and the UI will render properly. Magic.
 
-And this involves wonderfully little code. We just wrap a component in `observer`, dereference our `observable`s, and things just work. No store, no reducers, (...well, yes 'actions', but they're simpler and make more sense)
+And involves wonderfully little code. All we do is wrap any Functional Component or `render` method in `observer`, dereference any `observable`s we need to, and things just work. No store, no reducers ...well, yes to 'actions', but they're simpler and more sensible than `Redux`'s.
 
-A `Square` above has two `observable` fields, `occupant` and `squareState`. When either of them is changed by the core, the `SquareComponent` that dereferences them gets rerendered.
+As a simple example, a `Square` above has two `observable` fields, `occupant` and `squareState`. When either of them is changed by the core, the `SquareComponent` that dereferences them gets rerendered.
 
 ```typescript
 import { observer } from 'mobx-react'
@@ -127,12 +127,12 @@ const SquareComponent: React.FC<{ square: Square }> = observer(({ square }) =>
 
 ```
 
-Hopefully this has illustrated the key structural and behavioral patterns in the domain, as well as how the UI responds to and renders them. For more insight, see the [UI Architecture doc here](../UI-COMMON-ARCH.md)
+This discussion serves to illustrated the key structural and behavioral patterns in the domain, as well as how the UI responds to and renders them. For more insight, see the [UI Architecture doc here](./UI-COMMON-ARCH.md)
 
 ## **Notable Features and Implementation Choices**
 
 ### **Undo / Redo support**
-There is a stack of `ActionRecord`'s that can be traversed back and forth. An `ActionRecord` can be "applied" to the Game in three modes: `'do' | 'undo' | 'redo'`.  This contains and encapsulates state transitions simply and intuitively.
+There is a stack of `ActionRecord`'s that can be traversed back and forth easily for undo / redo.  An `ActionRecord` is "applied" to the Game in three modes: `'do' | 'undo' | 'redo'`.  This encapsulates state transitions simply and intuitively.
 
 ### **Action Resolution System**
 This has been partially discussed above. With Drag and Drop in mind, a move is conceived as follows:
@@ -140,7 +140,7 @@ This has been partially discussed above. With Drag and Drop in mind, a move is c
   * A call to `resolveAction()` provides a resolution.
   * **This is cached** for the same `Move`, until:
   * either `takeResolvedAction()` or `abandonResolution()` are called
-  * Note that this is a form of debouncing that avoids running complex piece-specific logic on in response to say, mouse events
+  * Note that this is a form of debouncing that avoids running complex piece-specific logic in response to say, mouse events
 
 
 ```typescript
@@ -149,15 +149,15 @@ takeResolvedAction(): boolean         // true if action was taken
 abandonResolution(): void             // call if drag was abandoned or finished on an invalid drop target 
 ```
 ### **'Put yourself in Check' support via a 'scratch' `Board`** 
-Since some moves could result in a player putting themselves or staying in check, we have to screen for this outcome for every `Move` before it's actually resolved to an 'Action'. The other approach would be each piece type being responsible for this on their own, which would be needlessly complicated.
+Since some moves could result in a player putting themselves into, or failing to get out of, check, we have to screen for this on every `Move` before it's actually resolved to an 'Action'. (Any other approach would have each piece being responsible for this internally, which would be much more complicated complicated.)
 
-We chose to accomplish this via a 'scratch' `Board` (in addition to the 'real' one). On every attempted resolution,
+I chose to accomplish this via a 'scratch' `Board` that exists solely for this purpose. On every attempted resolution,
 
-  1) The scratch `Board` is quickly synced to the exact state of the main `Board`
+  1) The scratch `Board` is quickly synced to the exact state of the "real" `Board`
   2) The same `ActionRecord` that would used for the real action is actually 'applied' to the scratch `Board`.
-  3) Depending on whether this results in the current player being in check on the scratch `Board`, the `Action` is either resolved or rejected.
+  3) The 'in check' state is tested for and depending on this hypothetical result with the scratch `Board`, the `Action` is either resolved as normal or rejected.
   
-This may seem cumbersome, but it actually ensures that game state is kept pure, and that core logic isn't needlessly complex. It's just simply rerun on the 'scratch' `Board`. 
+This may sound complicated, but it has several advantages. Mainly, it ensures that there's no risk of game state becoming unpoluted by any side-effects of testing for check. Also, core logic is kept as simple as possible, since the same sequence of steps is used on the scratch `Board` as would be used to actually take an action. 
 
 ### **Resolver Registry**
 There is a registry of `ActionResolver`'s based on piece type.  They live in `game/resolvers`  And are initialized to a `Map` in `game/resolverRegistry.ts`....
@@ -206,15 +206,15 @@ const resolve = (
 export { resolve }
 ```
 
-This is a clean way to encapsulate the behavioral pattern per type of piece. 
+This cleanly encapsulates the behavioral pattern per piece type. 
 
-(There are actually two methods in the interface: `resolve(board: Board, m: Move): Action | null` and also `resolvableMoves(board: Board, piece: Piece, from: Position): Position[]`. The latter is used internally to check for checkmate and stalemate.
+TL;DR: There are actually two methods in the interface: `resolve(board: Board, m: Move): Action | null` and also `resolvableMoves(board: Board, piece: Piece, from: Position): Position[]`. The latter is used internally to test for for checkmate and stalemate.
 
 ### **Tracking of Primaries**
-In order to optimize the "self in check" process discussed above, as well as checking for "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
+In order to optimize the process of testing for "in check" discussed above, as well as checking for "checkmate", and "stalemate", the positions of "Primary Types" --all except 'pawn' and 'king', are tracked and updated with every move. This lives in `game/board/Tracking.ts`.
 
 ### **Persistence**
-The entire Game, including pieces on the board, tracking, undo / redo stack, castling eligability, etc., can be converted to a condensed representation and persisted to JSON files. The JSON is quite human readable since we use a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) to represent actions, locations, etc. Each type involved, from `Game` on down, implements the `Snapshotable<T>` interface. 
+The entire Game, including pieces on the board, tracking, undo / redo stack, castling eligability, etc., can be converted to a condensed representation and persisted to JSON files. The JSON is quite human readable since it uses a modified version of [LAN (Long Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)). Each core type involved, from `Game` on down, implements the `Snapshotable<T>` interface. 
 
 ```typescript
 interface Snapshotable<T> {
@@ -231,6 +231,7 @@ interface GameSnapshot {
   board: BoardSnapshot
   actions: string[]
   currentTurn: SideCode
+  gameEnding?: string
 }
 
 interface Game extends Snapshotable<GameSnapshot> {
@@ -272,22 +273,22 @@ const PersistToFileButton: React.FC<React.PropsWithChildren> = ({children}) => {
 ```
 
 ### **Notification System** 
-In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This is convenient for implementing a visual history of standard chess move strings (like "wPh2h3"), or outputing messages from the core, like "That's not possible because you'd be in check". 
+In addition to observing `mobx` state changes, client code can also subscribe to common events and messages by registering a `ChessListener`.  This can be convenient displaying messages or anything related to the current action, etc. 
 
 ```typescript
 
 interface ChessListener {
 
   actionResolved(move: Move, action: Action | null): void
-  actionTaken(r: ActionRecord): void
-  actionUndone(r: ActionRecord): void
-  actionRedone(r: ActionRecord): void
+  actionTaken(r: ActionRecord, mode: ActionMode): void    // ActionMode is 'do' | 'undo' | 'redo'
 
     // eg, "You can't castle because your king has moved!"
-  message(s: string): void 
+  messageSent(s: string, type?: string): void 
 
-  inCheck(c: CheckInfo): void
+  inCheck(c: Check): void       // 'Check' is who's in check, from what squares, etc.
   notInCheck(side: Side): void
+
+  gameStatusChanged(s: GameStatus): void // 'stalemate', 'checkmate', etc.
 }
 ```
 

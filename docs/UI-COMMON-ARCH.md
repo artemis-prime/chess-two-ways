@@ -4,23 +4,25 @@ We can have a document like this precisely because an effort was made to keep th
 
 ## Main Organization
 
-* `app`: the specific implementation of the app UI itself, including the layout, domain-specific feature components, special widgets, etc.
+* `app`: the specific implementation of the app UI itself, including layout, domain-specific feature components, etc. Usually contains a `widgets` subdirectory. 
 * `primatives`: common components that are not domain-specific and likely reused in many places in the app. These would include general UI elements like `Button`, `Dialog`, `Drawer` etc. 
-* `services`: all cross-cutting concerns, React `Context`s / `Provider`s, hooks, etc.
-* `styles`: anything style or theming realated.
+* `services`: all cross-cutting concerns, often implemented using React `Context`s / `Provider`s, and hooks.
+* `style`: anything style or theming realated. Any styling specific to a component is encapsulated in that component. This directory contains the necessary support for that encapsulation.  
 
-We've found that this kind of organization is a clean, simple, and easily understood way to organize UI code.  **In an app where the domain code is in the same tree (a non-monorepo), there would also be a `domain` directory.** It would contain the equivalent of what `just-the-chess` has in our repo.  (See the [Core Architecture documentation](./just-the-chess/CORE_ARCH.md) for more on that)
+**In an app where the domain code is in the same tree (a non-monorepo), there would also be a `domain` directory.** It would contain the equivalent of what `just-the-chess` has in our repo.  (See the [Core Architecture documentation](./just-the-chess/CORE_ARCH.md) for more on that)
+
+Over many projects, I've found this organization to be a clean, simple, and easily understood way to organize UI code.  
 
 ## Stitches: Look Ma, no framework.
 
-Over time, we've found that the use of heavy, "complete" frameworks like [Material UI](https://mui.com/) can be a double-edged sword. If we want a UI that is in line with the basic design concepts of a framework, its use can ease things dramatically.  On the other hand, if want something more custom or only have a few common variants of components we need to use, we can spend a lot of time fighting (aka, "customizing") the framework just to achieve simple goals. This is often made less obvious by the mere fact of gaining of a theming mechanism, which on first approach seems like such a huge advantage. But over time, this may not be how the tradeoffs actually playing out!
+The more I've used more feature-packed, "complete" frameworks like [Material UI](https://mui.com/), the more I see them as a double-edged sword. If your UI is strongly in line with the design concept of a framework, and you need to develop an MVP asap, this can ease things dramatically. If on the other hand, you want something more specific, or only have a few common variants of various components, you can spend a lot of time fighting (aka, "customizing") the framework just to achieve simple goals. This disadvantage is often obscured further by the seeming advantage of having a theming mechanism. 
 
-Enter [Stitches](https://stitches.dev/). Stitches (and it's excellent [React Native port](https://github.com/Temzasse/stitches-native)) has truly managed to find a sweetspot between utter simplicity and necessary power. With it, we can quickly create useful styled components while not burdening our project with design assumptions we don't need, or layers of styling code to learn. And in the time saved, we can easily develop the `primatives` we actually need!
+Enter [Stitches](https://stitches.dev/). Stitches (and it's excellent [React Native port](https://github.com/Temzasse/stitches-native)) has truly managed to find a sweetspot between simplicity and power. With it, you can quickly create useful styled components while not burdening the project with design assumptions you don't share, or needless layers of styling code to fight. In the time saved, you can easily develop the `primatives` you actually need!
 
 It has many features, but truly shines in two areas:
 
 ### **theming**
- Stitches theming provides a way to create *any set of desired design tokens* **and** a simple way to apply them to any styled component (via the '$' notation below)
+Stitches theming provides a way to create virtually *any set of desired design tokens* **and** a simple way to apply them to any styled component (via the '$' notation below)
 
 ```typescript
 const { styled } = createStitches({
@@ -57,12 +59,15 @@ const MyComponent = styled('div', {
 ```
 
 ### **style / prop variants**
-This is a unique and powerful way of specifying component level props right from within a style block. 
+Herein lies the true power and convenience that Stitches brings: a easy way of specifying component-level design props right from within style blocks. 
 
 ```typescript
 const Button = styled('button', {
 
-  // other common styles
+  backgroundColor: 'transparent',
+  borderRadius: '3px,
+  height: '1.1rem',
+
   variants: {
     type: {
       alert: {
@@ -73,7 +78,6 @@ const Button = styled('button', {
         },
       },
       common: {
-        backgroundColor: '$gray11',
         color: '#111',
         '&:hover': {
           backgroundColor: '$gray4',
@@ -81,24 +85,31 @@ const Button = styled('button', {
       },
       // other types
     },
+    smaller: {
+      true: {
+        height: '0.9rem',
+      }
+    }
   },
 })
 
-() => <Button type='alert'>an orange button</Button>
+// ...
+
+<Button type='alert' smaller>Go it!</Button>
+
 ```
 
-This has proven to be a very powerful and convenient mechanism when dealing with UI variants that respond to domain-specific states or types.  For example, in our [core architecture](./just-the-chess/CORE_ARCH.md), `Action`s such as `'move'` or `'capture'` can have corresponding prop variants that say, determine the appearance of a square.
+This has proven to be a very powerful and convenient mechanism when dealing with UI variants that respond to domain-specific states or types.  For example, in our [core architecture](./CORE_ARCH.md), `Action`s such as `'move'` or `'capture'` can have corresponding prop variants that make up the appearance of a square.
 
-## Key Implementation and Use of Domain
+## Key Implementations and Uses of Domain
 
 ### **Square and Piece components**
-As mentioned in the [core architecture doc](./just-the-chess/CORE_ARCH.md), the core provides observable state for a `Square` which enables the UI to render their state. These are `occupant` and `squareState`
+As mentioned in the [core architecture doc](./CORE_ARCH.md), the core provides observable state for a `Square` which enables the UI to render it. These are `occupant` and `squareState`
 
-This allows for a `SquareComponent` component to provide feedback based on `squareState`, by translating it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
+This allows for a `SquareComponent` to provide feedback based on `squareState`, by translating it into internal effects variants, some of which correspond directly to `Action`s and some of which are variants of them:
 
 ```typescript
-// edited for clarity
-
+  // simplified for clarity
 const SquareComponent: React.FC<{
   square: Square 
 }> = observer(({
@@ -230,11 +241,11 @@ const PieceComponent: React.FC<{
 })
 ```
 
-The `PieceEffectsView` in this case contains Stitches *compound variants* that vary the size and drop shadow of the piece. For example, these represent the pulsing effect of the black King when its in check. 
+The `PieceEffectsView` in this case contains Stitches *compound variants* that vary the size and dropshadow of the piece. For example, these represent the pulsing effect of the black King when its in check. 
 
 Pulsing between:
 
-normalish <--> slightly larger with a bigger reddish drop shadow
+normal(ish) <--> slightly larger with a bigger reddish dropshadow
 
 
 ```typescript
@@ -261,27 +272,28 @@ normalish <--> slightly larger with a bigger reddish drop shadow
 
 ### **Drag and Drop and the Core**
 
-Because of how we have [architected the core](./just-the-chess/CORE_ARCH.md), the DnD code's only job is to ask to resolve `Action`s as a square is hovered over, and take the `Action` on drop.
+Because of how I've [architected the core](./CORE_ARCH.md), the DnD code's job very simple: to attempt to resolve `Action`s as a square is hovered over, and take the `Action` on drop.
 
 <image src='./ui-core-interaction-dnd.png' width='70%'/>
 
-There is a very similar module called `ChessDnDShell` that wraps the `Board` component **on both the web and React Native**, each with a corresponding `Context` / `Provider`, `useDragState` hook, etc.  On web, it's implemented using [dnd-kit](https://dndkit.com/), whereas on RN, it uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler/). But the implementations present an **almost identical** structure and interface to the rest of the system.  
+In both versions of the app, there is a very similar module called `ChessDnDShell` that wraps the `Board` component, each with a corresponding `Context` / `Provider`, `useDragState` hook, etc.  On web, it's implemented using [dnd-kit](https://dndkit.com/), whereas on RN, it uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler/) and partially hand-rolls the DnD functionality. But the onlines of both implementations are **almost identical** in structure and interface.  
 
-In fact, one of the only real differences is the RN version has to do it's own hit testing to determine what square is being dragged over. Otherwise, the logic is intentionally kept the same.
+In fact, one of few real differences is that the RN version has to do it's own hit testing to determine what square is being dragged over whereas the web version doesn't. Otherwise, the logic is the same...
 
 Web: 
 ```typescript
   const stateRef = useRef<DnDState>(getDnDState())
 
   const onDragUpdate = (event: DragMoveEvent) => {
-
+      // A valid position?  (event.over.data is the Position currently being hovered over)
     const pos = (event.over && event.over.data.current) ? event.over.data.current.position : null
+      // Is this an actual intended drag that's been properly initiated?
     if (pos && stateRef.current.piece) {
-          // We've entered a new square
+          // Have we've entered a new square that's not been tested yet?
       if (!positionsEqual(pos, stateRef.current.squareOver!)) {
         game.resolveAction({
           piece: stateRef.current.piece, 
-          from: stateRef.current.from!, // will be set if piece is
+          from: stateRef.current.from!,   
           to: pos
         })
         stateRef.current.setSquareOver(pos)
@@ -299,7 +311,6 @@ RN:
       const { x, y } = e 
       const pos = squareFromTouchOffset({x, y})
       if (pos) {
-          // We've entered a new square
         if (!positionsEqual(pos, stateRef.current.squareOver!)) {
           game.resolveAction({
             piece: stateRef.current.piece, 
@@ -313,4 +324,4 @@ RN:
   }
 ```
 
-[return to main doc](./README.md)
+[return to main doc](../README.md)
