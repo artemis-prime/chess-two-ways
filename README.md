@@ -1,6 +1,6 @@
 # Chess two ways
 
-<image src='./web-shot.png' width='40%' align='right' style='margin-left: 10px;'/>
+<image src='./docs/web-shot.png' width='40%' align='right' style='margin-left: 10px;'/>
 
 ## A demonstration of React, React Native, and Domain Driven Design
 (...and chess)
