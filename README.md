@@ -3,7 +3,7 @@
 ## An exploration of React, React Native, and Domain Driven Design
 (...and chess)
 
-<image src='./docs/web-shot-larger.png' width='60%' style='margin-left: 10px;'/>
+<image src='./docs/web-shot-larger.png' width='80%' align='center'/>
 
 
 <br clear="both"/>
