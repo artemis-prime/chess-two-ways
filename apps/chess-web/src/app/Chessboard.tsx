@@ -12,7 +12,7 @@ import { ChessDnDShell } from './chessboard/ChessDnD'
 import Square from './chessboard/Square'
 import DraggingPiece from './chessboard/DraggingPiece'
 
-import bg from 'assets/img/wood_grain_bg_low_res.jpg'
+import bg from '~assets/img/wood_grain_bg_low_res.jpg'
 
 const ChessboardInner = styled('div', {
 

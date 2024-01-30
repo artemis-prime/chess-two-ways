@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { ActionRecord, PIECETYPE_TO_UNICODE } from '@artemis-prime/chess-core'
 
@@ -6,6 +6,10 @@ import { styled } from '~/style'
 
 import SideSwatch from '../SideSwatch'
 import EMOJIS from './emojis'
+
+interface GetMoveNoteFn {
+  (action: ActionRecord, prevAction: ActionRecord): ReactNode
+}
 
 const Outer = styled('span', {})
 
@@ -91,4 +95,7 @@ const getMoveComment = (rec: ActionRecord, previous: ActionRecord | undefined): 
   return null
 }
 
-export default getMoveComment
+export {
+  getMoveComment as default, 
+  type GetMoveNoteFn 
+}

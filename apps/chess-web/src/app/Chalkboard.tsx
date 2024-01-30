@@ -13,7 +13,7 @@ import {
   TransientMessage,
 } from '~/app/widgets'
 
-import bg from 'assets/img/slate_bg_low_res.jpg'
+import bg from '~assets/img/slate_bg_low_res.jpg'
 
 const ChalkbdOuter = styled(Flex, {
 

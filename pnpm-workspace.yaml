@@ -1,0 +1,3 @@
+packages:
+  - 'just-the-chess'
+  - 'apps/chess-web'

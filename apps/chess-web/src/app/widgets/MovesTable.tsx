@@ -17,7 +17,7 @@ import { Row, Box, HR } from '~/primatives'
 
 import SideSwatch from './SideSwatch'
 import TransientMessage from './TransientMessage'
-import moveNoteFn from './movesTable/GetMoveNote'
+import moveNoteFn from './movesTable/getMoveNote'
 
   // TS workaround for put in module
 const Scrollable = ScrollableFeed as any

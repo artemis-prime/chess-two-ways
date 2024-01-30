@@ -2,11 +2,14 @@
   "name": "@artemis-prime/chess-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "yarn@1.22.17",
-  "scripts": {
-    "build:first-time": "yarn install && yarn prepare:serve",
-    "build:domain": "yarn workspace @artemis-prime/chess-core build",
-    "build:web": "yarn workspace @artemis-prime/chess-web build",
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "pnpm": ">=8"
+  },
+  "scripts_": {
+    "_build:first-time": "pnpm install && pnpm prepare:serve",
+    "_build:domain": "yarn workspace @artemis-prime/chess-core build",
+    "_build:web": "yarn workspace @artemis-prime/chess-web build",
     "tcheck:web": "yarn workspace @artemis-prime/chess-web tcheck",
     "prepare:web": "yarn build:domain && yarn refresh:web && yarn tcheck:web",
     "refresh:web": "yarn clean:web && yarn install",
@@ -23,15 +26,11 @@
     "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web && yarn clean:rn"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "typescript": "5.3.3"
   },
-  "workspaces": {
-    "packages": [
-      "just-the-chess",
-      "apps/chess-web",
-      "apps/chess-rn"
-    ]
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^18.2.48"
+    }
   }
 }

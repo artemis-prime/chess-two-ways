@@ -2,13 +2,16 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from 'path'
 
+  
 export default defineConfig({
   plugins: [react()],
   resolve: {
     preserveSymlinks: true,
     alias: [
+        // @ts-ignore __dirname is polyfilled by vite
       {find: '~', replacement: path.resolve(__dirname, 'src')},
-      {find: 'assets', replacement: path.resolve(__dirname, '../../assets')},
+        // @ts-ignore
+      {find: '~assets', replacement: path.resolve(__dirname, '../../assets')},
     ]
   },
   server: {

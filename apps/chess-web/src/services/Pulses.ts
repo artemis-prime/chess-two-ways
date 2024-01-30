@@ -11,8 +11,8 @@ class PulsesImpl implements Pulses {
   slow: boolean = false
   fast: boolean = false
 
-  private _fastInterval: NodeJS.Timer | null = null
-  private _slowInterval: NodeJS.Timer | null = null
+  private _fastInterval: ReturnType<typeof setTimeout> | null = null
+  private _slowInterval: ReturnType<typeof setTimeout> | null = null
   
   constructor() {
 

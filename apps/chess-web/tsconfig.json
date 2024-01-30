@@ -10,11 +10,12 @@
     "composite": true,
     "allowJs": true,
     "noEmit": true,
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
       "~/*": ["./src/*"],
-      "assets/*": ["../../assets/*"],
+      "~assets/*": ["../../assets/*"],
     },  
   },
   "references": [

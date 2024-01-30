@@ -2,10 +2,15 @@
   "extends": "../tsconfig.base",
 
   "compilerOptions": {
+    "emitDeclarationOnly": true,
     "composite": true,
-    "outDir": "dist",
-    "noEmit": false
+    "outDir": "./types",
   },
-  "include": ["src/**/*"],
-  "exclude": [ "dist/**"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+  ],
+  "exclude": [ 
+    "node_modules"
+  ],
 }
