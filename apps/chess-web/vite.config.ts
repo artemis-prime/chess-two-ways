@@ -13,7 +13,18 @@ export default defineConfig({
         // @ts-ignore
       {find: '~assets', replacement: path.resolve(__dirname, '../../assets')},
     ]
-  },
+  },   
+  build: {
+    rollupOptions: {
+      output: {
+        sourcemap: false,
+        manualChunks: {
+          chess: ['@artemis-prime/chess-core', 'mobx'],
+          dndkit: ['@dnd-kit/core', '@dnd-kit/modifiers'],
+        }
+     }
+    },
+  }, 
   server: {
     port: 8080,
   },
