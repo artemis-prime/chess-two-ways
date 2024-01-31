@@ -1,4 +1,3 @@
-export { default as useAnimatedStyleExt } from './useAnimatedStyleExt' 
 export type { CSS } from 'stitches-native'
 export { default as deborder } from './debugBorder' 
 export { default as useForceUpdate } from './useForceUpdate' 

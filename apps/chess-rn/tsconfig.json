@@ -3,9 +3,8 @@
   "extends": "../../tsconfig.base",
 
   "compilerOptions": {
-    "types": ["react-native"],
     "lib": [
-      "es2019"
+      "es2020"
     ],
     "composite": true,
     "allowJs": true,

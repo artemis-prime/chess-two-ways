@@ -99,7 +99,7 @@ const AnimatedPressable: React.FC<
         result[a.prop] = interpolateColor(      
           animBase.value, 
           [0, 1], 
-          [a.from, a.to]
+          [a.from, a.to as string]
         ) as ColorValue 
       }
       else {
@@ -213,7 +213,7 @@ const AnimatedPressableImage: React.FC<
         result[a.prop] = interpolateColor(      
           animBase.value, 
           [0, 1], 
-          [a.from, a.to]
+          [a.from, a.to as string]
         ) as ColorValue 
       }
       else {
@@ -235,7 +235,7 @@ const AnimatedPressableImage: React.FC<
         result[a.prop] = interpolateColor(      
           animBase.value, 
           [0, 1], 
-          [a.from, a.to]
+          [a.from, a.to as string]
         ) as ColorValue 
       }
       else {

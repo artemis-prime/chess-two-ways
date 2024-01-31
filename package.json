@@ -25,9 +25,6 @@
     "clean:rn": "yarn workspace @artemis-prime/chess-react-native clean",
     "clean:all": "rm -rf ./node_modules && yarn clean:domain && yarn clean:web && yarn clean:rn"
   },
-  "devDependencies": {
-    "typescript": "5.3.3"
-  },
   "pnpm": {
     "overrides": {
       "@types/react": "^18.2.48"
