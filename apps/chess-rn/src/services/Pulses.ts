@@ -10,8 +10,8 @@ class PulsesImpl implements Pulses {
   slow: boolean = false
   fast: boolean = false
 
-  private _fastInterval: number | null = null
-  private _slowInterval: number | null = null
+  private _fastInterval: ReturnType<typeof setTimeout> | null = null
+  private _slowInterval: ReturnType<typeof setTimeout> | null = null
   
   constructor() {
 

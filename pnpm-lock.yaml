@@ -16,6 +16,9 @@ importers:
       '@artemis-prime/chess-core':
         specifier: workspace:*
         version: link:../../just-the-chess
+      '@babel/runtime':
+        specifier: ^7.23.9
+        version: 7.23.9
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -71,9 +74,6 @@ importers:
       '@babel/preset-env':
         specifier: ^7.23.9
         version: 7.23.9(@babel/core@7.23.9)
-      '@babel/runtime':
-        specifier: ^7.23.9
-        version: 7.23.9
       '@react-native/babel-preset':
         specifier: ^0.73.20
         version: 0.73.20(@babel/core@7.23.9)(@babel/preset-env@7.23.9)
@@ -98,9 +98,6 @@ importers:
       react-native-codegen:
         specifier: ^0.71.6
         version: 0.71.6(@babel/preset-env@7.23.9)
-      react-native-monorepo-tools:
-        specifier: ^1.2.1
-        version: 1.2.1
       react-test-renderer:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
@@ -3837,10 +3834,6 @@ packages:
       make-dir: 2.1.0
       pkg-dir: 3.0.0
 
-  /find-root@1.1.0:
-    resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
-    dev: true
-
   /find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
     engines: {node: '>=6'}
@@ -5166,14 +5159,6 @@ packages:
       react: 18.2.0
       react-native: 0.73.3(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
     dev: false
-
-  /react-native-monorepo-tools@1.2.1:
-    resolution: {integrity: sha512-WW0cEP+/lTTQLKU268PXZISXFgL1wlaftMcxn4Z4QGXMls7WS+BMhwIZcEy0zudTeXaM+ft4yeVqMcUWM8ofXg==}
-    engines: {node: '>=11.0.0'}
-    dependencies:
-      find-root: 1.1.0
-      glob: 7.2.3
-    dev: true
 
   /react-native-reanimated@3.6.2(@babel/core@7.23.9)(@babel/plugin-proposal-nullish-coalescing-operator@7.18.6)(@babel/plugin-proposal-optional-chaining@7.21.0)(@babel/plugin-transform-arrow-functions@7.23.3)(@babel/plugin-transform-shorthand-properties@7.23.3)(@babel/plugin-transform-template-literals@7.23.3)(react-native@0.73.3)(react@18.2.0):
     resolution: {integrity: sha512-IIMREMOrxhtK35drfpzh2UhxNqAOHnuvGgtMofj7yHcMj16tmWZR2zFvMUf6z2MfmXv+aVgFQ6TRZ6yKYf7LNA==}

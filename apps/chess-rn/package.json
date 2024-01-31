@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "build:dev": "cd android && ./gradlew assembleDebug",
-    "deploy": "react-native run-android --mode release",
-    "start": "npx tsc && react-native start --verbose",
+    "load": "react-native run-android --mode release",
+    "start": "tsc && react-native start --verbose",
     "tc": "tsc --noEmit",
     "clean": "rm -rf node_modules && rm -rf android/build && rm -rf android/app/build",
     "link-assets": "npx react-native-asset"
   },
   "dependencies": {
     "@artemis-prime/chess-core": "workspace:*",
+    "@babel/runtime": "^7.23.9",
     "@radix-ui/colors": "^3.0.0",
     "mobx": "6.12.0",
     "mobx-react-lite": "^4.0.5",
@@ -32,7 +33,6 @@
     "@babel/plugin-transform-shorthand-properties": "^7.23.3",
     "@babel/plugin-transform-template-literals": "^7.23.3",
     "@babel/preset-env": "^7.23.9",
-    "@babel/runtime": "^7.23.9",
     "@react-native/babel-preset": "^0.73.20",
     "@react-native/gradle-plugin": "^0.73.4",
     "@react-native/metro-config": "^0.73.4",
@@ -41,7 +41,6 @@
     "@types/react-test-renderer": "^18.0.7",
     "babel-plugin-module-resolver": "^5.0.0",
     "react-native-codegen": "^0.71.6",
-    "react-native-monorepo-tools": "^1.2.1",
     "react-test-renderer": "18.2.0",
     "typescript": "5.3.3"
   }
